@@ -1,0 +1,11 @@
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines\bin\Debug\net9.0\Hoeyer.Machines.deps.json
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines\bin\Debug\net9.0\Hoeyer.Machines.dll
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines\bin\Debug\net9.0\Hoeyer.Machines.pdb
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines\obj\Debug\net9.0\Hoeyer.Machines.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines\obj\Debug\net9.0\Hoeyer.Machines.AssemblyInfoInputs.cache
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines\obj\Debug\net9.0\Hoeyer.Machines.AssemblyInfo.cs
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines\obj\Debug\net9.0\Hoeyer.Machines.csproj.CoreCompileInputs.cache
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines\obj\Debug\net9.0\Hoeyer.Machines.dll
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines\obj\Debug\net9.0\refint\Hoeyer.Machines.dll
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines\obj\Debug\net9.0\Hoeyer.Machines.pdb
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines\obj\Debug\net9.0\ref\Hoeyer.Machines.dll

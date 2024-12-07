@@ -1,0 +1,74 @@
+{
+  "version": 2,
+  "dgSpecHash": "Z7B2+X0fevQ=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\rasmus\\RiderProjects\\Hoeyer.Opcua\\Hoeyer.Machines.Opcua\\Hoeyer.Machines.Opcua.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\rasmus\\.nuget\\packages\\godsharp.opc.ua.client\\2024.101.19\\godsharp.opc.ua.client.2024.101.19.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\godsharp.opc.ua.common\\2024.101.19\\godsharp.opc.ua.common.2024.101.19.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.0\\microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\microsoft.win32.systemevents\\7.0.0\\microsoft.win32.systemevents.7.0.0.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\nito.asyncex.context\\5.1.2\\nito.asyncex.context.5.1.2.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\nito.asyncex.tasks\\5.1.2\\nito.asyncex.tasks.5.1.2.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\nito.disposables\\2.2.1\\nito.disposables.2.2.1.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\opcfoundation.netstandard.opc.ua.client\\1.4.372.107\\opcfoundation.netstandard.opc.ua.client.1.4.372.107.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\opcfoundation.netstandard.opc.ua.client.complextypes\\1.4.371.60\\opcfoundation.netstandard.opc.ua.client.complextypes.1.4.371.60.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\opcfoundation.netstandard.opc.ua.configuration\\1.4.372.107\\opcfoundation.netstandard.opc.ua.configuration.1.4.372.107.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\opcfoundation.netstandard.opc.ua.core\\1.4.372.107\\opcfoundation.netstandard.opc.ua.core.1.4.372.107.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\opcfoundation.netstandard.opc.ua.security.certificates\\1.4.372.107\\opcfoundation.netstandard.opc.ua.security.certificates.1.4.372.107.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\system.collections.immutable\\1.7.1\\system.collections.immutable.1.7.1.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\system.configuration.configurationmanager\\7.0.0\\system.configuration.configurationmanager.7.0.0.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\system.diagnostics.eventlog\\7.0.0\\system.diagnostics.eventlog.7.0.0.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\system.drawing.common\\7.0.0\\system.drawing.common.7.0.0.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\system.formats.asn1\\8.0.0\\system.formats.asn1.8.0.0.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\system.runtime.caching\\7.0.0\\system.runtime.caching.7.0.0.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\system.security.cryptography.cng\\5.0.0\\system.security.cryptography.cng.5.0.0.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\system.security.cryptography.protecteddata\\7.0.0\\system.security.cryptography.protecteddata.7.0.0.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\system.security.permissions\\7.0.0\\system.security.permissions.7.0.0.nupkg.sha512",
+    "C:\\Users\\rasmus\\.nuget\\packages\\system.windows.extensions\\7.0.0\\system.windows.extensions.7.0.0.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'OPCFoundation.NetStandard.Opc.Ua.Core' 1.4.372.107 has a known high severity vulnerability, https://github.com/advisories/GHSA-4q2p-hwmr-qcxc",
+      "libraryId": "OPCFoundation.NetStandard.Opc.Ua.Core",
+      "targetGraphs": [
+        "net9.0"
+      ]
+    },
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'OPCFoundation.NetStandard.Opc.Ua.Core' 1.4.372.107 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-7vfh-cqpc-4267",
+      "libraryId": "OPCFoundation.NetStandard.Opc.Ua.Core",
+      "targetGraphs": [
+        "net9.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'OPCFoundation.NetStandard.Opc.Ua.Core' 1.4.372.107 has a known high severity vulnerability, https://github.com/advisories/GHSA-qm9f-c3v9-wphv",
+      "libraryId": "OPCFoundation.NetStandard.Opc.Ua.Core",
+      "targetGraphs": [
+        "net9.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'System.Formats.Asn1' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-447r-wph3-92pm",
+      "libraryId": "System.Formats.Asn1",
+      "targetGraphs": [
+        "net9.0"
+      ]
+    }
+  ]
+}

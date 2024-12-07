@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "AwAhYTxxcp8JDTNCS54obAKeVrBMBmZEcIKFXgOuKMI=",
+  "Source": "MyOpcUaWebApplication",
+  "BasePath": "_content/MyOpcUaWebApplication",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

@@ -1,0 +1,10 @@
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines.OpcUa.Configuration\bin\Debug\netstandard2\Hoeyer.Machines.OpcUa.Configuration.deps.json
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines.OpcUa.Configuration\bin\Debug\netstandard2\Hoeyer.Machines.OpcUa.Configuration.dll
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines.OpcUa.Configuration\bin\Debug\netstandard2\Hoeyer.Machines.OpcUa.Configuration.pdb
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines.OpcUa.Configuration\obj\Debug\netstandard2\Hoeyer.Machines.OpcUa.Configuration.csproj.AssemblyReference.cache
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines.OpcUa.Configuration\obj\Debug\netstandard2\Hoeyer.Machines.OpcUa.Configuration.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines.OpcUa.Configuration\obj\Debug\netstandard2\Hoeyer.Machines.OpcUa.Configuration.AssemblyInfoInputs.cache
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines.OpcUa.Configuration\obj\Debug\netstandard2\Hoeyer.Machines.OpcUa.Configuration.AssemblyInfo.cs
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines.OpcUa.Configuration\obj\Debug\netstandard2\Hoeyer.Machines.OpcUa.Configuration.csproj.CoreCompileInputs.cache
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines.OpcUa.Configuration\obj\Debug\netstandard2\Hoeyer.Machines.OpcUa.Configuration.dll
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines.OpcUa.Configuration\obj\Debug\netstandard2\Hoeyer.Machines.OpcUa.Configuration.pdb

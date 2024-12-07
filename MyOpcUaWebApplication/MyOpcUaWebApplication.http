@@ -1,0 +1,6 @@
+@MyOpcUaWebApplication_HostAddress = http://localhost:5212
+
+GET {{MyOpcUaWebApplication_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
