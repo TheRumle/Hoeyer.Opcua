@@ -32,7 +32,7 @@
       "GodSharp.Opc.Ua.Common/2024.101.19": {
         "dependencies": {
           "OPCFoundation.NetStandard.Opc.Ua.Configuration": "1.4.372.107",
-          "OPCFoundation.NetStandard.Opc.Ua.Core": "1.4.372.107",
+          "OPCFoundation.NetStandard.Opc.Ua.Core": "1.5.374.158",
           "System.Runtime.Caching": "7.0.0"
         },
         "runtime": {
@@ -53,10 +53,15 @@
           }
         }
       },
-      "Microsoft.Extensions.DependencyInjection.Abstractions/8.0.0": {},
-      "Microsoft.Extensions.Logging.Abstractions/8.0.0": {
+      "Microsoft.Extensions.DependencyInjection/9.0.0": {
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0"
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions/9.0.0": {},
+      "Microsoft.Extensions.Logging.Abstractions/9.0.0": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0"
         }
       },
       "Microsoft.OpenApi/1.6.17": {
@@ -127,7 +132,7 @@
       "OPCFoundation.NetStandard.Opc.Ua.Client/1.4.372.107": {
         "dependencies": {
           "OPCFoundation.NetStandard.Opc.Ua.Configuration": "1.4.372.107",
-          "OPCFoundation.NetStandard.Opc.Ua.Core": "1.4.372.107"
+          "OPCFoundation.NetStandard.Opc.Ua.Core": "1.5.374.158"
         },
         "runtime": {
           "lib/net8.0/Opc.Ua.Client.dll": {
@@ -139,7 +144,7 @@
       "OPCFoundation.NetStandard.Opc.Ua.Client.ComplexTypes/1.4.371.60": {
         "dependencies": {
           "OPCFoundation.NetStandard.Opc.Ua.Client": "1.4.372.107",
-          "OPCFoundation.NetStandard.Opc.Ua.Core": "1.4.372.107"
+          "OPCFoundation.NetStandard.Opc.Ua.Core": "1.5.374.158"
         },
         "runtime": {
           "lib/net6.0/Opc.Ua.Client.ComplexTypes.dll": {
@@ -150,7 +155,7 @@
       },
       "OPCFoundation.NetStandard.Opc.Ua.Configuration/1.4.372.107": {
         "dependencies": {
-          "OPCFoundation.NetStandard.Opc.Ua.Core": "1.4.372.107"
+          "OPCFoundation.NetStandard.Opc.Ua.Core": "1.5.374.158"
         },
         "runtime": {
           "lib/net8.0/Opc.Ua.Configuration.dll": {
@@ -159,28 +164,27 @@
           }
         }
       },
-      "OPCFoundation.NetStandard.Opc.Ua.Core/1.4.372.107": {
+      "OPCFoundation.NetStandard.Opc.Ua.Core/1.5.374.158": {
         "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "9.0.0",
           "Newtonsoft.Json": "13.0.3",
-          "OPCFoundation.NetStandard.Opc.Ua.Security.Certificates": "1.4.372.107"
+          "OPCFoundation.NetStandard.Opc.Ua.Security.Certificates": "1.5.374.158"
         },
         "runtime": {
-          "lib/net8.0/Opc.Ua.Core.dll": {
-            "assemblyVersion": "1.4.372.0",
-            "fileVersion": "1.4.372.107"
+          "lib/net9.0/Opc.Ua.Core.dll": {
+            "assemblyVersion": "1.5.374.0",
+            "fileVersion": "1.5.374.158"
           }
         }
       },
-      "OPCFoundation.NetStandard.Opc.Ua.Security.Certificates/1.4.372.107": {
+      "OPCFoundation.NetStandard.Opc.Ua.Security.Certificates/1.5.374.158": {
         "dependencies": {
-          "System.Formats.Asn1": "8.0.0",
-          "System.Security.Cryptography.Cng": "5.0.0"
+          "System.Formats.Asn1": "8.0.1"
         },
         "runtime": {
-          "lib/net8.0/Opc.Ua.Security.Certificates.dll": {
-            "assemblyVersion": "1.4.372.0",
-            "fileVersion": "1.4.372.107"
+          "lib/net9.0/Opc.Ua.Security.Certificates.dll": {
+            "assemblyVersion": "1.5.374.0",
+            "fileVersion": "1.5.374.158"
           }
         }
       },
@@ -218,7 +222,7 @@
           }
         }
       },
-      "System.Formats.Asn1/8.0.0": {},
+      "System.Formats.Asn1/8.0.1": {},
       "System.Runtime.Caching/7.0.0": {
         "dependencies": {
           "System.Configuration.ConfigurationManager": "7.0.0"
@@ -236,11 +240,6 @@
             "assemblyVersion": "4.0.0.0",
             "fileVersion": "7.0.22.51805"
           }
-        }
-      },
-      "System.Security.Cryptography.Cng/5.0.0": {
-        "dependencies": {
-          "System.Formats.Asn1": "8.0.0"
         }
       },
       "System.Security.Cryptography.ProtectedData/7.0.0": {
@@ -312,7 +311,9 @@
       },
       "Hoeyer.Machines.OpcUa.Configuration/1.0.0": {
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0",
+          "Microsoft.Extensions.DependencyInjection": "9.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0",
+          "OPCFoundation.NetStandard.Opc.Ua.Core": "1.5.374.158",
           "System.Configuration.ConfigurationManager": "7.0.0"
         },
         "runtime": {
@@ -351,19 +352,26 @@
       "path": "microsoft.aspnetcore.openapi/9.0.0",
       "hashPath": "microsoft.aspnetcore.openapi.9.0.0.nupkg.sha512"
     },
-    "Microsoft.Extensions.DependencyInjection.Abstractions/8.0.0": {
+    "Microsoft.Extensions.DependencyInjection/9.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-cjWrLkJXK0rs4zofsK4bSdg+jhDLTaxrkXu4gS6Y7MAlCvRyNNgwY/lJi5RDlQOnSZweHqoyvgvbdvQsRIW+hg==",
-      "path": "microsoft.extensions.dependencyinjection.abstractions/8.0.0",
-      "hashPath": "microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512"
+      "sha512": "sha512-MCPrg7v3QgNMr0vX4vzRXvkNGgLg8vKWX0nKCWUxu2uPyMsaRgiRc1tHBnbTcfJMhMKj2slE/j2M9oGkd25DNw==",
+      "path": "microsoft.extensions.dependencyinjection/9.0.0",
+      "hashPath": "microsoft.extensions.dependencyinjection.9.0.0.nupkg.sha512"
     },
-    "Microsoft.Extensions.Logging.Abstractions/8.0.0": {
+    "Microsoft.Extensions.DependencyInjection.Abstractions/9.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-arDBqTgFCyS0EvRV7O3MZturChstm50OJ0y9bDJvAcmEPJm0FFpFyjU/JLYyStNGGey081DvnQYlncNX5SJJGA==",
-      "path": "microsoft.extensions.logging.abstractions/8.0.0",
-      "hashPath": "microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512"
+      "sha512": "sha512-+6f2qv2a3dLwd5w6JanPIPs47CxRbnk+ZocMJUhv9NxP88VlOcJYZs9jY+MYSjxvady08bUZn6qgiNh7DadGgg==",
+      "path": "microsoft.extensions.dependencyinjection.abstractions/9.0.0",
+      "hashPath": "microsoft.extensions.dependencyinjection.abstractions.9.0.0.nupkg.sha512"
+    },
+    "Microsoft.Extensions.Logging.Abstractions/9.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-g0UfujELzlLbHoVG8kPKVBaW470Ewi+jnptGS9KUi6jcb+k2StujtK3m26DFSGGwQ/+bVgZfsWqNzlP6YOejvw==",
+      "path": "microsoft.extensions.logging.abstractions/9.0.0",
+      "hashPath": "microsoft.extensions.logging.abstractions.9.0.0.nupkg.sha512"
     },
     "Microsoft.OpenApi/1.6.17": {
       "type": "package",
@@ -428,19 +436,19 @@
       "path": "opcfoundation.netstandard.opc.ua.configuration/1.4.372.107",
       "hashPath": "opcfoundation.netstandard.opc.ua.configuration.1.4.372.107.nupkg.sha512"
     },
-    "OPCFoundation.NetStandard.Opc.Ua.Core/1.4.372.107": {
+    "OPCFoundation.NetStandard.Opc.Ua.Core/1.5.374.158": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ppMb7D3lALVNzA+GgvMJp/YaKDZnpLEAV1eEx+/k9YN7qBxeOfoJR7dqIQe5r/G4cskPTw08ZJwqK/mpIEwn7Q==",
-      "path": "opcfoundation.netstandard.opc.ua.core/1.4.372.107",
-      "hashPath": "opcfoundation.netstandard.opc.ua.core.1.4.372.107.nupkg.sha512"
+      "sha512": "sha512-qMFh5Me60CX4qRzdMGdaI6ecA17d0OVsopuhwGXBQg6FZYgdg7gHPK9bRVOHuVTKHZGXJL4Qfg2Kz6EY1ZcXOg==",
+      "path": "opcfoundation.netstandard.opc.ua.core/1.5.374.158",
+      "hashPath": "opcfoundation.netstandard.opc.ua.core.1.5.374.158.nupkg.sha512"
     },
-    "OPCFoundation.NetStandard.Opc.Ua.Security.Certificates/1.4.372.107": {
+    "OPCFoundation.NetStandard.Opc.Ua.Security.Certificates/1.5.374.158": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-wCFDraF3BtCyc3bF71tV2tKN04HeCuuzlxmjR9lync8tuJZiJANrXsYS9JCxXquZswl3sXH0GflIYYRMHgjgLg==",
-      "path": "opcfoundation.netstandard.opc.ua.security.certificates/1.4.372.107",
-      "hashPath": "opcfoundation.netstandard.opc.ua.security.certificates.1.4.372.107.nupkg.sha512"
+      "sha512": "sha512-n6IQARUKT28O2zbBupvC+CxNswkIEezvP0dsgtwyTvs5/3KUNbhbV9w/paKto50VrHujmE/WYt1TBJfrNyMl8Q==",
+      "path": "opcfoundation.netstandard.opc.ua.security.certificates/1.5.374.158",
+      "hashPath": "opcfoundation.netstandard.opc.ua.security.certificates.1.5.374.158.nupkg.sha512"
     },
     "System.Collections.Immutable/1.7.1": {
       "type": "package",
@@ -470,12 +478,12 @@
       "path": "system.drawing.common/7.0.0",
       "hashPath": "system.drawing.common.7.0.0.nupkg.sha512"
     },
-    "System.Formats.Asn1/8.0.0": {
+    "System.Formats.Asn1/8.0.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-AJukBuLoe3QeAF+mfaRKQb2dgyrvt340iMBHYv+VdBzCUM06IxGlvl0o/uPOS7lHnXPN6u8fFRHSHudx5aTi8w==",
-      "path": "system.formats.asn1/8.0.0",
-      "hashPath": "system.formats.asn1.8.0.0.nupkg.sha512"
+      "sha512": "sha512-XqKba7Mm/koKSjKMfW82olQdmfbI5yqeoLV/tidRp7fbh5rmHAQ5raDI/7SU0swTzv+jgqtUGkzmFxuUg0it1A==",
+      "path": "system.formats.asn1/8.0.1",
+      "hashPath": "system.formats.asn1.8.0.1.nupkg.sha512"
     },
     "System.Runtime.Caching/7.0.0": {
       "type": "package",
@@ -483,13 +491,6 @@
       "sha512": "sha512-M0riW7Zgxca3Elp1iZVhzH7PWWT5bPSrdMFGCAGoH1n9YLuXOYE78ryui051Icf3swWWa8feBRoSxOCYwgMy8w==",
       "path": "system.runtime.caching/7.0.0",
       "hashPath": "system.runtime.caching.7.0.0.nupkg.sha512"
-    },
-    "System.Security.Cryptography.Cng/5.0.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-jIMXsKn94T9JY7PvPq/tMfqa6GAaHpElRDpmG+SuL+D3+sTw2M8VhnibKnN8Tq+4JqbPJ/f+BwtLeDMEnzAvRg==",
-      "path": "system.security.cryptography.cng/5.0.0",
-      "hashPath": "system.security.cryptography.cng.5.0.0.nupkg.sha512"
     },
     "System.Security.Cryptography.ProtectedData/7.0.0": {
       "type": "package",

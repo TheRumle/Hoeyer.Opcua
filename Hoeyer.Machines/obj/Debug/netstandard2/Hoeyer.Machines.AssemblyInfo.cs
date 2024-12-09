@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Hoeyer.Machines")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+742b37a4230567a060df260366f9ab9e15a047ee")]
 [assembly: System.Reflection.AssemblyProductAttribute("Hoeyer.Machines")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Hoeyer.Machines")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

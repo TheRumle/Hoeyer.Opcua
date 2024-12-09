@@ -13,3 +13,4 @@ C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines.Opcua\obj\Debug\net9.
 C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines.Opcua\obj\Debug\net9.0\refint\Hoeyer.Machines.Opcua.dll
 C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines.Opcua\obj\Debug\net9.0\Hoeyer.Machines.Opcua.pdb
 C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines.Opcua\obj\Debug\net9.0\ref\Hoeyer.Machines.Opcua.dll
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines.Opcua\obj\Debug\net9.0\Hoeyer.Machines.Opcua.sourcelink.json

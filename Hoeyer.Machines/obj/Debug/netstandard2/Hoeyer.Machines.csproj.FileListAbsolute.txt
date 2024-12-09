@@ -8,3 +8,4 @@ C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines\obj\Debug\netstandard
 C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines\obj\Debug\netstandard2\Hoeyer.Machines.csproj.CoreCompileInputs.cache
 C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines\obj\Debug\netstandard2\Hoeyer.Machines.dll
 C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines\obj\Debug\netstandard2\Hoeyer.Machines.pdb
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.Machines\obj\Debug\netstandard2\Hoeyer.Machines.sourcelink.json

@@ -1,11 +1,25 @@
 using Hoeyer.Machines.OpcUa.Configuration.Services;
+using MyOpcUaWebApplication.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+const string GantryOptionsErrorMessage =
+    $"The appsettings json file does not configure {nameof(GantryOptions)} correctly. Compare the {nameof(GantryOptions)} class and the {GantryOptions.APPCONFIG_SECTION} section of the .json file.";
+
 builder.Services.AddOpenApi();
-builder.Services.AddOpcUaConfiguration();
+
+builder.Services
+    .AddOptions<GantryOptions>()
+    .Bind(builder.Configuration.GetSection(GantryOptions.APPCONFIG_SECTION))
+    .Validate(e=>!string.IsNullOrEmpty(e.Name) && e.Speed > 0 && !string.IsNullOrEmpty(e.Id), GantryOptionsErrorMessage)
+    .ValidateOnStart();
+
+builder.Services.AddOptions<OpcUaRootConfigOptions>()
+    .Bind(builder.Configuration.GetSection(OpcUaRootConfigOptions.OPCUA_ROOT_CONFIG_SECTION))
+    .Validate(e => e.NamespaceIndex > 0, "Namespace index must be greater than 0")
+    .ValidateOnStart();
+
+builder.Services.AddOpcUa();
 
 var app = builder.Build();
 
@@ -37,9 +51,4 @@ app.MapGet("/weatherforecast", () =>
     .WithName("GetWeatherForecast");
 
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
-
-
+app.Run();

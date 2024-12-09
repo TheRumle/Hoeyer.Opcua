@@ -46,15 +46,23 @@
         "netstandard2.0": {
           "targetAlias": "netstandard2",
           "dependencies": {
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
             "Microsoft.Extensions.DependencyInjection.Abstractions": {
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[9.0.0, )"
             },
             "NETStandard.Library": {
               "suppressParent": "All",
               "target": "Package",
               "version": "[2.0.3, )",
               "autoReferenced": true
+            },
+            "OPCFoundation.NetStandard.Opc.Ua.Core": {
+              "target": "Package",
+              "version": "[1.5.374.158, )"
             },
             "System.Configuration.ConfigurationManager": {
               "target": "Package",

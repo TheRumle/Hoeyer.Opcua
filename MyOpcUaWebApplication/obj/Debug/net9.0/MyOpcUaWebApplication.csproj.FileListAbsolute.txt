@@ -60,3 +60,4 @@ C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\MyOpcUaWebApplication\obj\Debug\net9.
 C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\MyOpcUaWebApplication\obj\Debug\net9.0\MyOpcUaWebApplication.pdb
 C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\MyOpcUaWebApplication\obj\Debug\net9.0\MyOpcUaWebApplication.genruntimeconfig.cache
 C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\MyOpcUaWebApplication\obj\Debug\net9.0\ref\MyOpcUaWebApplication.dll
+C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\MyOpcUaWebApplication\obj\Debug\net9.0\MyOpcUaWebApplication.sourcelink.json
