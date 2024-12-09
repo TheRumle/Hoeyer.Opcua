@@ -132,3 +132,6 @@ $RECYCLE.BIN/
 
 _NCrunch*
 /MyOpcUaWebApplication/bin
+/Hoeyer.Machines.OpcUa.Configuration/bin
+bin/*
+bin/
