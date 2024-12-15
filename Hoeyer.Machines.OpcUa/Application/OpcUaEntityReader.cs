@@ -14,7 +14,7 @@ namespace Hoeyer.Machines.OpcUa.Application;
 public sealed class EntityReader<TEntity>(
     DataValuePropertyAssigner<TEntity> assigner,
     EntityConfiguration<TEntity> settings):
-    IOpcUaNodeStateReader<TEntity> where TEntity : new()
+    IOpcUaNodeConnectionHolder<TEntity> where TEntity : new()
 {
     private readonly List<PropertyConfiguration> _nodes = settings
         .PropertyConfigurations
