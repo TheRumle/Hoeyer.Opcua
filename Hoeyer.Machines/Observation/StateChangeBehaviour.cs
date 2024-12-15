@@ -6,6 +6,7 @@ using Hoeyer.Machines.StateSnapshot;
 
 namespace Hoeyer.Machines.Observation;
 
+
 public class StateChangeBehaviour<TState>(TState currentState) : ISubscribable<TState>
 {
     private StateChange<TState> _tail = new(currentState, currentState, default!);

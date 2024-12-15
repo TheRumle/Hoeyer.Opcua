@@ -4,7 +4,7 @@ namespace Hoeyer.Machines.StateSnapshot;
 
 public sealed class StateChangeSubscription<TState>(IStateChangeSubscriber<TState> subscriber) : IDisposable
 {
-    public readonly IStateChangeSubscriber<TState> Subscriber = subscriber;
+    internal readonly IStateChangeSubscriber<TState> Subscriber = subscriber;
     public bool IsCancelled { get; private set; }
     public bool IsActive => !IsCancelled;
 
@@ -16,7 +16,7 @@ public sealed class StateChangeSubscription<TState>(IStateChangeSubscriber<TStat
         }
     }
 
-    public void ReportStateChange(StateChange<TState> stateChange)
+    internal void ReportStateChange(StateChange<TState> stateChange)
     {
         if (IsCancelled) return;
         Subscriber.OnStateChange(stateChange);

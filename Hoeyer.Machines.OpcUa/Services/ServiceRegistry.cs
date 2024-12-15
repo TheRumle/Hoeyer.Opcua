@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Hoeyer.Machines.Observation;
 using Hoeyer.Machines.OpcUa.Application;
 using Hoeyer.Machines.OpcUa.Application.MachineProxy;
 using Hoeyer.Machines.OpcUa.Domain;
@@ -10,6 +11,7 @@ using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Exceptions;
 using Hoeyer.Machines.OpcUa.Reflection.Configurations;
 using Hoeyer.Machines.OpcUa.Services.BuildingServices;
 using Hoeyer.Machines.Proxy;
+using Hoeyer.Machines.StateSnapshot;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -95,22 +97,27 @@ internal sealed class ServiceRegistry(IServiceCollection services) : IDisposable
             var configuratorInstance = scope.ServiceProvider.GetService<IOpcEntityConfigurator<TEntity>>();
             if (configuratorInstance == null) throw new OpcuaConfigurationException($"Could not find implementation of IOpcEntityConfigurator<{typeof(TEntity).Name}>");
             
-            var entity = new EntityConfigurationBuilder<TEntity>();
-            configuratorInstance.Configure(entity);
+            var configurationBuilder = new EntityConfigurationBuilder<TEntity>();
+            configuratorInstance.Configure(configurationBuilder);
 
-            services.AddSingleton(entity.EntityConfiguration)
+            services.AddSingleton(configurationBuilder.EntityConfiguration)
                 .AddSingleton(new Machine<TEntity>(new TEntity()))
                 .AddTransient<DataValuePropertyAssigner<TEntity>>()
-                .AddTransient<EntityReader<TEntity>>()
-                .AddTransient<IOpcUaNodeStateReader<TEntity>, EntityReader<TEntity>>()
-                .AddSingleton(typeof(IRemoteMachineObserver<TEntity>), typeof(OpcUaRemoteMachineObserver<TEntity>))
-                .AddSingleton<OpcUaRemoteMachineObserver<TEntity>>()
-                .AddTransient<SessionManager>();
+                .AddTransient<OpcUaEntityReader<TEntity>>()
+                .AddTransient<IOpcUaNodeConnectionHolder<TEntity>, OpcUaEntityReader<TEntity>>()
+                .AddSingleton<SessionFactory>()
+                .AddTransient<SessionManager>()
+                .AddTransient<ISessionManager, SessionManager>()
+                .AddSingleton(typeof(IRemoteMachineObserver<TEntity>), typeof(OpcUaRemoteMachineProxy<TEntity>))
+                .AddSingleton<OpcUaRemoteMachineProxy<TEntity>>()
+                .AddSingleton<SubscriptionEngine<TEntity>>()
+                .AddSingleton<Func<IStateChangeSubscriber<TEntity>, StateChangeSubscription<TEntity>>>(
+                    serviceProvider => serviceProvider.GetService<SubscriptionEngine<TEntity>>()!.SubscribeToMachine);
 
         }
         catch (InvalidOperationException e)
         {
-            throw new OpcuaConfigurationException($"Could not setup configuration of  IOpcEntityConfigurator<{typeof(TEntity).Name}>. If the implementor depends on other services these must be registered before ${nameof(OpcUaServiceExtensions.AddOpcUa)} is called. \n\n" + e );
+            throw new OpcuaConfigurationException($"Could not setup configuration of  IOpcEntityConfigurator<{typeof(TEntity).Name}>. If the implementor depends on other services these must be registered before ${nameof(OpcUaServiceExtensions.AddOpcUaEntities)} is called. \n\n" + e );
         }
     }
 

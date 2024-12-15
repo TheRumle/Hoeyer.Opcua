@@ -11,7 +11,7 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.Machines.OpcUa.Application;
 
-public sealed class EntityReader<TEntity>(
+public sealed class OpcUaEntityReader<TEntity>(
     DataValuePropertyAssigner<TEntity> assigner,
     EntityConfiguration<TEntity> settings):
     IOpcUaNodeConnectionHolder<TEntity> where TEntity : new()

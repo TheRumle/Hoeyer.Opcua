@@ -1,5 +1,7 @@
 using Hoeyer.Machines.OpcUa.Services;
 using MyOpcUaWebApplication;
+using MyOpcUaWebApplication.Configuration.BackgroundService;
+using MyOpcUaWebApplication.Configuration.OpcUa.Options;
 using MyOpcUaWebApplication.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +23,17 @@ builder.Services
     .Validate(e => e.NamespaceIndex > 0, "Namespace index must be greater than 0")
     .ValidateOnStart();
 
-builder.Services.AddOpcUa();
+builder.Services
+    .AddOptions<GantryScannerOptions>()
+    .Bind(builder.Configuration.GetSection(GantryScannerOptions.APPCONFIG_SECTION))
+    .Validate(e=>e.IntervalMs > 0, $"{nameof(GantryScannerOptions.IntervalMs)} must be greater than 0")
+    .ValidateOnStart();
+
+
+builder.Services.AddOpcUaEntities();
+
+
+
 
 var app = builder.Build();
 

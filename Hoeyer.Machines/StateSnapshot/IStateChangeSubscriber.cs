@@ -1,9 +1,6 @@
-﻿
-using System;
+﻿namespace Hoeyer.Machines.StateSnapshot;
 
-namespace Hoeyer.Machines.StateSnapshot;
-
-public interface  IStateChangeSubscriber<TState> : IDisposable
+public interface  IStateChangeSubscriber<TState> 
 {
     public void OnStateChange(StateChange<TState> stateChange);
 }

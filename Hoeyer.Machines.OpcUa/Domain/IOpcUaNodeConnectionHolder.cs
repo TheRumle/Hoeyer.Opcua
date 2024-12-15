@@ -4,7 +4,7 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.Machines.OpcUa.Domain;
 
-public interface IOpcUaNodeStateReader<TValue>
+public interface IOpcUaNodeConnectionHolder<TValue>
 {
     public Task<Result<TValue>> ReadOpcUaEntityAsync(Session session);
 }

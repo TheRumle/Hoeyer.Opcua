@@ -1,6 +1,6 @@
 ﻿using Hoeyer.Machines.OpcUa.Domain;
 
-namespace MyOpcUaWebApplication.Sample;
+namespace MyOpcUaWebApplication;
 
 [OpcUaEntity]
 public record Gantry

@@ -11,7 +11,7 @@ namespace Hoeyer.Machines.OpcUa.Services;
 
 public static class OpcUaServiceExtensions
 {
-    private static IReadOnlyList<EntityConfigurationContext> AddConfigurators(this IServiceCollection serviceCollection, IEnumerable<Type> types)
+    private static IReadOnlyList<EntityConfigurationContext> GetConfigurators(IEnumerable<Type> types)
     {   
         var configurationContexts = types.GetEntityConfigContexts().ToList();
         ValidateContexts(configurationContexts);
@@ -31,11 +31,11 @@ public static class OpcUaServiceExtensions
         }
     }
 
-    public static IServiceCollection AddOpcUa(this IServiceCollection services)
+    public static IServiceCollection AddOpcUaEntities(this IServiceCollection services)
     {
         //Find and add all configurators to service collection and
         //build a service provider to resolve configurator dependencies s.t they can be used.
-        var configurators = services.AddConfigurators(Assembly.GetCallingAssembly().GetTypes());
+        var configurators = GetConfigurators(Assembly.GetCallingAssembly().GetTypes());
         using (var serviceConfigurator = new ServiceRegistry(services))
         {
             serviceConfigurator.ConfigureServices(configurators);

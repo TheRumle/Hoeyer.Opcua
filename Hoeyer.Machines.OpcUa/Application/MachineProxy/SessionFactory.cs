@@ -17,7 +17,7 @@ public class SessionFactory
         var selectedEndpoint = CoreClientUtils.SelectEndpoint(_opcServerUrl, false);
         var endpointConfiguration = EndpointConfiguration.Create(_config);
         var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
-        var _session = await Session.Create(_config, endpoint, false, "OpcUaRemoteMachineObserver", 60000, new UserIdentity(new AnonymousIdentityToken()), null);
+        var _session = await Session.Create(_config, endpoint, false, "OpcUaRemoteMachineProxy", 60000, new UserIdentity(new AnonymousIdentityToken()), null);
         return _session;
     }
 
@@ -26,14 +26,14 @@ public class SessionFactory
         var selectedEndpoint = CoreClientUtils.SelectEndpoint(_opcServerUrl, false);
         var endpointConfiguration = EndpointConfiguration.Create(_config);
         var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
-        return Session.Create(_config, endpoint, false, "OpcUaRemoteMachineObserver", 60000, new UserIdentity(new AnonymousIdentityToken()), null).Result;
+        return Session.Create(_config, endpoint, false, "OpcUaRemoteMachineProxy", 60000, new UserIdentity(new AnonymousIdentityToken()), null).Result;
     }
     
     private static ApplicationConfiguration CreateApplicationConfig()
     {
         return new ApplicationConfiguration
         {
-            ApplicationName = "OpcUaRemoteMachineObserver",
+            ApplicationName = "OpcUaRemoteMachineProxy",
             ApplicationType = ApplicationType.Client,
             SecurityConfiguration = new SecurityConfiguration
             {
@@ -45,7 +45,7 @@ public class SessionFactory
             ClientConfiguration = new ClientConfiguration { DefaultSessionTimeout = 60000 },
             TraceConfiguration = new TraceConfiguration
             {
-                OutputFilePath = "./OpcUaRemoteMachineObserver.log",
+                OutputFilePath = "./OpcUaRemoteMachineProxy.log",
                 DeleteOnLoad = false,
                 TraceMasks = 0x1
             }
