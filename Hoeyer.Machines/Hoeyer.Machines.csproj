@@ -6,4 +6,8 @@
         <LangVersion>latestMajor</LangVersion>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj" />
+    </ItemGroup>
+
 </Project>

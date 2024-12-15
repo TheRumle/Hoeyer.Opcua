@@ -17,4 +17,8 @@
       <Folder Include="Reflection\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Hoeyer.Machines\Hoeyer.Machines.csproj" />
+    </ItemGroup>
+
 </Project>

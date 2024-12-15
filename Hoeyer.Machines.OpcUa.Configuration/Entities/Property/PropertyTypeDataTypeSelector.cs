@@ -1,17 +1,15 @@
-﻿using Hoeyer.Machines.OpcUa.Configuration.Entity.Context;
+﻿using Hoeyer.Machines.OpcUa.Configuration.Entities.Configuration;
 using Opc.Ua;
 
-namespace Hoeyer.Machines.OpcUa.Configuration.Entity.Property;
+namespace Hoeyer.Machines.OpcUa.Configuration.Entities.Property;
 
-public class PropertyTypeDataTypeSelector
+public class PropertyTypeDataTypeSelector<TEntity>
 {
     private PropertyTypeDataTypeSelector() { }
-    private OpcUaEntityConfiguration _context;
     private readonly PropertyConfiguration _propertyConfiguration;
 
-    internal PropertyTypeDataTypeSelector(OpcUaEntityConfiguration context, PropertyConfiguration propertyConfiguration)
+    internal PropertyTypeDataTypeSelector(PropertyConfiguration propertyConfiguration)
     {
-        _context = context;
         _propertyConfiguration = propertyConfiguration;
     }
     public void AndIsOfType(BuiltInType builtInType)
@@ -22,6 +20,7 @@ public class PropertyTypeDataTypeSelector
 
     private void VerifyOrThrow(BuiltInType builtInType)
     {
+        
        //TODO verify that the built int type is compatible with the property.
     }
 }

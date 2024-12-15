@@ -1,6 +1,8 @@
 ﻿using System;
+using Hoeyer.Machines.OpcUa.Configuration.Entities.Property;
+using Opc.Ua;
 
-namespace Hoeyer.Machines.OpcUa.Configuration.Entity;
+namespace Hoeyer.Machines.OpcUa.Configuration.Entities.Configuration.Builder;
 
 /// <summary>
 /// Represents the root configurations used to set up OpcUa services for a configurable entity. 
@@ -19,4 +21,8 @@ public record RootIdentity(string Id, int NameSpaceIndex)
 
     public string Id { get; } = Id;
     public int NameSpaceIndex { get; } = NameSpaceIndex;
+    public NodeId ToNodeId()
+    {
+        return new NodeIdConfiguration(Id).ToNodeId(this);
+    }
 }

@@ -1,11 +1,12 @@
 ﻿using System;
+using Hoeyer.Machines.OpcUa.Configuration.Entities.Configuration.Builder;
 using Opc.Ua;
 
-namespace Hoeyer.Machines.OpcUa.Configuration.Entity.Property;
+namespace Hoeyer.Machines.OpcUa.Configuration.Entities.Property;
 
 /// <summary>
-/// Represents a valid NodeId string. Used to ensure that id's are given in the correct string format. 
-/// Valid NodeId strings are of the form: "i=1234", "s=HelloWorld", "g=AF469096-F02A-4563-940B-603958363B81", "b=01020304", "ns=2;s=HelloWorld", "ns=2;i=1234", "ns=2;g=AF469096-F02A-4563-940B-603958363B81", "ns=2;b=01020304"
+/// Represents a valid GetNodeId string. Used to ensure that id's are given in the correct string format. 
+/// Valid GetNodeId strings are of the form: "i=1234", "s=HelloWorld", "g=AF469096-F02A-4563-940B-603958363B81", "b=01020304", "ns=2;s=HelloWorld", "ns=2;i=1234", "ns=2;g=AF469096-F02A-4563-940B-603958363B81", "ns=2;b=01020304"
 /// </summary>
 public class NodeIdConfiguration
 {

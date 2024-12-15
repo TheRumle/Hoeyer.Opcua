@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.Machines.OpcUa.Confi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyOpcUaWebApplication", "MyOpcUaWebApplication\MyOpcUaWebApplication.csproj", "{6D779225-B797-4173-90B6-0CB428C2FA6F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.Common", "Hoeyer.Common\Hoeyer.Common.csproj", "{870B9A54-BD11-469A-A8D4-7B727C0B5B43}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{6D779225-B797-4173-90B6-0CB428C2FA6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D779225-B797-4173-90B6-0CB428C2FA6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D779225-B797-4173-90B6-0CB428C2FA6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{870B9A54-BD11-469A-A8D4-7B727C0B5B43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{870B9A54-BD11-469A-A8D4-7B727C0B5B43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{870B9A54-BD11-469A-A8D4-7B727C0B5B43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{870B9A54-BD11-469A-A8D4-7B727C0B5B43}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Hoeyer.Machines.OpcUa.Extensions;
-using Hoeyer.Machines.OpcUa.Generated.Configuration;
+﻿using Hoeyer.Machines.OpcUa.Extensions;
 using Hoeyer.Machines.OpcUa.ResourceLoading;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Hoeyer.Machines.OpcUa.Configuration;
@@ -12,7 +8,7 @@ namespace Hoeyer.Machines.OpcUa.Configuration;
 [Generator]
 internal class ObservableOpcUaProxyGenerator : IIncrementalGenerator
 {
-    private const string ATTRIBUTE_META_NAME = $"Hoeyer.Machines.OpcUa.Generated.Configuration.{nameof(OpcNodeConfigurationAttribute)}";
+    private const string ATTRIBUTE_META_NAME = $"Hoeyer.Machines.OpcUa.Configuration.{nameof(OpcUaEntity)}";
 
     
     public void Initialize(IncrementalGeneratorInitializationContext context)
@@ -42,12 +38,5 @@ internal class ObservableOpcUaProxyGenerator : IIncrementalGenerator
             transform: (attributeSyntaxContext, cancellationToken) =>
                 new TypeContext(attributeSyntaxContext.SemanticModel, (T)attributeSyntaxContext.TargetNode));
 
-    }
-
-
-    private static bool IsPublicReadableField(MemberDeclarationSyntax m)
-    {
-        return m is PropertyDeclarationSyntax property && property.Modifiers.Any(mod => mod.IsKind(SyntaxKind.PublicKeyword)) 
-               || m is FieldDeclarationSyntax field && field.Modifiers.Any(mod => mod.IsKind(SyntaxKind.PublicKeyword));
     }
 }

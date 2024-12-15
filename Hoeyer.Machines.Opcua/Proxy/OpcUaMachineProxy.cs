@@ -18,7 +18,7 @@ public sealed class OpcUaMachineProxy<T> (IOpcUaNodeStateReader<T> opcUaNodeStat
     public async Task<T> ReadMachineStateAsync()
     {
         await Connect();
-        return await opcUaNodeStateReader.ReadOpcUaNodeAsync(_session!);
+        return await opcUaNodeStateReader.ReadOpcUaEntityAsync(_session!);
     }
 
     public async Task Disconnect()

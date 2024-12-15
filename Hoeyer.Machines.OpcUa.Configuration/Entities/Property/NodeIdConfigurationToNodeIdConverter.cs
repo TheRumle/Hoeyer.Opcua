@@ -1,6 +1,7 @@
-﻿using Opc.Ua;
+﻿using Hoeyer.Machines.OpcUa.Configuration.Entities.Configuration.Builder;
+using Opc.Ua;
 
-namespace Hoeyer.Machines.OpcUa.Configuration.Entity.Property;
+namespace Hoeyer.Machines.OpcUa.Configuration.Entities.Property;
 
 public static class NodeIdConfigurationToNodeIdConverter
 {

@@ -1,23 +1,48 @@
-﻿using Hoeyer.Machines.OpcUa.Configuration.Entity.Context;
-using Hoeyer.Machines.OpcUa.Generation.Machine;
+﻿using Hoeyer.Machines.OpcUa.Configuration;
+using Hoeyer.Machines.OpcUa.Configuration.Entities.Configuration;
+using Hoeyer.Machines.OpcUa.Configuration.Entities.Property;
 using Hoeyer.Machines.OpcUa.Proxy;
+using Hoeyer.Machines.Proxy;
 
 namespace MyOpcUaWebApplication.Sample;
 
-public class AReadear(OpcUaEntityConfiguration settings,INodeParser<Gantry> parser) : IOpcUaNodeStateReader<Gantry>
-{
-    private GantryObservableMachineProxy _proxy;
-    
-    /// <inheritdoc />
-    public async Task<Gantry> ReadOpcUaNodeAsync(Opc.Ua.Client.Session session)
-    {
-        IEnumerable<Task<Gantry?>> a = settings
-            .PropertyConfigurations
-            .Select(async propertyConfiguration => parser.Parse(
-                propertyConfiguration,
-                await session.NodeCache.FetchNodeAsync(propertyConfiguration.GetNodeId)));
 
-        await Task.WhenAll(a);
-        return null;
+
+
+public class AReadear(
+    IEntityInstanceFactory<Gantry> factory,
+    IEntityPropertyAssigner<Gantry, PossiblePropertyMatch> assigner,
+    EntityOpcUaMapping<Gantry> settings) 
+    : IOpcUaNodeStateReader<Gantry>
+{
+    
+    private readonly List<PropertyConfiguration> _nodes = settings
+        .EntityConfiguration
+        .PropertyConfigurations
+        .ToList();
+
+    /// <inheritdoc />
+    public async Task<Gantry> ReadOpcUaEntityAsync(Opc.Ua.Client.Session session)
+    {
+        try
+        {
+            
+            var readResults = _nodes.Select(async propertyConfiguration => (
+                propertyConfiguration,
+                dataValue: await session.ReadValueAsync(propertyConfiguration.GetNodeId()))
+            );
+
+            var results = await Task.WhenAll(readResults);
+            var assignmentResult = assigner.TryAssignToEntity(factory.CreateEmpty, new PossiblePropertyMatch(results));
+            return settings.Entity;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+      
     }
+
+
 }

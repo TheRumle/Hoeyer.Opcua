@@ -7,6 +7,6 @@ public sealed class MachineClientConnectionException : Exception {
     {
     }
 
-    public MachineClientConnectionException(String msg) :base(msg) {
+    public MachineClientConnectionException(string msg) :base(msg) {
     }
 }

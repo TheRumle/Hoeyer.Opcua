@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Opc.Ua;
 
-namespace Hoeyer.Machines.OpcUa.Configuration.Entity.Exceptions;
+namespace Hoeyer.Machines.OpcUa.Configuration.Entities.Exceptions;
 
 public class IncompatibleTypesException(string s) : OpcuaConfigurationException(s)
 {

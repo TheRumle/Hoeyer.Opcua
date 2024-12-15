@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.Machines.OpcUa.Configuration.Entity;
-using Hoeyer.Machines.OpcUa.Configuration.Entity.Exceptions;
+using Hoeyer.Machines.OpcUa.Configuration.Entities.Configuration.Builder;
+using Hoeyer.Machines.OpcUa.Configuration.Entities.Exceptions;
 using Hoeyer.Machines.OpcUa.Configuration.Reflection.Types;
 
 namespace Hoeyer.Machines.OpcUa.Configuration.Reflection.Configurations;
 
 internal static class ConfiguratorExtensions
 {
-    public static readonly Type ConfiguratorType = typeof(IOpcUaNodeConfiguration<>);
-    public static IEnumerable<OpcUaNodeConfiguratorContext> GetOpcUaConfigurators(this IEnumerable<Type> assembly)
+    private static readonly Type ConfiguratorType = typeof(IOpcEntityConfigurator<>);
+    public static IEnumerable<EntityConfigurationContext> GetEntityConfigContexts(this IEnumerable<Type> assembly)
     {
         return assembly
             .Where(t => t.IsClass && !t.IsAbstract)
@@ -18,7 +18,7 @@ internal static class ConfiguratorExtensions
             .Select(type =>
             {
                 var node = type.GetNodeParameter();
-                return new OpcUaNodeConfiguratorContext(type, ConfiguratorType.MakeGenericType(node), node);
+                return new EntityConfigurationContext(type, ConfiguratorType.MakeGenericType(node), node);
             });
     }
 

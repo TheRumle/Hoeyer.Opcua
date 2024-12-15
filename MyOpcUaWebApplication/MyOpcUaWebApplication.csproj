@@ -13,6 +13,7 @@
 
 
     <ItemGroup>
+        <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj" />
         <ProjectReference Include="..\Hoeyer.Machines.OpcUa.Configuration\Hoeyer.Machines.OpcUa.Configuration.csproj" />
         <ProjectReference Include="..\Hoeyer.Machines.OpcUa.Generation\Hoeyer.Machines.OpcUa.Generation.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="..\Hoeyer.Machines.Opcua\Hoeyer.Machines.Opcua.csproj" />

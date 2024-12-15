@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Hoeyer.Machines.OpcUa.Configuration.Reflection.Types;
 
-public static class ConcreteTypeReflections
+internal static class ConcreteTypeExtensions
 {
     /// <summary>
     /// Checks if the type is a generic version of the @interface type. 
@@ -12,6 +13,7 @@ public static class ConcreteTypeReflections
     /// <param name="interface">A type representing the non-generic version of the type, for instance typeof(List<>)</param>
     /// <returns>True if type is a generic version of @interface</returns>
     /// <exception cref="ArgumentException"></exception>
+    [Pure]
     public static bool ImplementsGenericInterfaceOf(this Type type, Type @interface)
     {
         if (!@interface.IsGenericTypeDefinition)
@@ -20,6 +22,7 @@ public static class ConcreteTypeReflections
         return GetGenericInterfaceDefinition(type, @interface) != null;
     }
 
+    [Pure]
     public static Type? GetGenericInterfaceDefinition(this Type type, Type @interface)
     {
         if (!@interface.IsGenericTypeDefinition)
@@ -31,9 +34,15 @@ public static class ConcreteTypeReflections
             : null;
     }
 
-    
+    [Pure]
     public static bool HasGenericParameterOfType(this Type type, Type parameter)
     {
         return type.IsGenericType && type.GetGenericArguments().Contains(parameter);
+    }
+
+    public static bool HasEmptyConstructor(this Type type)
+    {
+        return Array.Exists(type.GetConstructors(),
+            static ctor => ctor.GetParameters().Length == 0);
     }
 }
