@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Hoeyer.Machines.OpcUa.Diagnostics;
 using Microsoft.CodeAnalysis;
 
 namespace Hoeyer.Machines.OpcUa.ResourceLoading;

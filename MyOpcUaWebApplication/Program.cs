@@ -1,4 +1,5 @@
-using Hoeyer.Machines.OpcUa.Configuration.Services;
+using Hoeyer.Machines.OpcUa.Services;
+using MyOpcUaWebApplication;
 using MyOpcUaWebApplication.Options;
 
 var builder = WebApplication.CreateBuilder(args);

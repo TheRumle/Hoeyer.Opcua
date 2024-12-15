@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Hoeyer.Machines.OpcUa.ResourceLoading;
+namespace Hoeyer.Machines.OpcUa.Diagnostics;
 
 public static class DiagnosticFactory {
     
@@ -16,7 +16,7 @@ public static class DiagnosticFactory {
         title: "Missing resource from assembly.", // Title of the diagnostic
         messageFormat: "Attempted to find resource {0}.", // Format for the message
         category: "SampleCategory", // Category of diagnostics (e.g., Style, Performance)
-        DiagnosticSeverity.Warning, // Severity level (e.g., Error, Warning, Info)
+        DiagnosticSeverity.Warning, // Severity level (e.g., Errors, Warning, Info)
         isEnabledByDefault: true,   // Is enabled by default
         description: $"Cannot find the resource {wantedResource}." // Description of the diagnostic,
     );

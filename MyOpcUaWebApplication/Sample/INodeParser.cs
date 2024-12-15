@@ -1,4 +1,4 @@
-﻿using Hoeyer.Machines.OpcUa.Configuration.Entities.Configuration;
+﻿using Hoeyer.Machines.OpcUa.Entities.Configuration;
 using Opc.Ua;
 
 namespace MyOpcUaWebApplication.Sample;

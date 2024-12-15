@@ -1,5 +1,5 @@
-﻿using Hoeyer.Machines.OpcUa.Configuration.Entities.Configuration.Builder;
-using Hoeyer.Machines.OpcUa.Configuration.Entities.Property;
+﻿using Hoeyer.Machines.OpcUa.Entities.Configuration.Builder;
+using Hoeyer.Machines.OpcUa.Entities.Property;
 using Microsoft.Extensions.Options;
 using MyOpcUaWebApplication.Options;
 using Opc.Ua;

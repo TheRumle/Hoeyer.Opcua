@@ -1,4 +1,5 @@
-﻿using Hoeyer.Machines.OpcUa.Extensions;
+﻿using Hoeyer.Machines.OpcUa.Annotation;
+using Hoeyer.Machines.OpcUa.Extensions;
 using Hoeyer.Machines.OpcUa.ResourceLoading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,8 +18,8 @@ internal class ObservableOpcUaProxyGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(decoratedRecordsProvider, (sourceProductionContext, typeContext) =>
         {
             var templateInformation = new CodeTemplateInformation (
-                    TemplateClassName: "ObservableMachineProxy",
-                    TemplateClassResourcePath: "Hoeyer.Machines.OpcUa.Generated.Machine.ObservableMachineProxy"
+                    TemplateClassName: "MachineObserver",
+                    TemplateClassResourcePath: "Hoeyer.Machines.OpcUa.Generated.Observation.MachineObserver"
             );
             
             var loader = new CSharpTemplateFileLoader(new TemplateFileLoad(templateInformation, typeContext), sourceProductionContext.ReportDiagnostic);
