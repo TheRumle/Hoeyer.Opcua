@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.Machines.OpcUa.Entities.Configuration.Builder;
+﻿namespace Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Builder;
 
 internal class EntityConfigurationBuilder<TNodeType> : IOpcUaEntityConfigurationBuilder<TNodeType> where TNodeType : new()
 {

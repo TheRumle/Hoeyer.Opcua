@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.Machines.OpcUa.Entities.Exceptions;
+﻿namespace Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Exceptions;
 
 public class InvalidPropertyConfigurationException() : OpcuaConfigurationException(
     """

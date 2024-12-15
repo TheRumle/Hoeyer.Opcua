@@ -2,7 +2,7 @@
 using Opc.Ua;
 using Opc.Ua.Client;
 
-namespace Hoeyer.Machines.OpcUa.Proxy;
+namespace Hoeyer.Machines.OpcUa.Application.MachineProxy;
 
 
 public class SessionFactory

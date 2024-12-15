@@ -4,15 +4,17 @@ using System.Threading.Tasks;
 using FluentResults;
 using FluentResults.Extensions;
 using Hoeyer.Common.Extensions.Functional;
-using Hoeyer.Machines.OpcUa.Entities.Configuration;
-using Hoeyer.Machines.OpcUa.Proxy;
+using Hoeyer.Machines.OpcUa.Domain;
+using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities;
+using Hoeyer.Machines.OpcUa.Services.BuildingServices;
 using Opc.Ua.Client;
 
-namespace Hoeyer.Machines.OpcUa.Services.BuildingServices;
+namespace Hoeyer.Machines.OpcUa.Application;
 
 public sealed class EntityReader<TEntity>(
     DataValuePropertyAssigner<TEntity> assigner,
-    EntityConfiguration<TEntity> settings):    IOpcUaNodeStateReader<TEntity> where TEntity : new()
+    EntityConfiguration<TEntity> settings):
+    IOpcUaNodeStateReader<TEntity> where TEntity : new()
 {
     private readonly List<PropertyConfiguration> _nodes = settings
         .PropertyConfigurations

@@ -12,14 +12,19 @@
     </ItemGroup>
 
 
-    <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.Machines.OpcUa.Configuration\Hoeyer.Machines.OpcUa.Configuration.csproj" />
-    </ItemGroup>
+
 
     <ItemGroup>
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+    </ItemGroup>
+
+
+
+
+    <ItemGroup>
+      <ProjectReference Include="..\Hoeyer.Machines.OpcUa\Hoeyer.Machines.OpcUa.csproj" />
     </ItemGroup>
 
 </Project>

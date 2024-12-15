@@ -1,6 +1,6 @@
-﻿using Hoeyer.Machines.OpcUa.Entities.Property;
+﻿using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Property;
 
-namespace Hoeyer.Machines.OpcUa.Entities.Configuration.Builder;
+namespace Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Builder;
 
 public interface IEntityFactorySelector<TEntity>
 {

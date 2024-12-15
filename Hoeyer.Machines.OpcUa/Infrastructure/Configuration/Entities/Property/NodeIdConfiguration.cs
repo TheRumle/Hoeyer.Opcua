@@ -1,8 +1,8 @@
 ﻿using System;
-using Hoeyer.Machines.OpcUa.Entities.Configuration.Builder;
+using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Builder;
 using Opc.Ua;
 
-namespace Hoeyer.Machines.OpcUa.Entities.Property;
+namespace Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Property;
 
 /// <summary>
 /// Represents a valid GetNodeId string. Used to ensure that id's are given in the correct string format. 

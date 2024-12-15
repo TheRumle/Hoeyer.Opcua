@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using Hoeyer.Machines.OpcUa.Entities.Configuration;
-using Hoeyer.Machines.OpcUa.Entities.Exceptions;
+using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Exceptions;
 
-namespace Hoeyer.Machines.OpcUa.Entities.Property;
+namespace Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Property;
 
 public class PropertySelector<TEntity>
 {

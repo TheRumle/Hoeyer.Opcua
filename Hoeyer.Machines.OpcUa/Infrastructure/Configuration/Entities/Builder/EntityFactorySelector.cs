@@ -1,6 +1,6 @@
-﻿using Hoeyer.Machines.OpcUa.Entities.Property;
+﻿using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Property;
 
-namespace Hoeyer.Machines.OpcUa.Entities.Configuration.Builder;
+namespace Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Builder;
 
 internal class EntityFactorySelector<TEntity>(EntityConfiguration<TEntity> context) 
     : IEntityFactorySelector<TEntity> where TEntity : new()

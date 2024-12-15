@@ -19,8 +19,4 @@
       <ProjectReference Include="..\Hoeyer.Machines\Hoeyer.Machines.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Application\" />
-    </ItemGroup>
-
 </Project>

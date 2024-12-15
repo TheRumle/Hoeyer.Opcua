@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentResults;
 using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.Machines.Observation;
+using Hoeyer.Machines.OpcUa.Domain;
 using Hoeyer.Machines.Proxy;
 using Microsoft.Extensions.Logging;
 
-namespace Hoeyer.Machines.OpcUa.Proxy;
+namespace Hoeyer.Machines.OpcUa.Application.MachineProxy;
 
 public sealed class OpcUaRemoteMachineObserver<TMachineState>(
         IOpcUaNodeStateReader<TMachineState> opcUaNodeStateReader,
@@ -17,17 +19,14 @@ public sealed class OpcUaRemoteMachineObserver<TMachineState>(
 {
     private readonly StateChangeBehaviour<ConnectionState> _stateChanger = new(ConnectionState.PreInitialized);
     /// <inheritdoc />
-    public async Task<TMachineState> ReadEntityAsync(CancellationToken token)
+    public async Task<Result<TMachineState>> ReadEntityAsync(CancellationToken token)
     {
         
         var a = await sessionManager.ConnectAndThen(opcUaNodeStateReader.ReadOpcUaEntityAsync, token);
-        a.Tap(machine.ChangeState,
-            e => logger.LogError(
-                "Invalid data OpcUa server. Could not assign the information fetcetd to entity of type {TYPE}",
-                typeof(TMachineState).Name));
-        
-        
-        throw new NotImplementedException();
+        return a.Tap(machine.ChangeState,
+            errors => logger.LogError(
+                "Invalid data OpcUa server. Could not assign the information fetched to entity of type {TYPE}. The error was {ERROR}",
+                typeof(TMachineState).Name, string.Join(",", errors)));
     }
 
     /// <inheritdoc />

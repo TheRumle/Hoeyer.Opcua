@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentResults;
-using Hoeyer.Machines.OpcUa.Entities.Configuration;
-using Hoeyer.Machines.OpcUa.Entities.Property.Errors;
+using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities;
+using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Property.Errors;
 using Opc.Ua;
 
 namespace Hoeyer.Machines.OpcUa.Services.BuildingServices;

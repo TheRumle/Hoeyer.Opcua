@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Hoeyer.Machines.OpcUa.Entities.Configuration.Builder;
-using Hoeyer.Machines.OpcUa.Entities.Property;
+using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Builder;
+using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Property;
 
-namespace Hoeyer.Machines.OpcUa.Entities.Configuration;
+namespace Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities;
 
 [SuppressMessage("Maintainability", "S2326:Unused parameters should be removed", Justification = "The generic value is used for service registrering, and the type specifies the entity connected to this configuration", Scope = "member")]
 public sealed record EntityConfiguration<T>(RootIdentity RootIdentity)

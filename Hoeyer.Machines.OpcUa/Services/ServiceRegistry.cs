@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Hoeyer.Machines.OpcUa.Entities.Configuration.Builder;
-using Hoeyer.Machines.OpcUa.Entities.Exceptions;
-using Hoeyer.Machines.OpcUa.Proxy;
+using Hoeyer.Machines.OpcUa.Application;
+using Hoeyer.Machines.OpcUa.Application.MachineProxy;
+using Hoeyer.Machines.OpcUa.Domain;
+using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Builder;
+using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Exceptions;
 using Hoeyer.Machines.OpcUa.Reflection.Configurations;
 using Hoeyer.Machines.OpcUa.Services.BuildingServices;
+using Hoeyer.Machines.Proxy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -94,11 +97,16 @@ internal sealed class ServiceRegistry(IServiceCollection services) : IDisposable
             
             var entity = new EntityConfigurationBuilder<TEntity>();
             configuratorInstance.Configure(entity);
-            
-            services.AddSingleton(entity.EntityConfiguration);
-            services.AddTransient<DataValuePropertyAssigner<TEntity>>();
-            services.AddTransient<EntityReader<TEntity>>();
-            services.AddTransient<IOpcUaNodeStateReader<TEntity>, EntityReader<TEntity>>();
+
+            services.AddSingleton(entity.EntityConfiguration)
+                .AddSingleton(new Machine<TEntity>(new TEntity()))
+                .AddTransient<DataValuePropertyAssigner<TEntity>>()
+                .AddTransient<EntityReader<TEntity>>()
+                .AddTransient<IOpcUaNodeStateReader<TEntity>, EntityReader<TEntity>>()
+                .AddSingleton(typeof(IRemoteMachineObserver<TEntity>), typeof(OpcUaRemoteMachineObserver<TEntity>))
+                .AddSingleton<OpcUaRemoteMachineObserver<TEntity>>()
+                .AddTransient<SessionManager>();
+
         }
         catch (InvalidOperationException e)
         {

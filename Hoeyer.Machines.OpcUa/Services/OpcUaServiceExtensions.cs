@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Hoeyer.Machines.OpcUa.Entities.Exceptions;
+using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Exceptions;
 using Hoeyer.Machines.OpcUa.Reflection.Configurations;
 using Hoeyer.Machines.OpcUa.Reflection.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,7 +27,7 @@ public static class OpcUaServiceExtensions
 
         if (invalidContextExceptions.Any())
         {
-            OpcuaConfigurationException.Merge(invalidContextExceptions);
+            throw OpcuaConfigurationException.Merge(invalidContextExceptions);
         }
     }
 

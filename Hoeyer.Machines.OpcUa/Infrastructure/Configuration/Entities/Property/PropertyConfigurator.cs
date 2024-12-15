@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
-using Hoeyer.Machines.OpcUa.Entities.Configuration;
 
-namespace Hoeyer.Machines.OpcUa.Entities.Property;
+namespace Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Property;
 
 public class PropertyConfigurator<TEntity>
 {

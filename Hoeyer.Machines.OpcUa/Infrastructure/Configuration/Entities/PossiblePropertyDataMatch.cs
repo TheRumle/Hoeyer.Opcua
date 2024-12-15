@@ -1,6 +1,6 @@
 ﻿using Opc.Ua;
 
-namespace Hoeyer.Machines.OpcUa.Entities.Configuration;
+namespace Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities;
 internal record PossiblePropertyDataMatch( PropertyConfiguration Property, DataValue DataValue)
 {
     public DataValue DataValue { get; } = DataValue;

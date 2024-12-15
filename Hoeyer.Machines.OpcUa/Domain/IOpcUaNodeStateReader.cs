@@ -2,7 +2,7 @@
 using FluentResults;
 using Opc.Ua.Client;
 
-namespace Hoeyer.Machines.OpcUa.Proxy;
+namespace Hoeyer.Machines.OpcUa.Domain;
 
 public interface IOpcUaNodeStateReader<TValue>
 {

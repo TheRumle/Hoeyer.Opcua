@@ -15,7 +15,8 @@ builder.Services
     .Validate(e=>!string.IsNullOrEmpty(e.Name) && e.Speed > 0 && !string.IsNullOrEmpty(e.Id), GantryOptionsErrorMessage)
     .ValidateOnStart();
 
-builder.Services.AddOptions<OpcUaRootConfigOptions>()
+builder.Services
+    .AddOptions<OpcUaRootConfigOptions>()
     .Bind(builder.Configuration.GetSection(OpcUaRootConfigOptions.OPCUA_ROOT_CONFIG_SECTION))
     .Validate(e => e.NamespaceIndex > 0, "Namespace index must be greater than 0")
     .ValidateOnStart();

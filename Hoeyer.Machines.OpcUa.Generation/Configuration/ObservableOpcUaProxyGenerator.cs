@@ -1,4 +1,4 @@
-﻿using Hoeyer.Machines.OpcUa.Annotation;
+﻿using Hoeyer.Machines.OpcUa.Domain;
 using Hoeyer.Machines.OpcUa.Extensions;
 using Hoeyer.Machines.OpcUa.ResourceLoading;
 using Microsoft.CodeAnalysis;

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.Machines.OpcUa.Entities.Configuration.Builder;
-using Hoeyer.Machines.OpcUa.Entities.Exceptions;
+using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Builder;
+using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Exceptions;
 using Hoeyer.Machines.OpcUa.Reflection.Types;
 
 namespace Hoeyer.Machines.OpcUa.Reflection.Configurations;

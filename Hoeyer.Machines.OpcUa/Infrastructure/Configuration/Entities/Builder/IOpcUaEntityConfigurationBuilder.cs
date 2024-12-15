@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.Machines.OpcUa.Entities.Configuration.Builder;
+﻿namespace Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Builder;
 
 public interface IOpcUaEntityConfigurationBuilder<T>
 {

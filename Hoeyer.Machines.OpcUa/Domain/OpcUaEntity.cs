@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Hoeyer.Machines.OpcUa.Annotation;
+namespace Hoeyer.Machines.OpcUa.Domain;
 
 
 [AttributeUsage(AttributeTargets.Class)]

@@ -1,4 +1,4 @@
-﻿using Hoeyer.Machines.OpcUa.Annotation;
+﻿using Hoeyer.Machines.OpcUa.Domain;
 
 namespace MyOpcUaWebApplication.Sample;
 

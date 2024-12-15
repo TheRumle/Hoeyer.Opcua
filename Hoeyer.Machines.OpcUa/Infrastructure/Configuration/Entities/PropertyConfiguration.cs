@@ -1,13 +1,13 @@
 ﻿using System.Reflection;
-using Hoeyer.Machines.OpcUa.Entities.Configuration.Builder;
-using Hoeyer.Machines.OpcUa.Entities.Property;
+using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Builder;
+using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Property;
 using Opc.Ua;
 
-namespace Hoeyer.Machines.OpcUa.Entities.Configuration;
+namespace Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities;
 
 public record PropertyConfiguration(PropertyInfo PropertyInfo, NodeIdConfiguration NodeIdConfiguration, RootIdentity Identity)
 {
-    public NodeId _nodeId => NodeIdConfiguration.ToNodeId(Identity);
+    private NodeId _nodeId => NodeIdConfiguration.ToNodeId(Identity);
     public NodeIdConfiguration NodeIdConfiguration { get; } = NodeIdConfiguration;
     public PropertyInfo PropertyInfo { get; } = PropertyInfo;
     public BuiltInType OpcUaNodeType { get; set; }
