@@ -17,14 +17,11 @@ public class GantryScanner (
     /// <inheritdoc />
     protected override async Task ExecuteAsync(CancellationToken cancel)
     {
-        logger.LogInformation("Scanning Gantry will begin in 10 seconds");
+        logger.LogInformation("Scanning Gantry will begin in {SECONDS} seconds", TimeSpan.FromMilliseconds(gantryOptions.Value.IntervalMs).TotalSeconds);
         _scanTimer = new(TimeSpan.FromMilliseconds(gantryOptions.Value.IntervalMs));
-        
-        while (!cancel.IsCancellationRequested && await _scanTimer.WaitForNextTickAsync(cancel))
-        {
-            var result = await gantry.ReadEntityAsync(cancel);
-            logger.LogInformation("Gantry read: {Result}", result.Value);
-        }
+
+        var result = await gantry.ReadEntityAsync(cancel);
+        logger.LogInformation("Gantry read: {Result}", result.Value);
     }
 }
 

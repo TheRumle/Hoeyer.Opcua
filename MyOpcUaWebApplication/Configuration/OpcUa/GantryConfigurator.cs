@@ -1,11 +1,11 @@
-﻿using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Builder;
-using Hoeyer.Machines.OpcUa.Infrastructure.Configuration.Entities.Property;
+﻿using Hoeyer.Machines.OpcUa.Client.Infrastructure.Configuration.Entities.Builder;
+using Hoeyer.Machines.OpcUa.Client.Infrastructure.Configuration.Entities.Property;
 using Microsoft.Extensions.Options;
 using MyOpcUaWebApplication.Configuration.OpcUa.Options;
 using MyOpcUaWebApplication.Options;
 using Opc.Ua;
 
-namespace MyOpcUaWebApplication.Sample;
+namespace MyOpcUaWebApplication.Configuration.OpcUa;
 
 
 
@@ -20,15 +20,11 @@ public class GantryConfigurator(IOptions<GantryOptions> options, IOptions<OpcUaR
             .HasRootNodeIdentity(new RootIdentity(_options.Id, _rootOptions.NamespaceIndex))
             .WithEmptyConstructor<Gantry>();
         
-        gantrySetup.Property(e=>e.Name)
-                .HasNodeId(new NodeIdConfiguration("mainGantry"))
-                .AndIsOfType(BuiltInType.String);
     
         gantrySetup
             .Property(e=>e.Speed)
-            .HasNodeId(new NodeIdConfiguration("machineSpeedMs"))
+            .HasNodeId(new NodeIdConfiguration("mainGantryVariable"))
             .AndIsOfType(BuiltInType.Float);
-        
-        gantrySetup.Property(e=>e.Id).IsNotMapped();
+
     }
 }

@@ -1,5 +1,6 @@
-using Hoeyer.Machines.OpcUa.Services;
+using Hoeyer.Machines.OpcUa.Client.Services;
 using MyOpcUaWebApplication;
+using MyOpcUaWebApplication.Background;
 using MyOpcUaWebApplication.Configuration.BackgroundService;
 using MyOpcUaWebApplication.Configuration.OpcUa.Options;
 using MyOpcUaWebApplication.Options;
@@ -31,6 +32,7 @@ builder.Services
 
 
 builder.Services.AddOpcUaEntities();
+builder.Services.AddHostedService<GantryScanner>();
 
 
 
@@ -63,6 +65,5 @@ app.MapGet("/weatherforecast", () =>
         return forecast;
     })
     .WithName("GetWeatherForecast");
-
 
 app.Run();

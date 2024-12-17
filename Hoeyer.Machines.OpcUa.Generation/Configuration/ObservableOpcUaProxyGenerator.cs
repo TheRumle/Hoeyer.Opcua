@@ -1,4 +1,4 @@
-﻿using Hoeyer.Machines.OpcUa.Domain;
+﻿using Hoeyer.Machines.OpcUa.Client.Domain;
 using Hoeyer.Machines.OpcUa.Extensions;
 using Hoeyer.Machines.OpcUa.ResourceLoading;
 using Microsoft.CodeAnalysis;
@@ -9,7 +9,7 @@ namespace Hoeyer.Machines.OpcUa.Configuration;
 [Generator]
 internal class ObservableOpcUaProxyGenerator : IIncrementalGenerator
 {
-    private const string ATTRIBUTE_META_NAME = $"Hoeyer.Machines.OpcUa.Configuration.{nameof(OpcUaEntity)}";
+    private const string ATTRIBUTE_META_NAME = $"Hoeyer.Machines.OpcUa.Client.Configuration.{nameof(OpcUaEntity)}";
 
     
     public void Initialize(IncrementalGeneratorInitializationContext context)
@@ -19,7 +19,7 @@ internal class ObservableOpcUaProxyGenerator : IIncrementalGenerator
         {
             var templateInformation = new CodeTemplateInformation (
                     TemplateClassName: "MachineObserver",
-                    TemplateClassResourcePath: "Hoeyer.Machines.OpcUa.Generated.Observation.MachineObserver"
+                    TemplateClassResourcePath: "Hoeyer.Machines.OpcUa.Client.Generated.Observation.MachineObserver"
             );
             
             var loader = new CSharpTemplateFileLoader(new TemplateFileLoad(templateInformation, typeContext), sourceProductionContext.ReportDiagnostic);

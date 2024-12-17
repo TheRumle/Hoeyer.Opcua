@@ -24,7 +24,7 @@
 
 
     <ItemGroup>
-      <ProjectReference Include="..\Hoeyer.Machines.OpcUa\Hoeyer.Machines.OpcUa.csproj" />
+      <ProjectReference Include="..\Hoeyer.Machines.OpcUa.Client\Hoeyer.Machines.OpcUa.Client.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿using Hoeyer.Machines.OpcUa.Domain;
+﻿using Hoeyer.Machines.OpcUa.Client.Domain;
 
 namespace MyOpcUaWebApplication;
 
@@ -9,15 +9,5 @@ public record Gantry
     {
         
     }
-
-    public string Name { get; init; }
-    public int Id { get; init; }
     public int Speed { get; init; }
-
-    public void Deconstruct(out string Name, out int Id, out int Speed)
-    {
-        Name = this.Name;
-        Id = this.Id;
-        Speed = this.Speed;
-    }
 }

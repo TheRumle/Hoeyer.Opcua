@@ -21,6 +21,7 @@
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.0"/>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.3.0"/>
         <ProjectReference Include="..\Hoeyer.Machines.OpcUa.Configuration\Hoeyer.Machines.OpcUa.Configuration.csproj" />
+        <ProjectReference Include="..\Hoeyer.Machines.OpcUa.Client\Hoeyer.Machines.OpcUa.Client.csproj" />
     </ItemGroup>
 
     <ItemGroup>
