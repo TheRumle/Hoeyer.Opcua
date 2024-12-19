@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentResults;
 using Hoeyer.Common.Extensions.Functional;
@@ -25,8 +26,8 @@ namespace Hoeyer.Machines.OpcUa.Client.Application.MachineProxy;
         var a = await sessionManager.ConnectAndThen(opcUaNodeConnectionHolder.ReadOpcUaEntityAsync, token);
         return a.Tap(machine.ChangeState,
             errors => logger.LogError(
-                "Something went wrong when getting data from the OpcUa server. Could not assign the information fetched to entity of type {TYPE}. The error was {ERROR}",
-                typeof(TMachineState).Name, string.Join(",", errors)));
+                "Could not fetch the state of the {TYPE} entity.\n\t{ERROR}",
+                typeof(TMachineState).Name, string.Join(",", errors.Select(e=>e.Message))));
     }
 
     /// <inheritdoc />

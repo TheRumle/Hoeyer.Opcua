@@ -26,6 +26,11 @@ public static class ResultExtensions
         return Result.Try(() => task);
     }
     
+    public static Task<Result<T>> Traverse<T>(this Task<T> task, Func<Exception, Error> onError)
+    {
+        return Result.Try(() => task, onError);
+    }
+    
     /// <summary>
     /// Tap into the result and perform a side effects, and return the original result!
     /// </summary>

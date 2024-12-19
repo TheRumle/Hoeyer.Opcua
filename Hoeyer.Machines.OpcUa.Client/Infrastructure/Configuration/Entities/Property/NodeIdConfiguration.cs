@@ -37,6 +37,6 @@ public class NodeIdConfiguration
     
     public NodeId ToNodeId(RootIdentity identity)
     {
-        return NodeId.Parse($"ns={identity.NameSpaceIndex};{IdString}");
+        return NodeId.Parse($"ns=2;s=mainGantry");
     }
 }

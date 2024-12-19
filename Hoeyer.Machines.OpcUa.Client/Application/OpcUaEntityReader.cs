@@ -32,7 +32,7 @@ public sealed class OpcUaEntityReader<TEntity>(
     private static Task<Result<PossiblePropertyDataMatch>> CreateDataMatch(Session session, PropertyConfiguration propertyConfiguration)
     {
         return session.ReadValueAsync(propertyConfiguration.GetNodeId())
-            .Traverse()
+            .Traverse(onError: ex=>new Error($"Could not read value for property {propertyConfiguration.PropertyInfo.Name} at server node '{propertyConfiguration.GetNodeId()}'. Does the node id match what is on the server? \n{ex.Message}", new Error(ex.Message)))
             .Map(dataValue => new PossiblePropertyDataMatch(
                 propertyConfiguration,
                 dataValue
