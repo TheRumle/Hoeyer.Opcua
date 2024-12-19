@@ -7,7 +7,6 @@ namespace Hoeyer.Machines.OpcUa.Client.Application.MachineProxy;
 
 public class SessionFactory
 {
-    public readonly ApplicationConfiguration Configuration = CreateApplicationConfig();
     private string _opcServerUrl = "opc.tcp://localhost:4840/freeopcua/server/"; 
     private string _machineStateNodeId = "ns=2;s=MachineStateSnapshot"; 
     private ApplicationConfiguration _applicationConfig = CreateApplicationConfig();
