@@ -9,15 +9,15 @@ public class SessionFactory
 {
     private string _opcServerUrl = "opc.tcp://localhost:4840/freeopcua/server/"; 
     private string _machineStateNodeId = "ns=2;s=MachineStateSnapshot"; 
-    private ApplicationConfiguration _applicationConfig = CreateApplicationConfig();
+    public readonly ApplicationConfiguration Configuration = CreateApplicationConfig();
     
     public async Task<Session> CreateSessionAsync()    
     {
         var selectedEndpoint = CoreClientUtils.SelectEndpoint(_opcServerUrl, false);
-        var endpointConfiguration = EndpointConfiguration.Create(_applicationConfig);
+        var endpointConfiguration = EndpointConfiguration.Create(Configuration);
         var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
         var session = await Session.Create(
-            _applicationConfig,
+            Configuration,
             endpoint,
             false, // Do not use reconnect
             "OpcUaRemoteMachineProxy", // Session name

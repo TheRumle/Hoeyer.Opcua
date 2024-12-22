@@ -2,22 +2,40 @@
 using Opc.Ua.Server;
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 using Opc.Ua.Configuration;
 
-public class SimpleOpcUaServer
+public record OpcUaServerOptions
+{
+    public int Port { get; set; }
+    public string OpcServerUrl { get; set; }
+    public string ServerName { get; set; }
+
+}
+
+public class EntityOpcuaServer
 {
     private ApplicationInstance _application;
-    private StandardServer _server;
+    public StandardServer _server;
     private ServerSystemContext _systemContext;
-    public readonly ApplicationConfiguration Configuration = CreateApplicationConfiguration();
-    private string _opcServerUrl = "opc.tcp://localhost:4840/freeopcua/server/"; 
-    private string _machineStateNodeId = "ns=2;s=MachineStateSnapshot"; 
+    public readonly ApplicationConfiguration Configuration;
+    private readonly string _opcServerUrl; 
+    private string _machineStateNodeId = "ns=2;s=MachineStateSnapshot";
+    private readonly OpcUaServerOptions options;
 
-    public SimpleOpcUaServer()
+    public EntityOpcuaServer(IOptions<OpcUaServerOptions> options)
+    {
+        this.options = options.Value;
+        Configuration = CreateApplicationConfiguration();
+        _opcServerUrl = options.Value.OpcServerUrl;
+        _server = CreateServer();
+    }
+
+    private StandardServer CreateServer()
     {
         _application = new ApplicationInstance
         {
-            ApplicationName = "SimpleOpcUaServer",
+            ApplicationName = options.ServerName,
             ApplicationType = ApplicationType.Server
         };
         
@@ -25,50 +43,50 @@ public class SimpleOpcUaServer
         _application.ApplicationConfiguration = Configuration;
 
         _server = new StandardServer();
+        return _server;
     }
 
-    public void Start()
+
+ 
+    public Uri Start()
     {
         var endpointDescription = new EndpointDescription
         {
-            EndpointUrl = "opc.tcp://localhost:4840",
+            EndpointUrl = $"opc.tcp://localhost:{options.Port}",
             SecurityMode = MessageSecurityMode.None,
             SecurityPolicyUri = SecurityPolicies.None
         };
 
         EndpointConfiguration endpointConfiguration = EndpointConfiguration.Create(_application.ApplicationConfiguration);
-        
-        var endpoint = new ConfiguredEndpoint(null, endpointDescription, endpointConfiguration);
+        var endpoint = new ConfiguredEndpoint(new(), endpointDescription, endpointConfiguration);
+        _server.Start(this.Configuration);
+        return endpoint.EndpointUrl;
     }
 
-    public void PrintNodes(Node node)
-    {
-        // Print node details, including namespace and index and its children (if any)
-        PrintNodeDetails(node, "", 0);
-    }
+    public void Stop() => _server.Stop();
 
-    private void PrintNodeDetails(Node node, string parentNamespace, int index)
+    public ApplicationConfiguration CreateApplicationConfiguration()
     {
-        string fullNamespace = parentNamespace + ":" + index.ToString();
-        Console.WriteLine($"Node: {node.NodeId}, Namespace: {fullNamespace}, Index: {index}");
-    }
-
-    public static ApplicationConfiguration CreateApplicationConfiguration()
-    {
-        return new ApplicationConfiguration()
+        var securityPolicy = new ServerSecurityPolicy();
+        securityPolicy.SecurityMode = MessageSecurityMode.None;
+        var a = new ApplicationConfiguration
         {
-            ApplicationName = "OpcUaServerApp",
+            ApplicationName = options.ServerName,
             ApplicationType = ApplicationType.Server,
             SecurityConfiguration = new SecurityConfiguration
             {
                 ApplicationCertificate = new CertificateIdentifier(),
-                AutoAcceptUntrustedCertificates = true, // Allow untrusted certificates
+                AutoAcceptUntrustedCertificates = true, 
                 AddAppCertToTrustedStore = true
             },
             ServerConfiguration = new ServerConfiguration
             {
                 MaxSubscriptionCount = 1000,
                 MinSubscriptionLifetime = 10000,
+                SecurityPolicies = new ServerSecurityPolicyCollection()
+                {
+                   securityPolicy
+                }
             },
             TransportConfigurations = new TransportConfigurationCollection(),
             TransportQuotas = new TransportQuotas { OperationTimeout = 15000 },
@@ -76,6 +94,6 @@ public class SimpleOpcUaServer
             TraceConfiguration = new TraceConfiguration()
         };
 
+        return a;
     }
 }
-

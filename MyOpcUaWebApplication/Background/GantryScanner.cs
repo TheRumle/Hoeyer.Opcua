@@ -1,27 +1,63 @@
-﻿using Hoeyer.Machines.Proxy;
+﻿using Hoeyer.Machines.OpcUa.Client.Application;
+using Hoeyer.Machines.OpcUa.Client.Application.MachineProxy;
+using Hoeyer.Machines.Proxy;
 using Microsoft.Extensions.Options;
 using MyOpcUaWebApplication.Configuration.BackgroundService;
+using Opc.Ua;
 
 namespace MyOpcUaWebApplication.Background;
 
 public class GantryScanner (
     IOptions<GantryScannerOptions> gantryOptions,
-    IRemoteMachineObserver<Gantry> gantry,
-    ILogger<GantryScanner> logger ) : BackgroundService
+    OpcUaEntityReader<Gantry> reader,
+    SessionFactory factory ) : BackgroundService
 {
-
-    private PeriodicTimer? _scanTimer = null;
+    private PeriodicTimer _scanTimer = new(TimeSpan.FromMilliseconds(gantryOptions.Value.IntervalMs));
     
 
 
     /// <inheritdoc />
     protected override async Task ExecuteAsync(CancellationToken cancel)
     {
-        logger.LogInformation("Scanning Gantry will begin in {SECONDS} seconds", TimeSpan.FromMilliseconds(gantryOptions.Value.IntervalMs).TotalSeconds);
-        _scanTimer = new(TimeSpan.FromMilliseconds(gantryOptions.Value.IntervalMs));
-
-        var result = await gantry.ReadEntityAsync(cancel);
-        logger.LogInformation("Gantry read: {Result}", result.Value);
+        while (await _scanTimer.WaitForNextTickAsync(cancel))
+        {
+            try
+            {
+                EntityOpcuaServer server = new();
+                var header = new RequestHeader
+                {
+                    AuthenticationToken = null,
+                    Timestamp = default,
+                    RequestHandle = 0,
+                    ReturnDiagnostics = 0,
+                    AuditEntryId = null,
+                    TimeoutHint = 0,
+                    AdditionalHeader = null
+                };
+                var session = await factory.CreateSessionAsync();
+                var node = await reader.ReadOpcUaEntityAsync(session);
+                var f = new AddNodesItemCollection(new List<AddNodesItem>()
+                {
+                    new AddNodesItem()
+                    {
+                        BrowseName = "",
+                        NodeAttributes = ,
+                        NodeClass = ,
+                        ParentNodeId = ,
+                        ReferenceTypeId = ,
+                        RequestedNewNodeId = ,
+                        TypeDefinition = ,
+                    }
+                });
+                server._server.AddNodes(header, , out var q, out var b);
+                Console.WriteLine(node.Value);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+           
+        }
     }
 }
 

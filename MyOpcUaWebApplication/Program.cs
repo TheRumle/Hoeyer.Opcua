@@ -1,9 +1,12 @@
+using Hoeyer.Machines.OpcUa.Client.Application;
+using Hoeyer.Machines.OpcUa.Client.Application.MachineProxy;
 using Hoeyer.Machines.OpcUa.Client.Services;
 using MyOpcUaWebApplication;
 using MyOpcUaWebApplication.Background;
 using MyOpcUaWebApplication.Configuration.BackgroundService;
 using MyOpcUaWebApplication.Configuration.OpcUa.Options;
 using MyOpcUaWebApplication.Options;
+using Opc.Ua.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +36,6 @@ builder.Services
 
 builder.Services.AddOpcUaEntities();
 builder.Services.AddHostedService<GantryScanner>();
-
 
 
 
