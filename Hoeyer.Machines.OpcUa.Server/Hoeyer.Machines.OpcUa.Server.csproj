@@ -21,5 +21,9 @@
         <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj" />
         <ProjectReference Include="..\Hoeyer.Machines\Hoeyer.Machines.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Node\Manager\" />
+    </ItemGroup>
     
 </Project>

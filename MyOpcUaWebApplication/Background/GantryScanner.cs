@@ -1,5 +1,6 @@
 ﻿using Hoeyer.Machines.OpcUa.Client.Application;
 using Hoeyer.Machines.OpcUa.Client.Application.MachineProxy;
+using Hoeyer.Machines.OpcUa.Server;
 using Hoeyer.Machines.Proxy;
 using Microsoft.Extensions.Options;
 using MyOpcUaWebApplication.Configuration.BackgroundService;
@@ -9,6 +10,7 @@ namespace MyOpcUaWebApplication.Background;
 
 public class GantryScanner (
     IOptions<OpcUaServerOptions> serverOptions,
+    IOptions<OpcUaApplicationOptions> rootOptions,
     IOptions<GantryScannerOptions> gantryOptions,
     OpcUaEntityReader<Gantry> reader,
     SessionFactory factory ) : BackgroundService
@@ -24,7 +26,7 @@ public class GantryScanner (
         {
             try
             {
-                EntityOpcuaServer server = new(serverOptions);
+                using EntityOpcuaServer server = new(serverOptions.Value, rootOptions.Value.ApplicationName);
                 var header = new RequestHeader
                 {
                     AuthenticationToken = null,
@@ -45,7 +47,7 @@ public class GantryScanner (
                     }
                 });
                 server.Start();
-                server._server.AddNodes(header, f, out var q, out var b);
+                server.Server.AddNodes(header, f, out var q, out var b);
                 var session = await factory.CreateSessionAsync();
                 var node = await reader.ReadOpcUaEntityAsync(session);
                 Console.WriteLine(node.Value);

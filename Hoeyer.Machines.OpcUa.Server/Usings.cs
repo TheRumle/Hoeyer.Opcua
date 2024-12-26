@@ -1,0 +1,1 @@
+﻿global using CustomNodeManager = Opc.Ua.Server.CustomNodeManager2;

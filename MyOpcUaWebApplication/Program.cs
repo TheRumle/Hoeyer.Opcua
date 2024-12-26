@@ -1,6 +1,7 @@
 using Hoeyer.Machines.OpcUa.Client.Application;
 using Hoeyer.Machines.OpcUa.Client.Application.MachineProxy;
 using Hoeyer.Machines.OpcUa.Client.Services;
+using Hoeyer.Machines.OpcUa.Server;
 using Microsoft.AspNetCore.Mvc.Routing;
 using MyOpcUaWebApplication;
 using MyOpcUaWebApplication.Background;
@@ -25,7 +26,7 @@ builder.Services
 builder.Services
     .AddOptions<OpcUaRootConfigOptions>()
     .Bind(builder.Configuration.GetSection(OpcUaRootConfigOptions.OPCUA_ROOT_CONFIG_SECTION))
-    .Validate(e => e.NamespaceIndex > 0, "Namespace index must be greater than 0")
+    //.Validate(e => e.NamespaceIndex > 0, "Namespace index must be greater than 0")
     .ValidateOnStart();
 
 builder.Services
@@ -38,9 +39,12 @@ builder.Services
     .AddOptions<OpcUaServerOptions>()
     .Bind(builder.Configuration.GetSection("OPCUA:server"))
     .Validate(e => !string.IsNullOrEmpty(e.ServerName), "Server name must be defined!")
-    .Validate(e => !string.IsNullOrEmpty(e.url)
-                   && Uri.TryCreate(e.url, UriKind.RelativeOrAbsolute, out var _),
-        "Opc server options must have valid URI.")
+    .Validate(e => e.Port != default, "Port must be defined!")
+    .ValidateOnStart();
+
+builder.Services.AddOptions<OpcUaApplicationOptions>()
+    .Bind(builder.Configuration.GetSection("OPCUA:ApplicationName"))
+    .Validate(e => string.IsNullOrEmpty(e.ApplicationName), "Application name must be defined!")
     .ValidateOnStart();
 
 

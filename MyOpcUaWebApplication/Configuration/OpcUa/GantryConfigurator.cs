@@ -16,7 +16,7 @@ public class GantryConfigurator(IOptions<GantryOptions> options, IOptions<OpcUaR
     public void Configure(IOpcUaEntityConfigurationBuilder<Gantry> gantryConfiguration)
     {
         var gantrySetup = gantryConfiguration
-            .HasRootNodeIdentity(new RootIdentity(_options.Id, _rootOptions.NamespaceIndex))
+            .HasRootNodeIdentity(new RootIdentity(_options.Id, 293))
             .WithEmptyConstructor<Gantry>();
         
     
