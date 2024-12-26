@@ -1,19 +1,20 @@
 using Hoeyer.Machines.OpcUa.Client.Application;
 using Hoeyer.Machines.OpcUa.Client.Application.MachineProxy;
 using Hoeyer.Machines.OpcUa.Client.Services;
+using Microsoft.AspNetCore.Mvc.Routing;
 using MyOpcUaWebApplication;
 using MyOpcUaWebApplication.Background;
 using MyOpcUaWebApplication.Configuration.BackgroundService;
 using MyOpcUaWebApplication.Configuration.OpcUa.Options;
 using MyOpcUaWebApplication.Options;
 using Opc.Ua.Client;
+using Org.BouncyCastle.Tls;
 
 var builder = WebApplication.CreateBuilder(args);
 
 const string GantryOptionsErrorMessage =
     $"The appsettings json file does not configure {nameof(GantryOptions)} correctly. Compare the {nameof(GantryOptions)} class and the {GantryOptions.APPCONFIG_SECTION} section of the .json file.";
 
-builder.Services.AddOpenApi();
 
 builder.Services
     .AddOptions<GantryOptions>()
@@ -33,6 +34,15 @@ builder.Services
     .Validate(e=>e.IntervalMs > 0, $"{nameof(GantryScannerOptions.IntervalMs)} must be greater than 0")
     .ValidateOnStart();
 
+builder.Services
+    .AddOptions<OpcUaServerOptions>()
+    .Bind(builder.Configuration.GetSection("OPCUA:server"))
+    .Validate(e => !string.IsNullOrEmpty(e.ServerName), "Server name must be defined!")
+    .Validate(e => !string.IsNullOrEmpty(e.url)
+                   && Uri.TryCreate(e.url, UriKind.RelativeOrAbsolute, out var _),
+        "Opc server options must have valid URI.")
+    .ValidateOnStart();
+
 
 builder.Services.AddOpcUaEntities();
 builder.Services.AddHostedService<GantryScanner>();
@@ -41,11 +51,6 @@ builder.Services.AddHostedService<GantryScanner>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
 
 app.UseHttpsRedirection();
 

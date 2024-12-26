@@ -8,6 +8,7 @@ using Opc.Ua;
 namespace MyOpcUaWebApplication.Background;
 
 public class GantryScanner (
+    IOptions<OpcUaServerOptions> serverOptions,
     IOptions<GantryScannerOptions> gantryOptions,
     OpcUaEntityReader<Gantry> reader,
     SessionFactory factory ) : BackgroundService
@@ -23,7 +24,7 @@ public class GantryScanner (
         {
             try
             {
-                EntityOpcuaServer server = new();
+                EntityOpcuaServer server = new(serverOptions);
                 var header = new RequestHeader
                 {
                     AuthenticationToken = null,
@@ -34,22 +35,19 @@ public class GantryScanner (
                     TimeoutHint = 0,
                     AdditionalHeader = null
                 };
-                var session = await factory.CreateSessionAsync();
-                var node = await reader.ReadOpcUaEntityAsync(session);
+
                 var f = new AddNodesItemCollection(new List<AddNodesItem>()
                 {
                     new AddNodesItem()
                     {
-                        BrowseName = "",
-                        NodeAttributes = ,
-                        NodeClass = ,
-                        ParentNodeId = ,
-                        ReferenceTypeId = ,
-                        RequestedNewNodeId = ,
-                        TypeDefinition = ,
+                        BrowseName = "ast",
+                        NodeClass = NodeClass.Object
                     }
                 });
-                server._server.AddNodes(header, , out var q, out var b);
+                server.Start();
+                server._server.AddNodes(header, f, out var q, out var b);
+                var session = await factory.CreateSessionAsync();
+                var node = await reader.ReadOpcUaEntityAsync(session);
                 Console.WriteLine(node.Value);
             }
             catch (Exception e)

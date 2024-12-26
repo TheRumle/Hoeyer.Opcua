@@ -8,7 +8,7 @@ using Opc.Ua.Configuration;
 public record OpcUaServerOptions
 {
     public int Port { get; set; }
-    public string OpcServerUrl { get; set; }
+    public string url { get; set; }
     public string ServerName { get; set; }
 
 }
@@ -27,7 +27,7 @@ public class EntityOpcuaServer
     {
         this.options = options.Value;
         Configuration = CreateApplicationConfiguration();
-        _opcServerUrl = options.Value.OpcServerUrl;
+        _opcServerUrl = options.Value.url;
         _server = CreateServer();
     }
 
