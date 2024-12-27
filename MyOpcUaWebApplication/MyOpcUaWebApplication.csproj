@@ -14,11 +14,16 @@
     </ItemGroup>
 
 
-
-
     <ItemGroup>
-      <ProjectReference Include="..\Hoeyer.Machines.OpcUa.Client\Hoeyer.Machines.OpcUa.Client.csproj" />
-      <ProjectReference Include="..\Hoeyer.Machines.OpcUa.Server\Hoeyer.Machines.OpcUa.Server.csproj" />
+        <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.5.374.158" />
+        <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.5.374.158" />
+        
+    </ItemGroup>
+    
+    
+    <ItemGroup>
+      <ProjectReference Include="..\Hoeyer.OpcUa.Client\Hoeyer.OpcUa.Client.csproj" />
+      <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj" />
     </ItemGroup>
 
 </Project>

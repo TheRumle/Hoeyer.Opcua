@@ -1,7 +1,7 @@
-﻿using Hoeyer.Machines.OpcUa.Client.Application;
-using Hoeyer.Machines.OpcUa.Client.Application.MachineProxy;
-using Hoeyer.Machines.OpcUa.Server;
-using Hoeyer.Machines.Proxy;
+﻿using Hoeyer.OpcUa.Client.Application;
+using Hoeyer.OpcUa.Client.Application.MachineProxy;
+using Hoeyer.OpcUa.Server;
+using Hoeyer.OpcUa.Server.Configuration;
 using Microsoft.Extensions.Options;
 using MyOpcUaWebApplication.Configuration.BackgroundService;
 using Opc.Ua;
@@ -9,6 +9,7 @@ using Opc.Ua;
 namespace MyOpcUaWebApplication.Background;
 
 public class GantryScanner (
+    OpcUaEntityServerFactory serverFactory,
     IOptions<OpcUaServerOptions> serverOptions,
     IOptions<OpcUaApplicationOptions> rootOptions,
     IOptions<GantryScannerOptions> gantryOptions,
@@ -26,7 +27,7 @@ public class GantryScanner (
         {
             try
             {
-                using EntityOpcuaServer server = new(serverOptions.Value, rootOptions.Value.ApplicationName);
+                var driver = serverFactory.CreateServer();
                 var header = new RequestHeader
                 {
                     AuthenticationToken = null,
@@ -46,11 +47,10 @@ public class GantryScanner (
                         NodeClass = NodeClass.Object
                     }
                 });
-                server.Start();
-                server.Server.AddNodes(header, f, out var q, out var b);
+                await driver.StartAsync();
+                driver.EntityServer.AddNodes(header, f, out var q, out var b);
                 var session = await factory.CreateSessionAsync();
                 var node = await reader.ReadOpcUaEntityAsync(session);
-                Console.WriteLine(node.Value);
             }
             catch (Exception e)
             {

@@ -1,5 +1,5 @@
-﻿using Hoeyer.Machines.OpcUa.Client.Infrastructure.Configuration.Entities.Builder;
-using Hoeyer.Machines.OpcUa.Client.Infrastructure.Configuration.Entities.Property;
+﻿using Hoeyer.OpcUa.Client.Infrastructure.Configuration.Entities.Builder;
+using Hoeyer.OpcUa.Client.Infrastructure.Configuration.Entities.Property;
 using Microsoft.Extensions.Options;
 using MyOpcUaWebApplication.Configuration.OpcUa.Options;
 using MyOpcUaWebApplication.Options;

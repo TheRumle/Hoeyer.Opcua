@@ -1,5 +1,5 @@
-﻿using Hoeyer.Machines.Observation;
-using Hoeyer.Machines.StateSnapshot;
+﻿using Hoeyer.OpcUa.Observation;
+using Hoeyer.OpcUa.StateSnapshot;
 
 namespace MyOpcUaWebApplication;
 

@@ -1,7 +1,8 @@
-using Hoeyer.Machines.OpcUa.Client.Application;
-using Hoeyer.Machines.OpcUa.Client.Application.MachineProxy;
-using Hoeyer.Machines.OpcUa.Client.Services;
-using Hoeyer.Machines.OpcUa.Server;
+using Hoeyer.OpcUa.Client.Application;
+using Hoeyer.OpcUa.Client.Application.MachineProxy;
+using Hoeyer.OpcUa.Client.Services;
+using Hoeyer.OpcUa.Server;
+using Hoeyer.OpcUa.Server.Configuration;
 using Microsoft.AspNetCore.Mvc.Routing;
 using MyOpcUaWebApplication;
 using MyOpcUaWebApplication.Background;
