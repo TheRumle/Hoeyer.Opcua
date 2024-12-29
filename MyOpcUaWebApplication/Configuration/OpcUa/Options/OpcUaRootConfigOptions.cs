@@ -1,4 +1,4 @@
-﻿namespace MyOpcUaWebApplication.Options;
+﻿namespace MyOpcUaWebApplication.Configuration.OpcUa.Options;
 
 public class OpcUaRootConfigOptions
 {

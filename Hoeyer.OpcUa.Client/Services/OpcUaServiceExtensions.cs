@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Hoeyer.OpcUa.Client.Infrastructure.Configuration.Entities.Exceptions;
+using Hoeyer.OpcUa.Client.Configuration.Entities.Exceptions;
 using Hoeyer.OpcUa.Client.Reflection.Configurations;
 using Hoeyer.OpcUa.Client.Reflection.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,11 +31,14 @@ public static class OpcUaServiceExtensions
         }
     }
 
-    public static IServiceCollection AddOpcUaEntities(this IServiceCollection services)
+    public static IServiceCollection AddOpcUaClientServices(this IServiceCollection services)
     {
         //Find and add all configurators to service collection and
         //build a service provider to resolve configurator dependencies s.t they can be used.
-        var configurators = GetConfigurators(Assembly.GetCallingAssembly().GetTypes());
+        var configurators = AppDomain.CurrentDomain
+            .GetAssemblies()
+            .SelectMany(assembly => GetConfigurators(assembly.GetTypes()));
+        
         using (var serviceConfigurator = new ServiceRegistry(services))
         {
             serviceConfigurator.ConfigureServices(configurators);

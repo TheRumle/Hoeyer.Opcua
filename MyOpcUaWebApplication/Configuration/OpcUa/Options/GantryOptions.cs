@@ -2,7 +2,7 @@
 
 public class GantryOptions
 {
-    public const string APPCONFIG_SECTION = "OPCUA:Gantry";
+    public const string APPCONFIG_SECTION = "OpcUa:Gantry";
     
     public string Name { get; init; } 
     public string Id { get; init; }

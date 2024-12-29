@@ -2,7 +2,7 @@
 
 namespace Hoeyer.OpcUa.Server.Entity;
 
-internal interface IEntityObjectStateCreator
+public interface IEntityObjectStateCreator
 {
-    public BaseObjectState CreateEntityOpcUaNode(ushort namespaceIndex);
+    public BaseObjectState CreateEntityOpcUaNode(ISystemContext context, NodeState root, ushort namespaceIndex);
 }

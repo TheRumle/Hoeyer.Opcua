@@ -5,11 +5,9 @@ using System.Reflection;
 using Hoeyer.OpcUa.Observation;
 using Hoeyer.OpcUa.Client.Application;
 using Hoeyer.OpcUa.Client.Application.MachineProxy;
-using Hoeyer.OpcUa.Client.Domain;
-using Hoeyer.OpcUa.Client.Infrastructure.Configuration.Entities.Builder;
-using Hoeyer.OpcUa.Client.Infrastructure.Configuration.Entities.Exceptions;
+using Hoeyer.OpcUa.Client.Configuration.Entities.Builder;
+using Hoeyer.OpcUa.Client.Configuration.Entities.Exceptions;
 using Hoeyer.OpcUa.Client.Reflection.Configurations;
-using Hoeyer.OpcUa.Client.Services.BuildingServices;
 using Hoeyer.OpcUa.Proxy;
 using Hoeyer.OpcUa.StateSnapshot;
 using Microsoft.Extensions.DependencyInjection;
@@ -117,7 +115,7 @@ internal sealed class ServiceRegistry(IServiceCollection services) : IDisposable
         }
         catch (InvalidOperationException e)
         {
-            throw new OpcuaConfigurationException($"Could not setup configuration of  IOpcEntityConfigurator<{typeof(TEntity).Name}>. If the implementor depends on other services these must be registered before ${nameof(OpcUaServiceExtensions.AddOpcUaEntities)} is called. \n\n" + e );
+            throw new OpcuaConfigurationException($"Could not setup configuration of  IOpcEntityConfigurator<{typeof(TEntity).Name}>. If the implementor depends on other services these must be registered before ${nameof(OpcUaServiceExtensions.AddOpcUaClientServices)} is called. \n\n" + e );
         }
     }
 

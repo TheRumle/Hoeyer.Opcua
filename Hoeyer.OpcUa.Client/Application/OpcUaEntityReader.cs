@@ -4,9 +4,8 @@ using System.Threading.Tasks;
 using FluentResults;
 using FluentResults.Extensions;
 using Hoeyer.Common.Extensions.Functional;
-using Hoeyer.OpcUa.Client.Domain;
-using Hoeyer.OpcUa.Client.Infrastructure.Configuration.Entities;
-using Hoeyer.OpcUa.Client.Services.BuildingServices;
+using Hoeyer.OpcUa.Client.Application.MachineProxy;
+using Hoeyer.OpcUa.Client.Configuration.Entities;
 using Opc.Ua;
 using Opc.Ua.Client;
 

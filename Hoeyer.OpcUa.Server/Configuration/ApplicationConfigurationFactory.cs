@@ -1,44 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Options;
 using Opc.Ua;
 using Opc.Ua.Security.Certificates;
 
 namespace Hoeyer.OpcUa.Server.Configuration;
 
-public class ApplicationConfigurationFactory(string applicationName, string baseAddress) : IApplicationConfigurationFactory
+public class ApplicationConfigurationFactory(IOptions<OpcUaServerApplicationOptions> options) : IApplicationConfigurationFactory
 {
     /// <inheritdoc />
-    public string ApplicationName { get; } = applicationName;
+    public string ApplicationName { get; } = options.Value.ApplicationName;
 
     /// <inheritdoc />
-    public Uri BaseAddress { get; } = new(baseAddress);
+    public Uri ApplicationUri { get; } = new(options.Value.ApplicationUri);
+    public string ApplicationUriString => ApplicationUri.ToString();
+
+    private ServerSecurityPolicyCollection ServerSecurityPolicyCollection = new()
+    {
+        new ServerSecurityPolicy { SecurityMode = MessageSecurityMode.None, SecurityPolicyUri = SecurityPolicies.None },
+    };
+
+    private UserTokenPolicyCollection UserTokenPolicyCollection = new()
+    {
+        new UserTokenPolicy { TokenType = UserTokenType.Anonymous },
+    };
+    
+    
 
     public ApplicationConfiguration CreateServerConfiguration(string subject, params string[] legalDomains)
     {
         var config = CreateApplicationConfiguration();
         AssignApplicationInstanceCertificate(config, subject, legalDomains);
+        AssignDiscoveryConfiguration(config);
         config.Validate(ApplicationType.Server).Wait();
         return config;
+    }
+
+    private void AssignDiscoveryConfiguration(ApplicationConfiguration config)
+    {
+        var discoveryConfig = new DiscoveryServerConfiguration()
+        {
+            BaseAddresses = [ApplicationUri.ToString()],
+            SecurityPolicies = ServerSecurityPolicyCollection,
+            ServerNames = { ApplicationName }
+        };
+        config.DiscoveryServerConfiguration = discoveryConfig;
     }
 
     private ApplicationConfiguration CreateApplicationConfiguration()
     {
         ApplicationConfiguration config = new ApplicationConfiguration
         {
-            ApplicationName = applicationName,
+            ApplicationUri = ApplicationUriString,
+            ApplicationName = ApplicationName,
             ApplicationType = ApplicationType.Server,
             CertificateValidator = new CertificateValidator(),
             ServerConfiguration = new ServerConfiguration
             {
-                BaseAddresses = new StringCollection { baseAddress },
-                SecurityPolicies = new ServerSecurityPolicyCollection
-                {
-                    new ServerSecurityPolicy { SecurityMode = MessageSecurityMode.None, SecurityPolicyUri = SecurityPolicies.None },
-                },
-                UserTokenPolicies = new UserTokenPolicyCollection
-                {
-                    new UserTokenPolicy { TokenType = UserTokenType.Anonymous },
-                },
+                BaseAddresses = new StringCollection { ApplicationUriString },
+                SecurityPolicies = ServerSecurityPolicyCollection,
+                UserTokenPolicies = UserTokenPolicyCollection,
             },
             DisableHiResClock = false,
         };
@@ -48,8 +70,8 @@ public class ApplicationConfigurationFactory(string applicationName, string base
 
     private void AssignApplicationInstanceCertificate(ApplicationConfiguration config, string subject, string[] legalDomains)
     {
-        IList<string> domains = ["localhost", "127.0.0.1", ..legalDomains];
-        ICertificateBuilder appCert = CertificateFactory.CreateCertificate(baseAddress, applicationName, subject, domains );
+        ISet<string> domains = new HashSet<string>(["localhost", "127.0.0.1", ..legalDomains]);
+        ICertificateBuilder appCert = CertificateFactory.CreateCertificate(ApplicationUriString, ApplicationName, subject, domains.ToList() );
         var certificate = appCert.CreateForRSA();
        
 

@@ -1,16 +1,10 @@
-using Hoeyer.OpcUa.Client.Application;
-using Hoeyer.OpcUa.Client.Application.MachineProxy;
 using Hoeyer.OpcUa.Client.Services;
-using Hoeyer.OpcUa.Server;
 using Hoeyer.OpcUa.Server.Configuration;
-using Microsoft.AspNetCore.Mvc.Routing;
+using Hoeyer.OpcUa.Server.Services;
 using MyOpcUaWebApplication;
 using MyOpcUaWebApplication.Background;
 using MyOpcUaWebApplication.Configuration.BackgroundService;
 using MyOpcUaWebApplication.Configuration.OpcUa.Options;
-using MyOpcUaWebApplication.Options;
-using Opc.Ua.Client;
-using Org.BouncyCastle.Tls;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,19 +31,15 @@ builder.Services
     .ValidateOnStart();
 
 builder.Services
-    .AddOptions<OpcUaServerOptions>()
-    .Bind(builder.Configuration.GetSection("OPCUA:server"))
-    .Validate(e => !string.IsNullOrEmpty(e.ServerName), "Server name must be defined!")
-    .Validate(e => e.Port != default, "Port must be defined!")
-    .ValidateOnStart();
+    .AddOptions<OpcUaServerApplicationOptions>()
+    .Bind( builder.Configuration.GetSection("OpcUa:Application"))
+    .Validate(e => !string.IsNullOrWhiteSpace(e.ApplicationName), $"ApplicationName name must be defined!")
+    .Validate(e => !string.IsNullOrWhiteSpace(e.ApplicationUri) != default, "ApplicationUri must be defined!")
+    .Validate(e => Uri.TryCreate(e.ApplicationUri, UriKind.Absolute, out var _), "\nApplicationUri must be absolute URI.\n")
+    .ValidateBeforeStart();
 
-builder.Services.AddOptions<OpcUaApplicationOptions>()
-    .Bind(builder.Configuration.GetSection("OPCUA:ApplicationName"))
-    .Validate(e => string.IsNullOrEmpty(e.ApplicationName), "Application name must be defined!")
-    .ValidateOnStart();
-
-
-builder.Services.AddOpcUaEntities();
+builder.Services.AddOpcUaEntityServerServices();
+builder.Services.AddOpcUaClientServices();
 builder.Services.AddHostedService<GantryScanner>();
 
 

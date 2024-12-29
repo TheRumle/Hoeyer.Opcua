@@ -13,36 +13,8 @@ public static class SupportedVariableTypeCallbackHandler
     /// <typeparam name="T">The result of <paramref name="effect"/>.</typeparam>
     /// <returns>The result produced by invoking <paramref name="effect"/></returns>
     /// <exception cref="NotSupportedException">If <paramref name="type"/> is not supported yet.</exception>
-    public static T HandleType<T>(Func<T> effect, BuiltInType type)
-    {
-        return type switch
-        {
-            // Supported types
-            BuiltInType.Boolean => effect(),
-            BuiltInType.Byte => effect(),
-            BuiltInType.Int16 => effect(),
-            BuiltInType.UInt16 => effect(),
-            BuiltInType.Int32 or BuiltInType.Integer => effect(),
-            BuiltInType.UInt32 or BuiltInType.UInteger => effect(),
-            BuiltInType.Int64 => effect(),
-            BuiltInType.UInt64 => effect(),
-            BuiltInType.Float => effect(),
-            BuiltInType.Double => effect(),
-            BuiltInType.String => effect(),
-            BuiltInType.DateTime => effect(),
-            BuiltInType.Guid => effect(),
+    public static T HandleType<T>(BuiltInType type, Func<T> effect) => HandleType((int)type, effect);
 
-            BuiltInType.Null or BuiltInType.SByte or BuiltInType.ByteString or
-                BuiltInType.XmlElement or BuiltInType.NodeId or BuiltInType.ExpandedNodeId or
-                BuiltInType.StatusCode or BuiltInType.QualifiedName or BuiltInType.LocalizedText or
-                BuiltInType.ExtensionObject or BuiltInType.DataValue or BuiltInType.Variant or
-                BuiltInType.DiagnosticInfo or BuiltInType.Number or BuiltInType.Enumeration =>
-                throw new NotSupportedException($"{Enum.GetName(type.GetType(), type)} is currently not supported type of datavalue."),
-
-            _ => throw new NotSupportedException($"{Enum.GetName(type.GetType(), type)} is currently not supported type of datavalue.")
-        };
-    }
-    
     /// <summary>
     /// Calls the effect if <paramref name="type"/> is supported.
     /// </summary>
@@ -51,7 +23,7 @@ public static class SupportedVariableTypeCallbackHandler
     /// <typeparam name="T">The result of <paramref name="effect"/>.</typeparam>
     /// <returns>The result produced by invoking <paramref name="effect"/></returns>
     /// <exception cref="NotSupportedException">If <paramref name="type"/> is not supported yet.</exception>
-    public static T HandleType<T>(Func<T> effect, int type)
+    public static T HandleType<T>(int type, Func<T> effect)
     {
         if (type == DataTypes.Boolean) return effect();
         if (type == DataTypes.Byte) return effect();

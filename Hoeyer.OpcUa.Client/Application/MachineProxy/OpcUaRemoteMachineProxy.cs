@@ -4,14 +4,13 @@ using System.Threading.Tasks;
 using FluentResults;
 using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.OpcUa.Observation;
-using Hoeyer.OpcUa.Client.Domain;
 using Hoeyer.OpcUa.Proxy;
 using Hoeyer.OpcUa.StateSnapshot;
 using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
 
-    public sealed class OpcUaRemoteMachineProxy<TMachineState>(
+public sealed class OpcUaRemoteMachineProxy<TMachineState>(
         IOpcUaNodeConnectionHolder<TMachineState> opcUaNodeConnectionHolder,
         ISessionManager sessionManager,
         Machine<TMachineState> machine,
@@ -33,7 +32,7 @@ namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
     /// <inheritdoc />
     public StateChangeSubscription<ConnectionState> Subscribe(IStateChangeSubscriber<ConnectionState> subscriber)
     {
-        return this._stateChanger.Subscribe(subscriber);
+        return _stateChanger.Subscribe(subscriber);
     }
 
 

@@ -1,5 +1,4 @@
-﻿using Hoeyer.OpcUa.Client.Domain;
-using Hoeyer.Machines.OpcUa.Extensions;
+﻿using Hoeyer.Machines.OpcUa.Extensions;
 using Hoeyer.Machines.OpcUa.ResourceLoading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;

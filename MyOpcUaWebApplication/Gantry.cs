@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.Client.Domain;
+﻿using Hoeyer.OpcUa;
 
 namespace MyOpcUaWebApplication;
 
