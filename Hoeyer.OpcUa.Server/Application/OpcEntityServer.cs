@@ -9,22 +9,24 @@ namespace Hoeyer.OpcUa.Server.Application;
 
 public sealed class OpcEntityServer : StandardServer
 {
-    private readonly IEntityNodeManagerFactory _factory;
+    private readonly IEnumerable<IEntityObjectStateCreator> _entityObjectCreators;
     public readonly Uri RootUri;
+    public IServerInternal Server => ServerInternal;
 
-    public OpcEntityServer(IEntityNodeManagerFactory factory, string applicationUri)
+    public OpcEntityServer(IEnumerable<IEntityObjectStateCreator> entityObjectCreators, string applicationUri)
     {
-        _factory = factory;
+        this._entityObjectCreators = entityObjectCreators;
         RootUri = new Uri(applicationUri);
     }
 
 
+    
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server, ApplicationConfiguration configuration)
     {
         return new MasterNodeManager(server,
             configuration,
             RootUri.ToString(), 
-            _factory.GetEntityManagers(server, configuration).ToArray());
+            _entityObjectCreators.Select(INodeManager (e) => new SingletonEntityNodeManager(e, server, configuration)).ToArray());
     }
     
     public IEnumerable<Uri> EndPoints => CurrentInstance.EndpointAddresses;

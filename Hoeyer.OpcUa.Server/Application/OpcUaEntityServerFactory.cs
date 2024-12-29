@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.Server.Configuration;
+﻿using System.Collections.Generic;
+using Hoeyer.OpcUa.Server.Configuration;
 using Hoeyer.OpcUa.Server.Entity;
 using Opc.Ua;
 using Opc.Ua.Configuration;
@@ -6,12 +7,14 @@ using Opc.Ua.Configuration;
 namespace Hoeyer.OpcUa.Server.Application;
 
 /// <summary>
-/// Given an <see cref="IEntityNodeManagerFactory"/> and <see cref="IApplicationConfigurationFactory"/>, will construct instances of <see cref="ApplicationInstance"/>, load the <see cref="ApplicationConfiguration"/> provided by the factory into the instance. This class exposes a method used to create tuples containing an <see cref="OpcEntityServer"/> instance and an <see cref="ApplicationInstance"/> which can be used to start it.
+/// Given number of <see cref="IEntityObjectStateCreator"/> and an <see cref="IApplicationConfigurationFactory"/>, will construct instances of <see cref="ApplicationInstance"/>, load the <see cref="ApplicationConfiguration"/> provided by the factory into the instance. The <see cref="IEntityObjectStateCreator"/> are used to create OpcUa nodes for all classes marked with the <see cref="OpcUaEntityAttribute"/>. 
 /// </summary>
-/// <param name="entityNodeManagerFactory">A factory creating node managers for the different entities.</param>
+/// <param name="entityObjectCreators">A factory creating node managers for the different entities.</param>
 /// <param name="configurationFactory">A factory that can create an application the server will use.</param>
+/// <returns>A <see cref="OpcEntityServerDriver"/>which encapsulates the Application instance running the server</returns>
 public sealed class OpcUaEntityServerFactory(
-    IEntityNodeManagerFactory entityNodeManagerFactory, IApplicationConfigurationFactory configurationFactory)
+    IApplicationConfigurationFactory configurationFactory,
+    IEnumerable<IEntityObjectStateCreator> entityObjectCreators)
 {
     public OpcEntityServerDriver CreateServer()
     {
@@ -23,7 +26,7 @@ public sealed class OpcUaEntityServerFactory(
             ApplicationType = ApplicationType.Server
         };
         application.LoadApplicationConfiguration(false);
-        var server = new OpcEntityServer(entityNodeManagerFactory, configuration.ApplicationUri);
+        var server = new OpcEntityServer(entityObjectCreators, configuration.ApplicationUri);
         return new OpcEntityServerDriver(application, server);
     }
 }

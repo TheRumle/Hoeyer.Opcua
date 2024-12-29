@@ -12,6 +12,7 @@ using Hoeyer.OpcUa.Proxy;
 using Hoeyer.OpcUa.StateSnapshot;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Hoeyer.OpcUa.Client.Services;
 
@@ -97,13 +98,16 @@ internal sealed class ServiceRegistry(IServiceCollection services) : IDisposable
             
             var configurationBuilder = new EntityConfigurationBuilder<TEntity>();
             configuratorInstance.Configure(configurationBuilder);
+            
+            var opcUaApplicationOptions = scope.ServiceProvider.GetService<IOptions<OpcUaServerApplicationOptions>>();
+            if (opcUaApplicationOptions == null) throw new OptionsNotConfiguredException(typeof(OpcUaServerApplicationOptions), Assembly.GetExecutingAssembly());
 
             services.AddSingleton(configurationBuilder.EntityConfiguration)
                 .AddSingleton(new Machine<TEntity>(new TEntity()))
                 .AddTransient<DataValuePropertyAssigner<TEntity>>()
                 .AddTransient<OpcUaEntityReader<TEntity>>()
                 .AddTransient<IOpcUaNodeConnectionHolder<TEntity>, OpcUaEntityReader<TEntity>>()
-                .AddSingleton<SessionFactory>()
+                .AddSingleton(new SessionFactory(opcUaApplicationOptions.Value))
                 .AddTransient<SessionManager>()
                 .AddTransient<ISessionManager, SessionManager>()
                 .AddSingleton(typeof(IRemoteMachineObserver<TEntity>), typeof(OpcUaRemoteMachineProxy<TEntity>))

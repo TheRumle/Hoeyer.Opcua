@@ -43,7 +43,7 @@ public class ApplicationConfigurationFactory(IOptions<OpcUaServerApplicationOpti
         {
             BaseAddresses = [ApplicationUri.ToString()],
             SecurityPolicies = ServerSecurityPolicyCollection,
-            ServerNames = { ApplicationName }
+            ServerNames = { ApplicationName },
         };
         config.DiscoveryServerConfiguration = discoveryConfig;
     }
@@ -61,6 +61,7 @@ public class ApplicationConfigurationFactory(IOptions<OpcUaServerApplicationOpti
                 BaseAddresses = new StringCollection { ApplicationUriString },
                 SecurityPolicies = ServerSecurityPolicyCollection,
                 UserTokenPolicies = UserTokenPolicyCollection,
+                RegistrationEndpoint = new EndpointDescription(ApplicationUriString)
             },
             DisableHiResClock = false,
         };

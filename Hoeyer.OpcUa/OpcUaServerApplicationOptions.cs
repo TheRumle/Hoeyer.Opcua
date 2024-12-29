@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.OpcUa.Server.Configuration;
+﻿namespace Hoeyer.OpcUa;
 
 public record OpcUaServerApplicationOptions
 {

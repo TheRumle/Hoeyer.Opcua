@@ -7,7 +7,7 @@ namespace Hoeyer.OpcUa.Server.Entity;
 
 internal sealed class EntityObjectStateCreator<TEntity> : IEntityObjectStateCreator
 {
-    private readonly string _name = typeof(TEntity).Name;
+    public string EntityName { get; } =  typeof(TEntity).Name;
     
     public BaseObjectState CreateEntityOpcUaNode(ISystemContext context, NodeState root, ushort namespaceIndex)
     {
@@ -27,8 +27,8 @@ internal sealed class EntityObjectStateCreator<TEntity> : IEntityObjectStateCrea
     private BaseObjectState CreateEntityNode(ISystemContext context, NodeState root, ushort dynamicNamespaceIndex)
     {
         BaseObjectState entityNode = new BaseObjectState(root);
-        entityNode.Create(context, root.NodeId, new QualifiedName(_name, dynamicNamespaceIndex), null, true);
-        entityNode.BrowseName = new QualifiedName(_name, dynamicNamespaceIndex);
+        entityNode.Create(context, root.NodeId, new QualifiedName(EntityName, dynamicNamespaceIndex), EntityName, true);
+        entityNode.BrowseName = new QualifiedName(EntityName, dynamicNamespaceIndex);
         root.AddChild(entityNode);
         return entityNode;
     }

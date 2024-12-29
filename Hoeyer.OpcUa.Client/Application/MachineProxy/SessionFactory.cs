@@ -5,9 +5,9 @@ using Opc.Ua.Client;
 namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
 
 
-public class SessionFactory
+public class SessionFactory(OpcUaServerApplicationOptions applicationOptions)
 {
-    private string _opcServerUrl = "opc.tcp://localhost:4840/freeopcua/server/"; 
+    private string _opcServerUrl = applicationOptions.ApplicationUri; 
     private string _machineStateNodeId = "ns=2;s=MachineStateSnapshot"; 
     public readonly ApplicationConfiguration Configuration = CreateApplicationConfig();
     
@@ -19,11 +19,11 @@ public class SessionFactory
         var session = await Session.Create(
             Configuration,
             endpoint,
-            false, // Do not use reconnect
-            "OpcUaRemoteMachineProxy", // Session name
-            60000, // Session timeout in milliseconds
-            new UserIdentity(new AnonymousIdentityToken()), // Anonymous authentication
-            null); // No session locale
+            updateBeforeConnect: false, 
+            sessionName: "OpcUaRemoteMachineProxy",
+            sessionTimeout: 60000, 
+            new UserIdentity(new AnonymousIdentityToken()),
+            preferredLocales: null);
         
         return session;
     }

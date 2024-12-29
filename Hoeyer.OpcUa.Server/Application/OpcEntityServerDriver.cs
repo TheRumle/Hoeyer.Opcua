@@ -19,16 +19,8 @@ public sealed class OpcEntityServerDriver : IDisposable
     {
         if (_disposed) throw new ObjectDisposedException(nameof(OpcEntityServerDriver));
 
-        try
-        {
-            await ApplicationInstance.Start(EntityServer);
-            return EntityServer.RootUri;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        await ApplicationInstance.Start(EntityServer);
+        return EntityServer.RootUri;
     }
 
     public void Stop()

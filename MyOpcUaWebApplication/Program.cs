@@ -1,4 +1,6 @@
+using Hoeyer.OpcUa;
 using Hoeyer.OpcUa.Client.Services;
+using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Configuration;
 using Hoeyer.OpcUa.Server.Services;
 using MyOpcUaWebApplication;
@@ -32,7 +34,7 @@ builder.Services
 
 builder.Services
     .AddOptions<OpcUaServerApplicationOptions>()
-    .Bind( builder.Configuration.GetSection("OpcUa:Application"))
+    .Bind( builder.Configuration.GetSection("OpcUa:Application"))   
     .Validate(e => !string.IsNullOrWhiteSpace(e.ApplicationName), $"ApplicationName name must be defined!")
     .Validate(e => !string.IsNullOrWhiteSpace(e.ApplicationUri) != default, "ApplicationUri must be defined!")
     .Validate(e => Uri.TryCreate(e.ApplicationUri, UriKind.Absolute, out var _), "\nApplicationUri must be absolute URI.\n")
@@ -40,11 +42,13 @@ builder.Services
 
 builder.Services.AddOpcUaEntityServerServices();
 builder.Services.AddOpcUaClientServices();
-builder.Services.AddHostedService<GantryScanner>();
 
 
 
 var app = builder.Build();
+
+var factory  = app.Services.GetService<OpcUaEntityServerFactory>()!;
+await factory.CreateServer().StartAsync();
 
 
 app.UseHttpsRedirection();
