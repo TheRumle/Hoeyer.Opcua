@@ -13,10 +13,10 @@
         <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
         <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.5.374.158" />
         <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
+        <PackageReference Include="System.Text.Json" Version="9.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj" />
         <ProjectReference Include="..\Hoeyer.OpcUa\Hoeyer.OpcUa.csproj" />
     </ItemGroup>
     

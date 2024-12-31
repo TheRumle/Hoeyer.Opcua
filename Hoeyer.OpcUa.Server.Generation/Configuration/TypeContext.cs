@@ -2,9 +2,9 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.Machines.OpcUa.Configuration;
+namespace Hoeyer.OpcUa.Server.Generation.Configuration;
 
-public class TypeContext(SemanticModel semanticModel, BaseTypeDeclarationSyntax node)
+public readonly struct TypeContext(SemanticModel semanticModel, BaseTypeDeclarationSyntax node)
 {
     public SemanticModel SemanticModel { get; } = semanticModel;
     public BaseTypeDeclarationSyntax Node { get; } = node;

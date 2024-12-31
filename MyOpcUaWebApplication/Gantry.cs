@@ -3,8 +3,7 @@
 namespace MyOpcUaWebApplication;
 
 [OpcUaEntity]
-public record Gantry
+public class Gantry
 {
     public int Speed { get; init; }
 }
-

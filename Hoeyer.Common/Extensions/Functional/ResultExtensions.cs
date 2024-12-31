@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentResults;
-using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.Common.Extensions.Functional;
 

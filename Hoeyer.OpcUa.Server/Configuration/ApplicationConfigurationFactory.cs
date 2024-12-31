@@ -58,7 +58,7 @@ public class ApplicationConfigurationFactory(IOptions<OpcUaServerApplicationOpti
             CertificateValidator = new CertificateValidator(),
             ServerConfiguration = new ServerConfiguration
             {
-                BaseAddresses = new StringCollection { ApplicationUriString },
+                BaseAddresses = [ApplicationUriString],
                 SecurityPolicies = ServerSecurityPolicyCollection,
                 UserTokenPolicies = UserTokenPolicyCollection,
                 RegistrationEndpoint = new EndpointDescription(ApplicationUriString)

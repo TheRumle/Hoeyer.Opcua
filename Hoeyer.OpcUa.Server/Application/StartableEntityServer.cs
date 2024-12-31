@@ -1,32 +1,43 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Opc.Ua.Configuration;
 
 namespace Hoeyer.OpcUa.Server.Application;
-public sealed class OpcEntityServerDriver : IDisposable
+
+public sealed class StartedEntityServer(StartableEntityServer server)
+{
+    
+    public void Stop()
+    {
+        server.Stop();
+    }
+}
+public sealed class StartableEntityServer : IDisposable
 {
     private bool _disposed;
     public readonly ApplicationInstance ApplicationInstance;
     public readonly OpcEntityServer EntityServer;
 
-    public OpcEntityServerDriver(ApplicationInstance applicationInstance, OpcEntityServer entityServer)
+    public StartableEntityServer(ApplicationInstance applicationInstance, OpcEntityServer entityServer)
     {
         ApplicationInstance = applicationInstance ?? throw new ArgumentNullException(nameof(applicationInstance));
         EntityServer = entityServer ?? throw new ArgumentNullException(nameof(entityServer));
     }
 
-    public async Task<Uri> StartAsync()
+    public async Task<StartedEntityServer> StartAsync()
     {
-        if (_disposed) throw new ObjectDisposedException(nameof(OpcEntityServerDriver));
+        if (_disposed) throw new ObjectDisposedException(nameof(StartableEntityServer));
 
         await ApplicationInstance.Start(EntityServer);
-        return EntityServer.RootUri;
+        var jsonString = System.Text.Json.JsonSerializer.Serialize(EntityServer.EntityNodes.First());
+        
+        return new (this);
     }
 
     public void Stop()
     {
-        if (_disposed) throw new ObjectDisposedException(nameof(OpcEntityServerDriver));
-
+        if (_disposed) throw new ObjectDisposedException(nameof(StartableEntityServer));
         EntityServer.Stop();
         ApplicationInstance.Stop();
     }
@@ -49,7 +60,7 @@ public sealed class OpcEntityServerDriver : IDisposable
         _disposed = true;
     }
 
-    ~OpcEntityServerDriver()
+    ~StartableEntityServer()
     {
         Dispose(false);
     }

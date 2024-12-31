@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using Hoeyer.OpcUa.Variables;
 using Opc.Ua;
@@ -9,40 +10,39 @@ internal sealed class EntityObjectStateCreator<TEntity> : IEntityObjectStateCrea
 {
     public string EntityName { get; } =  typeof(TEntity).Name;
     
-    public BaseObjectState CreateEntityOpcUaNode(ISystemContext context, NodeState root, ushort namespaceIndex)
+    public NodeState CreateEntityOpcUaNode(NodeState root, ushort namespaceIndex)
     {
-        var entityNode = CreateEntityNode(context, root, namespaceIndex);
+        var entityNode = CreateEntityNode(root, namespaceIndex);
 
         var readableProperties = typeof(TEntity).GetProperties()
             .Where(e => e.CanRead && e.GetAccessors().Any(accessor => accessor.IsPublic));
         
         foreach (var publicProperty in readableProperties)
         {
-            AddVariable(publicProperty, entityNode, namespaceIndex, context);
+            AddVariable(publicProperty, entityNode, namespaceIndex);
         }
         
         return entityNode;
     }
 
-    private BaseObjectState CreateEntityNode(ISystemContext context, NodeState root, ushort dynamicNamespaceIndex)
+    private NodeState CreateEntityNode(NodeState root, ushort dynamicNamespaceIndex)
     {
-        BaseObjectState entityNode = new BaseObjectState(root);
-        entityNode.Create(context, root.NodeId, new QualifiedName(EntityName, dynamicNamespaceIndex), EntityName, true);
-        entityNode.BrowseName = new QualifiedName(EntityName, dynamicNamespaceIndex);
+        BaseObjectState entityNode = new BaseObjectState(root)
+        {
+            BrowseName =  new QualifiedName(EntityName, dynamicNamespaceIndex),
+            NodeId = new NodeId(Guid.NewGuid(), dynamicNamespaceIndex),
+            DisplayName = EntityName,
+        };
+
         root.AddChild(entityNode);
         return entityNode;
     }
 
-    private void AddVariable(PropertyInfo property, BaseObjectState entity, ushort dynamicNamespaceIndex,
-        ISystemContext context)
+    private static void AddVariable(PropertyInfo property, NodeState entity, ushort dynamicNamespaceIndex)
     {
-        var name = property.Name;
-        BaseDataVariableState speedNode = new BaseDataVariableState(entity);
-        speedNode.AccessLevel = AccessLevels.CurrentReadOrWrite;
-        speedNode.Create(context, entity.NodeId, new QualifiedName(name, dynamicNamespaceIndex), name, true);
-        speedNode.BrowseName = new QualifiedName(name, dynamicNamespaceIndex);
-        
-        speedNode.DataType = property.PropertyType.ToOpcDataType();
-        entity.AddChild(speedNode);
+        //TODO here is a good place to use source generation
+        var  (dataTypeId, rank) = SupportedVariableTypeCallbackHandler.ToDataTypeId(property);
+        PropertyState? a = entity.AddProperty<int>(property.Name, dataTypeId, ValueRanks.Scalar);
+        a.NodeId = new NodeId(Guid.NewGuid(), dynamicNamespaceIndex);
     }
 }

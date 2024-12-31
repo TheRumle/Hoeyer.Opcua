@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa", "Hoeyer.OpcUa\Hoeyer.OpcUa.csproj", "{83F13633-73EC-4FF5-83E3-96C660BB5A1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Generation", "Hoeyer.OpcUa.Generation\Hoeyer.OpcUa.Generation.csproj", "{103E1E61-A9FC-454D-B191-8BD9218CD76E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Server.Generation", "Hoeyer.OpcUa.Server.Generation\Hoeyer.OpcUa.Server.Generation.csproj", "{103E1E61-A9FC-454D-B191-8BD9218CD76E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyOpcUaWebApplication", "MyOpcUaWebApplication\MyOpcUaWebApplication.csproj", "{6D779225-B797-4173-90B6-0CB428C2FA6F}"
 EndProject

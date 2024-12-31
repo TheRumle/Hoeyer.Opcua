@@ -1,48 +1,11 @@
 ﻿using System;
+using System.Reflection;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Variables;
 
 public static class SupportedVariableTypeCallbackHandler
 {
-    /// <summary>
-    /// Calls the effect if <paramref name="type"/> is supported.
-    /// </summary>
-    /// <param name="effect">The effect that is invoked if <paramref name="type"/> is supported</param>
-    /// <param name="type">A built-in OpcUa type</param>
-    /// <typeparam name="T">The result of <paramref name="effect"/>.</typeparam>
-    /// <returns>The result produced by invoking <paramref name="effect"/></returns>
-    /// <exception cref="NotSupportedException">If <paramref name="type"/> is not supported yet.</exception>
-    public static T HandleType<T>(BuiltInType type, Func<T> effect) => HandleType((int)type, effect);
-
-    /// <summary>
-    /// Calls the effect if <paramref name="type"/> is supported.
-    /// </summary>
-    /// <param name="effect">The effect that is invoked if <paramref name="type"/> is supported</param>
-    /// <param name="type">A built-in OpcUa type</param>
-    /// <typeparam name="T">The result of <paramref name="effect"/>.</typeparam>
-    /// <returns>The result produced by invoking <paramref name="effect"/></returns>
-    /// <exception cref="NotSupportedException">If <paramref name="type"/> is not supported yet.</exception>
-    public static T HandleType<T>(int type, Func<T> effect)
-    {
-        if (type == DataTypes.Boolean) return effect();
-        if (type == DataTypes.Byte) return effect();
-        if (type == DataTypes.Int16) return effect();
-        if (type == DataTypes.UInt16) return effect();
-        if (type == DataTypes.Int32 || type == DataTypes.Integer) return effect();
-        if (type == DataTypes.UInt32 || type == DataTypes.UInteger) return effect();
-        if (type == DataTypes.Int64) return effect();
-        if (type == DataTypes.UInt64) return effect();
-        if (type == DataTypes.Float) return effect();
-        if (type == DataTypes.Double) return effect();
-        if (type == DataTypes.String) return effect();
-        if (type == DataTypes.DateTime) return effect();
-        if (type == DataTypes.Guid) return effect();
-        throw new NotSupportedException(
-            $"{Enum.GetName(type.GetType(), type)} is currently not supported type of datavalue.");
-    }
-    
-    
     /// <summary>
     /// Given a type T, returns the equivalent DataTypes integer variable.
     /// </summary>
@@ -66,6 +29,15 @@ public static class SupportedVariableTypeCallbackHandler
         throw new NotSupportedException(
             $"The type {type.Name} is  not a supported DataType in OpcUa.");
     }
-
     
+    /// <summary>
+    /// Given a type T, returns the equivalent DataTypes integer variable.
+    /// </summary>
+    /// See <see cref="DataTypes"/> for a complete list of data types. NOTE: Not all data types in the list are supported.
+    /// <exception cref="NotSupportedException">If <paramref name="type"/> is not a supported OpcUa DataType.</exception>
+    public static uint ToOpcDataType<T>() => ToOpcDataType(typeof(T));
+
+    public static (NodeId nodeId, int ValueRank) ToDataTypeId(PropertyInfo property) => (DataTypeNodeId(property), ValueRanks.Scalar);
+
+    private static NodeId DataTypeNodeId(PropertyInfo property) => new(ToOpcDataType(property.PropertyType));
 }

@@ -11,24 +11,39 @@ public sealed class OpcEntityServer : StandardServer
 {
     private readonly IEnumerable<IEntityObjectStateCreator> _entityObjectCreators;
     public readonly Uri RootUri;
+    public IReadOnlyList<SingletonEntityNodeManager> EntityNodesManagers { get; private set; }
+    public IEnumerable<NodeState> EntityNodes => EntityNodesManagers.Select(e => e.EntityNode);
     public IServerInternal Server => ServerInternal;
+    
 
     public OpcEntityServer(IEnumerable<IEntityObjectStateCreator> entityObjectCreators, string applicationUri)
     {
-        this._entityObjectCreators = entityObjectCreators;
+        _entityObjectCreators = entityObjectCreators;
         RootUri = new Uri(applicationUri);
     }
 
+    /// <inheritdoc />
+    protected override void OnUpdateConfiguration(ApplicationConfiguration configuration)
+    {
+        configuration.ApplicationUri = RootUri.ToString();
+        base.OnUpdateConfiguration(configuration);
+    }
 
-    
+
+
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server, ApplicationConfiguration configuration)
     {
+        EntityNodesManagers = _entityObjectCreators
+            .Select(SingletonEntityNodeManager (e) => new SingletonEntityNodeManager(e, server, configuration)).ToList();
+        
         return new MasterNodeManager(server,
             configuration,
-            RootUri.ToString(), 
-            _entityObjectCreators.Select(INodeManager (e) => new SingletonEntityNodeManager(e, server, configuration)).ToArray());
+            RootUri.ToString(),
+            EntityNodesManagers.Select(INodeManager (m) => m).ToArray());
+
     }
-    
+
+
     public IEnumerable<Uri> EndPoints => CurrentInstance.EndpointAddresses;
 
 }
