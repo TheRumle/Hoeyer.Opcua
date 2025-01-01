@@ -7,49 +7,21 @@
     <projectFile profileName="DebugRoslynSourceGenerator">Hoeyer.OpcUa.Generation/Hoeyer.OpcUa.Generation.csproj</projectFile>
     <projectFile profileName="http">MyOpcUaWebApplication/MyOpcUaWebApplication.csproj</projectFile>
     <projectFile profileName="https">MyOpcUaWebApplication/MyOpcUaWebApplication.csproj</projectFile>
+    <projectFile profileName="DebugRoslynSourceGenerator">SourceGenerators1/SourceGenerators1/SourceGenerators1.csproj</projectFile>
+    <projectFile>TestLib/TestLib.csproj</projectFile>
   </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="acf2e6fe-62b1-46ef-b90b-3347663306e0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Configuration/OpcTypeDecider.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Configuration/OpcUaProperty.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Configuration/EntityOpcUaObjectStateGenerator.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Hoeyer.Opcua/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Hoeyer.Opcua/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.Common/Extensions/Functional/ResultExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.Common/Extensions/Functional/ResultExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.Common/Hoeyer.Common.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.Common/Hoeyer.Common.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/Configuration/CodeTemplateInformation.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/Configuration/ObservableOpcUaProxyGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Configuration/ObservableOpcUaProxyGenerator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/Configuration/TypeContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Configuration/TypeContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/Diagnostics/DiagnosticFactory.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/Extensions/SourceProductionContextExtensions.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/Extensions/SymbolExtensions.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/Generated/Machine/ObservableMachineProxy.cst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/Hoeyer.OpcUa.Generation.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Hoeyer.OpcUa.Server.Generation.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/Properties/launchSettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Properties/launchSettings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/Readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Readme.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/ResourceLoading/AssemblyResourceLoader.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/ResourceLoading/AssociativeEmbeddedResourceLoader.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/ResourceLoading/CSharpTemplateFileLoader.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/ResourceLoading/EmbeddedResourceLoader.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/ResourceLoading/IResourceLoader.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/ResourceLoading/LoadTypeRequest.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/ResourceLoading/LoadableType.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/ResourceLoading/ResourceMatcher.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Generation/ResourceLoading/TemplateFileLoad.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Application/OpcEntityServer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Application/OpcEntityServer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Application/OpcEntityServerDriver.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Application/StartableEntityServer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Application/OpcUaEntityServerFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Application/OpcUaEntityServerFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Configuration/ApplicationConfigurationFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Configuration/ApplicationConfigurationFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Entity/EntityObjectStateCreator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Entity/EntityObjectStateCreator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Entity/IEntityObjectStateCreator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Entity/IEntityObjectStateCreator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Entity/SingletonEntityNodeManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Entity/SingletonEntityNodeManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Hoeyer.OpcUa.Server.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Hoeyer.OpcUa.Server.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.sln" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.sln" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa/Variables/SupportedVariableTypeCallbackHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa/Variables/SupportedVariableTypeCallbackHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MyOpcUaWebApplication/Configuration/OpcUa/Options/GantryOptions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MyOpcUaWebApplication/Configuration/OpcUa/Options/GantryOptions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MyOpcUaWebApplication/Gantry.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MyOpcUaWebApplication/Gantry.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MyOpcUaWebApplication/MyOpcUaWebApplication.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/MyOpcUaWebApplication/MyOpcUaWebApplication.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Configuration/ObservableOpcUaProxyGenerator.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Configuration/OpcTypeDecider.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Configuration/TypeContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Configuration/TypeContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Hoeyer.OpcUa.Server.Generation.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Hoeyer.OpcUa.Server.Generation.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa/OpcUaEntityAttribute.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa/OpcUaEntityAttribute.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,18 +35,6 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/bf5e279d9239bfef5bb1b8d6212f1b971c434606/src/libraries/System.Linq/src/System/Linq/Where.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/AppData/Local/Temp/SourceGeneratedDocuments/80B641614ABBFF6DFB0D5CCC/Hoeyer.Machines.OpcUa.Generation/Hoeyer.Machines.OpcUa.Configuration.ObservableProxyGenerator/GantryObservableMachineProxy.g.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/AppData/Local/Temp/SourceGeneratedDocuments/80B641614ABBFF6DFB0D5CCC/Hoeyer.Machines.OpcUa.Generation/Hoeyer.Machines.OpcUa.Configuration.PreRequisiteLoader/OpcNodeConfigurationAttribute.g..cs" root0="FORCE_HIGHLIGHTING" />
@@ -482,6 +442,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9863a4148851c1633a5d5594a596859f4bf33c4213f3b4a4cb84e87d235d512/TcpServiceHost.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9a19c0635ce2fc8a34384a544a997d2687b924e630a4b696424f44be9c22be/SyntaxKind.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9d77328df3c57b7ce7e8114cf6f9b3bbad741a3abdf7a95f34ee9f55a2af9f/ClientBase.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9de67e16ecf2119f6f21cce26a5a43a591fc6f674df8dc15b05d61d4a1452b5f/ValueSourceExtensions.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/a6ec619f1e4b47fe3d76b0ed6de56fbef2b51be65a6bf3fdda0bd459a4652/EndpointConfiguration.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/ad1d58b8dd22123dfae3f2cf5d8b199992465c9c344d032f93a826d8e5539ff/RuntimeType.CoreCLR.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/adda3cec1121574a7f5c23675549dd1ae5cf982a22ba9b8c239f10d434d670/INamespaceOrTypeSymbol.cs" root0="SKIP_HIGHLIGHTING" />
@@ -526,11 +487,16 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/f949a7d69a2dc27ad6efccdb27c04ec3ce20148d65b538256557f9fcc2cef7d8/Variant.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/fe6e39be1bedaea6f1e855dee1d2a73dfbf61f54dd6e278c43d21e8a7dab/TypeInfo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Client/Application/MachineProxy/SessionFactory.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Configuration/ObservableOpcUaProxyGenerator.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Configuration/EntityOpcUaObjectStateGenerator.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Configuration/OpcUaProperty.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Configuration/TypeContext.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Properties/launchSettings.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa/OpcUaEntityAttribute.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa/Variables/SupportedVariableTypeCallbackHandler.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/MyOpcUaWebApplication/Configuration/OpcUa/GantryConfigurator.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/MyOpcUaWebApplication/Gantry.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/MyOpcUaWebApplication/Program.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/MyOpcUaWebApplication/WeatherForecast.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
@@ -549,32 +515,51 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.Hoeyer.Machines.OpcUa.Generation: DebugRoslynSourceGenerator (1).executor": "Run",
-    ".NET Launch Settings Profile.Hoeyer.OpcUa.Generation: DebugRoslynSourceGenerator.executor": "Debug",
-    ".NET Launch Settings Profile.MyOpcUaWebApplication: http.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa.Server/obj",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.Hoeyer.Machines.OpcUa.Generation: DebugRoslynSourceGenerator (1).executor&quot;: &quot;Run&quot;,
+    &quot;.NET Launch Settings Profile.Hoeyer.OpcUa.Generation: DebugRoslynSourceGenerator.executor&quot;: &quot;Debug&quot;,
+    &quot;.NET Launch Settings Profile.MyOpcUaWebApplication: http.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Launch Settings Profile.SourceGenerators1: DebugRoslynSourceGenerator.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa.Server/obj&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "GitIgnore"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;GitIgnore&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected=".NET Launch Settings Profile.Hoeyer.OpcUa.Generation: DebugRoslynSourceGenerator">
+    <configuration name="TestLib" type="DotNetProject" factoryName=".NET Project">
+      <option name="EXE_PATH" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="USE_MONO" value="0" />
+      <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="PROJECT_PATH" value="$PROJECT_DIR$/TestLib/TestLib.csproj" />
+      <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
+      <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
+      <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
+      <option name="PROJECT_KIND" value="DotNetCore" />
+      <option name="PROJECT_TFM" value="" />
+      <method v="2">
+        <option name="Build" />
+      </method>
+    </configuration>
     <configuration name="Hoeyer.Common: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/Hoeyer.Common/Hoeyer.Common.csproj" />
       <option name="LAUNCH_PROFILE_TFM" value="net9.0" />
@@ -680,6 +665,21 @@
         <option name="Build" />
       </method>
     </configuration>
+    <configuration name="SourceGenerators1: DebugRoslynSourceGenerator" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
+      <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/SourceGenerators1/SourceGenerators1/SourceGenerators1.csproj" />
+      <option name="LAUNCH_PROFILE_TFM" value=".NETStandard,Version=v2.0" />
+      <option name="LAUNCH_PROFILE_NAME" value="DebugRoslynSourceGenerator" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="USE_MONO" value="0" />
+      <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="GENERATE_APPLICATIONHOST_CONFIG" value="1" />
+      <option name="SHOW_IIS_EXPRESS_OUTPUT" value="0" />
+      <option name="SEND_DEBUG_REQUEST" value="1" />
+      <option name="ADDITIONAL_IIS_EXPRESS_ARGUMENTS" value="" />
+      <method v="2">
+        <option name="Build" />
+      </method>
+    </configuration>
     <configuration name="Hoeyer.Common/Dockerfile" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
       <deployment type="dockerfile">
         <settings>
@@ -774,7 +774,13 @@
       <workItem from="1735571332054" duration="14778000" />
       <workItem from="1735590478743" duration="2435000" />
       <workItem from="1735592952275" duration="1458000" />
-      <workItem from="1735634360523" duration="3445000" />
+      <workItem from="1735634360523" duration="4778000" />
+      <workItem from="1735639208986" duration="571000" />
+      <workItem from="1735639795420" duration="63000" />
+      <workItem from="1735639882896" duration="168000" />
+      <workItem from="1735640181878" duration="36000" />
+      <workItem from="1735640749776" duration="2417000" />
+      <workItem from="1735732339322" duration="1147000" />
     </task>
     <task id="LOCAL-00001" summary="GitIgnore">
       <option name="closed" value="true" />
@@ -856,7 +862,15 @@
       <option name="project" value="LOCAL" />
       <updated>1735496410353</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="checkpoint">
+      <option name="closed" value="true" />
+      <created>1735637939864</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1735637939864</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -878,7 +892,8 @@
     <MESSAGE value="Examining setting up a server" />
     <MESSAGE value="tsrt" />
     <MESSAGE value="Being able to start and browse server with UAExpert" />
-    <option name="LAST_COMMIT_MESSAGE" value="Being able to start and browse server with UAExpert" />
+    <MESSAGE value="checkpoint" />
+    <option name="LAST_COMMIT_MESSAGE" value="checkpoint" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1281,16 +1296,42 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/86459aac4731d26ef5af9eb2a787577062f2a1181a7f4751442bf74096b5c558/GeneratorDriver.cs</url>
-          <line>289</line>
-          <properties documentPath="C:\Users\rasmus\AppData\Roaming\JetBrains\Rider2024.3\resharper-host\SourcesCache\86459aac4731d26ef5af9eb2a787577062f2a1181a7f4751442bf74096b5c558\GeneratorDriver.cs" containingFunctionPresentation="Method 'RunGeneratorsCore'">
+          <line>342</line>
+          <properties documentPath="C:\Users\rasmus\AppData\Roaming\JetBrains\Rider2024.3\resharper-host\SourcesCache\86459aac4731d26ef5af9eb2a787577062f2a1181a7f4751442bf74096b5c558\GeneratorDriver.cs" containingFunctionPresentation="Local function 'handleGeneratorException'">
             <startOffsets>
-              <option value="15714" />
+              <option value="19176" />
             </startOffsets>
             <endOffsets>
-              <option value="15767" />
+              <option value="19196" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="199" />
+          <option name="timeStamp" value="203" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Configuration/EntityOpcUaObjectStateGenerator.cs</url>
+          <line>30</line>
+          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Server.Generation\Configuration\EntityOpcUaObjectStateGenerator.cs" containingFunctionPresentation="Lambda expression inside Method 'Initialize'">
+            <startOffsets>
+              <option value="1086" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1098" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="214" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Configuration/EntityOpcUaObjectStateGenerator.cs</url>
+          <line>29</line>
+          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Server.Generation\Configuration\EntityOpcUaObjectStateGenerator.cs" containingFunctionPresentation="Lambda expression inside Method 'Initialize'">
+            <startOffsets>
+              <option value="1003" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1013" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="215" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

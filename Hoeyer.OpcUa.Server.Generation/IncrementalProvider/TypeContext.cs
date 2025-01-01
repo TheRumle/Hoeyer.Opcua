@@ -4,9 +4,10 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Hoeyer.OpcUa.Server.Generation.Configuration;
 
-public readonly struct TypeContext(SemanticModel semanticModel, BaseTypeDeclarationSyntax node)
+public readonly struct TypeContext<T>(SemanticModel semanticModel, T node) 
+where T : BaseTypeDeclarationSyntax
 {
     public SemanticModel SemanticModel { get; } = semanticModel;
-    public BaseTypeDeclarationSyntax Node { get; } = node;
+    public T Node { get; } = node;
     public INamespaceSymbol GetNamespace => SemanticModel.GetDeclaredSymbol(Node)!.ContainingNamespace;
 }

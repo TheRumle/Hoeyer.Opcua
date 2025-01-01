@@ -19,8 +19,6 @@
         </PackageReference>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.0"/>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.3.0"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa\Hoeyer.OpcUa.csproj" />
-        <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj" />
     </ItemGroup>
     
 
