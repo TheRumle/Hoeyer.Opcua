@@ -2,6 +2,6 @@
 
 public record OpcUaServerApplicationOptions
 {
-    public string ApplicationName { get; set; }
-    public string ApplicationUri { get; set; }
+    public string ApplicationName { get; set; } = null!;
+    public string ApplicationUri { get; set; } = null!;
 }

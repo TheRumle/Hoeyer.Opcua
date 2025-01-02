@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 
+namespace MyOpcUaWebApplication.Configuration.Validation;
+
 public static class EagerValidationExtensions {
     public static OptionsBuilder<TOptions> ValidateBeforeStart<TOptions>(this OptionsBuilder<TOptions> optionsBuilder)
         where TOptions : class, new()

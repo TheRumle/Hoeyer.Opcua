@@ -7,6 +7,7 @@ using MyOpcUaWebApplication;
 using MyOpcUaWebApplication.Background;
 using MyOpcUaWebApplication.Configuration.BackgroundService;
 using MyOpcUaWebApplication.Configuration.OpcUa.Options;
+using MyOpcUaWebApplication.Configuration.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,4 +73,4 @@ app.MapGet("/weatherforecast", () =>
     })
     .WithName("GetWeatherForecast");
 
-app.Run();
+await app.RunAsync();

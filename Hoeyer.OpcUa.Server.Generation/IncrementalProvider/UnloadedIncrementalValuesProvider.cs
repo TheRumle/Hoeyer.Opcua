@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -13,7 +14,9 @@ internal record struct UnloadedIncrementalValuesProvider<T>(IncrementalValuesPro
     public UnloadedIncrementalValuesProvider<T> Where(Func<T, bool> predicate) =>
         new(source.Where(predicate));
     
-    public UnloadedIncrementalValuesProvider<TOut> Select<TOut>(Func<T, CancellationToken, TOut> selector) where TOut : BaseTypeDeclarationSyntax => new(source.Select(selector));
+    public UnloadedIncrementalValuesProvider<TOut> Select<TOut>(Func<T, CancellationToken, TOut> selector) => new(source.Select(selector));
 
-    public UnloadedIncrementalValuesProvider<TOut> SelectMany<TOut>(Func<T, CancellationToken, IEnumerable<TOut>> selector) where TOut : BaseTypeDeclarationSyntax => new(source.SelectMany(selector));
+    public UnloadedIncrementalValuesProvider<TOut> SelectMany<TOut>(Func<T, CancellationToken, IEnumerable<TOut>> selector) => new(source.SelectMany(selector));
+
+    public IncrementalValueProvider<ImmutableArray<T>> Collect() => source.Collect();
 }

@@ -1,12 +1,11 @@
-﻿using Hoeyer.OpcUa.Server.Generation.Configuration;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Hoeyer.OpcUa.Server.Generation.IncrementalProvider;
 
-internal static class IncrementalProviderExtensions
+internal static class IncrementalGeneratorExtensions
 {
-    private static UnloadedIncrementalValuesProvider<TypeContext<T>> GetTypeDeclarationsDecoratedWith<T>(this IncrementalGeneratorInitializationContext context, string attributeMetaName)
+    public static UnloadedIncrementalValuesProvider<TypeContext<T>> GetTypeDeclarationsDecoratedWith<T>(this IncrementalGeneratorInitializationContext context, string attributeMetaName)
         where T : BaseTypeDeclarationSyntax
     {
         var valueProvider = context.SyntaxProvider.ForAttributeWithMetadataName(attributeMetaName,

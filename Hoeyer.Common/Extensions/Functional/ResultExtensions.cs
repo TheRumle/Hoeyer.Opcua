@@ -44,8 +44,32 @@ public static class ResultExtensions
         else onError(result.Errors);
         return result;
     }
+
+    public static Result<T> FailIf<T>(this T value, bool check, IError error)
+    {
+        return check ? value.ToResult() : Result.Fail(error);
+    }
     
-   
+    public static Result<T> FailIf<T>(this Result<T> value, bool check, IError error)
+    {
+        if (!check)
+        {
+            return !value.IsSuccess 
+                ? Result.Fail(value.Errors.Concat([new Error(error.Message)])) 
+                : Result.Fail(error);
+        }
+
+        return value;
+    }
+
+    public static Result ToFailedResult(this IError er)
+    {
+        return Result.Fail(er);
+    }
     
+    public static Result<T> ToFailedResult<T>(this IError er)
+    {
+        return Result.Fail(er);
+    }
 
 }
