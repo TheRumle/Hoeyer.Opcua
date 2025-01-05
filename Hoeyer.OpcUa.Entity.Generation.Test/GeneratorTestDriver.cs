@@ -12,7 +12,7 @@ internal sealed class GeneratorTestDriver<T>(T generator) where T : IIncremental
     
     [SuppressMessage("csharpsquid", "S3220", Justification = "Cannot match the suggested function which uses ISourceGenerator")]
     private CSharpGeneratorDriver Driver => CSharpGeneratorDriver.Create(generator);
-    private readonly PortableExecutableReference[] _necessaryReferences = GetMetadataReferences();
+    private readonly IEnumerable<PortableExecutableReference> _necessaryReferences = GetMetadataReferences();
 
     
     public Result<GenerationResult> RunGeneratorOnSourceCode(string sourceCode)
@@ -47,18 +47,30 @@ internal sealed class GeneratorTestDriver<T>(T generator) where T : IIncremental
             TimingInformation: timingInfo.GeneratorTimes.First(e => e.Generator.GetGeneratorType() == typeof(T)).ElapsedTime);
     }
 
-    private static PortableExecutableReference[] GetMetadataReferences()
+    private static IEnumerable<PortableExecutableReference> GetMetadataReferences()
     {
-        var typeAssembly = typeof(T).Assembly;
-
-        var assemblies = typeAssembly.GetReferencedAssemblies()
-            .Select(Assembly.Load)
-            .ToHashSet();
+        Queue<Assembly> queue = new();
+        queue.Enqueue(typeof(T).Assembly);
+        queue.Enqueue(typeof(OpcUaEntityAttribute).Assembly);
         
-        assemblies.Add(typeAssembly); 
+        HashSet<Assembly> visited = [];
+        
+        List<PortableExecutableReference> result = [];
+        while (queue.TryDequeue(out var assembly))
+        {
+            if (!visited.Add(assembly)) continue;
 
-        return assemblies
-            .Select(asm => MetadataReference.CreateFromFile(asm.Location))
-            .ToArray();
+            var newAssemblies = assembly.GetReferencedAssemblies()
+                .Select(Assembly.Load)
+                .ToHashSet();
+
+            foreach (var discovered in newAssemblies)
+            {
+                queue.Enqueue(discovered);
+                result.Add(MetadataReference.CreateFromFile(discovered.Location));
+            }
+        }
+
+        return result;
     }
 }

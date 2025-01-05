@@ -39,6 +39,11 @@ public static class ResultExtensions
     {
         return Task.WhenAll(tasks).ContinueWith(task => task.Result.AsEnumerable().Merge());
     }
+    public static T GetOrThrow<T>(this Result<T> result, Func<Error, Exception> onError)
+    {
+        if (result.IsSuccess) return result.Value;
+        throw onError.Invoke(new Error(result.Errors.SeparatedBy("\n")));
+    }
     
     
     /// <summary>
