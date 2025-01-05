@@ -12,7 +12,7 @@ public sealed class OpcEntityServer : StandardServer
 {
     private readonly IEnumerable<IEntityNodeCreator> _entityObjectCreators;
     public readonly Uri RootUri;
-    public IReadOnlyList<SingletonEntityNodeManager> EntityNodesManagers { get; private set; }
+    public IReadOnlyList<EntityNodeManager> EntityNodesManagers { get; private set; }
     public IEnumerable<NodeState> EntityNodes => EntityNodesManagers.Select(e => e.EntityNode);
     public IServerInternal Server => ServerInternal;
     
@@ -34,7 +34,7 @@ public sealed class OpcEntityServer : StandardServer
 
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server, ApplicationConfiguration configuration)
     {
-        
+        EntityNodesManagers = _entityObjectCreators.Select(creator => new EntityNodeManager(creator, server, configuration)).ToList();
         return new MasterNodeManager(server,
             configuration,
             RootUri.ToString(),

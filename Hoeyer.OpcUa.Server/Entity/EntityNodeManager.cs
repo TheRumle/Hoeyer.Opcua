@@ -5,13 +5,13 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Entity;
 
-public sealed class SingletonEntityNodeManager : CustomNodeManager{
+public sealed class EntityNodeManager : CustomNodeManager{
     private readonly IEntityNodeCreator _iEntityObjectCreator;
     private readonly string _namespaceUri;
     private readonly ushort _namespaceIndex;
     public NodeState EntityNode { get; private set; } = null!;
     
-    public SingletonEntityNodeManager(IEntityNodeCreator iEntityObjectCreator, 
+    public EntityNodeManager(IEntityNodeCreator iEntityObjectCreator, 
         IServerInternal server, ApplicationConfiguration configuration) : base(server, configuration)
     {
         _namespaceUri =  Server.NamespaceUris.ToArray()[0].EndsWith("/")
