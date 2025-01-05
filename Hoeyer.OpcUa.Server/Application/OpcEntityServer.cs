@@ -34,13 +34,16 @@ public sealed class OpcEntityServer : StandardServer
 
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server, ApplicationConfiguration configuration)
     {
-        EntityNodesManagers = _entityObjectCreators
-            .Select(SingletonEntityNodeManager (e) => new SingletonEntityNodeManager(e, server, configuration)).ToList();
         
         return new MasterNodeManager(server,
             configuration,
             RootUri.ToString(),
-            EntityNodesManagers.Select(INodeManager (m) => m).ToArray());
+            EntityNodesManagers
+                .Select(INodeManager (m) => m)
+                .Union(NodeManagerFactories != null 
+                    ? NodeManagerFactories.Select(f=>f.Create(server, configuration)) 
+                    : [])
+                .ToArray());
 
     }
 
