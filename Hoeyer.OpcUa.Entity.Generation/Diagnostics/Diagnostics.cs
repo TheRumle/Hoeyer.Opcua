@@ -3,7 +3,7 @@ using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.Server.Generation.Diagnostics;
+namespace Hoeyer.OpcUa.EntityGeneration.Diagnostics;
 
 public sealed class DiagnosticException(Diagnostic diagnostic) : Exception(diagnostic.Descriptor.Title + "\n" + diagnostic.Descriptor.Description)
 {

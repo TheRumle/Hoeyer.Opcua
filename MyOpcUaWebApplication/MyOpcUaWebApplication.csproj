@@ -27,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.OpcUa.Server.Generation\Hoeyer.OpcUa.Server.Generation.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Entity.Generation\Hoeyer.OpcUa.Entity.Generation.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
 </Project>

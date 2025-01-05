@@ -5,7 +5,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.Server.Generation.IncrementalProvider;
+namespace Hoeyer.OpcUa.EntityGeneration.IncrementalProvider;
 
 internal record struct UnloadedIncrementalValuesProvider<T>(IncrementalValuesProvider<T> source)
 {

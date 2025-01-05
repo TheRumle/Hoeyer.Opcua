@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Hoeyer.OpcUa.Server.Generation.Diagnostics;
-using Hoeyer.OpcUa.Server.Generation.IncrementalProvider;
-using Hoeyer.OpcUa.Server.Generation.SyntaxExtensions;
+using Hoeyer.OpcUa.EntityGeneration.Diagnostics;
+using Hoeyer.OpcUa.EntityGeneration.IncrementalProvider;
+using Hoeyer.OpcUa.EntityGeneration.SyntaxExtensions;
 using Hoeyer.OpcUa.TypeUtilities;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Generation.OpcUa;
+namespace Hoeyer.OpcUa.EntityGeneration.OpcUa;
 
 
 [Generator]

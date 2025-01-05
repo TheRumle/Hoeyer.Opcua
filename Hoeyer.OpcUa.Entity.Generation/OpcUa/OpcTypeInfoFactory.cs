@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Generation.OpcUa;
+namespace Hoeyer.OpcUa.EntityGeneration.OpcUa;
 
 public class OpcTypeInfoFactory(PropertyDeclarationSyntax property, SemanticModel semanticModel)
 {

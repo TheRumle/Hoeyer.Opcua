@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.Server.Generation.SyntaxExtensions;
+namespace Hoeyer.OpcUa.EntityGeneration.SyntaxExtensions;
 
 public static class PropertyDeclarationSyntaxExtensions
 {

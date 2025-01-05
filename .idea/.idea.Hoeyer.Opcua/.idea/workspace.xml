@@ -16,45 +16,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="acf2e6fe-62b1-46ef-b90b-3347663306e0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Compiletime/Hoeyer.OpcUa.Compiletime.csproj" afterDir="false" />
+    <list default="true" id="acf2e6fe-62b1-46ef-b90b-3347663306e0" name="Changes" comment="Bugfix: No longer using null EntityNodeManagers">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Hoeyer.Opcua/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Hoeyer.Opcua/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Client/Application/MachineProxy/OpcUaRemoteMachineProxy.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Client/Application/MachineProxy/EntityProxy.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Client/Application/MachineProxy/SessionFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Client/Application/MachineProxy/SessionFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Client/Application/MachineProxy/SessionManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Client/Application/MachineProxy/SessionManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Client/Services/ServiceRegistry.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Client/Services/ServiceRegistry.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Diagnostics/Diagnostics.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Diagnostics/Diagnostics.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Hoeyer.OpcUa.Server.Generation.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Hoeyer.OpcUa.Server.Generation.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/OpcUa/EntityOpcUaObjectStateGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/OpcUa/EntityNodeCreatorGenerator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/OpcUa/OpcTypeInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/OpcUa/OpcTypeInfo.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/OpcUa/OpcUaProperty.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/OpcUa/OpcUaProperty.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/SyntaxExtensions/PropertyDeclarationSyntax.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/SyntaxExtensions/PropertyDeclarationSyntax.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Application/OpcEntityServer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Application/OpcEntityServer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Application/OpcUaEntityServerFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Application/OpcUaEntityServerFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Application/StartableEntityServer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Application/StartableEntityServer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Configuration/ApplicationConfigurationFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Configuration/ApplicationConfigurationFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Entity/EntityObjectStateCreator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Entity/EntityNodeCreator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Entity/IEntityObjectStateCreator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa/Nodes/IEntityNodeCreator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Entity/SingletonEntityNodeManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Entity/SingletonEntityNodeManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Services/ServerServicesRegistry.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Services/ServerServicesRegistry.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Services/ServiceExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Server/Services/ServiceExtensions.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.sln" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.sln" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa/Machine.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa/Entity/State/StateContainer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa/Observation/ISubscribable.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa/Observation/ISubscribable.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa/Observation/StateChangeBehaviour.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa/Observation/StateChangeBehaviour.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa/Observation/SubscriptionEngine.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa/Observation/SubscriptionEngine.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa/OpcUaEntityAttribute.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa/Entity/OpcUaEntityAttribute.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa/OpcUaServerApplicationOptions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa/Configuration/OpcUaApplicationOptions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa/Proxy/IRemoteMachineObserver.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa/Proxy/IEntityObserver.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa/Proxy/MachineClientConnectionError.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa/StateSnapshot/IStateChangeSubscriber.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa/Entity/State/IStateChangeSubscriber.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa/StateSnapshot/StateChange.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa/Entity/State/StateChange.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa/StateSnapshot/StateChangeSubscription.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa/Entity/State/StateChangeSubscription.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa/Variables/SupportedVariableTypeCallbackHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa/Nodes/Variables/SupportedVariableTypeCallbackHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MyOpcUaWebApplication/Configuration/OpcUa/GantryConfigurator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MyOpcUaWebApplication/Configuration/OpcUa/GantryConfigurator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MyOpcUaWebApplication/Gantry.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MyOpcUaWebApplication/Gantry.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MyOpcUaWebApplication/GantryObserver.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MyOpcUaWebApplication/GantryObserver.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MyOpcUaWebApplication/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MyOpcUaWebApplication/Program.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,8 +32,6 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/bf5e279d9239bfef5bb1b8d6212f1b971c434606/src/libraries/System.Linq/src/System/Linq/Where.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/AppData/Local/Temp/SourceGeneratedDocuments/80B641614ABBFF6DFB0D5CCC/Hoeyer.Machines.OpcUa.Generation/Hoeyer.Machines.OpcUa.Configuration.ObservableProxyGenerator/GantryObservableMachineProxy.g.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/AppData/Local/Temp/SourceGeneratedDocuments/80B641614ABBFF6DFB0D5CCC/Hoeyer.Machines.OpcUa.Generation/Hoeyer.Machines.OpcUa.Configuration.PreRequisiteLoader/OpcNodeConfigurationAttribute.g..cs" root0="FORCE_HIGHLIGHTING" />
@@ -428,6 +390,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/10ef96e6324086656296b67c5323042322c442b13f8aa14526637755783a/INodeManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/133fa5ae8d19b1831e7ffadbc8bafb8270ecfbe0b8c35568fa22367a86615d/UriExt.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/15a7ef1a30f6be504eff16726d2e580d195cbe22a6847ebfa55a15b013b365/ExpandedNodeId.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/16b7b7d49ac9928bc190e6c54d4a34a3988974ace4524bf40ce6fa65d596a4b/IServerBase.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/177b1be81f1888243edf44d9b2d4d18847da20242ca371958aeac62f16cc69/SemanticModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/1ac5e53e98d4afe478d0ff64e65aff66728d8c5af23555faffebfd42cc7e07f/RecordDeclarationSyntax.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2314ff94a9b2c86f2e3efb5699f45c2d474bb83ba234630affe4f1a9ee7d7e/SyntaxValueProvider_ForAttributeWithMetadataName.cs" root0="FORCE_HIGHLIGHTING" />
@@ -504,6 +467,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/cece63acfb38c8dba920da6ea9b2ed1f88fcce0f8a2d82420fb6ae4238c16/NodeId.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/cf66507686c7ecd306a04874e2c9698efb8bbbb3c9866e33349f45c3a1861/CombineNode.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/d0165cb640e16fb3b8fe6932c042fc2917cd7f2770ff123cf7b9d11b5bfc6/Task.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/d06da77e5cee535f3ba7951fe2f715ca73e08019c7af0841a647f5de5765e/ConnectionEvents.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/d1a82327816534ba779c2e273f2fd4578198d833b0341a52662dff2324c67/Opc.Ua.ServerBase.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/d1b5b965e8d16bb3d9113712c1ed834f5e12836eae69a53f283d5b86e0b6/TransformNode.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/d3491026876fb3dd55b8c8cb45d570c6d5f0292c288445ccfa9dc527641ca162/CommonCompiler.cs" root0="FORCE_HIGHLIGHTING" />
@@ -529,16 +493,19 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/f949a7d69a2dc27ad6efccdb27c04ec3ce20148d65b538256557f9fcc2cef7d8/Variant.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/fe6e39be1bedaea6f1e855dee1d2a73dfbf61f54dd6e278c43d21e8a7dab/TypeInfo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Client/Application/MachineProxy/SessionFactory.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Compiletime/ModellingNamespace.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Diagnostics/Diagnostics.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/IncrementalProvider/IncrementalGeneratorExtensions.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/IncrementalProvider/TypeContext.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/IncrementalProvider/UnloadedIncrementalValuesProvider.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/OpcUa/EntityNodeCreatorGenerator.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/OpcUa/OpcTypeInfo.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/OpcUa/OpcUaProperty.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Properties/launchSettings.json" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/SyntaxExtensions/PropertyDeclarationSyntax.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.EntityTypeSupport/ModellingNamespace.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/Diagnostics/Diagnostics.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/IncrementalProvider/IncrementalGeneratorExtensions.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/IncrementalProvider/TypeContext.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/IncrementalProvider/UnloadedIncrementalValuesProvider.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/OpcUa/EntityNodeCreatorGenerator.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/OpcUa/OpcTypeInfoFactory.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/OpcUa/OpcUaProperty.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/Properties/launchSettings.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/SyntaxExtensions/PropertyDeclarationSyntax.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa.Server/Application/OpcEntityServer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa.Server/Application/OpcEntityServer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa.Server/Configuration/ApplicationConfigurationFactory.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa/Nodes/Variables/SupportedVariableTypeCallbackHandler.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/MyOpcUaWebApplication/Configuration/OpcUa/GantryConfigurator.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/MyOpcUaWebApplication/Gantry.cs" root0="FORCE_HIGHLIGHTING" />
@@ -562,32 +529,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.Hoeyer.Machines.OpcUa.Generation: DebugRoslynSourceGenerator (1).executor": "Run",
-    ".NET Launch Settings Profile.Hoeyer.OpcUa.Generation: DebugRoslynSourceGenerator.executor": "Debug",
-    ".NET Launch Settings Profile.MyOpcUaWebApplication: http.executor": "Run",
-    ".NET Launch Settings Profile.SourceGenerators1: DebugRoslynSourceGenerator.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa.Server/obj",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.Hoeyer.Machines.OpcUa.Generation: DebugRoslynSourceGenerator (1).executor&quot;: &quot;Run&quot;,
+    &quot;.NET Launch Settings Profile.Hoeyer.OpcUa.Generation: DebugRoslynSourceGenerator.executor&quot;: &quot;Debug&quot;,
+    &quot;.NET Launch Settings Profile.MyOpcUaWebApplication: http.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Launch Settings Profile.SourceGenerators1: DebugRoslynSourceGenerator.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa.Server/obj&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "GitIgnore"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;GitIgnore&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected=".NET Launch Settings Profile.Hoeyer.OpcUa.Generation: DebugRoslynSourceGenerator">
     <configuration name="TestLib" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
@@ -698,7 +665,7 @@
       </method>
     </configuration>
     <configuration name="Hoeyer.OpcUa.Generation: DebugRoslynSourceGenerator" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
-      <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/Hoeyer.OpcUa.Server.Generation.csproj" />
+      <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/Hoeyer.OpcUa.Entity.Generation.csproj" />
       <option name="LAUNCH_PROFILE_TFM" value=".NETStandard,Version=v2.0" />
       <option name="LAUNCH_PROFILE_NAME" value="DebugRoslynSourceGenerator" />
       <option name="USE_EXTERNAL_CONSOLE" value="0" />
@@ -967,7 +934,23 @@
       <option name="project" value="LOCAL" />
       <updated>1735851416525</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Add nodes from node manager factories">
+      <option name="closed" value="true" />
+      <created>1736071110341</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1736071110341</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Bugfix: No longer using null EntityNodeManagers">
+      <option name="closed" value="true" />
+      <created>1736071334493</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1736071334493</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -991,7 +974,9 @@
     <MESSAGE value="Being able to start and browse server with UAExpert" />
     <MESSAGE value="checkpoint" />
     <MESSAGE value="Successful generation of IEntityObjectStateCreators" />
-    <option name="LAST_COMMIT_MESSAGE" value="Successful generation of IEntityObjectStateCreators" />
+    <MESSAGE value="Add nodes from node manager factories" />
+    <MESSAGE value="Bugfix: No longer using null EntityNodeManagers" />
+    <option name="LAST_COMMIT_MESSAGE" value="Bugfix: No longer using null EntityNodeManagers" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1185,14 +1170,14 @@
           <option name="timeStamp" value="115" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Server/Entity/SingletonEntityNodeManager.cs</url>
+          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Server/Entity/EntityNodeManager.cs</url>
           <line>37</line>
           <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Server\Entity\SingletonEntityNodeManager.cs" containingFunctionPresentation="Method 'AddPredefinedNode'">
             <startOffsets>
-              <option value="1434" />
+              <option value="1416" />
             </startOffsets>
             <endOffsets>
-              <option value="1472" />
+              <option value="1454" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="128" />
@@ -1224,14 +1209,14 @@
           <option name="timeStamp" value="137" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Server/Entity/SingletonEntityNodeManager.cs</url>
+          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Server/Entity/EntityNodeManager.cs</url>
           <line>30</line>
           <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Server\Entity\SingletonEntityNodeManager.cs" containingFunctionPresentation="Method 'LoadPredefinedNodes'">
             <startOffsets>
-              <option value="1249" />
+              <option value="1231" />
             </startOffsets>
             <endOffsets>
-              <option value="1294" />
+              <option value="1276" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="138" />
@@ -1393,9 +1378,9 @@
           <option name="timeStamp" value="203" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Server.Generation/SyntaxExtensions/PropertyDeclarationSyntax.cs</url>
+          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/SyntaxExtensions/PropertyDeclarationSyntax.cs</url>
           <line>15</line>
-          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Server.Generation\SyntaxExtensions\PropertyDeclarationSyntax.cs" containingFunctionPresentation="Method 'IsFullPublicProperty'">
+          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Entity.Generation\SyntaxExtensions\PropertyDeclarationSyntax.cs" containingFunctionPresentation="Method 'IsFullPublicProperty'">
             <startOffsets>
               <option value="620" />
             </startOffsets>
@@ -1404,6 +1389,19 @@
             </endOffsets>
           </properties>
           <option name="timeStamp" value="210" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/SyntaxExtensions/PropertyDeclarationSyntax.cs</url>
+          <line>14</line>
+          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Entity.Generation\SyntaxExtensions\PropertyDeclarationSyntax.cs" containingFunctionPresentation="Method 'IsFullPublicProperty'">
+            <startOffsets>
+              <option value="539" />
+            </startOffsets>
+            <endOffsets>
+              <option value="611" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="211" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
