@@ -14,25 +14,13 @@ public static class PropertyDeclarationSyntaxExtensions
         // public int MyInt {get; set;} -> true otherwise false
         var isPublicProperty = property.Modifiers.Any(SyntaxKind.PublicKeyword);
         return isPublicProperty && property.AccessorList != null &&
-               property.AccessorList.Accessors.All(e => e.HasAccessor(SyntaxKind.PublicKeyword));
+               property.AccessorList.Accessors.All(e => e.HasAccessModifier(SyntaxKind.PublicKeyword));
     }
 
     public enum GetterOrSetter
     {
         Setter,
         Getter
-    }
-
-    private static bool HasAccessability(this PropertyDeclarationSyntax property, GetterOrSetter getterOrSetter, SyntaxKind kind)
-    {
-        var accessor = property.Accessor(getterOrSetter);
-        return accessor != null && accessor.Modifiers.Any(e => e.IsKind(kind));
-    }
-    
-    private static bool DoesNotHaveAccessibility(this PropertyDeclarationSyntax property, GetterOrSetter getterOrSetter, params SyntaxKind[] kind)
-    {
-        var accessor = property.Accessor(getterOrSetter);
-        return accessor != null && accessor.Modifiers.Any(e => kind.Contains(e.Kind()));
     }
 
     public static AccessorDeclarationSyntax? Accessor(this PropertyDeclarationSyntax property, GetterOrSetter getterOrSetter)
@@ -43,7 +31,7 @@ public static class PropertyDeclarationSyntaxExtensions
         return property.AccessorList?.Accessors.FirstOrDefault(a => a.Kind() == propertyAccessor);
     }
 
-    public static bool HasAccessor(this AccessorDeclarationSyntax accessor, SyntaxKind kind)
+    public static bool HasAccessModifier(this AccessorDeclarationSyntax accessor, SyntaxKind kind)
     {
         return accessor.Modifiers.Any(e => e.IsKind(kind));
     }

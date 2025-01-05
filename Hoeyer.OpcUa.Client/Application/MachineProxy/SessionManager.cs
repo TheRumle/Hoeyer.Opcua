@@ -8,14 +8,11 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
 
-public interface ISessionManager
+public interface ISessionManager : IDisposable
 {
     bool IsConnected { get; }
     Task Setup();
     Task<T> ConnectAndThen<T>(Func<Session, Task<T>> todo, CancellationToken token);
-
-    /// <inheritdoc />
-    void Dispose();
 }
 
 /// <summary>
@@ -23,7 +20,7 @@ public interface ISessionManager
 /// </summary>
 /// <param name="connect">Opens a connection to the machine.</param>
 /// <param name="disconnect">Diconnects and closes connection to the machine</param>
-internal sealed class SessionManager : IDisposable, ISessionManager
+internal sealed class SessionManager : ISessionManager
 {
     private readonly SessionFactory _factory;
     public readonly StateChangeBehaviour<ConnectionState> StateChanger = new(ConnectionState.PreInitialized);
@@ -49,7 +46,7 @@ internal sealed class SessionManager : IDisposable, ISessionManager
             StateChanger.ChangeState(ConnectionState.Running);
             isSetupUp = true;
         }
-        catch (Exception _)
+        catch (Exception)
         {
             StateChanger.ChangeState(ConnectionState.FailedInitializing);
             throw;
@@ -65,7 +62,7 @@ internal sealed class SessionManager : IDisposable, ISessionManager
             var result = await todo.Invoke(_session);
             return result;
         }
-        catch (Exception e)
+        catch (Exception)
         {
             StateChanger.ChangeState(ConnectionState.FailedConnect);
             throw;
@@ -82,7 +79,7 @@ internal sealed class SessionManager : IDisposable, ISessionManager
             _session.Dispose();
             StateChanger.ChangeState(ConnectionState.Disconnected);
         }
-        catch (Exception e)
+        catch (Exception)
         {
             StateChanger.ChangeState(ConnectionState.FailedDisconnect);
             throw;

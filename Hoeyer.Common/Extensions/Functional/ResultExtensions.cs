@@ -24,11 +24,22 @@ public static class ResultExtensions
     {
         return Result.Try(() => task);
     }
-    
     public static Task<Result<T>> Traverse<T>(this Task<T> task, Func<Exception, Error> onError)
     {
         return Result.Try(() => task, onError);
     }
+    
+    public static Task<Result<T>> Traverse<T>(this Result<Task<T>> result)
+    {
+        if (result.IsFailed) return Task.FromResult(Result.Fail<T>(result.Errors));
+        return Task.FromResult(result.Bind(e => Result.Try(() => e.Result)));
+    }
+
+    public static Task<Result<IEnumerable<T>>> Combine<T>(this IEnumerable<Task<Result<T>>> tasks)
+    {
+        return Task.WhenAll(tasks).ContinueWith(task => task.Result.AsEnumerable().Merge());
+    }
+    
     
     /// <summary>
     /// Tap into the result and perform a side effects, and return the original result!
@@ -49,6 +60,9 @@ public static class ResultExtensions
     {
         return check ? value.ToResult() : Result.Fail(error);
     }
+
+    public static Result<T> FailIf<T>(this T value, bool check, string error) => value.FailIf(check, new Error(error));
+    public static Result<T> FailIf<T>(this T value, Predicate<T> check, string error) => value.FailIf(check.Invoke(value), new Error(error));
     
     public static Result<T> FailIf<T>(this Result<T> value, bool check, IError error)
     {
@@ -60,6 +74,11 @@ public static class ResultExtensions
         }
 
         return value;
+    }
+    
+    public static Result<T> FailIf<T>(this Result<T> value, bool check, string error)
+    {
+        return value.FailIf(check, new Error(error));
     }
 
     public static Result ToFailedResult(this IError er)

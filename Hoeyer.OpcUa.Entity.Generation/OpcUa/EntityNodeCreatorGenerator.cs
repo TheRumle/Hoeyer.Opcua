@@ -13,7 +13,7 @@ namespace Hoeyer.OpcUa.EntityGeneration.OpcUa;
 
 
 [Generator]
-public class EntityNodeCreatorGenerator : IIncrementalGenerator
+public class    EntityNodeCreatorGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
