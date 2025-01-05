@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.OpcUa.StateSnapshot;
+﻿namespace Hoeyer.OpcUa.Entity.State;
 
 public interface  IStateChangeSubscriber<TState> 
 {

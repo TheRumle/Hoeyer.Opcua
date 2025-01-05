@@ -1,23 +1,24 @@
 ﻿using System;
+using Hoeyer.OpcUa.Nodes;
 using Opc.Ua;
 using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Entity;
 
 public sealed class SingletonEntityNodeManager : CustomNodeManager{
-    private readonly IEntityObjectStateCreator _entityObjectCreator;
+    private readonly IEntityNodeCreator _iEntityObjectCreator;
     private readonly string _namespaceUri;
     private readonly ushort _namespaceIndex;
     public NodeState EntityNode { get; private set; } = null!;
     
-    public SingletonEntityNodeManager(IEntityObjectStateCreator entityObjectCreator, 
+    public SingletonEntityNodeManager(IEntityNodeCreator iEntityObjectCreator, 
         IServerInternal server, ApplicationConfiguration configuration) : base(server, configuration)
     {
         _namespaceUri =  Server.NamespaceUris.ToArray()[0].EndsWith("/")
-            ? server.NamespaceUris.ToArray()[0] +  entityObjectCreator.EntityName
-            : server.NamespaceUris.ToArray()[0] + "/" + entityObjectCreator.EntityName;
+            ? server.NamespaceUris.ToArray()[0] +  iEntityObjectCreator.EntityName
+            : server.NamespaceUris.ToArray()[0] + "/" + iEntityObjectCreator.EntityName;
         
-        _entityObjectCreator = entityObjectCreator;
+        _iEntityObjectCreator = iEntityObjectCreator;
         _namespaceIndex = Server.NamespaceUris.GetIndexOrAppend(_namespaceUri);
     }
     
@@ -26,7 +27,7 @@ public sealed class SingletonEntityNodeManager : CustomNodeManager{
     protected override NodeStateCollection LoadPredefinedNodes(ISystemContext context)
     {
         var root = CreateRootFolder(context);
-        EntityNode = _entityObjectCreator.CreateEntityOpcUaNode(root, _namespaceIndex);
+        EntityNode = _iEntityObjectCreator.CreateEntityOpcUaNode(root, _namespaceIndex);
         return new NodeStateCollection([EntityNode]);
     }
 
@@ -40,11 +41,11 @@ public sealed class SingletonEntityNodeManager : CustomNodeManager{
 
     private NodeState CreateRootFolder(ISystemContext context)
     {
-        var browseName = new QualifiedName(_entityObjectCreator.EntityName+"Content", _namespaceIndex);
+        var browseName = new QualifiedName(_iEntityObjectCreator.EntityName+"Content", _namespaceIndex);
         FolderState root = new FolderState(null); // Parent is null for the root
         root.NodeId = new NodeId(Guid.NewGuid(), _namespaceIndex); //Give it a node id
         root.BrowseName = browseName;
-        root.Description = new LocalizedText($"The root folder for my data about the {_entityObjectCreator.EntityName} entity.");
+        root.Description = new LocalizedText($"The root folder for my data about the {_iEntityObjectCreator.EntityName} entity.");
         root.ReferenceTypeId = ReferenceTypeIds.Organizes;
         root.TypeDefinitionId = ObjectTypeIds.FolderType;
 

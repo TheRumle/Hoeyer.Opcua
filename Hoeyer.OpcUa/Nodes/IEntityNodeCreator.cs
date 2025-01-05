@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics.Contracts;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Entity;
+namespace Hoeyer.OpcUa.Nodes;
 
-public interface IEntityObjectStateCreator
+public interface IEntityNodeCreator
 {
     public string EntityName { get; }
     

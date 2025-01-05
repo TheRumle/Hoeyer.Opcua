@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.StateSnapshot;
+﻿using Hoeyer.OpcUa.Entity.State;
 
 namespace Hoeyer.OpcUa.Observation;
 

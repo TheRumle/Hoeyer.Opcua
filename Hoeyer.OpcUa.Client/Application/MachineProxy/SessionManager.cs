@@ -49,7 +49,7 @@ internal sealed class SessionManager : IDisposable, ISessionManager
             StateChanger.ChangeState(ConnectionState.Running);
             isSetupUp = true;
         }
-        catch (Exception e)
+        catch (Exception _)
         {
             StateChanger.ChangeState(ConnectionState.FailedInitializing);
             throw;

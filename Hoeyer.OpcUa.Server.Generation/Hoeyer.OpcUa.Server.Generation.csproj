@@ -24,7 +24,7 @@
     
     
     <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.OpcUa.TypeUtilities\Hoeyer.OpcUa.TypeUtilities.csproj" />
+        <ProjectReference Include="..\Hoeyer.OpcUa.Compiletime\Hoeyer.OpcUa.Compiletime.csproj" />
     </ItemGroup>
     
 

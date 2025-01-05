@@ -18,9 +18,9 @@ public class GantryConfigurator(IOptions<GantryOptions> options, IOptions<OpcUaR
             .HasRootNodeIdentity(new RootIdentity(_options.Id, 293))
             .WithEmptyConstructor<Gantry>();
         
-    
+        
         gantrySetup
-            .Property(e=>e.Speed)
+            .Property(e=>e. Speed)
             .HasNodeId(new NodeIdConfiguration("mainGantryVariable"))
             .AndIsOfType(BuiltInType.Float);
 

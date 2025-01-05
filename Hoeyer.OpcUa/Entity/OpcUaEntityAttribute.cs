@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Hoeyer.OpcUa
+namespace Hoeyer.OpcUa.Entity
 {
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class OpcUaEntityAttribute : Attribute{}

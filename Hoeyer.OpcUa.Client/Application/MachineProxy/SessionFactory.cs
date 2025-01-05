@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
+using Hoeyer.OpcUa.Configuration;
 using Opc.Ua;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
 
 
-public class SessionFactory(OpcUaServerApplicationOptions applicationOptions)
+public class SessionFactory(OpcUaApplicationOptions applicationOptions)
 {
     private string _opcServerUrl = applicationOptions.ApplicationUri; 
     private string _machineStateNodeId = "ns=2;s=MachineStateSnapshot"; 

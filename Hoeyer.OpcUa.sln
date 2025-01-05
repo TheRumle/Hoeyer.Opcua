@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Server", "Hoey
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CompileTime", "CompileTime", "{806504DA-AF89-4C44-AF3B-D02DEFD00C41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.TypeUtilities", "Hoeyer.OpcUa.TypeUtilities\Hoeyer.OpcUa.TypeUtilities.csproj", "{F0CB3955-A9F8-4B76-B200-3AA3BBE22656}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Compiletime", "Hoeyer.OpcUa.Compiletime\Hoeyer.OpcUa.Compiletime.csproj", "{F0CB3955-A9F8-4B76-B200-3AA3BBE22656}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

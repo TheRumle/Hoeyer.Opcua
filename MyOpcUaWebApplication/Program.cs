@@ -1,5 +1,6 @@
 using Hoeyer.OpcUa;
 using Hoeyer.OpcUa.Client.Services;
+using Hoeyer.OpcUa.Configuration;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Configuration;
 using Hoeyer.OpcUa.Server.Services;
@@ -34,7 +35,7 @@ builder.Services
     .ValidateOnStart();
 
 builder.Services
-    .AddOptions<OpcUaServerApplicationOptions>()
+    .AddOptions<OpcUaApplicationOptions>()
     .Bind( builder.Configuration.GetSection("OpcUa:Application"))   
     .Validate(e => !string.IsNullOrWhiteSpace(e.ApplicationName), $"ApplicationName name must be defined!")
     .Validate(e => !string.IsNullOrWhiteSpace(e.ApplicationUri) != default, "ApplicationUri must be defined!")

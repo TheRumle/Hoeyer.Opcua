@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
+using Hoeyer.OpcUa.Configuration;
+using Hoeyer.OpcUa.Nodes;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Configuration;
-using Hoeyer.OpcUa.Server.Entity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -12,45 +12,29 @@ namespace Hoeyer.OpcUa.Server.Services;
 
 internal static class ServerServicesRegistry
 {
-    internal static void ConfigureServices(IEnumerable<Type> entityTypes, IServiceCollection services)
+    internal static void ConfigureServices(IServiceCollection services)
     {
-        AddEntityNodeCreation(entityTypes, services);
-        
-        using var scope = services.BuildServiceProvider().CreateScope();
-        var serviceProvider = scope.ServiceProvider;
-        var opcUaApplicationOptions = serviceProvider.GetService<IOptions<OpcUaServerApplicationOptions>>();
-        if (opcUaApplicationOptions == null) throw new OptionsNotConfiguredException(typeof(OpcUaServerApplicationOptions), Assembly.GetExecutingAssembly());
-        
+        var entityCreator = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(assembly => assembly.GetTypes())
+            .Where(type => typeof(IEntityNodeCreator).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+            .Select(Activator.CreateInstance)
+            .Cast<IEntityNodeCreator>();
+
+        // Register them as a singleton IEnumerable<IEntityNodeCreator>
+        services.AddSingleton(entityCreator);
         AddEntityNodeServerServices(services);
     }
 
     private static void AddEntityNodeServerServices(IServiceCollection services)
     {
+        using var scope = services.BuildServiceProvider().CreateScope();
+        var serviceProvider = scope.ServiceProvider;
+        var opcUaApplicationOptions = serviceProvider.GetService<IOptions<OpcUaApplicationOptions>>();
+        //Check if options are configured s.t the server factory can be created
+        if (opcUaApplicationOptions == null) throw new OptionsNotConfiguredException(typeof(OpcUaApplicationOptions), Assembly.GetExecutingAssembly());
+        
         services.AddSingleton<OpcUaEntityServerFactory>();
         services.AddSingleton<ApplicationConfigurationFactory>();
         services.AddSingleton<IApplicationConfigurationFactory>((serviceProvider) => serviceProvider.GetService<ApplicationConfigurationFactory>()!);
-    }
-
-    private static void AddEntityNodeCreation(IEnumerable<Type> entityTypes, IServiceCollection services)
-    {
-        foreach (var type in entityTypes)
-        {
-
-            // Use reflection to invoke this.RunConfigurationSetup<TEntity>() with entityType. This is done to get better IDE within the invoked method. 
-            MethodInfo configureServiceMethod = typeof(ServerServicesRegistry)
-                .GetMethod(
-                    name: nameof(RunConfigurationSetup), 
-                    bindingAttr: BindingFlags.NonPublic | BindingFlags.Static)!;
-            
-            MethodInfo genericMethod = configureServiceMethod.MakeGenericMethod(type);
-            genericMethod.Invoke(null, [services]);
-        }
-    }
-
-    private static void RunConfigurationSetup<TEntity>(IServiceCollection services)
-    {
-        EntityObjectStateCreator<TEntity> entityObjectStateCreator = new();
-        services.AddSingleton(entityObjectStateCreator);
-        services.AddSingleton<IEntityObjectStateCreator>(entityObjectStateCreator);
     }
 }

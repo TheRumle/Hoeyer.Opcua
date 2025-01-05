@@ -3,19 +3,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentResults;
 using Hoeyer.Common.Extensions.Functional;
+using Hoeyer.OpcUa.Entity.State;
 using Hoeyer.OpcUa.Observation;
 using Hoeyer.OpcUa.Proxy;
-using Hoeyer.OpcUa.StateSnapshot;
 using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
 
-public sealed class OpcUaRemoteMachineProxy<TMachineState>(
+public sealed class EntityProxy<TMachineState>(
         IOpcUaNodeConnectionHolder<TMachineState> opcUaNodeConnectionHolder,
         ISessionManager sessionManager,
-        Machine<TMachineState> machine,
-        ILogger<OpcUaRemoteMachineProxy<TMachineState>> logger)
-    : IRemoteMachineObserver<TMachineState>
+        StateContainer<TMachineState> stateContainer,
+        ILogger<EntityProxy<TMachineState>> logger)
+    : IEntityObserver<TMachineState>
 {
     private readonly StateChangeBehaviour<ConnectionState> _stateChanger = new(ConnectionState.PreInitialized);
     
@@ -23,7 +23,7 @@ public sealed class OpcUaRemoteMachineProxy<TMachineState>(
     public async Task<Result<TMachineState>> ReadEntityAsync(CancellationToken token)
     {
         var a = await sessionManager.ConnectAndThen(opcUaNodeConnectionHolder.ReadOpcUaEntityAsync, token);
-        return a.Tap(machine.ChangeState,
+        return a.Tap(stateContainer.ChangeState,
             errors => logger.LogError(
                 "Could not fetch the state of the {TYPE} entity.\n\t{ERROR}",
                 typeof(TMachineState).Name, string.Join(",", errors.Select(e=>e.Message))));

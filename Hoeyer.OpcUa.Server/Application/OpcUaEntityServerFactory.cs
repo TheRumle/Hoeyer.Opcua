@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Hoeyer.OpcUa.Entity;
+using Hoeyer.OpcUa.Nodes;
 using Hoeyer.OpcUa.Server.Configuration;
 using Hoeyer.OpcUa.Server.Entity;
 using Opc.Ua;
@@ -15,7 +17,7 @@ namespace Hoeyer.OpcUa.Server.Application;
 /// <returns>A <see cref="StartableEntityServer"/>which encapsulates the Application instance running the server</returns>
 public sealed class OpcUaEntityServerFactory(
     IApplicationConfigurationFactory configurationFactory,
-    IEnumerable<IEntityObjectStateCreator> entityObjectCreators)
+    IEnumerable<IEntityNodeCreator> entityObjectCreators)
 {
     public StartableEntityServer CreateServer()
     {

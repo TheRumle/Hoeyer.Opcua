@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Hoeyer.OpcUa.Configuration;
 using Microsoft.Extensions.Options;
 using Opc.Ua;
 using Opc.Ua.Security.Certificates;
 
 namespace Hoeyer.OpcUa.Server.Configuration;
 
-public class ApplicationConfigurationFactory(IOptions<OpcUaServerApplicationOptions> options) : IApplicationConfigurationFactory
+public class ApplicationConfigurationFactory(IOptions<OpcUaApplicationOptions> options) : IApplicationConfigurationFactory
 {
     /// <inheritdoc />
     public string ApplicationName { get; } = options.Value.ApplicationName;

@@ -1,6 +1,6 @@
-﻿namespace Hoeyer.OpcUa;
+﻿namespace Hoeyer.OpcUa.Configuration;
 
-public record OpcUaServerApplicationOptions
+public record OpcUaApplicationOptions
 {
     public string ApplicationName { get; set; } = null!;
     public string ApplicationUri { get; set; } = null!;

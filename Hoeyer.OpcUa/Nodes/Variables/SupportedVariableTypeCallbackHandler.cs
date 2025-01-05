@@ -2,7 +2,7 @@
 using System.Reflection;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Variables;
+namespace Hoeyer.OpcUa.Nodes.Variables;
 
 public static class SupportedVariableTypeCallbackHandler
 {

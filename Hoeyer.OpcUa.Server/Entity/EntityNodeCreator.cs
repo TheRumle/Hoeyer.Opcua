@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using Hoeyer.OpcUa.Variables;
+using Hoeyer.OpcUa.Nodes;
+using Hoeyer.OpcUa.Nodes.Variables;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Entity;
 
-internal sealed class EntityObjectStateCreator<TEntity> : IEntityObjectStateCreator
+internal sealed class EntityNodeCreator<TEntity> : IEntityNodeCreator
 {
     public string EntityName { get; } =  typeof(TEntity).Name;
     

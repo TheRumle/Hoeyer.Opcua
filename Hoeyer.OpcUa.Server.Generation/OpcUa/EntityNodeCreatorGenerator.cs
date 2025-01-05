@@ -1,17 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Hoeyer.OpcUa.Server.Generation.Diagnostics;
 using Hoeyer.OpcUa.Server.Generation.IncrementalProvider;
 using Hoeyer.OpcUa.Server.Generation.SyntaxExtensions;
 using Hoeyer.OpcUa.TypeUtilities;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Generation.OpcUa;
 
 
 [Generator]
-public class EntityOpcUaObjectStateGenerator : IIncrementalGenerator
+public class EntityNodeCreatorGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -26,14 +28,12 @@ public class EntityOpcUaObjectStateGenerator : IIncrementalGenerator
         {
             foreach (var typeContext in typeContexts)
             {
-                ExtractAssignmentTexts(typeContext, context);
+                AddNodeGeneratorSourceCode(typeContext, context);
             }
-            
-            
         });
     }
 
-    private static void ExtractAssignmentTexts(TypeContext<ClassDeclarationSyntax> typeContext, SourceProductionContext context)
+    private static void AddNodeGeneratorSourceCode(TypeContext<ClassDeclarationSyntax> typeContext, SourceProductionContext context)
     {
         var entityName = typeContext.Node.Identifier.ToString();
         var nodeName = entityName + "Node";
@@ -48,13 +48,14 @@ public class EntityOpcUaObjectStateGenerator : IIncrementalGenerator
         return $$"""
 using System;
 using System.Linq;
-using Hoeyer.OpcUa.Variables;
+using Hoeyer.OpcUa.Nodes;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Entity
 {
-    internal sealed class {{className}} : IEntityObjectStateCreator
+    internal sealed class {{className}} : IEntityNodeCreator
     {
+       public {{className}}(){}
        public string EntityName { get; } = "{{entityName}}";
        public NodeState CreateEntityOpcUaNode(NodeState root, ushort dynamicNamespaceIndex)
        {
@@ -82,19 +83,19 @@ namespace Hoeyer.OpcUa.Server.Entity
     {
         var semanticModel = typeContext.SemanticModel;
 
-        var obtainedProperties = typeContext
-            .Node.Members.OfType<PropertyDeclarationSyntax>()
-            .Select(property => (PropertyInfo: OpcTypeInfo.PropertyInfo(property, semanticModel),
-                Errors: GetDiagnosticErrors(property, semanticModel))).ToList();
+        var properties = typeContext.Node.Members.OfType<PropertyDeclarationSyntax>().ToList();
+        var typeAnalysisResult = properties.Select(property => new OpcTypeInfoFactory(property, semanticModel).GetTypeInfo()).ToList();
 
-        foreach (var err in obtainedProperties.Where(e=>e.Errors.Any()).SelectMany(e=>e.Errors))
-        {
-            context.ReportDiagnostic(err);
-        }
+
+        ReportDiagnostics(context,
+            accessViolators: properties.Where(e => !e.IsFullPublicProperty()),
+            unsupportedTypes: typeAnalysisResult.Where(e => !e.TypeIsSupported).Select(e => e.PropertyDecleration)
+        );
+
+
         
-        foreach (var propertyInfo in obtainedProperties
-                     .Where(e=>e.Errors.Count == 0)
-                     .Select(e=>e.PropertyInfo))
+
+        foreach (var propertyInfo in typeAnalysisResult.Where(e=>e.TypeIsSupported).Select(e=>e.PropertyInfo))
         {
             var propertyName = char.ToLower(propertyInfo.Name.Trim()[0]) + propertyInfo.Name.Trim().Substring(1);
             yield return $"""
@@ -105,13 +106,17 @@ PropertyState {propertyName} = {nodeName}.AddProperty< {propertyInfo.Type}>("{pr
         
     }
 
-    private static List<Diagnostic> GetDiagnosticErrors(PropertyDeclarationSyntax property, SemanticModel semanticModel)
+    private static void ReportDiagnostics(
+        SourceProductionContext context,
+        IEnumerable<PropertyDeclarationSyntax> accessViolators,
+        IEnumerable<PropertyDeclarationSyntax> unsupportedTypes)
     {
-        var diagnostics = new List<Diagnostic>();
-        
-        if (!property.HasPublicSetter()) diagnostics.Add(OpcUaDiagnostics.MustHavePublicSetter(property));
-        if (!OpcTypeInfo.IsSupported(property, semanticModel)) diagnostics.Add(OpcUaDiagnostics.UnsupportedOpcUaType(property));
-        
-        return diagnostics;
+        IEnumerable<Diagnostic> errors = [
+            ..accessViolators.Select(OpcUaDiagnostics.MustHavePublicSetter),
+            ..unsupportedTypes.Select(OpcUaDiagnostics.UnsupportedOpcUaType)
+        ];
+
+        foreach (var err in errors) context.ReportDiagnostic(err);
     }
+
 }

@@ -8,8 +8,9 @@ using Hoeyer.OpcUa.Client.Application.MachineProxy;
 using Hoeyer.OpcUa.Client.Configuration.Entities.Builder;
 using Hoeyer.OpcUa.Client.Configuration.Entities.Exceptions;
 using Hoeyer.OpcUa.Client.Reflection.Configurations;
+using Hoeyer.OpcUa.Configuration;
+using Hoeyer.OpcUa.Entity.State;
 using Hoeyer.OpcUa.Proxy;
-using Hoeyer.OpcUa.StateSnapshot;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -99,19 +100,19 @@ internal sealed class ServiceRegistry(IServiceCollection services) : IDisposable
             var configurationBuilder = new EntityConfigurationBuilder<TEntity>();
             configuratorInstance.Configure(configurationBuilder);
             
-            var opcUaApplicationOptions = scope.ServiceProvider.GetService<IOptions<OpcUaServerApplicationOptions>>();
-            if (opcUaApplicationOptions == null) throw new OptionsNotConfiguredException(typeof(OpcUaServerApplicationOptions), Assembly.GetExecutingAssembly());
+            var opcUaApplicationOptions = scope.ServiceProvider.GetService<IOptions<OpcUaApplicationOptions>>();
+            if (opcUaApplicationOptions == null) throw new OptionsNotConfiguredException(typeof(OpcUaApplicationOptions), Assembly.GetExecutingAssembly());
 
             services.AddSingleton(configurationBuilder.EntityConfiguration)
-                .AddSingleton(new Machine<TEntity>(new TEntity()))
+                .AddSingleton(new StateContainer<TEntity>(new TEntity()))
                 .AddTransient<DataValuePropertyAssigner<TEntity>>()
                 .AddTransient<OpcUaEntityReader<TEntity>>()
                 .AddTransient<IOpcUaNodeConnectionHolder<TEntity>, OpcUaEntityReader<TEntity>>()
                 .AddSingleton(new SessionFactory(opcUaApplicationOptions.Value))
                 .AddTransient<SessionManager>()
                 .AddTransient<ISessionManager, SessionManager>()
-                .AddSingleton(typeof(IRemoteMachineObserver<TEntity>), typeof(OpcUaRemoteMachineProxy<TEntity>))
-                .AddSingleton<OpcUaRemoteMachineProxy<TEntity>>()
+                .AddSingleton(typeof(IEntityObserver<TEntity>), typeof(EntityProxy<TEntity>))
+                .AddSingleton<EntityProxy<TEntity>>()
                 .AddSingleton<SubscriptionEngine<TEntity>>()
                 .AddSingleton<Func<IStateChangeSubscriber<TEntity>, StateChangeSubscription<TEntity>>>(
                     serviceProvider => serviceProvider.GetService<SubscriptionEngine<TEntity>>()!.SubscribeToMachine);

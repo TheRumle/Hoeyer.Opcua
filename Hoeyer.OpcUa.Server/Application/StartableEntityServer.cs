@@ -5,12 +5,23 @@ using Opc.Ua.Configuration;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-public sealed class StartedEntityServer(StartableEntityServer server)
+public sealed class StartedEntityServer(StartableEntityServer server) : IDisposable
 {
-    
+    private bool _isStopped = false;
     public void Stop()
     {
         server.Stop();
+        _isStopped = true;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (!_isStopped)
+        { 
+            Stop();
+        }
+        server.Dispose();
     }
 }
 public sealed class StartableEntityServer : IDisposable
@@ -53,7 +64,7 @@ public sealed class StartableEntityServer : IDisposable
         if (_disposed) return;
         if (disposing)
         {
-            EntityServer?.Stop();
+            EntityServer.Stop();
             ApplicationInstance?.Stop();
             EntityServer?.Dispose();
         }

@@ -1,9 +1,8 @@
 ﻿using Hoeyer.OpcUa.Observation;
-using Hoeyer.OpcUa.StateSnapshot;
 
-namespace Hoeyer.OpcUa;
+namespace Hoeyer.OpcUa.Entity.State;
 
-public sealed class Machine<TState>(TState state) : ISubscribable<TState>
+public sealed class StateContainer<TState>(TState state) : ISubscribable<TState>
 {
     private readonly StateChangeBehaviour<TState> _stateChangeBehaviour = new(state);
     public TState State => _stateChangeBehaviour.CurrentState;

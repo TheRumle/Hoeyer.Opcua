@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using Hoeyer.OpcUa.StateSnapshot;
+using Hoeyer.OpcUa.Entity.State;
 
 namespace Hoeyer.OpcUa.Observation;
 

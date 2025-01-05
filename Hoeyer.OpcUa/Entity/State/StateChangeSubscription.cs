@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Hoeyer.OpcUa.StateSnapshot;
+namespace Hoeyer.OpcUa.Entity.State;
 
 public sealed class StateChangeSubscription<TState>(IStateChangeSubscriber<TState> subscriber) : IDisposable
 {
