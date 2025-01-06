@@ -17,7 +17,37 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="acf2e6fe-62b1-46ef-b90b-3347663306e0" name="Changes" comment="First failing test: checkpoint">
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/OpcEntityDataAttribute.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/OpcEntityDataAttribute.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/FourthClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/InternalFirstClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/InternalSecondClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/InternalStaticFirstClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/InternalStaticSecondClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/PrivateFirstClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/PrivateStaticFirstClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/ProtecectedFirstClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/ProtecectedSecondClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/ProtecectedStaticFirstClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/ProtecectedStaticSecondClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/PublicFifthClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/PublicFourthClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/PublicSecondClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/PublicSixthClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/PublicStaticFifthClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/PublicStaticFirstClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/PublicStaticFourthClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/PublicStaticSecondClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/PublicStaticSixthClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/PublicStaticThirdClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/PublicThirdClass.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Hoeyer.Opcua/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Hoeyer.Opcua/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Correct/PropertyTestEntity.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Correct/Properties/PropertyAccessesTestEntity.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/PropertyTestEntity.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/OpcEntityDataAttribute.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/TestEntities.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/OpcTestEntities.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/OpcTestEntities.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/TestEntityTypes.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/EntityNodeCreatorGeneratorTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/EntityNodeCreatorGeneratorTest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/GeneratorTestDriver.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/GeneratorTestDriver.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MyOpcUaWebApplication/Gantry.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MyOpcUaWebApplication/Gantry.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -461,6 +491,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9d77328df3c57b7ce7e8114cf6f9b3bbad741a3abdf7a95f34ee9f55a2af9f/ClientBase.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9de67e16ecf2119f6f21cce26a5a43a591fc6f674df8dc15b05d61d4a1452b5f/ValueSourceExtensions.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9e3c5587b420eb54d688e26ddbfb9b157dc397156c8e8918e10bf84b91d1877/ClassDataAttribute.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9f36f47319b32af838b2a5d575986ff83918e428931b1ed44ad662b6bc8a/HashSet.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/a0bb57407e64e473814b6906c6e2a4cd6622c898e843bb759436eacf23a/FactAttribute.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/a6ec619f1e4b47fe3d76b0ed6de56fbef2b51be65a6bf3fdda0bd459a4652/EndpointConfiguration.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/ad1d58b8dd22123dfae3f2cf5d8b199992465c9c344d032f93a826d8e5539ff/RuntimeType.CoreCLR.cs" root0="FORCE_HIGHLIGHTING" />
@@ -519,28 +550,20 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/f949a7d69a2dc27ad6efccdb27c04ec3ce20148d65b538256557f9fcc2cef7d8/Variant.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/fe6e39be1bedaea6f1e855dee1d2a73dfbf61f54dd6e278c43d21e8a7dab/TypeInfo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Client/Application/MachineProxy/SessionFactory.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Correct/PropertyTestEntity.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/CorrectEntitySourceCode.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/OpcEntityDataAttribute.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Incorrect/Properties/tsr.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/OpcEntityResourceLoader.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/TestEntityTypes.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/OpcTestEntities.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/EntityNodeCreatorGeneratorTest.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa.Entity.Generation.Test/EntityNodeCreatorGeneratorTest.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa.Entity.Generation.Test/GeneratorTestDriver.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/Diagnostics/Diagnostics.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/IncrementalProvider/IncrementalGeneratorExtensions.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/IncrementalProvider/TypeContext.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/IncrementalProvider/UnloadedIncrementalValuesProvider.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/OpcUa/EntityNodeCreatorGenerator.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa.Entity.Generation/OpcUa/EntityNodeCreatorGenerator.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/OpcUa/OpcTypeInfoFactory.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/OpcUa/OpcUaProperty.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/Properties/launchSettings.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/SyntaxExtensions/PropertyDeclarationSyntax.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.EntityTypeSupport/ModellingNamespace.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa.Server/Application/OpcEntityServer.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa.Server/Application/OpcEntityServer.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa.Server/Configuration/ApplicationConfigurationFactory.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa/Nodes/Variables/SupportedVariableTypeCallbackHandler.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/MyOpcUaWebApplication/Configuration/OpcUa/GantryConfigurator.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/MyOpcUaWebApplication/Gantry.cs" root0="FORCE_HIGHLIGHTING" />
@@ -564,33 +587,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.Hoeyer.Machines.OpcUa.Generation: DebugRoslynSourceGenerator (1).executor": "Run",
-    ".NET Launch Settings Profile.Hoeyer.OpcUa.Generation: DebugRoslynSourceGenerator.executor": "Debug",
-    ".NET Launch Settings Profile.MyOpcUaWebApplication: http.executor": "Run",
-    ".NET Launch Settings Profile.SourceGenerators1: DebugRoslynSourceGenerator.executor": "Run",
-    "0b26c960-71aa-4b9c-8508-e4417d450bb0.executor": "Debug",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa.Server/obj",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.Hoeyer.Machines.OpcUa.Generation: DebugRoslynSourceGenerator (1).executor&quot;: &quot;Run&quot;,
+    &quot;.NET Launch Settings Profile.Hoeyer.OpcUa.Generation: DebugRoslynSourceGenerator.executor&quot;: &quot;Debug&quot;,
+    &quot;.NET Launch Settings Profile.MyOpcUaWebApplication: http.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Launch Settings Profile.SourceGenerators1: DebugRoslynSourceGenerator.executor&quot;: &quot;Run&quot;,
+    &quot;0b26c960-71aa-4b9c-8508-e4417d450bb0.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/rasmus/RiderProjects/Hoeyer.Opcua/Hoeyer.OpcUa.Server/obj&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "GitIgnore"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;GitIgnore&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected=".NET Launch Settings Profile.Hoeyer.OpcUa.Generation: DebugRoslynSourceGenerator">
     <configuration name="TestLib" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
@@ -865,6 +888,8 @@
       <workItem from="1735842539374" duration="9398000" />
       <workItem from="1735920615203" duration="10738000" />
       <workItem from="1735980771960" duration="4642000" />
+      <workItem from="1736183398435" duration="215000" />
+      <workItem from="1736183676716" duration="4187000" />
     </task>
     <task id="LOCAL-00001" summary="GitIgnore">
       <option name="closed" value="true" />
@@ -1236,7 +1261,14 @@
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Server/Entity/EntityNodeManager.cs</url>
           <line>37</line>
-          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Server\Entity\SingletonEntityNodeManager.cs" containingFunctionPresentation="Method 'AddPredefinedNode'" />
+          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Server\Entity\SingletonEntityNodeManager.cs" containingFunctionPresentation="Method 'AddPredefinedNode'">
+            <startOffsets>
+              <option value="1416" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1454" />
+            </endOffsets>
+          </properties>
           <option name="timeStamp" value="128" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
@@ -1268,7 +1300,14 @@
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Server/Entity/EntityNodeManager.cs</url>
           <line>30</line>
-          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Server\Entity\SingletonEntityNodeManager.cs" containingFunctionPresentation="Method 'LoadPredefinedNodes'" />
+          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Server\Entity\SingletonEntityNodeManager.cs" containingFunctionPresentation="Method 'LoadPredefinedNodes'">
+            <startOffsets>
+              <option value="1231" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1276" />
+            </endOffsets>
+          </properties>
           <option name="timeStamp" value="138" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
@@ -1452,98 +1491,6 @@
             </endOffsets>
           </properties>
           <option name="timeStamp" value="213" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/GeneratorTestDriver.cs</url>
-          <line>73</line>
-          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Entity.Generation.Test\GeneratorTestDriver.cs" containingFunctionPresentation="Method 'GetMetadataReferences'">
-            <startOffsets>
-              <option value="3089" />
-            </startOffsets>
-            <endOffsets>
-              <option value="3103" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="249" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/OpcEntityResourceLoader.cs</url>
-          <line>36</line>
-          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Entity.CompileTime.Testing\EntityDefinitions\OpcEntityResourceLoader.cs" containingFunctionPresentation="Method 'LoadTypeAsResourceString'">
-            <startOffsets>
-              <option value="1555" />
-            </startOffsets>
-            <endOffsets>
-              <option value="1605" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="254" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/OpcEntityResourceLoader.cs</url>
-          <line>35</line>
-          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Entity.CompileTime.Testing\EntityDefinitions\OpcEntityResourceLoader.cs" containingFunctionPresentation="Method 'LoadTypeAsResourceString'">
-            <startOffsets>
-              <option value="1504" />
-            </startOffsets>
-            <endOffsets>
-              <option value="1546" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="255" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/TestEntityTypes.cs</url>
-          <line>18</line>
-          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Entity.CompileTime.Testing\EntityDefinitions\TestEntityTypes.cs" containingFunctionPresentation="">
-            <startOffsets>
-              <option value="874" />
-            </startOffsets>
-            <endOffsets>
-              <option value="947" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="258" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <condition expression="type.FullName != default &amp;&amp; type.FullName.Contains(&quot;PropertyTestEntity&quot;)" language="C#" />
-          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/TestEntityTypes.cs</url>
-          <line>12</line>
-          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Entity.CompileTime.Testing\EntityDefinitions\TestEntityTypes.cs" containingFunctionPresentation="Lambda expression inside 'TestEntities' declaration">
-            <startOffsets>
-              <option value="532" />
-            </startOffsets>
-            <endOffsets>
-              <option value="600" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="259" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/TestEntityTypes.cs</url>
-          <line>13</line>
-          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Entity.CompileTime.Testing\EntityDefinitions\TestEntityTypes.cs" containingFunctionPresentation="Lambda expression inside 'TestEntities' declaration">
-            <startOffsets>
-              <option value="625" />
-            </startOffsets>
-            <endOffsets>
-              <option value="674" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="260" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/TestEntityTypes.cs</url>
-          <line>14</line>
-          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Entity.CompileTime.Testing\EntityDefinitions\TestEntityTypes.cs" containingFunctionPresentation="Lambda expression inside 'TestEntities' declaration">
-            <startOffsets>
-              <option value="699" />
-            </startOffsets>
-            <endOffsets>
-              <option value="743" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="261" />
         </line-breakpoint>
         <breakpoint enabled="true" type="DotNet Exception Breakpoints">
           <properties exception="System.InvalidOperationException" isInternal="false" displayValue="InvalidOperationException" namespaceName="System">

@@ -19,7 +19,7 @@ public static class TestEntities
     {
         public ValidData()
         {
-            foreach (var sourceCode in GetSourceCodes(TestEntityTypes.PositiveEntities))
+            foreach (var sourceCode in GetSourceCodes(OpcTestEntities.PositiveEntities))
             {
                 Add(sourceCode);   
             }
@@ -35,7 +35,7 @@ public static class TestEntities
     {
         public NegativeData()
         {
-            foreach (var sourceCode in GetSourceCodes(TestEntityTypes.NegativeEntities))
+            foreach (var sourceCode in GetSourceCodes(OpcTestEntities.NegativeEntities))
             {
                 Add(sourceCode);   
             }
@@ -50,7 +50,7 @@ public static class TestEntities
     {
         public AllData()
         {
-            foreach (var sourceCode in GetSourceCodes(TestEntityTypes.NegativeEntities.Union(TestEntityTypes.NegativeEntities)))
+            foreach (var sourceCode in GetSourceCodes(OpcTestEntities.NegativeEntities.Union(OpcTestEntities.NegativeEntities)))
             {
                 Add(sourceCode);   
             }

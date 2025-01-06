@@ -19,7 +19,7 @@ internal sealed class GeneratorTestDriver<T>(T generator) where T : IIncremental
     {
         var compilation = CSharpCompilation.Create(nameof(GeneratorTestDriver<T>),
             syntaxTrees: [ CSharpSyntaxTree.ParseText(sourceCode)],
-            references: _necessaryReferences,
+            references: [ MetadataReference.CreateFromFile(typeof(object).Assembly.Location), .._necessaryReferences],
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
         
         var originalDiagnostics = compilation.GetDiagnostics();
@@ -47,30 +47,27 @@ internal sealed class GeneratorTestDriver<T>(T generator) where T : IIncremental
             TimingInformation: timingInfo.GeneratorTimes.First(e => e.Generator.GetGeneratorType() == typeof(T)).ElapsedTime);
     }
 
-    private static IEnumerable<PortableExecutableReference> GetMetadataReferences()
+    private static PortableExecutableReference[] GetMetadataReferences()
     {
-        Queue<Assembly> queue = new();
-        queue.Enqueue(typeof(T).Assembly);
-        queue.Enqueue(typeof(OpcUaEntityAttribute).Assembly);
-        
-        HashSet<Assembly> visited = [];
-        
-        List<PortableExecutableReference> result = [];
-        while (queue.TryDequeue(out var assembly))
+        HashSet<Assembly> initials = new()
         {
-            if (!visited.Add(assembly)) continue;
+            typeof(T).Assembly,                        // The assembly containing the type T
+            typeof(object).Assembly,                  // Core assembly (mscorlib or System.Private.CoreLib)
+            typeof(OpcUaEntityAttribute).Assembly,    // Custom attribute assembly
+            typeof(Attribute).Assembly                // System.Runtime (for Attribute type)
+        };
+        
+        var references = initials
+            .Select(a => MetadataReference.CreateFromFile(a.Location))
+            .Union(initials
+                .SelectMany(a => a.GetReferencedAssemblies())
+                .Select(assemblyName => MetadataReference.CreateFromFile(Assembly.Load(assemblyName).Location)))
+            .ToList();
 
-            var newAssemblies = assembly.GetReferencedAssemblies()
-                .Select(Assembly.Load)
-                .ToHashSet();
+        // Ensure System.Runtime is added explicitly
+        var systemRuntimeLocation = Assembly.Load("System.Runtime").Location;
+        references.Add(MetadataReference.CreateFromFile(systemRuntimeLocation));
 
-            foreach (var discovered in newAssemblies)
-            {
-                queue.Enqueue(discovered);
-                result.Add(MetadataReference.CreateFromFile(discovered.Location));
-            }
-        }
-
-        return result;
+        return references.ToArray();
     }
 }
