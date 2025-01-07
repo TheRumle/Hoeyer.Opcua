@@ -14,10 +14,13 @@ public class OpcTypeInfoFactory(PropertyDeclarationSyntax property, SemanticMode
 
     private static readonly ImmutableHashSet<string> SUPPORTED_ENUMERABLE_NAMES = ImmutableHashSet.CreateRange
     ([
-        "System.Collections.Generic.IList<>", "System.Collections.Generic.ICollection<>",
-        "System.Collections.Generic.IEnumerable<>", "System.Collections.Generic.List<>",
+        "System.Collections.Generic.IList<>",
+        "System.Collections.Generic.ICollection<>",
+        "System.Collections.Generic.IEnumerable<>",
+        "System.Collections.Generic.List<>",
         "System.Collections.Generic.ISet<>",
-        "System.Collections.Generic.HashSet<>", "System.Collections.Generic.SortedSet<>",
+        "System.Collections.Generic.HashSet<>",
+        "System.Collections.Generic.SortedSet<>",
         "System.Collections.Generic.SortedList<>"
     ]);
     

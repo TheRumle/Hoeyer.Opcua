@@ -31,10 +31,10 @@ public static class OpcEntityResourceLoader
     /// <param name="type">The type to be loaded as a resource</param>
     /// <returns>A string representing the full source code of the class file.</returns>
     /// <exception cref="FileNotFoundException">If no resource matching the type could be found.</exception>
-    public static Result<string> LoadTypeAsResourceString(Type type)
+    public static Result<(Type Type, string TypeAsString)> LoadTypeAsResourceString(Type type)
     {
         var resourceName = type.FullName! + ".cs";
-        if (Resources.TryGetValue(type, out var resource)) return Result.Ok(resource);
+        if (Resources.TryGetValue(type, out var resource)) return Result.Ok((type, resource));
         return Result.Fail("Resource not found: " + resourceName);
     }
 

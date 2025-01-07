@@ -1,19 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Hoeyer.OpcUa.EntityGeneration.Diagnostics;
 using Hoeyer.OpcUa.EntityGeneration.IncrementalProvider;
+using Hoeyer.OpcUa.EntityGeneration.OpcUa;
 using Hoeyer.OpcUa.EntityGeneration.SyntaxExtensions;
 using Hoeyer.OpcUa.TypeUtilities;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Opc.Ua;
 
-namespace Hoeyer.OpcUa.EntityGeneration.OpcUa;
+namespace Hoeyer.OpcUa.EntityGeneration.Generators;
 
 
 [Generator]
-public class    EntityNodeCreatorGenerator : IIncrementalGenerator
+public class EntityNodeCreatorGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {

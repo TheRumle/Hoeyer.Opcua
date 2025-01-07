@@ -1,34 +1,43 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using FluentResults;
+using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Xunit.Abstractions;
 
 namespace Hoeyer.OpcUa.Entity.Generation.Test;
 
-internal sealed class GeneratorTestDriver<T>(T generator) where T : IIncrementalGenerator
+internal sealed class GeneratorTestDriver<T>(T generator, ITestOutputHelper? logger = null) where T : IIncrementalGenerator
 {
+    private readonly Action<string> Log = logger == null
+        ? _ => { }
+        : logger!.WriteLine;
     
     [SuppressMessage("csharpsquid", "S3220", Justification = "Cannot match the suggested function which uses ISourceGenerator")]
     private CSharpGeneratorDriver Driver => CSharpGeneratorDriver.Create(generator);
-    private readonly IEnumerable<PortableExecutableReference> _necessaryReferences = GetMetadataReferences();
 
     
-    public Result<GenerationResult> RunGeneratorOnSourceCode(string sourceCode)
+    public Result<GenerationResult> RunGeneratorOnSourceCode(SourceCodeInfo sourceCodeInfo)
     {
+        var sourceCode = sourceCodeInfo.SourceCodeString;
+        
+        var referencedAssemblies = AssemblyLoader.GetMetaReferencesContainedIn(sourceCodeInfo.Type)
+            .Union(AssemblyLoader.BaseReferences);
+
+        
         var compilation = CSharpCompilation.Create(nameof(GeneratorTestDriver<T>),
             syntaxTrees: [ CSharpSyntaxTree.ParseText(sourceCode)],
-            references: [ MetadataReference.CreateFromFile(typeof(object).Assembly.Location), .._necessaryReferences],
+            references: referencedAssemblies,
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
         
-        var originalDiagnostics = compilation.GetDiagnostics();
-        if (originalDiagnostics.Any(e=>e.Severity==DiagnosticSeverity.Error)) 
-            throw new ArgumentException($"Invalid source code: \n\"{sourceCode}\"\n The provided compilation cannot compile for the following reasons:" + string.Join(Environment.NewLine + "\t", originalDiagnostics));
+        if (compilation.GetDiagnostics().Any()) 
+            Log("The original compilation of the source code had errors! \n" + string.Join("\n", compilation.GetDiagnostics()));
 
         return RunCompilation(Driver, compilation);
     }
-
+    
 
     private static GenerationResult RunCompilation(CSharpGeneratorDriver driver, Compilation compilation)
     {
@@ -46,28 +55,6 @@ internal sealed class GeneratorTestDriver<T>(T generator) where T : IIncremental
             GeneratedTrees: compilationResult.GetRunResult().GeneratedTrees,
             TimingInformation: timingInfo.GeneratorTimes.First(e => e.Generator.GetGeneratorType() == typeof(T)).ElapsedTime);
     }
-
-    private static PortableExecutableReference[] GetMetadataReferences()
-    {
-        HashSet<Assembly> initials = new()
-        {
-            typeof(T).Assembly,                        // The assembly containing the type T
-            typeof(object).Assembly,                  // Core assembly (mscorlib or System.Private.CoreLib)
-            typeof(OpcUaEntityAttribute).Assembly,    // Custom attribute assembly
-            typeof(Attribute).Assembly                // System.Runtime (for Attribute type)
-        };
-        
-        var references = initials
-            .Select(a => MetadataReference.CreateFromFile(a.Location))
-            .Union(initials
-                .SelectMany(a => a.GetReferencedAssemblies())
-                .Select(assemblyName => MetadataReference.CreateFromFile(Assembly.Load(assemblyName).Location)))
-            .ToList();
-
-        // Ensure System.Runtime is added explicitly
-        var systemRuntimeLocation = Assembly.Load("System.Runtime").Location;
-        references.Add(MetadataReference.CreateFromFile(systemRuntimeLocation));
-
-        return references.ToArray();
-    }
+    
+    
 }
