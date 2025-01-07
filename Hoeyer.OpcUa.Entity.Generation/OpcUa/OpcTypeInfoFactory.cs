@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -11,17 +12,19 @@ public class OpcTypeInfoFactory(PropertyDeclarationSyntax property, SemanticMode
 {
     private const string DATA_TYPE_ENUM_NAME = nameof(DataTypes);
     private const string VALUE_RANK_ENUM_NAME = nameof(ValueRanks);
+    private const string VALUE_RANK_SINGLE_VALUE = VALUE_RANK_ENUM_NAME + "." + nameof(ValueRanks.Scalar);
+    private const string VALUE_RANK_ONE_DIM = VALUE_RANK_ENUM_NAME + "." + nameof(ValueRanks.OneDimension);
 
     private static readonly ImmutableHashSet<string> SUPPORTED_ENUMERABLE_NAMES = ImmutableHashSet.CreateRange
-    ([
-        "System.Collections.Generic.IList<>",
-        "System.Collections.Generic.ICollection<>",
-        "System.Collections.Generic.IEnumerable<>",
-        "System.Collections.Generic.List<>",
-        "System.Collections.Generic.ISet<>",
-        "System.Collections.Generic.HashSet<>",
-        "System.Collections.Generic.SortedSet<>",
-        "System.Collections.Generic.SortedList<>"
+   ([
+       "IList<>",
+       "ICollection<>",
+       "IEnumerable<>",
+       "List<>",
+       "ISet<>",
+       "HashSet<>",
+       "SortedSet<>",
+       "SortedList<>"
     ]);
     
     private const string OpcUaBooleanType =  DATA_TYPE_ENUM_NAME + "." + nameof(DataTypes.Boolean);
@@ -83,7 +86,7 @@ public class OpcTypeInfoFactory(PropertyDeclarationSyntax property, SemanticMode
             return (
                 typeSyntax.ToFullString(),
                 OPC_NATIVE_TYPES[syntaxKind],
-                VALUE_RANK_ENUM_NAME + nameof(ValueRanks.Scalar));
+                VALUE_RANK_SINGLE_VALUE);
         }
 
         var typeInfo = semanticModel.GetTypeInfo(property.Type).Type;
@@ -93,19 +96,30 @@ public class OpcTypeInfoFactory(PropertyDeclarationSyntax property, SemanticMode
         {
             return (typeInfo.ToString(),
                 SPECIAL_TYPE_OPC_NATIVE_TYPES[typeInfo.SpecialType],
-                VALUE_RANK_ENUM_NAME + nameof(ValueRanks.Scalar));
+                VALUE_RANK_SINGLE_VALUE);
         }
         
         
 
         if (typeInfo is INamedTypeSymbol { IsGenericType: true, TypeArguments.Length: 1 } namedTypeSymbol )
         {
-            var collectionTypeName = namedTypeSymbol.ConstructUnboundGenericType().ToDisplayString();
-            if (TryGetSupportedParam(collectionTypeName, namedTypeSymbol, out var typeArgument))
+            var span = namedTypeSymbol.ConstructUnboundGenericType().ToString().AsSpan();
+            var lastDot = span.LastIndexOf('.') + 1; //even if no . then it returns index 0! : )
+            
+            int startIndex = span.Slice(lastDot).IndexOf('<');
+            int endIndex = span.IndexOf('>');
+            ReadOnlySpan<char> upToBracket = span.Slice(lastDot, startIndex + 1);
+            ReadOnlySpan<char> skippedTypeArgument = span.Slice(endIndex);
+            
+            var collectionTypeGenericName = new ReadOnlySpan<char>([..upToBracket,..skippedTypeArgument]);
+    
+            
+            
+            if (TryGetSupportedParam(collectionTypeGenericName.ToString(), namedTypeSymbol, out var typeArgument))
             {
                 return (typeArgument.ToDisplayString(),
                     SPECIAL_TYPE_OPC_NATIVE_TYPES[typeArgument.SpecialType],
-                    VALUE_RANK_ENUM_NAME + nameof(ValueRanks.OneDimension));
+                    VALUE_RANK_ONE_DIM);
             }
         }
 

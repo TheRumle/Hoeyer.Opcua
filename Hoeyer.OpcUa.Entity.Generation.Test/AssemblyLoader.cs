@@ -9,19 +9,7 @@ internal static class AssemblyLoader
     [
         Assembly.Load("mscorlib"),
         Assembly.Load("netstandard"),
-        Assembly.Load("System.Private.CoreLib"),
-        Assembly.Load("System.Core"),
         Assembly.Load("System"),
-        Assembly.Load("System.Collections"),
-        Assembly.Load("System.Collections.Immutable"),
-        Assembly.Load("System.IO"),
-        Assembly.Load("System.Linq"),
-        Assembly.Load("System.Numerics"),
-        Assembly.Load("System.Private.CoreLib"),
-        Assembly.Load("System.Reflection"),
-        Assembly.Load("System.Runtime"),
-        Assembly.Load("System.Threading"),
-        Assembly.Load("System.Threading.Tasks"),
     ];
     
     public static readonly IReadOnlySet<MetadataReference> BaseReferences = CoreAssemblies

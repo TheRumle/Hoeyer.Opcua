@@ -87,7 +87,7 @@ namespace Hoeyer.OpcUa.Server.Entity
 
 
         ReportDiagnostics(context,
-            accessViolators: properties.Where(e => !e.IsFullPublicProperty()),
+            accessViolators: properties.Where(e => !e.IsFullyPublicProperty()),
             unsupportedTypes: typeAnalysisResult.Where(e => !e.TypeIsSupported).Select(e => e.PropertyDecleration)
         );
 

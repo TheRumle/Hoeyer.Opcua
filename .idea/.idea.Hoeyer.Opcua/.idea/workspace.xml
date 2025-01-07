@@ -16,17 +16,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="acf2e6fe-62b1-46ef-b90b-3347663306e0" name="Changes" comment="Added negative testing classes">
-      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/Correct/Properties/SupportedDataTypes.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/AssemblyLoader.cs" afterDir="false" />
+    <list default="true" id="acf2e6fe-62b1-46ef-b90b-3347663306e0" name="Changes" comment="Test fixing">
+      <change afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/SyntaxExtensions/PropertyDeclarationSyntaxExtensions.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Hoeyer.Opcua/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Hoeyer.Opcua/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/OpcEntityResourceLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/OpcEntityResourceLoader.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/TestEntities.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.CompileTime.Testing/EntityDefinitions/TestEntities.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/EntityNodeCreatorGeneratorTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/Generators/EntityNodeCreatorGeneratorTest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/AssemblyLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/AssemblyLoader.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/GenerationResult.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/GenerationResult.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/GeneratorTestDriver.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/GeneratorTestDriver.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/Hoeyer.OpcUa.Entity.Generation.Test.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/Hoeyer.OpcUa.Entity.Generation.Test.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/OpcUa/EntityNodeCreatorGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/Generators/EntityNodeCreatorGenerator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/Generators/EntityNodeCreatorGeneratorTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation.Test/Generators/EntityNodeCreatorGeneratorTest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/Generators/EntityNodeCreatorGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/Generators/EntityNodeCreatorGenerator.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/OpcUa/OpcTypeInfoFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/OpcUa/OpcTypeInfoFactory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/SyntaxExtensions/PropertyDeclarationSyntax.cs" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +39,20 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/bf5e279d9239bfef5bb1b8d6212f1b971c434606/src/libraries/System.Linq/src/System/Linq/Where.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/AppData/Local/Temp/SourceGeneratedDocuments/80B641614ABBFF6DFB0D5CCC/Hoeyer.Machines.OpcUa.Generation/Hoeyer.Machines.OpcUa.Configuration.ObservableProxyGenerator/GantryObservableMachineProxy.g.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/AppData/Local/Temp/SourceGeneratedDocuments/80B641614ABBFF6DFB0D5CCC/Hoeyer.Machines.OpcUa.Generation/Hoeyer.Machines.OpcUa.Configuration.PreRequisiteLoader/OpcNodeConfigurationAttribute.g..cs" root0="FORCE_HIGHLIGHTING" />
@@ -379,6 +392,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/ff8306f107c24539a723c9f1787f1f841d930/13/55639f5b/0200001Cpdb7.il" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/ff8306f107c24539a723c9f1787f1f841d930/69/dc35e642/02000011pdb2.il" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/ff8306f107c24539a723c9f1787f1f841d930/c6/06f0fd16/02000005pdb11.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/00be0fb588be459b8356ff9591cac0f722da0/4a/b0a65dee/ReadOnlySpan`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/1aa8e84761ad45ac9c8835645339482f1f918/fd/22ab547d/OptionsServiceCollectionExtensions.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/245ee06297d84c5d8f203adc32f7f093ca6a0/26/b02d7ec2/MethodBase.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/245ee06297d84c5d8f203adc32f7f093ca6a0/62/2a088db6/Activator.cs" root0="FORCE_HIGHLIGHTING" />
@@ -405,6 +419,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/92ae3577f92540f1993109bc228e8f6e22400/cf/474075e0/OpcUaClientBuilder.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/95a7c2520ef64a9a9702d37509031b3b710848/cc/b9936e46/Node.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/d6e1988f02a840f4bdcd0acbf57a579e7ea0/09/2e671928/Enumerable.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/d787fa3a59a44e38bd52e917eebfeb76b4b0/5f/22b2fa3a/Dictionary`2.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/ec16b57d03b44cccb18a36000b29c7b210d18/0b/761cd127/IOptions`1.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/01ff93021f1443630349011471aecb143dd7977b53255b1972a58d79ab51db3/INamedTypeSymbol.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/10ef96e6324086656296b67c5323042322c442b13f8aa14526637755783a/INodeManager.cs" root0="FORCE_HIGHLIGHTING" />
@@ -462,6 +477,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/84b61ad53687e2aaaf3d6ca418b2912d872d865eaf3a1d164e9ac95ccb7fcf/IncrementalContexts.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/86459aac4731d26ef5af9eb2a787577062f2a1181a7f4751442bf74096b5c558/GeneratorDriver.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/88fbcf2d21ca2ee9bb16f3efd9b3b2cd26b30cbfc884869d84cf712a9ec82/Opc.Ua.Constants.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/91cd9ea146b0b01ac23f87423d971d6bcb1120836a59d9b6bdb9873af8e/ArgumentException.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/91d54010b96405b27798d6293408a6ec7954f43fec2b677c7a865f5d49a332/ISystemContext.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/934949eae5651b5eb2acd723ea2eddb45dcecb91cfa8c5b3ec4dd0c84b8edb/IdentifierNameSyntax.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/95ff8fd0b277e9b4d42c5cd9c1fa73579ec9f56cea87264faef646abd1f80/GreenNode.cs" root0="FORCE_HIGHLIGHTING" />
@@ -541,7 +557,7 @@
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/OpcUa/OpcTypeInfoFactory.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/OpcUa/OpcUaProperty.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/Properties/launchSettings.json" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/SyntaxExtensions/PropertyDeclarationSyntax.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/SyntaxExtensions/PropertyDeclarationSyntaxExtensions.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa.EntityTypeSupport/ModellingNamespace.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Hoeyer.OpcUa/Nodes/Variables/SupportedVariableTypeCallbackHandler.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/MyOpcUaWebApplication/Configuration/OpcUa/GantryConfigurator.cs" root0="FORCE_HIGHLIGHTING" />
@@ -869,7 +885,7 @@
       <workItem from="1735980771960" duration="4642000" />
       <workItem from="1736183398435" duration="215000" />
       <workItem from="1736183676716" duration="4946000" />
-      <workItem from="1736268384515" duration="7832000" />
+      <workItem from="1736268384515" duration="15934000" />
     </task>
     <task id="LOCAL-00001" summary="GitIgnore">
       <option name="closed" value="true" />
@@ -1023,11 +1039,34 @@
       <option name="project" value="LOCAL" />
       <updated>1736188680651</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Test fixing">
+      <option name="closed" value="true" />
+      <created>1736277817465</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1736277817465</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="UnitTestsCoverage.Settings">
+    <option name="coveragePercentColumnWidth" value="150" />
+    <option name="sortOrder" value="DESCENDING" />
+    <option name="sortedColumn" value="1" />
+    <option name="symbolColumnWidth" value="176" />
+    <coverage-tree-state>
+      <expand>
+        <path>
+          <item name="rootNode" type="c53c71d1:RiderDotCoverCoverageTreeModel$RootNode" />
+          <item name="Total 17% 1061/1278" type="8b8fad3a:RiderDotCoverCoverageTreeNode" />
+        </path>
+      </expand>
+      <select />
+    </coverage-tree-state>
   </component>
   <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
@@ -1054,7 +1093,8 @@
     <MESSAGE value="First failing test" />
     <MESSAGE value="First failing test: checkpoint" />
     <MESSAGE value="Added negative testing classes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added negative testing classes" />
+    <MESSAGE value="Test fixing" />
+    <option name="LAST_COMMIT_MESSAGE" value="Test fixing" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1454,6 +1494,58 @@
             </endOffsets>
           </properties>
           <option name="timeStamp" value="203" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/SyntaxExtensions/PropertyDeclarationSyntaxExtensions.cs</url>
+          <line>63</line>
+          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Entity.Generation\SyntaxExtensions\PropertyDeclarationSyntax.cs" containingFunctionPresentation="Method 'HasAccessModifier'">
+            <startOffsets>
+              <option value="2875" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2926" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="218" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/OpcUa/OpcTypeInfoFactory.cs</url>
+          <line>117</line>
+          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Entity.Generation\OpcUa\OpcTypeInfoFactory.cs" containingFunctionPresentation="Method 'FindSupportedTypes'">
+            <startOffsets>
+              <option value="5662" />
+            </startOffsets>
+            <endOffsets>
+              <option value="5764" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="220" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/SyntaxExtensions/PropertyDeclarationSyntaxExtensions.cs</url>
+          <line>45</line>
+          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Entity.Generation\SyntaxExtensions\PropertyDeclarationSyntaxExtensions.cs" containingFunctionPresentation="Method 'HasAccessorWithModifier'">
+            <startOffsets>
+              <option value="1789" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2353" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="223" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Hoeyer.OpcUa.Entity.Generation/SyntaxExtensions/PropertyDeclarationSyntaxExtensions.cs</url>
+          <line>39</line>
+          <properties documentPath="C:\Users\rasmus\RiderProjects\Hoeyer.Opcua\Hoeyer.OpcUa.Entity.Generation\SyntaxExtensions\PropertyDeclarationSyntaxExtensions.cs" containingFunctionPresentation="Method 'HasAccessorWithModifier'">
+            <startOffsets>
+              <option value="1616" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1650" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="224" />
         </line-breakpoint>
         <breakpoint enabled="true" type="DotNet Exception Breakpoints">
           <properties exception="System.InvalidOperationException" isInternal="false" displayValue="InvalidOperationException" namespaceName="System">

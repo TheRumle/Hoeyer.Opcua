@@ -1,0 +1,41 @@
+﻿using System;
+using System.Collections.Immutable;
+using System.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+namespace Hoeyer.OpcUa.EntityGeneration.SyntaxExtensions;
+
+internal static class PropertyDeclarationSyntaxExtensions
+{
+    const int PUBLIC_LENGTH = 6;
+    public static bool IsPublic(this PropertyDeclarationSyntax property) => property.Modifiers.Any(SyntaxKind.PublicKeyword);
+
+    public static bool IsFullyPublicProperty(this PropertyDeclarationSyntax property)
+    {
+        var modifierText = property.Modifiers.ToString().AsSpan();
+        // The only keyword of length 6 is "public" and no other modifiers must restrict the property.
+        // Therefore, any modifier text of length != 6 will restrict access
+        // Thus it will not be 'fully public'
+        var isPublicProperty = modifierText.Length == PUBLIC_LENGTH;
+        return isPublicProperty &&
+               property.HasPublicOnlyAccessModifier();
+    }
+
+    
+    private static bool HasPublicOnlyAccessModifier(this PropertyDeclarationSyntax property)
+    {
+        // we know that the property is public
+        // if no modifier exists, false
+        // if a modifier exists but its 
+        var accessor = property.Setter();
+        if (accessor is null) return false;
+
+        //a public property cannot have the form 'public T t {get; public set;} and any additional modifier therefore indicates error'
+        return accessor.Modifiers.Count == 0;
+    }
+
+    private static AccessorDeclarationSyntax? Setter(this PropertyDeclarationSyntax property)
+        => property.AccessorList?.Accessors.First(a => a.Kind() ==  SyntaxKind.SetAccessorDeclaration);
+}

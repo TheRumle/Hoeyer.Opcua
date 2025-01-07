@@ -3,13 +3,19 @@ using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 using Hoeyer.OpcUa.EntityGeneration.Generators;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
+using Xunit.Abstractions;
 
 namespace Hoeyer.OpcUa.Entity.Generation.Test.Generators;
 
 [TestSubject(typeof(EntityNodeCreatorGenerator))]
-public class EntityNodeCreatorGeneratorTest{
+public class EntityNodeCreatorGeneratorTest {
+    private readonly GeneratorTestDriver<EntityNodeCreatorGenerator> _testDriver;
+
+    public EntityNodeCreatorGeneratorTest(ITestOutputHelper output)
+    {
+        _testDriver = new(new EntityNodeCreatorGenerator(), output);
+    }
     
-    private readonly GeneratorTestDriver<EntityNodeCreatorGenerator> _testDriver =  new (new EntityNodeCreatorGenerator());
     
     
     [Theory]
@@ -17,8 +23,7 @@ public class EntityNodeCreatorGeneratorTest{
     public void WhenGiven_CorrectEntitySourceCode_ShouldNotHaveDiagnostics(SourceCodeInfo sourceCode)
     {
         var generationResult = _testDriver.RunGeneratorOnSourceCode(sourceCode);
-        generationResult.IsSuccess.Should().BeTrue();
-        generationResult.Value.Diagnostics.Where(e=> e.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
+        generationResult.Value.Errors.Should().BeEmpty();
     }
     
     [Theory]
@@ -26,7 +31,6 @@ public class EntityNodeCreatorGeneratorTest{
     public void WhenGiven_InCorrectEntitySourceCode_ShouldNotHaveDiagnostics(SourceCodeInfo sourceCode)
     {
         var generationResult = _testDriver.RunGeneratorOnSourceCode(sourceCode);
-        generationResult.IsSuccess.Should().BeTrue();
-        generationResult.Value.Diagnostics.Should().BeEmpty();
+        generationResult.Value.Errors.Should().NotBeEmpty();
     }
 }

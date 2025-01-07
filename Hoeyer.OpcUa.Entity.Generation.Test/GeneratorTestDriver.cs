@@ -22,6 +22,7 @@ internal sealed class GeneratorTestDriver<T>(T generator, ITestOutputHelper? log
     public Result<GenerationResult> RunGeneratorOnSourceCode(SourceCodeInfo sourceCodeInfo)
     {
         var sourceCode = sourceCodeInfo.SourceCodeString;
+        Log(sourceCode);
         
         var referencedAssemblies = AssemblyLoader.GetMetaReferencesContainedIn(sourceCodeInfo.Type)
             .Union(AssemblyLoader.BaseReferences);
