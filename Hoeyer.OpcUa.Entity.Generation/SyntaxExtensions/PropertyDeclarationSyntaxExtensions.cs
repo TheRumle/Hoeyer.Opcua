@@ -27,12 +27,12 @@ internal static class PropertyDeclarationSyntaxExtensions
     private static bool HasPublicOnlyAccessModifier(this PropertyDeclarationSyntax property)
     {
         // we know that the property is public
-        // if no modifier exists, false
-        // if a modifier exists but its 
+        // if no modifier exists, then there is no poublic setter
         var accessor = property.Setter();
         if (accessor is null) return false;
 
-        //a public property cannot have the form 'public T t {get; public set;} and any additional modifier therefore indicates error'
+        //a public property cannot have the form 'public T t {get; public set;} and any other modifier will indicate that no public setter exists'
+        //Therefore, only public T t {get; set;} is validm so ther eshould be no modifier
         return accessor.Modifiers.Count == 0;
     }
 
