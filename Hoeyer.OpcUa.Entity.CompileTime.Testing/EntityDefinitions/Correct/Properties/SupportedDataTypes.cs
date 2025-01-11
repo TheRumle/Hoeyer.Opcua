@@ -3,7 +3,7 @@
 [OpcUaEntity]
 public class SupportedDataTypes
 {
-    public System.Collections.Generic.IList<int> TestIList {get; set;}
+    public IList<int> TestIList {get; set;}
     public ICollection<int> TestICollection {get; set;}
     public IEnumerable<int> TestIEnumerable {get; set;}
     public List<int> TestList {get; set;}

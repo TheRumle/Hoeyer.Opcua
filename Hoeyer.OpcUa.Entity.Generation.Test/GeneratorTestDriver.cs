@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using FluentResults;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;

@@ -2,7 +2,6 @@
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 using Hoeyer.OpcUa.EntityGeneration.Generators;
 using JetBrains.Annotations;
-using Microsoft.CodeAnalysis;
 using Xunit.Abstractions;
 
 namespace Hoeyer.OpcUa.Entity.Generation.Test.Generators;
