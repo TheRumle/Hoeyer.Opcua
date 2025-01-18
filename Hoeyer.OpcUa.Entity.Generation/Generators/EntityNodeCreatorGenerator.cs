@@ -76,7 +76,7 @@ namespace Hoeyer.OpcUa.Server.Entity
 """;
     }
 
-    private static IEnumerable<string> GetPropertyCreationStatements(TypeContext<ClassDeclarationSyntax> typeContext,, string nodeName)
+    private static IEnumerable<string> GetPropertyCreationStatements(TypeContext<ClassDeclarationSyntax> typeContext, string nodeName)
     {
         var semanticModel = typeContext.SemanticModel;
 
