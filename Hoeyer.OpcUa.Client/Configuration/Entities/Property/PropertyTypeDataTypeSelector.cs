@@ -10,8 +10,9 @@ public class PropertyTypeDataTypeSelector<_>
     {
         _propertyConfiguration = propertyConfiguration;
     }
+
     public void AndIsOfType(BuiltInType builtInType)
-    {   
+    {
         _propertyConfiguration.OpcUaNodeType = builtInType;
     }
 }

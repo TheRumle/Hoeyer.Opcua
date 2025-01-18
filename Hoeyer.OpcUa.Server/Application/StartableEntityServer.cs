@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Opc.Ua.Configuration;
 
@@ -7,9 +8,9 @@ namespace Hoeyer.OpcUa.Server.Application;
 
 public sealed class StartableEntityServer : IDisposable
 {
-    private bool _disposed;
     public readonly ApplicationInstance ApplicationInstance;
     public readonly OpcEntityServer EntityServer;
+    private bool _disposed;
 
     public StartableEntityServer(ApplicationInstance applicationInstance, OpcEntityServer entityServer)
     {
@@ -17,14 +18,20 @@ public sealed class StartableEntityServer : IDisposable
         EntityServer = entityServer ?? throw new ArgumentNullException(nameof(entityServer));
     }
 
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
     public async Task<StartedEntityServer> StartAsync()
     {
         if (_disposed) throw new ObjectDisposedException(nameof(StartableEntityServer));
 
         await ApplicationInstance.Start(EntityServer);
-        var jsonString = System.Text.Json.JsonSerializer.Serialize(EntityServer.EntityNodes.First());
-        
-        return new (this);
+        var jsonString = JsonSerializer.Serialize(EntityServer.EntityNodes.First());
+
+        return new StartedEntityServer(this);
     }
 
     public void Stop()
@@ -32,12 +39,6 @@ public sealed class StartableEntityServer : IDisposable
         if (_disposed) throw new ObjectDisposedException(nameof(StartableEntityServer));
         EntityServer.Stop();
         ApplicationInstance.Stop();
-    }
-    
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
     }
 
     private void Dispose(bool disposing)
@@ -49,6 +50,7 @@ public sealed class StartableEntityServer : IDisposable
             ApplicationInstance?.Stop();
             EntityServer?.Dispose();
         }
+
         _disposed = true;
     }
 

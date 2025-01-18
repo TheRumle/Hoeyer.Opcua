@@ -8,26 +8,26 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
 
 
     <ItemGroup>
-        <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.5.374.158" />
-        <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.5.374.158" />
-        
+        <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.5.374.158"/>
+        <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.5.374.158"/>
+
     </ItemGroup>
-    
-    
+
+
     <ItemGroup>
-      <ProjectReference Include="..\Hoeyer.OpcUa.Client\Hoeyer.OpcUa.Client.csproj" />
-      <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj" />
+        <ProjectReference Include="..\Hoeyer.OpcUa.Client\Hoeyer.OpcUa.Client.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime\Hoeyer.OpcUa.CompileTime.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime\Hoeyer.OpcUa.CompileTime.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
 
 </Project>

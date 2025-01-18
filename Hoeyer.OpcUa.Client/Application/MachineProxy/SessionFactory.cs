@@ -5,14 +5,13 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
 
-
 public class SessionFactory(OpcUaApplicationOptions applicationOptions)
 {
-    private string _opcServerUrl = applicationOptions.ApplicationUri; 
-    private string _machineStateNodeId = "ns=2;s=MachineStateSnapshot"; 
+    private readonly string _opcServerUrl = applicationOptions.ApplicationUri;
     public readonly ApplicationConfiguration Configuration = CreateApplicationConfig();
-    
-    public async Task<Session> CreateSessionAsync()    
+    private string _machineStateNodeId = "ns=2;s=MachineStateSnapshot";
+
+    public async Task<Session> CreateSessionAsync()
     {
         var selectedEndpoint = CoreClientUtils.SelectEndpoint(_opcServerUrl, false);
         var endpointConfiguration = EndpointConfiguration.Create(Configuration);
@@ -20,20 +19,23 @@ public class SessionFactory(OpcUaApplicationOptions applicationOptions)
         var session = await Session.Create(
             Configuration,
             endpoint,
-            updateBeforeConnect: false, 
-            sessionName: "OpcUaRemoteMachineProxy",
-            sessionTimeout: 60000, 
+            false,
+            "OpcUaRemoteMachineProxy",
+            60000,
             new UserIdentity(new AnonymousIdentityToken()),
-            preferredLocales: null);
-        
+            null);
+
         return session;
     }
 
-    public Session CreateSession() => CreateSessionAsync().Result;
+    public Session CreateSession()
+    {
+        return CreateSessionAsync().Result;
+    }
 
     private static ApplicationConfiguration CreateApplicationConfig()
     {
-        var config = new ApplicationConfiguration()
+        var config = new ApplicationConfiguration
         {
             ApplicationName = "OpcUaClientApp",
             ApplicationType = ApplicationType.Client,
@@ -48,7 +50,7 @@ public class SessionFactory(OpcUaApplicationOptions applicationOptions)
             ClientConfiguration = new ClientConfiguration { DefaultSessionTimeout = 60000 },
             TraceConfiguration = new TraceConfiguration()
         };
-        
+
         return config;
     }
 }

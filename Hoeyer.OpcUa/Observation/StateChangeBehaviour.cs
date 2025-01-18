@@ -6,7 +6,6 @@ using Hoeyer.OpcUa.Entity.State;
 
 namespace Hoeyer.OpcUa.Observation;
 
-
 public class StateChangeBehaviour<TState>(TState currentState) : ISubscribable<TState>
 {
     private StateChange<TState> _tail = new(currentState, currentState, default!);
@@ -15,19 +14,8 @@ public class StateChangeBehaviour<TState>(TState currentState) : ISubscribable<T
 
     public DateTime EnteredStateOn => _tail.EnteredStateOn;
     private List<StateChangeSubscription<TState>> Subscriptions { get; set; } = new();
-    
-    public void ChangeState(TState newState) {
-        if (Equals(newState, default(TState))) throw new ArgumentNullException(nameof(newState));
-        
-        Subscriptions = Subscriptions.Where(e=>e.IsActive).ToList();
-        _tail = new StateChange<TState>(_tail.ReachedState, newState, DateTime.Now);
-        foreach (var subscription in Subscriptions)
-        {
-            subscription.ReportStateChange(_tail);
-        }
-    }
-    
-        
+
+
     [Pure]
     public StateChangeSubscription<TState> Subscribe(IStateChangeSubscriber<TState> stateChangeSubscriber)
     {
@@ -36,4 +24,12 @@ public class StateChangeBehaviour<TState>(TState currentState) : ISubscribable<T
         return subscription;
     }
 
+    public void ChangeState(TState newState)
+    {
+        if (Equals(newState, default(TState))) throw new ArgumentNullException(nameof(newState));
+
+        Subscriptions = Subscriptions.Where(e => e.IsActive).ToList();
+        _tail = new StateChange<TState>(_tail.ReachedState, newState, DateTime.Now);
+        foreach (var subscription in Subscriptions) subscription.ReportStateChange(_tail);
+    }
 }

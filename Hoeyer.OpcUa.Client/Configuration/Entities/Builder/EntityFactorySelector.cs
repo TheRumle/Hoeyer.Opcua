@@ -2,13 +2,12 @@
 
 namespace Hoeyer.OpcUa.Client.Configuration.Entities.Builder;
 
-internal class EntityFactorySelector<TEntity>(EntityConfiguration<TEntity> context) 
+internal class EntityFactorySelector<TEntity>(EntityConfiguration<TEntity> context)
     : IEntityFactorySelector<TEntity> where TEntity : new()
 {
-    public  PropertySelector<TEntity>  WithEmptyConstructor<T>()
+    public PropertySelector<TEntity> WithEmptyConstructor<T>()
     {
-        
         context.InstanceFactoryType = typeof(T);
         return new PropertySelector<TEntity>(context);
-    } 
+    }
 }

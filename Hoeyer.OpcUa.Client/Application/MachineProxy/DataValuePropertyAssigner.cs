@@ -8,33 +8,36 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
 
-public sealed class DataValuePropertyAssigner<TEntity> 
+public sealed class DataValuePropertyAssigner<TEntity>
 {
-    
-    /// <summary>   
-    /// Will try to read all node values into the properties. If any conversion of DataValue fails, then no assignment occurs.
+    /// <summary>
+    ///     Will try to read all node values into the properties. If any conversion of DataValue fails, then no assignment
+    ///     occurs.
     /// </summary>
     /// <param name="instanceFactory">A factory that creates new instances which the values can be assigned to</param>
     /// <param name="source">Tuples representing the property to assign value to and the DataValue read from OpcUaServer.</param>
     /// <returns></returns>
-    internal Result<TEntity> AssignValuesToInstance(Func<TEntity> instanceFactory, IEnumerable<PossiblePropertyDataMatch> source)
+    internal Result<TEntity> AssignValuesToInstance(Func<TEntity> instanceFactory,
+        IEnumerable<PossiblePropertyDataMatch> source)
     {
         var entity = instanceFactory.Invoke();
         if (entity is null)
             return Result.Fail($"{instanceFactory} creating {typeof(TEntity).Name} returned a null value.");
-        
+
         return source
             .Select(e => TryAssignToProperty(e.Property, e.DataValue, entity))
             .Merge()
             .ToResult(entity);
     }
+
     private static Result TryAssignToProperty<T>(PropertyConfiguration conf, DataValue dataValue, T entity)
     {
-        
         if (entity is null) return Result.Fail("The entity is null, and values cannot be assigned to its properties.");
         var type = conf.OpcUaNodeType;
-        
-        Func<Result> throwException = () => throw new NotSupportedException($"{Enum.GetName(type.GetType(), type)} is currently not supported type of datavalue.");
+
+        Func<Result> throwException = () =>
+            throw new NotSupportedException(
+                $"{Enum.GetName(type.GetType(), type)} is currently not supported type of datavalue.");
         return type switch
         {
             BuiltInType.Boolean => TryGetAssignment<bool>(conf, dataValue, entity),
@@ -56,7 +59,7 @@ public sealed class DataValuePropertyAssigner<TEntity>
                 BuiltInType.StatusCode or BuiltInType.QualifiedName or BuiltInType.LocalizedText or
                 BuiltInType.ExtensionObject or BuiltInType.DataValue or BuiltInType.Variant or
                 BuiltInType.DiagnosticInfo or BuiltInType.Number or BuiltInType.Enumeration => throwException.Invoke(),
-            _ =>  throwException.Invoke()
+            _ => throwException.Invoke()
         };
     }
 
@@ -73,6 +76,7 @@ public sealed class DataValuePropertyAssigner<TEntity>
     {
         return value.Value is T result && propertyConfiguration.PropertyInfo.PropertyType.IsInstanceOfType(value.Value)
             ? Result.Ok(result)
-            : Result.Fail(new EntityOpcUaStateDiscrepencyError($"The declared OpcUa value for {propertyConfiguration.PropertyInfo.Name} is {propertyConfiguration.OpcUaNodeType} but the value of the data read from OpcUa server was of type {value.Value.GetType().Name}."));
+            : Result.Fail(new EntityOpcUaStateDiscrepencyError(
+                $"The declared OpcUa value for {propertyConfiguration.PropertyInfo.Name} is {propertyConfiguration.OpcUaNodeType} but the value of the data read from OpcUa server was of type {value.Value.GetType().Name}."));
     }
 }

@@ -9,7 +9,7 @@ public static class NodeIdConfigurationToNodeIdConverter
     {
         return new NodeId(nodeId.IdString);
     }
-    
+
     public static NodeId Create(NodeIdConfiguration nodeId, RootIdentity identity)
     {
         return new NodeId($"ns={identity.NameSpaceIndex};{nodeId.IdString}");

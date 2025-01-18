@@ -4,30 +4,30 @@ using System.Linq;
 using Hoeyer.OpcUa.Configuration;
 using Microsoft.Extensions.Options;
 using Opc.Ua;
-using Opc.Ua.Security.Certificates;
 
 namespace Hoeyer.OpcUa.Server.Configuration;
 
-public class ApplicationConfigurationFactory(IOptions<OpcUaApplicationOptions> options) : IApplicationConfigurationFactory
+public class ApplicationConfigurationFactory(IOptions<OpcUaApplicationOptions> options)
+    : IApplicationConfigurationFactory
 {
+    private readonly ServerSecurityPolicyCollection ServerSecurityPolicyCollection = new()
+    {
+        new ServerSecurityPolicy { SecurityMode = MessageSecurityMode.None, SecurityPolicyUri = SecurityPolicies.None }
+    };
+
+    private readonly UserTokenPolicyCollection UserTokenPolicyCollection = new()
+    {
+        new UserTokenPolicy { TokenType = UserTokenType.Anonymous }
+    };
+
+    public string ApplicationUriString => ApplicationUri.ToString();
+
     /// <inheritdoc />
     public string ApplicationName { get; } = options.Value.ApplicationName;
 
     /// <inheritdoc />
     public Uri ApplicationUri { get; } = new(options.Value.ApplicationUri);
-    public string ApplicationUriString => ApplicationUri.ToString();
 
-    private ServerSecurityPolicyCollection ServerSecurityPolicyCollection = new()
-    {
-        new ServerSecurityPolicy { SecurityMode = MessageSecurityMode.None, SecurityPolicyUri = SecurityPolicies.None },
-    };
-
-    private UserTokenPolicyCollection UserTokenPolicyCollection = new()
-    {
-        new UserTokenPolicy { TokenType = UserTokenType.Anonymous },
-    };
-    
-    
 
     public ApplicationConfiguration CreateServerConfiguration(string subject, params string[] legalDomains)
     {
@@ -40,18 +40,18 @@ public class ApplicationConfigurationFactory(IOptions<OpcUaApplicationOptions> o
 
     private void AssignDiscoveryConfiguration(ApplicationConfiguration config)
     {
-        var discoveryConfig = new DiscoveryServerConfiguration()
+        var discoveryConfig = new DiscoveryServerConfiguration
         {
             BaseAddresses = [ApplicationUri.ToString()],
             SecurityPolicies = ServerSecurityPolicyCollection,
-            ServerNames = { ApplicationName },
+            ServerNames = { ApplicationName }
         };
         config.DiscoveryServerConfiguration = discoveryConfig;
     }
 
     private ApplicationConfiguration CreateApplicationConfiguration()
     {
-        ApplicationConfiguration config = new ApplicationConfiguration
+        var config = new ApplicationConfiguration
         {
             ApplicationUri = ApplicationUriString,
             ApplicationName = ApplicationName,
@@ -64,18 +64,20 @@ public class ApplicationConfigurationFactory(IOptions<OpcUaApplicationOptions> o
                 UserTokenPolicies = UserTokenPolicyCollection,
                 RegistrationEndpoint = new EndpointDescription(ApplicationUriString)
             },
-            DisableHiResClock = false,
+            DisableHiResClock = false
         };
 
         return config;
     }
 
-    private void AssignApplicationInstanceCertificate(ApplicationConfiguration config, string subject, string[] legalDomains)
+    private void AssignApplicationInstanceCertificate(ApplicationConfiguration config, string subject,
+        string[] legalDomains)
     {
         ISet<string> domains = new HashSet<string>(["localhost", "127.0.0.1", ..legalDomains]);
-        ICertificateBuilder appCert = CertificateFactory.CreateCertificate(ApplicationUriString, ApplicationName, subject, domains.ToList() );
+        var appCert =
+            CertificateFactory.CreateCertificate(ApplicationUriString, ApplicationName, subject, domains.ToList());
         var certificate = appCert.CreateForRSA();
-       
+
 
         // Assign the created certificate to the configuration
         config.SecurityConfiguration = new SecurityConfiguration
@@ -90,9 +92,6 @@ public class ApplicationConfigurationFactory(IOptions<OpcUaApplicationOptions> o
         config.TransportQuotas = new TransportQuotas();
 
         // Set up certificate validation to accept all certificates
-        config.CertificateValidator.CertificateValidation += (sender, eventArgs) =>
-        {
-            eventArgs.Accept = true;
-        };  
+        config.CertificateValidator.CertificateValidation += (sender, eventArgs) => { eventArgs.Accept = true; };
     }
 }

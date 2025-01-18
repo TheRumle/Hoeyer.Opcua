@@ -13,15 +13,12 @@ public sealed class GantryObserver : IStateChangeSubscriber<Gantry>
         _logger = logger;
         sub = subscriptionEngine.SubscribeToMachine(this);
     }
+
     /// <inheritdoc />
     public void OnStateChange(StateChange<Gantry> stateChange)
     {
-        _logger.LogInformation("State of Gantry changed at {EnteredOn}. It was {PreviousState} and it is now {ReachedState}", stateChange.EnteredStateOn, stateChange.PreviousState, stateChange.ReachedState);
-    }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        sub.Dispose();
+        _logger.LogInformation(
+            "State of Gantry changed at {EnteredOn}. It was {PreviousState} and it is now {ReachedState}",
+            stateChange.EnteredStateOn, stateChange.PreviousState, stateChange.ReachedState);
     }
 }

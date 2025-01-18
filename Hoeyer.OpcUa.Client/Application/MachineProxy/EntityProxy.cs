@@ -11,14 +11,14 @@ using Microsoft.Extensions.Logging;
 namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
 
 public sealed class EntityProxy<TMachineState>(
-        IOpcUaNodeConnectionHolder<TMachineState> opcUaNodeConnectionHolder,
-        ISessionManager sessionManager,
-        StateContainer<TMachineState> stateContainer,
-        ILogger<EntityProxy<TMachineState>> logger)
+    IOpcUaNodeConnectionHolder<TMachineState> opcUaNodeConnectionHolder,
+    ISessionManager sessionManager,
+    StateContainer<TMachineState> stateContainer,
+    ILogger<EntityProxy<TMachineState>> logger)
     : IEntityObserver<TMachineState>
 {
     private readonly StateChangeBehaviour<ConnectionState> _stateChanger = new(ConnectionState.PreInitialized);
-    
+
     /// <inheritdoc />
     public async Task<Result<TMachineState>> ReadEntityAsync(CancellationToken token)
     {
@@ -26,7 +26,7 @@ public sealed class EntityProxy<TMachineState>(
         return a.Tap(stateContainer.ChangeState,
             errors => logger.LogError(
                 "Could not fetch the state of the {TYPE} entity.\n\t{ERROR}",
-                typeof(TMachineState).Name, string.Join(",", errors.Select(e=>e.Message))));
+                typeof(TMachineState).Name, string.Join(",", errors.Select(e => e.Message))));
     }
 
     /// <inheritdoc />
@@ -39,7 +39,7 @@ public sealed class EntityProxy<TMachineState>(
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{typeof(TMachineState).Name} connection status: Moved from {_stateChanger.LastState} to {_stateChanger.CurrentState} on {_stateChanger.EnteredStateOn}";
+        return
+            $"{typeof(TMachineState).Name} connection status: Moved from {_stateChanger.LastState} to {_stateChanger.CurrentState} on {_stateChanger.EnteredStateOn}";
     }
-    
 }

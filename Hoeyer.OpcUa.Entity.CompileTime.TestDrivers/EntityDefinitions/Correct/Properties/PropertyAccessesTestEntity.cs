@@ -5,4 +5,3 @@ public class PropertyAccessesTestEntity
 {
     public string S { get; set; }
 }
-

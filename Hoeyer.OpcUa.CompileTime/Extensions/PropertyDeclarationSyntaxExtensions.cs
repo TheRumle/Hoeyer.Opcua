@@ -8,8 +8,12 @@ namespace Hoeyer.OpcUa.CompileTime.Extensions;
 
 public static class PropertyDeclarationSyntaxExtensions
 {
-    const int PUBLIC_LENGTH = 6;
-    public static bool IsPublic(this PropertyDeclarationSyntax property) => property.Modifiers.Any(SyntaxKind.PublicKeyword);
+    private const int PUBLIC_LENGTH = 6;
+
+    public static bool IsPublic(this PropertyDeclarationSyntax property)
+    {
+        return property.Modifiers.Any(SyntaxKind.PublicKeyword);
+    }
 
     public static bool IsFullyPublicProperty(this PropertyDeclarationSyntax property)
     {
@@ -22,7 +26,7 @@ public static class PropertyDeclarationSyntaxExtensions
                property.HasPublicOnlyAccessModifier();
     }
 
-    
+
     private static bool HasPublicOnlyAccessModifier(this PropertyDeclarationSyntax property)
     {
         // we know that the property is public
@@ -36,5 +40,7 @@ public static class PropertyDeclarationSyntaxExtensions
     }
 
     private static AccessorDeclarationSyntax? Setter(this PropertyDeclarationSyntax property)
-        => property.AccessorList?.Accessors.FirstOrDefault(a => a.Kind() ==  SyntaxKind.SetAccessorDeclaration);
+    {
+        return property.AccessorList?.Accessors.FirstOrDefault(a => a.Kind() == SyntaxKind.SetAccessorDeclaration);
+    }
 }

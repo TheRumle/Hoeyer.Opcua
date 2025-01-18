@@ -8,8 +8,9 @@ public sealed class AnalyzerTestDriver<T>(T analyzer, Action<string>? logger = n
     where T : DiagnosticAnalyzer
 {
     private readonly CompilationFactory _compilationFactory = new(nameof(AnalyzerTestDriver<T>), logger);
-    
-    public async Task<AnalyzerResult> RunAnalyzerOn(EntitySourceCode entitySourceCode, CancellationToken cancellationToken = default)
+
+    public async Task<AnalyzerResult> RunAnalyzerOn(EntitySourceCode entitySourceCode,
+        CancellationToken cancellationToken = default)
     {
         var compilation = _compilationFactory.CreateCompilation(entitySourceCode).WithAnalyzers([analyzer]);
         var diagnostics = compilation.GetAnalyzerDiagnosticsAsync(cancellationToken);

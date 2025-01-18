@@ -6,14 +6,13 @@ using FluentResults.Extensions;
 using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.OpcUa.Client.Application.MachineProxy;
 using Hoeyer.OpcUa.Client.Configuration.Entities;
-using Opc.Ua;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application;
 
 public sealed class OpcUaEntityReader<TEntity>(
     DataValuePropertyAssigner<TEntity> assigner,
-    EntityConfiguration<TEntity> settings):
+    EntityConfiguration<TEntity> settings) :
     IOpcUaNodeConnectionHolder<TEntity> where TEntity : new()
 {
     private readonly List<PropertyConfiguration> _nodes = settings
@@ -28,14 +27,17 @@ public sealed class OpcUaEntityReader<TEntity>(
             .Bind(possibleMatches => assigner.AssignValuesToInstance(() => new TEntity(), possibleMatches));
     }
 
-    private static Task<Result<PossiblePropertyDataMatch>> CreateDataMatch(Session session, PropertyConfiguration propertyConfiguration)
+    private static Task<Result<PossiblePropertyDataMatch>> CreateDataMatch(Session session,
+        PropertyConfiguration propertyConfiguration)
     {
         return session.ReadValueAsync(propertyConfiguration.GetNodeId())
-            .Traverse(onError: ex=>new Error($"Could not read value for property {propertyConfiguration.PropertyInfo.Name} at server node '{propertyConfiguration.GetNodeId()}'. Does the node id match what is on the server? \n{ex.Message}", new Error(ex.Message)))
+            .Traverse(ex =>
+                new Error(
+                    $"Could not read value for property {propertyConfiguration.PropertyInfo.Name} at server node '{propertyConfiguration.GetNodeId()}'. Does the node id match what is on the server? \n{ex.Message}",
+                    new Error(ex.Message)))
             .Map(dataValue => new PossiblePropertyDataMatch(
                 propertyConfiguration,
                 dataValue
             ));
     }
 }
-

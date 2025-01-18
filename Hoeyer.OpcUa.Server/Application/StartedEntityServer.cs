@@ -4,20 +4,18 @@ namespace Hoeyer.OpcUa.Server.Application;
 
 public sealed class StartedEntityServer(StartableEntityServer server) : IDisposable
 {
-    private bool _isStopped = false;
-    public void Stop()
-    {
-        server.Stop();
-        _isStopped = true;
-    }
+    private bool _isStopped;
 
     /// <inheritdoc />
     public void Dispose()
     {
-        if (!_isStopped)
-        { 
-            Stop();
-        }
+        if (!_isStopped) Stop();
         server.Dispose();
+    }
+
+    public void Stop()
+    {
+        server.Stop();
+        _isStopped = true;
     }
 }

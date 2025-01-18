@@ -1,6 +1,5 @@
 ﻿using Hoeyer.OpcUa.Client.Application;
 using Hoeyer.OpcUa.Client.Application.MachineProxy;
-using Hoeyer.OpcUa.Server;
 using Hoeyer.OpcUa.Server.Application;
 using Microsoft.Extensions.Options;
 using MyOpcUaWebApplication.Configuration.BackgroundService;
@@ -8,21 +7,19 @@ using Opc.Ua;
 
 namespace MyOpcUaWebApplication.Background;
 
-public class GantryScanner (
+public class GantryScanner(
     OpcUaEntityServerFactory serverFactory,
     IOptions<GantryScannerOptions> gantryOptions,
     OpcUaEntityReader<Gantry> reader,
-    SessionFactory factory ) : BackgroundService
+    SessionFactory factory) : BackgroundService
 {
-    private PeriodicTimer _scanTimer = new(TimeSpan.FromMilliseconds(gantryOptions.Value.IntervalMs));
-    
+    private readonly PeriodicTimer _scanTimer = new(TimeSpan.FromMilliseconds(gantryOptions.Value.IntervalMs));
 
 
     /// <inheritdoc />
-    protected override async Task ExecuteAsync(CancellationToken cancel)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        while (await _scanTimer.WaitForNextTickAsync(cancel))
-        {
+        while (await _scanTimer.WaitForNextTickAsync(stoppingToken))
             try
             {
                 var driver = serverFactory.CreateServer();
@@ -36,7 +33,7 @@ public class GantryScanner (
                     TimeoutHint = 0,
                     AdditionalHeader = null
                 };
-                
+
                 await driver.StartAsync();
                 var session = await factory.CreateSessionAsync();
                 var node = await reader.ReadOpcUaEntityAsync(session);
@@ -45,8 +42,5 @@ public class GantryScanner (
             {
                 Console.WriteLine(e);
             }
-           
-        }
     }
 }
-

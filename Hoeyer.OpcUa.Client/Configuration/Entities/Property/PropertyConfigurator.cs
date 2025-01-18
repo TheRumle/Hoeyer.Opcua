@@ -12,7 +12,7 @@ public class PropertyConfigurator<TEntity>
         _context = context;
         _propertyInfo = propertyInfo;
     }
-    
+
     public PropertyTypeDataTypeSelector<TEntity> HasNodeId(NodeIdConfiguration nodeId)
     {
         var propertyConfiguration = _context.AddPropertyConfiguration(_propertyInfo, nodeId);
@@ -20,7 +20,7 @@ public class PropertyConfigurator<TEntity>
     }
 
     /// <summary>
-    /// Marks that the property should not be mapped.  
+    ///     Marks that the property should not be mapped.
     /// </summary>
     public void IsNotMapped()
     {

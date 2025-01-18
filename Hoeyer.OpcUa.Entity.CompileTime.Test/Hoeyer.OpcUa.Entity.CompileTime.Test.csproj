@@ -1,32 +1,31 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <IsPackable>false</IsPackable>
-    <RootNamespace>Hoeyer.OpcUa.Entity.Analysis.Test</RootNamespace>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+        <RootNamespace>Hoeyer.OpcUa.Entity.Analysis.Test</RootNamespace>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="coverlet.collector" Version="6.0.2"/>
-    <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.3.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing" Version="1.1.2" />
-    <PackageReference Include="TUnit" Version="0.6.131" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="coverlet.collector" Version="6.0.2"/>
+        <PackageReference Include="JetBrains.Annotations" Version="2024.3.0"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.3.0"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing" Version="1.1.2"/>
+        <PackageReference Include="TUnit" Version="0.6.131"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Using Include="TUnit"/>
-  </ItemGroup>
+    <ItemGroup>
+        <Using Include="TUnit"/>
+    </ItemGroup>
 
 
-  <ItemGroup>
-    <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime\Hoeyer.OpcUa.CompileTime.csproj" />
-    <ProjectReference Include="..\Hoeyer.OpcUa.Entity.CompileTime.TestDrivers\Hoeyer.OpcUa.Entity.CompileTime.TestDrivers.csproj" />
-  </ItemGroup>
-
+    <ItemGroup>
+        <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime\Hoeyer.OpcUa.CompileTime.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Entity.CompileTime.TestDrivers\Hoeyer.OpcUa.Entity.CompileTime.TestDrivers.csproj"/>
+    </ItemGroup>
 
 
 </Project>

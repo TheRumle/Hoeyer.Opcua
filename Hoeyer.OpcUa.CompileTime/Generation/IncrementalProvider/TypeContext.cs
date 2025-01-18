@@ -4,8 +4,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Hoeyer.OpcUa.EntityGeneration.IncrementalProvider;
 
-public readonly struct TypeContext<T>(SemanticModel semanticModel, T node) 
-where T : BaseTypeDeclarationSyntax
+public readonly struct TypeContext<T>(SemanticModel semanticModel, T node)
+    where T : BaseTypeDeclarationSyntax
 {
     public SemanticModel SemanticModel { get; } = semanticModel;
     public T Node { get; } = node;

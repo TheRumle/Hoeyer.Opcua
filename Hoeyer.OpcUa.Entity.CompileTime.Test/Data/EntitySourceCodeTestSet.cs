@@ -9,8 +9,9 @@ public static class EntitySourceCodeTestSet
     internal static readonly IReadOnlyList<EntitySourceCode>
         Valid = LoadSourceCodeDefinitionFor(OpcTestEntities.Valid).ToList();
 
-    internal static readonly IReadOnlyList<EntitySourceCode> Invalid = LoadSourceCodeDefinitionFor(OpcTestEntities.Invalid).ToList();
-   
+    internal static readonly IReadOnlyList<EntitySourceCode> Invalid =
+        LoadSourceCodeDefinitionFor(OpcTestEntities.Invalid).ToList();
+
     internal static readonly IReadOnlyList<EntitySourceCode> All = Invalid.Union(Valid).ToList();
 
     private static IEnumerable<EntitySourceCode> LoadSourceCodeDefinitionFor(IEnumerable<Type> types)
@@ -19,6 +20,6 @@ public static class EntitySourceCodeTestSet
             .Select(OpcEntityResourceLoader.LoadTypeAsResourceString)
             .Merge()
             .GetOrThrow(e => new InvalidDataException(e.Message))
-            .Select(e=> new EntitySourceCode(e.Type, e.TypeAsString));
+            .Select(e => new EntitySourceCode(e.Type, e.TypeAsString));
     }
 }

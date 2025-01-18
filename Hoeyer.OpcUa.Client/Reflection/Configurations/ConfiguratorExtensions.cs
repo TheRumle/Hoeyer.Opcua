@@ -10,6 +10,7 @@ namespace Hoeyer.OpcUa.Client.Reflection.Configurations;
 internal static class ConfiguratorExtensions
 {
     private static readonly Type ConfiguratorType = typeof(IOpcEntityConfigurator<>);
+
     public static IEnumerable<EntityConfigurationContext> GetEntityConfigContexts(this IEnumerable<Type> assembly)
     {
         return assembly
@@ -24,9 +25,11 @@ internal static class ConfiguratorExtensions
 
     private static Type GetNodeParameter(this Type type)
     {
-        var nodeConfiguratorInterface =  Array.Find(type.GetInterfaces(), static i => i.IsGenericType && i.GetGenericTypeDefinition() == ConfiguratorType);
-            
-        return nodeConfiguratorInterface.GenericTypeArguments.FirstOrDefault() 
-               ?? throw new OpcuaConfigurationException($"Type '{type.FullName}' does not implement '{ConfiguratorType.FullName}' correctly. It does not have a generic argument.");
+        var nodeConfiguratorInterface = Array.Find(type.GetInterfaces(),
+            static i => i.IsGenericType && i.GetGenericTypeDefinition() == ConfiguratorType);
+
+        return nodeConfiguratorInterface.GenericTypeArguments.FirstOrDefault()
+               ?? throw new OpcuaConfigurationException(
+                   $"Type '{type.FullName}' does not implement '{ConfiguratorType.FullName}' correctly. It does not have a generic argument.");
     }
 }

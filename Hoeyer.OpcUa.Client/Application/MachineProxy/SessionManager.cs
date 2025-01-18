@@ -13,21 +13,20 @@ internal sealed class SessionManager : ISessionManager
     private readonly SessionFactory _factory;
     public readonly StateChangeBehaviour<ConnectionState> StateChanger = new(ConnectionState.PreInitialized);
     private Session _session;
-    private bool isSetupUp = false;
-    
+    private bool isSetupUp;
+
     public SessionManager(SessionFactory factory)
     {
         _factory = factory;
     }
 
 
-
-    public bool IsConnected => _session.Connected && StateChanger.LastState == ConnectionState.Connected; 
+    public bool IsConnected => _session.Connected && StateChanger.LastState == ConnectionState.Connected;
 
     public async Task Setup()
     {
         try
-        { 
+        {
             StateChanger.ChangeState(ConnectionState.Initializing);
             await _factory.Configuration.Validate(ApplicationType.Client);
             _session = await _factory.CreateSessionAsync();
@@ -40,7 +39,7 @@ internal sealed class SessionManager : ISessionManager
             throw;
         }
     }
-    
+
     public async Task<T> ConnectAndThen<T>(Func<Session, Task<T>> todo, CancellationToken token)
     {
         try
@@ -55,7 +54,6 @@ internal sealed class SessionManager : ISessionManager
             StateChanger.ChangeState(ConnectionState.FailedConnect);
             throw;
         }
-
     }
 
     /// <inheritdoc />

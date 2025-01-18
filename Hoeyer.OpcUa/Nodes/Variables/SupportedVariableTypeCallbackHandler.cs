@@ -7,10 +7,12 @@ namespace Hoeyer.OpcUa.Nodes.Variables;
 public static class SupportedVariableTypeCallbackHandler
 {
     /// <summary>
-    /// Given a type T, returns the equivalent DataTypes integer variable.
+    ///     Given a type T, returns the equivalent DataTypes integer variable.
     /// </summary>
-    /// See <see cref="DataTypes"/> for a complete list of data types. NOTE: Not all data types in the list are supported.
-    /// <exception cref="NotSupportedException">If <paramref name="type"/> is not a supported OpcUa DataType.</exception>
+    /// See
+    /// <see cref="DataTypes" />
+    /// for a complete list of data types. NOTE: Not all data types in the list are supported.
+    /// <exception cref="NotSupportedException">If <paramref name="type" /> is not a supported OpcUa DataType.</exception>
     public static uint ToOpcDataType(this Type type)
     {
         if (type == typeof(bool)) return DataTypes.Boolean;
@@ -29,15 +31,26 @@ public static class SupportedVariableTypeCallbackHandler
         throw new NotSupportedException(
             $"The type {type.Name} is  not a supported DataType in OpcUa.");
     }
-    
+
     /// <summary>
-    /// Given a type T, returns the equivalent DataTypes integer variable.
+    ///     Given a type T, returns the equivalent DataTypes integer variable.
     /// </summary>
-    /// See <see cref="DataTypes"/> for a complete list of data types. NOTE: Not all data types in the list are supported.
-    /// <exception cref="NotSupportedException">If <paramref name="type"/> is not a supported OpcUa DataType.</exception>
-    public static uint ToOpcDataType<T>() => ToOpcDataType(typeof(T));
+    /// See
+    /// <see cref="DataTypes" />
+    /// for a complete list of data types. NOTE: Not all data types in the list are supported.
+    /// <exception cref="NotSupportedException">If <paramref name="type" /> is not a supported OpcUa DataType.</exception>
+    public static uint ToOpcDataType<T>()
+    {
+        return ToOpcDataType(typeof(T));
+    }
 
-    public static (NodeId nodeId, int ValueRank) ToDataTypeId(PropertyInfo property) => (DataTypeNodeId(property), ValueRanks.Scalar);
+    public static (NodeId nodeId, int ValueRank) ToDataTypeId(PropertyInfo property)
+    {
+        return (DataTypeNodeId(property), ValueRanks.Scalar);
+    }
 
-    private static NodeId DataTypeNodeId(PropertyInfo property) => new(ToOpcDataType(property.PropertyType));
+    private static NodeId DataTypeNodeId(PropertyInfo property)
+    {
+        return new NodeId(ToOpcDataType(property.PropertyType));
+    }
 }

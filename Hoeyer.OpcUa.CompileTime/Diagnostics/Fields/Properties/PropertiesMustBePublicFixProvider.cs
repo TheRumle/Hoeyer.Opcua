@@ -13,20 +13,25 @@ using SyntaxKind = Microsoft.CodeAnalysis.CSharp.SyntaxKind;
 namespace Hoeyer.OpcUa.CompileTime.Diagnostics.Fields.Properties;
 
 /// <summary>
-/// Provides fixes for HOEYERUA0001 - OpcUa entities' properties must be fully public./>
+///     Provides fixes for HOEYERUA0001 - OpcUa entities' properties must be fully public./>
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(PropertiesMustBePublicFixProvider)), Shared]
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(PropertiesMustBePublicFixProvider))]
+[Shared]
 public sealed class PropertiesMustBePublicFixProvider : CodeFixProvider
 {
-    public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(OpcUaDiagnostics.MustHavePublicSetterDescriptor.Id);
+    public override ImmutableArray<string> FixableDiagnosticIds { get; } =
+        ImmutableArray.Create(OpcUaDiagnostics.MustHavePublicSetterDescriptor.Id);
 
-    public override FixAllProvider? GetFixAllProvider() => null;
+    public override FixAllProvider? GetFixAllProvider()
+    {
+        return null;
+    }
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var diagnostic = context.Diagnostics.Single();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
-        
+
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         var diagnosticNode = root?.FindNode(diagnosticSpan);
         if (diagnosticNode is not PropertyDeclarationSyntax declaration)
@@ -34,12 +39,12 @@ public sealed class PropertiesMustBePublicFixProvider : CodeFixProvider
 
         context.RegisterCodeFix(
             CodeAction.Create(
-                title: "Make property publicly available",
-                createChangedSolution: c => MakeFullyPublic(context.Document, declaration, root!),
-                equivalenceKey: nameof(Resources.HOEYERUA0001_CODEFIX)),
+                "Make property publicly available",
+                c => MakeFullyPublic(context.Document, declaration, root!),
+                nameof(Resources.HOEYERUA0001_CODEFIX)),
             diagnostic);
     }
-    
+
     private static Task<Solution> MakeFullyPublic(Document document,
         PropertyDeclarationSyntax property, SyntaxNode root)
     {
@@ -61,7 +66,7 @@ public sealed class PropertiesMustBePublicFixProvider : CodeFixProvider
                 SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
                     .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
             ]));
-        
+
         return property
             .WithModifiers(SyntaxFactory.TokenList(publicModifier))
             .WithAccessorList(accessorList);

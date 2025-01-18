@@ -10,9 +10,9 @@
         <IsRoslynComponent>true</IsRoslynComponent>
         <PackageId>Hoeyer.OpcUa.Entity.CompileTime</PackageId>
     </PropertyGroup>
-    
+
     <ItemGroup>
-      <ProjectReference Include="..\Hoeyer.OpcUa\Hoeyer.OpcUa.csproj" />
+        <ProjectReference Include="..\Hoeyer.OpcUa\Hoeyer.OpcUa.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -22,17 +22,17 @@
         </PackageReference>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.0"/>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.3.0"/>
-        <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Core" Version="1.5.374.158" />
+        <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Core" Version="1.5.374.158"/>
     </ItemGroup>
-    
+
     <ItemGroup>
         <EmbeddedResource Update="Resources.resx">
             <Generator>PublicResXFileCodeGenerator</Generator>
             <LastGenOutput>Resources.Designer.cs</LastGenOutput>
         </EmbeddedResource>
         <EmbeddedResource Update="Diagnostics\Resources.resx">
-          <Generator>PublicResXFileCodeGenerator</Generator>
-          <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+            <Generator>PublicResXFileCodeGenerator</Generator>
+            <LastGenOutput>Resources.Designer.cs</LastGenOutput>
         </EmbeddedResource>
     </ItemGroup>
 
@@ -43,12 +43,11 @@
             <DependentUpon>Resources.resx</DependentUpon>
         </Compile>
         <Compile Update="Diagnostics\Resources.Designer.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>Resources.resx</DependentUpon>
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Resources.resx</DependentUpon>
         </Compile>
     </ItemGroup>
-
 
 
 </Project>

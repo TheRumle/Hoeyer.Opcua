@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using FluentResults;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.CodeLoading;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 using Microsoft.CodeAnalysis;
@@ -37,9 +36,9 @@ public sealed class GeneratorTestDriver<T>(T generator, Action<string>? logger =
         GeneratorDriverTimingInfo timingInfo)
     {
         return new GeneratorResult(
-            Diagnostics: diagnostics,
-            GeneratedTrees: compilationResult.GetRunResult().GeneratedTrees,
-            TimingInformation: timingInfo.GeneratorTimes.First(e => e.Generator.GetGeneratorType() == typeof(T))
+            diagnostics,
+            compilationResult.GetRunResult().GeneratedTrees,
+            timingInfo.GeneratorTimes.First(e => e.Generator.GetGeneratorType() == typeof(T))
                 .ElapsedTime);
     }
 }

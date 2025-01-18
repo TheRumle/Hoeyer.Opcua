@@ -7,7 +7,10 @@ using Hoeyer.OpcUa.Client.Configuration.Entities.Property;
 
 namespace Hoeyer.OpcUa.Client.Configuration.Entities;
 
-[SuppressMessage("Maintainability", "S2326:Unused parameters should be removed", Justification = "The generic value is used for service registrering, and the type specifies the entity connected to this configuration", Scope = "member")]
+[SuppressMessage("Maintainability", "S2326:Unused parameters should be removed",
+    Justification =
+        "The generic value is used for service registrering, and the type specifies the entity connected to this configuration",
+    Scope = "member")]
 public sealed record EntityConfiguration<T>(RootIdentity RootIdentity)
 {
     private readonly List<PropertyConfiguration> _propertyConfigurations = [];

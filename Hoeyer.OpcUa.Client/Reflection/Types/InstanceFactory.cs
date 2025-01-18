@@ -9,13 +9,14 @@ namespace Hoeyer.OpcUa.Client.Reflection.Types;
 internal static class InstanceFactory
 {
     [Pure]
-    public static (Type GenericInstantiation, TInstance Instance) CreateGenericInstance<TInstance>(this Type genericTypeDefinition,  Type[] genericParams,  object[] ctorArgs)
+    public static (Type GenericInstantiation, TInstance Instance) CreateGenericInstance<TInstance>(
+        this Type genericTypeDefinition, Type[] genericParams, object[] ctorArgs)
     {
-        if(!genericTypeDefinition.IsGenericTypeDefinition)
+        if (!genericTypeDefinition.IsGenericTypeDefinition)
             throw new ArgumentException("The type must be a generic type definition.");
-        
+
         var genericType = genericTypeDefinition.MakeGenericType(genericParams);
-        var instance = (TInstance) Activator.CreateInstance(
+        var instance = (TInstance)Activator.CreateInstance(
             genericType,
             BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
             null,
@@ -24,9 +25,8 @@ internal static class InstanceFactory
         );
         return (GenericInstantiation: genericType, Instance: instance);
     }
-    
 
-  
+
     public static object CreateUninitalizedInstance(this Type typeDefinition)
     {
         return FormatterServices.GetUninitializedObject(typeDefinition);

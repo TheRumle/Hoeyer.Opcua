@@ -8,6 +8,13 @@ namespace Hoeyer.OpcUa.Client.Services;
 public sealed class ReversibleCollection(IServiceCollection collection) : IDisposable
 {
     public List<Type> RegisteredTypes { get; } = new();
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Reverse();
+    }
+
     public void AddSingleTon(Type t)
     {
         collection.AddSingleton(t);
@@ -23,15 +30,6 @@ public sealed class ReversibleCollection(IServiceCollection collection) : IDispo
 
     public void Reverse()
     {
-        foreach (var type in RegisteredTypes)
-        {
-            collection.RemoveAll(type);
-        }
-    }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        Reverse();
+        foreach (var type in RegisteredTypes) collection.RemoveAll(type);
     }
 }

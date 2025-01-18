@@ -1,11 +1,8 @@
-using Hoeyer.OpcUa;
 using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Configuration;
 using Hoeyer.OpcUa.Server.Application;
-using Hoeyer.OpcUa.Server.Configuration;
 using Hoeyer.OpcUa.Server.Services;
 using MyOpcUaWebApplication;
-using MyOpcUaWebApplication.Background;
 using MyOpcUaWebApplication.Configuration.BackgroundService;
 using MyOpcUaWebApplication.Configuration.OpcUa.Options;
 using MyOpcUaWebApplication.Configuration.Validation;
@@ -19,7 +16,8 @@ const string GantryOptionsErrorMessage =
 builder.Services
     .AddOptions<GantryOptions>()
     .Bind(builder.Configuration.GetSection(GantryOptions.APPCONFIG_SECTION))
-    .Validate(e=>!string.IsNullOrEmpty(e.Name) && e.Speed > 0 && !string.IsNullOrEmpty(e.Id), GantryOptionsErrorMessage)
+    .Validate(e => !string.IsNullOrEmpty(e.Name) && e.Speed > 0 && !string.IsNullOrEmpty(e.Id),
+        GantryOptionsErrorMessage)
     .ValidateOnStart();
 
 builder.Services
@@ -31,25 +29,24 @@ builder.Services
 builder.Services
     .AddOptions<GantryScannerOptions>()
     .Bind(builder.Configuration.GetSection(GantryScannerOptions.APPCONFIG_SECTION))
-    .Validate(e=>e.IntervalMs > 0, $"{nameof(GantryScannerOptions.IntervalMs)} must be greater than 0")
+    .Validate(e => e.IntervalMs > 0, $"{nameof(GantryScannerOptions.IntervalMs)} must be greater than 0")
     .ValidateOnStart();
 
 builder.Services
     .AddOptions<OpcUaApplicationOptions>()
-    .Bind( builder.Configuration.GetSection("OpcUa:Application"))   
-    .Validate(e => !string.IsNullOrWhiteSpace(e.ApplicationName), $"ApplicationName name must be defined!")
+    .Bind(builder.Configuration.GetSection("OpcUa:Application"))
+    .Validate(e => !string.IsNullOrWhiteSpace(e.ApplicationName), "ApplicationName name must be defined!")
     .Validate(e => !string.IsNullOrWhiteSpace(e.ApplicationUri) != default, "ApplicationUri must be defined!")
-    .Validate(e => Uri.TryCreate(e.ApplicationUri, UriKind.Absolute, out var _), "\nApplicationUri must be absolute URI.\n")
+    .Validate(e => Uri.TryCreate(e.ApplicationUri, UriKind.Absolute, out _), "\nApplicationUri must be absolute URI.\n")
     .ValidateBeforeStart();
 
 builder.Services.AddOpcUaEntityServerServices();
 builder.Services.AddOpcUaClientServices();
 
 
-
 var app = builder.Build();
 
-var factory  = app.Services.GetService<OpcUaEntityServerFactory>()!;
+var factory = app.Services.GetService<OpcUaEntityServerFactory>()!;
 await factory.CreateServer().StartAsync();
 
 

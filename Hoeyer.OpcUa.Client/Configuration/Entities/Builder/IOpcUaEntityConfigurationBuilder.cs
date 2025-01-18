@@ -3,5 +3,4 @@
 public interface IOpcUaEntityConfigurationBuilder<T>
 {
     IEntityFactorySelector<T> HasRootNodeIdentity(RootIdentity node);
-
 }

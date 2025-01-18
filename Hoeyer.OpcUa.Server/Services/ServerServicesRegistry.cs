@@ -31,10 +31,12 @@ internal static class ServerServicesRegistry
         var serviceProvider = scope.ServiceProvider;
         var opcUaApplicationOptions = serviceProvider.GetService<IOptions<OpcUaApplicationOptions>>();
         //Check if options are configured s.t the server factory can be created
-        if (opcUaApplicationOptions == null) throw new OptionsNotConfiguredException(typeof(OpcUaApplicationOptions), Assembly.GetExecutingAssembly());
-        
+        if (opcUaApplicationOptions == null)
+            throw new OptionsNotConfiguredException(typeof(OpcUaApplicationOptions), Assembly.GetExecutingAssembly());
+
         services.AddSingleton<OpcUaEntityServerFactory>();
         services.AddSingleton<ApplicationConfigurationFactory>();
-        services.AddSingleton<IApplicationConfigurationFactory>((serviceProvider) => serviceProvider.GetService<ApplicationConfigurationFactory>()!);
+        services.AddSingleton<IApplicationConfigurationFactory>(serviceProvider =>
+            serviceProvider.GetService<ApplicationConfigurationFactory>()!);
     }
 }

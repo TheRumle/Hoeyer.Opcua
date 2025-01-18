@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using Hoeyer.OpcUa.CompileTime.Extensions;
 using Microsoft.CodeAnalysis;
@@ -12,10 +11,9 @@ namespace Hoeyer.OpcUa.CompileTime.Diagnostics.Fields.Properties;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class PropertiesMustBePublicAnalyser : DiagnosticAnalyzer
 {
-    public PropertiesMustBePublicAnalyser()
-    {
-
-    }
+    /// <inheritdoc />
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
+        ImmutableArray.Create(OpcUaDiagnostics.MustHavePublicSetterDescriptor);
 
     /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
@@ -30,9 +28,7 @@ public class PropertiesMustBePublicAnalyser : DiagnosticAnalyzer
     {
         if (context.Node is not TypeDeclarationSyntax typeSyntax ||
             !typeSyntax.IsAnnotatedAsOpcUaEntity(context.SemanticModel))
-        {
             return;
-        }
 
         var properties = typeSyntax.Members
             .OfType<PropertyDeclarationSyntax>()
@@ -41,8 +37,4 @@ public class PropertiesMustBePublicAnalyser : DiagnosticAnalyzer
 
         foreach (var diagnostic in properties) context.ReportDiagnostic(diagnostic);
     }
-
-    /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
-        ImmutableArray.Create(OpcUaDiagnostics.MustHavePublicSetterDescriptor);
 }

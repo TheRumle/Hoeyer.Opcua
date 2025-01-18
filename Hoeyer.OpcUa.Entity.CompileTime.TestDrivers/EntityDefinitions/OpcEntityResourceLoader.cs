@@ -7,12 +7,14 @@ namespace Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 public static class OpcEntityResourceLoader
 {
     private static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
+
     private static readonly ImmutableSortedDictionary<string, Lazy<string>> AssemblyResources = Assembly
         .GetManifestResourceNames()
         .ToImmutableSortedDictionary(
             resource => resource,
-            resource => new Lazy<string>(()=>new StreamReader(Assembly.GetManifestResourceStream(resource)!).ReadToEnd())
-            );
+            resource => new Lazy<string>(() =>
+                new StreamReader(Assembly.GetManifestResourceStream(resource)!).ReadToEnd())
+        );
 
     private static ImmutableDictionary<Type, string> Resources => Assembly.GetExportedTypes()
         .Where(type => AssemblyResources.ContainsKey(type.FullName + ".cs"))
@@ -22,10 +24,9 @@ public static class OpcEntityResourceLoader
         );
 
 
-
-
     /// <summary>
-    /// Loads a resource by mapping the fully qualified name of the type to a path to a file ending with <paramref name="fileType"/>. 
+    ///     Loads a resource by mapping the fully qualified name of the type to a path to a file ending with
+    ///     <paramref name="fileType" />.
     /// </summary>
     /// <param name="type">The type to be loaded as a resource</param>
     /// <returns>A string representing the full source code of the class file.</returns>
@@ -36,5 +37,4 @@ public static class OpcEntityResourceLoader
         if (Resources.TryGetValue(type, out var resource)) return Result.Ok((type, resource));
         return Result.Fail("Resource not found: " + resourceName);
     }
-
 }

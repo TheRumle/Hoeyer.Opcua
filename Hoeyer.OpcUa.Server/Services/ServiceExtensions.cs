@@ -22,12 +22,13 @@ public static class ServiceExtensions
             .Cast<IEntityNodeCreator>();
 
         services.AddSingleton(entityCreator);
-        
-        
+
+
         AssertOptionsConfigured(services);
         services.AddSingleton<OpcUaEntityServerFactory>();
         services.AddSingleton<ApplicationConfigurationFactory>();
-        services.AddSingleton<IApplicationConfigurationFactory>((serviceProvider) => serviceProvider.GetService<ApplicationConfigurationFactory>()!);
+        services.AddSingleton<IApplicationConfigurationFactory>(serviceProvider =>
+            serviceProvider.GetService<ApplicationConfigurationFactory>()!);
     }
 
     private static void AssertOptionsConfigured(IServiceCollection services)
@@ -35,6 +36,7 @@ public static class ServiceExtensions
         using var scope = services.BuildServiceProvider().CreateScope();
         var serviceProvider = scope.ServiceProvider;
         var opcUaApplicationOptions = serviceProvider.GetService<IOptions<OpcUaApplicationOptions>>();
-        if (opcUaApplicationOptions == null) throw new OptionsNotConfiguredException(typeof(OpcUaApplicationOptions), Assembly.GetExecutingAssembly());
+        if (opcUaApplicationOptions == null)
+            throw new OptionsNotConfiguredException(typeof(OpcUaApplicationOptions), Assembly.GetExecutingAssembly());
     }
 }

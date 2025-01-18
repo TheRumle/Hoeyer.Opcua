@@ -9,13 +9,13 @@ public static class AssemblyLoader
     [
         Assembly.Load("mscorlib"),
         Assembly.Load("netstandard"),
-        Assembly.Load("System"),
+        Assembly.Load("System")
     ];
-    
+
     public static readonly IReadOnlySet<MetadataReference> CoreMetadataReferences = CoreAssemblies
         .Select(MetadataReference (e) => MetadataReference.CreateFromFile(e.Location))
-        .ToHashSet();  
-    
+        .ToHashSet();
+
     private static ParallelQuery<Type> MemberAssemblies(Type type)
     {
         return type
@@ -27,17 +27,18 @@ public static class AssemblyLoader
                 ]))
             );
     }
-    
+
     public static IEnumerable<PortableExecutableReference> GetMetaReferencesContainedIn(Type type)
     {
-
         return GetAssembliesContainedIn(type)
-            .Select(assembly => MetadataReference.CreateFromFile(assembly.Location)).Union([MetadataReference.CreateFromFile(type.GetTypeInfo().Assembly.Location)]);
+            .Select(assembly => MetadataReference.CreateFromFile(assembly.Location)).Union([
+                MetadataReference.CreateFromFile(type.GetTypeInfo().Assembly.Location)
+            ]);
     }
-    
+
     public static HashSet<Assembly> GetAssembliesContainedIn(Type type)
     {
-        List<Type> otherTypes = [..type.GenericTypeArguments, ..type.CustomAttributes.Select(e=>e.AttributeType)];
+        List<Type> otherTypes = [..type.GenericTypeArguments, ..type.CustomAttributes.Select(e => e.AttributeType)];
         if (type.BaseType != null) otherTypes.Add(type.BaseType);
 
         return MemberAssemblies(type)
@@ -46,18 +47,14 @@ public static class AssemblyLoader
             .ToHashSet();
     }
 
-    
+
     public static HashSet<Assembly> AssembliesAndCoreAssembliesFor(Type type)
     {
-        return AssemblyLoader.GetAssembliesContainedIn(type).Union(CoreAssemblies).ToHashSet();
+        return GetAssembliesContainedIn(type).Union(CoreAssemblies).ToHashSet();
     }
-    
+
     public static HashSet<MetadataReference> MetaDataReferencesForCoreAnd(Type type)
     {
-        return AssemblyLoader.GetMetaReferencesContainedIn(type).Union(CoreMetadataReferences).ToHashSet();
+        return GetMetaReferencesContainedIn(type).Union(CoreMetadataReferences).ToHashSet();
     }
-
-
-
-
 }

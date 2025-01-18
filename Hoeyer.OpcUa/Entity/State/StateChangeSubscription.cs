@@ -10,10 +10,7 @@ public sealed class StateChangeSubscription<TState>(IStateChangeSubscriber<TStat
 
     public void Dispose()
     {
-        if (!IsCancelled)
-        {
-            IsCancelled = true;
-        }
+        if (!IsCancelled) IsCancelled = true;
     }
 
     internal void ReportStateChange(StateChange<TState> stateChange)
