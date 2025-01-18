@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Hoeyer.OpcUa.Entity;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -11,6 +12,6 @@ public static class TypeDeclarationSyntaxExtensions
         if (typeSyntax.AttributeLists.Count == 0) return false;
         return typeSyntax.AttributeLists.Any(attributes =>
             attributes.Attributes.Any(attribute =>
-                ModellingNamespace.ENTITY_ATTRIBUTE_FULLNAME.Equals(attribute.FullyQualifiedName(semanticModel))));
+                nameof(OpcUaEntityAttribute) == attribute.AttributeFullName(semanticModel)));
     }
 }

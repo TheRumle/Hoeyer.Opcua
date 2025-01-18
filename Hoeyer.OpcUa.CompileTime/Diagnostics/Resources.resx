@@ -22,6 +22,6 @@
         <value>OpcUa entities' properties must have a public setters</value>
     </data>
     <data name="HOEYERUA0001_CODEFIX" xml:space="preserve">
-        <value>Make {0} publically accessible</value>
+        <value>Make {0} publicly accessible.</value>
     </data>
 </root>

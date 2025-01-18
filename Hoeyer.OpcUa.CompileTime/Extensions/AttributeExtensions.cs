@@ -5,11 +5,15 @@ namespace Hoeyer.OpcUa.CompileTime.Extensions;
 
 public static class AttributeExtensions
 {
-    public static string FullyQualifiedName(this AttributeSyntax attributeSyntax, SemanticModel semanticModel)
+    /// <summary>
+    /// For an attribute class 'MyAttribute' that is being used as [My] or [MyAttribute] returns "MyAttribute"
+    /// </summary>
+    /// <param name="attributeSyntax">The attribute syntax of [My], [MyAttribute], or [My.Namespace.MyAttribute]</param>
+    /// <param name="semanticModel">A semantic model used to get the fully qualified format of the attribute usage.</param>
+    /// <returns></returns>
+    public static string AttributeFullName(this AttributeSyntax attributeSyntax, SemanticModel semanticModel)
     {
-        var symbolInfo = semanticModel.GetSymbolInfo(attributeSyntax);
-        var symbol = symbolInfo.Symbol as INamedTypeSymbol;
-        return symbol?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) ?? string.Empty;
+        return semanticModel.GetTypeInfo(attributeSyntax).Type.Name;
     }
     
 }

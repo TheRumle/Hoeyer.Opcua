@@ -2,7 +2,6 @@ using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.CompileTime.Diagnostics;
 using Hoeyer.OpcUa.EntityRulesAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -11,15 +10,15 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SyntaxFactory = Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using SyntaxKind = Microsoft.CodeAnalysis.CSharp.SyntaxKind;
 
-namespace Hoeyer.OpcUa.CompileTime.Analysis.Fields.Properties;
+namespace Hoeyer.OpcUa.CompileTime.Diagnostics.Fields.Properties;
 
 /// <summary>
 /// Provides fixes for HOEYERUA0001 - OpcUa entities' properties must be fully public./>
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(FullyPublicPropertiesFixProvider)), Shared]
-public sealed class FullyPublicPropertiesFixProvider : CodeFixProvider
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(PropertiesMustBePublicFixProvider)), Shared]
+public sealed class PropertiesMustBePublicFixProvider : CodeFixProvider
 {
-    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(OpcUaDiagnostics.MustHavePublicSetterDescriptor.Id);
+    public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(OpcUaDiagnostics.MustHavePublicSetterDescriptor.Id);
 
     public override FixAllProvider? GetFixAllProvider() => null;
 

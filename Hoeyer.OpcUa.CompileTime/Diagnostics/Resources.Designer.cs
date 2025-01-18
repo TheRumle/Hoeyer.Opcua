@@ -38,7 +38,7 @@ namespace Hoeyer.OpcUa.EntityRulesAnalysis {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Hoeyer.OpcUa.EntityRulesAnalysis.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Hoeyer.OpcUa.CompileTime.Diagnostics.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -69,7 +69,7 @@ namespace Hoeyer.OpcUa.EntityRulesAnalysis {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Make {0} publically accessible.
+        ///   Looks up a localized string similar to Make {0} publicly accessible..
         /// </summary>
         public static string HOEYERUA0001_CODEFIX {
             get {

@@ -1,12 +1,12 @@
 ﻿using FluentAssertions;
-using Hoeyer.OpcUa.CompileTime.Analysis.Fields.Properties;
 using Hoeyer.OpcUa.CompileTime.Diagnostics;
+using Hoeyer.OpcUa.CompileTime.Diagnostics.Fields.Properties;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.Drivers;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
 
-namespace Hoeyer.OpcUa.Entity.Analysis.Test.Analysis.Fields.Properties;
+namespace Hoeyer.OpcUa.Entity.Analysis.Test.Diagnostics.Fields.Properties;
 
 
 [TestSubject(typeof(PropertiesMustBePublicAnalyser))]
