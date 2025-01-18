@@ -36,5 +36,5 @@ public static class PropertyDeclarationSyntaxExtensions
     }
 
     private static AccessorDeclarationSyntax? Setter(this PropertyDeclarationSyntax property)
-        => property.AccessorList?.Accessors.First(a => a.Kind() ==  SyntaxKind.SetAccessorDeclaration);
+        => property.AccessorList?.Accessors.FirstOrDefault(a => a.Kind() ==  SyntaxKind.SetAccessorDeclaration);
 }
