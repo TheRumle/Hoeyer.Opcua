@@ -13,7 +13,6 @@
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj" />
         <ProjectReference Include="..\Hoeyer.OpcUa\Hoeyer.OpcUa.csproj" />
-        <ProjectReference Include="..\Hoeyer.OpcUa.Entity.Generation\Hoeyer.OpcUa.Entity.Generation.csproj"/>
     </ItemGroup>
     
     <ItemGroup>
