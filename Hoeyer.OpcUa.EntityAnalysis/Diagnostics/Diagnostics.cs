@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.EntityGeneration.Diagnostics;
+namespace Hoeyer.OpcUa.EntityRulesAnalysis.Diagnostics;
 
 public sealed class DiagnosticException(Diagnostic diagnostic) : Exception(diagnostic.Descriptor.Title + "\n" + diagnostic.Descriptor.Description)
 {

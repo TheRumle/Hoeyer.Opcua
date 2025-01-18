@@ -1,4 +1,4 @@
-namespace Hoeyer.OpcUa.EntityGeneration.SyntaxExtensions;
+namespace Hoeyer.OpcUa.CompileTime.Extensions;
 
 internal enum AccessModifier
 {

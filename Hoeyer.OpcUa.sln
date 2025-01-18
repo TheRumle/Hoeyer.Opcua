@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Server", "Hoey
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CompileTime", "CompileTime", "{806504DA-AF89-4C44-AF3B-D02DEFD00C41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.EntityTypeSupport", "Hoeyer.OpcUa.EntityTypeSupport\Hoeyer.OpcUa.EntityTypeSupport.csproj", "{F0CB3955-A9F8-4B76-B200-3AA3BBE22656}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.CompileTime", "Hoeyer.OpcUa.CompileTime\Hoeyer.OpcUa.CompileTime.csproj", "{F0CB3955-A9F8-4B76-B200-3AA3BBE22656}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A89A920F-FE1F-41A1-A62D-7E11250B5576}"
 EndProject
@@ -25,6 +25,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Entity.Generation.Test", "Hoeyer.OpcUa.Entity.Generation.Test\Hoeyer.OpcUa.Entity.Generation.Test.csproj", "{097AA7B1-9DC8-4DD9-9CDD-BFDADFB8F7E0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Entity.CompileTime.Testing", "Hoeyer.OpcUa.Entity.CompileTime.Testing\Hoeyer.OpcUa.Entity.CompileTime.Testing.csproj", "{5FF998E2-4895-4ABC-A38A-BB667CA70484}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.EntityAnalysis.Test", "Hoeyer.OpcUa.EntityAnalysis.Test\Hoeyer.OpcUa.EntityAnalysis.Test.csproj", "{D3F6F620-7C40-4792-9DAF-19B372764907}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.EntityAnalysis", "Hoeyer.OpcUa.EntityAnalysis\Hoeyer.OpcUa.EntityAnalysis.csproj", "{99460905-A4BD-4F79-8CD9-8E085F4AE4B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,6 +72,14 @@ Global
 		{5FF998E2-4895-4ABC-A38A-BB667CA70484}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FF998E2-4895-4ABC-A38A-BB667CA70484}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FF998E2-4895-4ABC-A38A-BB667CA70484}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3F6F620-7C40-4792-9DAF-19B372764907}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3F6F620-7C40-4792-9DAF-19B372764907}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3F6F620-7C40-4792-9DAF-19B372764907}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3F6F620-7C40-4792-9DAF-19B372764907}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99460905-A4BD-4F79-8CD9-8E085F4AE4B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99460905-A4BD-4F79-8CD9-8E085F4AE4B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99460905-A4BD-4F79-8CD9-8E085F4AE4B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99460905-A4BD-4F79-8CD9-8E085F4AE4B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{103E1E61-A9FC-454D-B191-8BD9218CD76E} = {806504DA-AF89-4C44-AF3B-D02DEFD00C41}
@@ -81,5 +93,7 @@ Global
 		{E6628798-D193-491C-A8F9-8EE1B7774E1D} = {592D1AA6-E902-4D44-BDDA-CF54EA15B5A0}
 		{097AA7B1-9DC8-4DD9-9CDD-BFDADFB8F7E0} = {E6628798-D193-491C-A8F9-8EE1B7774E1D}
 		{5FF998E2-4895-4ABC-A38A-BB667CA70484} = {E6628798-D193-491C-A8F9-8EE1B7774E1D}
+		{D3F6F620-7C40-4792-9DAF-19B372764907} = {E6628798-D193-491C-A8F9-8EE1B7774E1D}
+		{99460905-A4BD-4F79-8CD9-8E085F4AE4B4} = {806504DA-AF89-4C44-AF3B-D02DEFD00C41}
 	EndGlobalSection
 EndGlobal

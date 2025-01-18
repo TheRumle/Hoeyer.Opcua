@@ -6,9 +6,9 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.EntityGeneration.OpcUa;
+namespace Hoeyer.OpcUa.CompileTime.OpcUaTypes;
 
-public class OpcTypeInfoFactory(PropertyDeclarationSyntax property, SemanticModel semanticModel)
+public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, SemanticModel semanticModel)
 {
     private const string DATA_TYPE_ENUM_NAME = nameof(DataTypes);
     private const string VALUE_RANK_ENUM_NAME = nameof(ValueRanks);

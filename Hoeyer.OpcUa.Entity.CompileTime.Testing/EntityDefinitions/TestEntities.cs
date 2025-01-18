@@ -1,6 +1,9 @@
-﻿using System.Runtime.Serialization;
-using FluentResults;
+﻿using FluentResults;
+using FluentResults.Extensions;
 using Hoeyer.Common.Extensions.Functional;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Xunit;
 
 namespace Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
@@ -8,6 +11,15 @@ namespace Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 [Serializable]
 public record SourceCodeInfo([field: NonSerialized] Type Type, string SourceCodeString)
 {
+    public async Task<TypeDeclarationSyntax> ToDeclarationSyntax()
+    {
+        var res = await Result.Try(() => CSharpSyntaxTree.ParseText(SourceCodeString).GetRootAsync())
+            .Map( root => root.DescendantNodes().OfType<TypeDeclarationSyntax>().FirstOrDefault());
+        
+        if (res.IsFailed) throw new InvalidOperationException(string.Join(",\n",res.Errors));
+        return res.Value!;
+    }
+    
     /// <inheritdoc />
     public override string ToString()
     {
@@ -24,9 +36,11 @@ public static class TestEntities
     /// </summary>
     public class ValidData : TheoryData<SourceCodeInfo>
     {
+        internal static readonly IEnumerable<SourceCodeInfo>
+            Positives = GetSourceCodes(OpcTestEntities.PositiveEntities); 
         public ValidData()
         {
-            foreach (var sourceCode in GetSourceCodes(OpcTestEntities.PositiveEntities))
+            foreach (var sourceCode in Positives)
             {
                 Add(sourceCode);   
             }
@@ -38,11 +52,12 @@ public static class TestEntities
     /// Represents invalid test data, where errors are expected.
     /// All data is constructed from test data classes annotated with <see cref="OpcUaEntityAttribute"/>;
     /// </summary>
-    public class NegativeData :  TheoryData<SourceCodeInfo>
+    public class InvalidData :  TheoryData<SourceCodeInfo>
     {
-        public NegativeData()
+        internal static readonly IEnumerable<SourceCodeInfo> Negatives = GetSourceCodes(OpcTestEntities.NegativeEntities);
+        public InvalidData()
         {
-            foreach (var sourceCode in GetSourceCodes(OpcTestEntities.NegativeEntities))
+            foreach (var sourceCode in Negatives)
             {
                 Add(sourceCode);   
             }
@@ -57,7 +72,7 @@ public static class TestEntities
     {
         public AllData()
         {
-            foreach (var sourceCode in GetSourceCodes(OpcTestEntities.NegativeEntities.Union(OpcTestEntities.NegativeEntities)))
+            foreach (var sourceCode in InvalidData.Negatives.Union(ValidData.Positives))
             {
                 Add(sourceCode);   
             }

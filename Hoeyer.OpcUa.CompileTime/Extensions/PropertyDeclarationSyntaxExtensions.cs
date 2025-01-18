@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.EntityGeneration.SyntaxExtensions;
+namespace Hoeyer.OpcUa.CompileTime.Extensions;
 
-internal static class PropertyDeclarationSyntaxExtensions
+public static class PropertyDeclarationSyntaxExtensions
 {
     const int PUBLIC_LENGTH = 6;
     public static bool IsPublic(this PropertyDeclarationSyntax property) => property.Modifiers.Any(SyntaxKind.PublicKeyword);

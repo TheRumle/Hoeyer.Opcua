@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Hoeyer.OpcUa.Entity.CompileTime.Testing.Drivers;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 using Hoeyer.OpcUa.EntityGeneration.Generators;
 using JetBrains.Annotations;
@@ -12,24 +13,22 @@ public class EntityNodeCreatorGeneratorTest {
 
     public EntityNodeCreatorGeneratorTest(ITestOutputHelper output)
     {
-        _testDriver = new(new EntityNodeCreatorGenerator(), output);
+        _testDriver = new(new EntityNodeCreatorGenerator(), output.WriteLine);
     }
-    
-    
     
     [Theory]
     [ClassData(typeof(TestEntities.ValidData))]
-    public void WhenGiven_CorrectEntitySourceCode_ShouldNotHaveDiagnostics(SourceCodeInfo sourceCode)
+    public void WhenGiven_CorrectSourceCodeInfo_ShouldCreate_XX(SourceCodeInfo sourceCode)
     {
-        var generationResult = _testDriver.RunGeneratorOnSourceCode(sourceCode);
-        generationResult.Value.Errors.Should().BeEmpty();
+        var generationResult = _testDriver.RunGeneratorOn(sourceCode);
+        generationResult.GeneratedTrees.Should().NotBeEmpty("Source code should be generated.");
     }
     
     [Theory]
-    [ClassData(typeof(TestEntities.NegativeData))]
-    public void WhenGiven_InCorrectEntitySourceCode_ShouldNotHaveDiagnostics(SourceCodeInfo sourceCode)
+    [ClassData(typeof(TestEntities.AllData))]
+    public void ShouldNotProduceDiagnostics(SourceCodeInfo sourceCode)
     {
-        var generationResult = _testDriver.RunGeneratorOnSourceCode(sourceCode);
-        generationResult.Value.Errors.Should().NotBeEmpty();
+        var generationResult = _testDriver.RunGeneratorOn(sourceCode);
+        generationResult.Errors.Should().BeEmpty("The generator should not be responsible for analyzing source code, only production of generated code.");
     }
 }

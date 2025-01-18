@@ -8,11 +8,12 @@
 
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <IsRoslynComponent>true</IsRoslynComponent>
-        <PackageId>Hoeyer.OpcUa.Entity.Generation</PackageId>
-        <RootNamespace>Hoeyer.OpcUa.EntityGeneration</RootNamespace>
+
+        <RootNamespace>Hoeyer.OpcUa.EntityRulesAnalysis</RootNamespace>
+
+        <PackageId>Hoeyer.OpcUa.EntityAnalysis</PackageId>
     </PropertyGroup>
-    
-    
+
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4">
             <PrivateAssets>all</PrivateAssets>
@@ -20,18 +21,25 @@
         </PackageReference>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.0"/>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.3.0"/>
-        <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Core" Version="1.5.374.158" />
     </ItemGroup>
-    
-    
+
     <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime\Hoeyer.OpcUa.CompileTime.csproj" />
+        <EmbeddedResource Update="Resources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
     </ItemGroup>
-    
-    
+
     <ItemGroup>
-      <Folder Include="SyntaxExtensions\" />
+        <Compile Update="Resources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Resources.resx</DependentUpon>
+        </Compile>
     </ItemGroup>
-    
+
+    <ItemGroup>
+      <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime\Hoeyer.OpcUa.CompileTime.csproj" />
+    </ItemGroup>
 
 </Project>

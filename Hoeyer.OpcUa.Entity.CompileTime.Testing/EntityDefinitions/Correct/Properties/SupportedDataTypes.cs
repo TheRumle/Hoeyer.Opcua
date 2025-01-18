@@ -1,6 +1,6 @@
 ﻿namespace Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions.Correct.Properties;
 
-[OpcUaEntity]
+[ OpcUaEntity]
 public class SupportedDataTypes
 {
     public IList<int> TestIList {get; set;}

@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.OpcUa.EntityGeneration.Diagnostics;
-using Hoeyer.OpcUa.EntityGeneration.IncrementalProvider;
-using Hoeyer.OpcUa.EntityGeneration.OpcUa;
-using Hoeyer.OpcUa.EntityGeneration.SyntaxExtensions;
-using Hoeyer.OpcUa.TypeUtilities;
+using Hoeyer.OpcUa.CompileTime;
+using Hoeyer.OpcUa.CompileTime.Extensions;
+using Hoeyer.OpcUa.CompileTime.OpcUaTypes;
+    using Hoeyer.OpcUa.EntityGeneration.IncrementalProvider;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -77,23 +76,17 @@ namespace Hoeyer.OpcUa.Server.Entity
 """;
     }
 
-    private static IEnumerable<string> GetPropertyCreationStatements(TypeContext<ClassDeclarationSyntax> typeContext,
-        SourceProductionContext context, string nodeName)
+    private static IEnumerable<string> GetPropertyCreationStatements(TypeContext<ClassDeclarationSyntax> typeContext,, string nodeName)
     {
         var semanticModel = typeContext.SemanticModel;
 
-        var properties = typeContext.Node.Members.OfType<PropertyDeclarationSyntax>().ToList();
-        var typeAnalysisResult = properties.Select(property => new OpcTypeInfoFactory(property, semanticModel).GetTypeInfo()).ToList();
-
-
-        ReportDiagnostics(context,
-            accessViolators: properties.Where(e => !e.IsFullyPublicProperty()),
-            unsupportedTypes: typeAnalysisResult.Where(e => !e.TypeIsSupported).Select(e => e.PropertyDecleration)
-        );
-
+        var typeAnalysisResult = typeContext.Node.Members
+            .OfType<PropertyDeclarationSyntax>()
+            .Where(e => e.IsFullyPublicProperty())
+            .Select(property => new OpcPropertyTypeInfoFactory(property, semanticModel).GetTypeInfo())
+            .Where(e => e.TypeIsSupported);
 
         
-
         foreach (var propertyInfo in typeAnalysisResult.Where(e=>e.TypeIsSupported).Select(e=>e.PropertyInfo))
         {
             var propertyName = char.ToLower(propertyInfo.Name.Trim()[0]) + propertyInfo.Name.Trim().Substring(1);
@@ -105,17 +98,5 @@ PropertyState {propertyName} = {nodeName}.AddProperty< {propertyInfo.Type}>("{pr
         
     }
 
-    private static void ReportDiagnostics(
-        SourceProductionContext context,
-        IEnumerable<PropertyDeclarationSyntax> accessViolators,
-        IEnumerable<PropertyDeclarationSyntax> unsupportedTypes)
-    {
-        IEnumerable<Diagnostic> errors = [
-            ..accessViolators.Select(OpcUaDiagnostics.MustHavePublicSetter),
-            ..unsupportedTypes.Select(OpcUaDiagnostics.UnsupportedOpcUaType)
-        ];
-
-        foreach (var err in errors) context.ReportDiagnostic(err);
-    }
 
 }
