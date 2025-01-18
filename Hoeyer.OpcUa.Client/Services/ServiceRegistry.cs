@@ -12,42 +12,9 @@ using Hoeyer.OpcUa.Configuration;
 using Hoeyer.OpcUa.Entity.State;
 using Hoeyer.OpcUa.Proxy;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace Hoeyer.OpcUa.Client.Services;
-
-
-public sealed class ReversibleCollection(IServiceCollection collection) : IDisposable
-{
-    public List<Type> RegisteredTypes { get; } = new();
-    public void AddSingleTon(Type t)
-    {
-        collection.AddSingleton(t);
-        RegisteredTypes.Add(t);
-    }
-
-    public void AddTransient(Type service, Type impl)
-    {
-        collection.AddTransient(service, impl);
-        RegisteredTypes.Add(service);
-        RegisteredTypes.Add(impl);
-    }
-
-    public void Reverse()
-    {
-        foreach (var type in RegisteredTypes)
-        {
-            collection.RemoveAll(type);
-        }
-    }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        Reverse();
-    }
-}
 
 /// <summary>
 /// Uses the <paramref name="services"/> to create a <see cref="ServiceProvider"/> and uses it to wire up services necessary for configuring OpcUa entities. Disposing the <see cref="ServiceRegistry"/> will remove services used for internal wiring from <paramref name="services"/>.

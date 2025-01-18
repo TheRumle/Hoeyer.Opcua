@@ -5,6 +5,6 @@ namespace MyOpcUaWebApplication;
 [OpcUaEntity]
 public class Gantry
 {
-    public HashSet<int> Speed { get; set; }
+    public HashSet<int> Speed { get; } = [];
 
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Hoeyer.OpcUa.Entity.State;
 
 namespace Hoeyer.OpcUa.Observation;

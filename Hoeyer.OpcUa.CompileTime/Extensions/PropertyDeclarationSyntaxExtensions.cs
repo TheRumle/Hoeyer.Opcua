@@ -26,7 +26,7 @@ public static class PropertyDeclarationSyntaxExtensions
     private static bool HasPublicOnlyAccessModifier(this PropertyDeclarationSyntax property)
     {
         // we know that the property is public
-        // if no modifier exists, then there is no poublic setter
+        // if no modifier exists, then there is no public setter
         var accessor = property.Setter();
         if (accessor is null) return false;
 
