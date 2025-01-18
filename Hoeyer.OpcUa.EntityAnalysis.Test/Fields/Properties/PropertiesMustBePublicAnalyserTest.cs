@@ -6,9 +6,7 @@ using Hoeyer.OpcUa.EntityRulesAnalysis.Diagnostics;
 using Hoeyer.OpcUa.EntityRulesAnalysis.Fields.Properties;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Testing;
 using Xunit.Abstractions;
 
 namespace Hoeyer.OpcUa.EntityAnalysis.Test.Fields.Properties;

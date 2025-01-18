@@ -25,7 +25,6 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj" />
     <ProjectReference Include="..\Hoeyer.OpcUa.Entity.CompileTime.Testing\Hoeyer.OpcUa.Entity.CompileTime.Testing.csproj" />
     <ProjectReference Include="..\Hoeyer.OpcUa.EntityAnalysis\Hoeyer.OpcUa.EntityAnalysis.csproj" />
   </ItemGroup>
