@@ -4,7 +4,7 @@ using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 
 namespace Hoeyer.OpcUa.Entity.Analysis.Test;
 
-public static class TestEntities
+public static class TheoryDataEntities
 {
     /// <summary>
     /// Used to choose what data should be used in the test. 

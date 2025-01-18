@@ -17,7 +17,7 @@ public class PropertiesMustBePublicAnalyserTest(ITestOutputHelper helper)
 
 
     [Theory]
-    [ClassData(typeof(TestEntities.ValidData))]
+    [ClassData(typeof(TheoryDataEntities.ValidData))]
     public async Task WhenGiven_CorrectEntitySourceCode_ShouldNotHaveDiagnostics(SourceCodeInfo sourceCode)
     {
         var res = await _driver.RunAnalyzerOn(sourceCode);
@@ -25,7 +25,7 @@ public class PropertiesMustBePublicAnalyserTest(ITestOutputHelper helper)
     }
     
     [Theory]
-    [ClassData(typeof(TestEntities.InvalidData))]
+    [ClassData(typeof(TheoryDataEntities.InvalidData))]
     public async Task WhenSourceCode_Violates_SupportedFieldPublicity_ShouldHaveDiagnostics(SourceCodeInfo sourceCode)
     {
         var res = await _driver.RunAnalyzerOn(sourceCode);

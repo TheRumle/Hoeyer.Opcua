@@ -17,15 +17,20 @@ public class EntityNodeCreatorGeneratorTest {
     }
     
     [Theory]
-    [ClassData(typeof(TestEntities.ValidData))]
+    [ClassData(typeof(TheoryDataEntities.ValidData))]
     public void WhenGiven_CorrectSourceCodeInfo_ShouldCreate_XX(SourceCodeInfo sourceCode)
     {
         var generationResult = _testDriver.RunGeneratorOn(sourceCode);
         generationResult.GeneratedTrees.Should().NotBeEmpty("Source code should be generated.");
+        
+        
+        
     }
     
+    
+    
     [Theory]
-    [ClassData(typeof(TestEntities.AllData))]
+    [ClassData(typeof(TheoryDataEntities.AllData))]
     public void Generator_ShouldNeverProduceDiagnostics(SourceCodeInfo sourceCode)
     {
         var generationResult = _testDriver.RunGeneratorOn(sourceCode);
