@@ -36,11 +36,11 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
         var entityName = typeContext.Node.Identifier.ToString();
         var nodeName = entityName + "Node";
         var className = $"{entityName}OpcUaNodeCreator";
-        var sourceCode = CreateSourceCode(typeContext, context, entityName, nodeName, className);
+        var sourceCode = CreateSourceCode(typeContext, entityName, nodeName, className);
         context.AddSource(className+".g.cs", sourceCode);
     }
 
-    private static string CreateSourceCode(TypeContext<ClassDeclarationSyntax> typeContext, SourceProductionContext context, string entityName,
+    private static string CreateSourceCode(TypeContext<ClassDeclarationSyntax> typeContext, string entityName,
         string nodeName, string className)
     {
         return $$"""
@@ -67,7 +67,7 @@ namespace Hoeyer.OpcUa.Server.Entity
            root.AddChild({{nodeName}});
            
            //Assign properties
-           {{string.Join("\n", GetPropertyCreationStatements(typeContext, context, nodeName))}}
+           {{string.Join("\n", GetPropertyCreationStatements(typeContext, nodeName))}}
            
            return {{nodeName}};
        }
