@@ -6,8 +6,8 @@ namespace Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 
 public static class OpcEntityResourceLoader
 {
-    private readonly static Assembly Assembly = Assembly.GetExecutingAssembly();
-    private readonly static ImmutableSortedDictionary<string, Lazy<string>> AssemblyResources = Assembly
+    private static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
+    private static readonly ImmutableSortedDictionary<string, Lazy<string>> AssemblyResources = Assembly
         .GetManifestResourceNames()
         .ToImmutableSortedDictionary(
             resource => resource,

@@ -13,7 +13,7 @@ public static class AttributeExtensions
     /// <returns></returns>
     public static string AttributeFullName(this AttributeSyntax attributeSyntax, SemanticModel semanticModel)
     {
-        return semanticModel.GetTypeInfo(attributeSyntax).Type.Name;
+        return semanticModel.GetTypeInfo(attributeSyntax)!.Type!.Name;
     }
     
 }

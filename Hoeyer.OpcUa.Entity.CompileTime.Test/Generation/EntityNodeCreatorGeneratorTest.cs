@@ -1,39 +1,30 @@
-﻿using FluentAssertions;
+﻿using Hoeyer.OpcUa.Entity.Analysis.Test.Data;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.Drivers;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 using Hoeyer.OpcUa.EntityGeneration.Generators;
 using JetBrains.Annotations;
-using Xunit.Abstractions;
 
 namespace Hoeyer.OpcUa.Entity.Analysis.Test.Generation;
 
 [TestSubject(typeof(EntityNodeCreatorGenerator))]
 public class EntityNodeCreatorGeneratorTest {
-    private readonly GeneratorTestDriver<EntityNodeCreatorGenerator> _testDriver;
+    
+    private readonly GeneratorTestDriver<EntityNodeCreatorGenerator> _testDriver = new(new EntityNodeCreatorGenerator(), Console.WriteLine);
 
-    public EntityNodeCreatorGeneratorTest(ITestOutputHelper output)
+    [Test]
+    [ValidEntitySourceCodeGenerator]
+    public async Task WhenGiven_CorrectSourceCodeInfo_ShouldGenerateSyntaxTrees(EntitySourceCode entitySourceCode)
     {
-        _testDriver = new(new EntityNodeCreatorGenerator(), output.WriteLine);
-    }
-    
-    [Theory]
-    [ClassData(typeof(TheoryDataEntities.ValidData))]
-    public void WhenGiven_CorrectSourceCodeInfo_ShouldCreate_XX(SourceCodeInfo sourceCode)
-    {
-        var generationResult = _testDriver.RunGeneratorOn(sourceCode);
-        generationResult.GeneratedTrees.Should().NotBeEmpty("Source code should be generated.");
-        
-        
-        
+        var generationResult = _testDriver.RunGeneratorOn(entitySourceCode);
+        await Assert.That(generationResult.GeneratedTrees).IsNotEmpty().Because("Source code should be generated.");
     }
     
     
-    
-    [Theory]
-    [ClassData(typeof(TheoryDataEntities.AllData))]
-    public void Generator_ShouldNeverProduceDiagnostics(SourceCodeInfo sourceCode)
+    [Test]
+    [EntitySourceCodeGenerator]
+    public async Task Generator_ShouldNeverProduceDiagnostics(EntitySourceCode entitySourceCode)
     {
-        var generationResult = _testDriver.RunGeneratorOn(sourceCode);
-        generationResult.Errors.Should().BeEmpty("The generator should not be responsible for analyzing source code, only production of generated code.");
+        var generationResult = _testDriver.RunGeneratorOn(entitySourceCode);
+        await Assert.That(generationResult.Errors).IsEmpty().Because("The generator should not be responsible for analyzing source code, only production of generated code.");
     }
 }

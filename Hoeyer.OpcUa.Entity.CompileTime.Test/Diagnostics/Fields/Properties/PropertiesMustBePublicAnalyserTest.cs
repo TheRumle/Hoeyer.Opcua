@@ -1,34 +1,35 @@
-﻿using FluentAssertions;
-using Hoeyer.OpcUa.CompileTime.Diagnostics;
+﻿using Hoeyer.OpcUa.CompileTime.Diagnostics;
 using Hoeyer.OpcUa.CompileTime.Diagnostics.Fields.Properties;
+using Hoeyer.OpcUa.Entity.Analysis.Test.Data;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.Drivers;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 using JetBrains.Annotations;
-using Xunit.Abstractions;
+using Microsoft.CodeAnalysis;
 
 namespace Hoeyer.OpcUa.Entity.Analysis.Test.Diagnostics.Fields.Properties;
 
 
 [TestSubject(typeof(PropertiesMustBePublicAnalyser))]
-public class PropertiesMustBePublicAnalyserTest(ITestOutputHelper helper)
-    
+public class PropertiesMustBePublicAnalyserTest
 {
-    private readonly AnalyzerTestDriver<PropertiesMustBePublicAnalyser> _driver = new(new PropertiesMustBePublicAnalyser(), helper.WriteLine);
+    private readonly AnalyzerTestDriver<PropertiesMustBePublicAnalyser> _driver = new(new PropertiesMustBePublicAnalyser());
 
+    private static readonly Func<Diagnostic, bool> CompareDiagnostic = (descriptor) =>
+        OpcUaDiagnostics.MustHavePublicSetterDescriptor.Equals(descriptor.Descriptor);
 
-    [Theory]
-    [ClassData(typeof(TheoryDataEntities.ValidData))]
-    public async Task WhenGiven_CorrectEntitySourceCode_ShouldNotHaveDiagnostics(SourceCodeInfo sourceCode)
+    [Test]
+    [ValidEntitySourceCodeGenerator]
+    public async Task WhenGiven_CorrectEntitySourceCode_ShouldNotHaveDiagnostics(EntitySourceCode entitySourceCode)
     {
-        var res = await _driver.RunAnalyzerOn(sourceCode);
-        res.Diagnostics.Should().BeEmpty();
+        var res = await _driver.RunAnalyzerOn(entitySourceCode);
+        await Assert.That(res.Diagnostics).IsEmpty().Because("Correct entities should not have diagnostics.");
     }
     
-    [Theory]
-    [ClassData(typeof(TheoryDataEntities.InvalidData))]
-    public async Task WhenSourceCode_Violates_SupportedFieldPublicity_ShouldHaveDiagnostics(SourceCodeInfo sourceCode)
+    [Test]
+    [InvalidEntitySourceCodeGenerator]
+    public async Task WhenSourceCode_Violates_SupportedFieldPublicity_ShouldHaveDiagnostics(EntitySourceCode entitySourceCode)
     {
-        var res = await _driver.RunAnalyzerOn(sourceCode);
-        res.Diagnostics.Should().Contain(e => e.Descriptor.Equals(OpcUaDiagnostics.MustHavePublicSetterDescriptor));
+        var res = await _driver.RunAnalyzerOn(entitySourceCode);
+        await Assert.That(res.Diagnostics).IsNotEmpty().And.Contains(CompareDiagnostic);
     }
 }

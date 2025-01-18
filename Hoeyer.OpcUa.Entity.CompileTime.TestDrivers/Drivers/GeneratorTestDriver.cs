@@ -18,9 +18,9 @@ public sealed class GeneratorTestDriver<T>(T generator, Action<string>? logger =
     private readonly CSharpGeneratorDriver _driver = CSharpGeneratorDriver.Create(generator);
 
 
-    public GeneratorResult RunGeneratorOn(SourceCodeInfo sourceCodeInfo)
+    public GeneratorResult RunGeneratorOn(EntitySourceCode entitySourceCode)
     {
-        var compilation = _compilationFactory.CreateCompilation(sourceCodeInfo);
+        var compilation = _compilationFactory.CreateCompilation(entitySourceCode);
         return RunCompilation(_driver, compilation);
     }
 

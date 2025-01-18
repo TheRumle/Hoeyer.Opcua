@@ -10,12 +10,12 @@ public sealed class CompilationFactory(string compilationName,  Action<string>? 
     private readonly Action<string> Log = log == null ? _ => { } : log;
     
     [Pure]
-    public CSharpCompilation CreateCompilation(SourceCodeInfo sourceCodeInfo)
+    public CSharpCompilation CreateCompilation(EntitySourceCode entitySourceCode)
     {
-        var sourceCode = sourceCodeInfo.SourceCodeString;
+        var sourceCode = entitySourceCode.SourceCodeString;
         Log(sourceCode);
         
-        var referencedAssemblies = AssemblyLoader.GetMetaReferencesContainedIn(sourceCodeInfo.Type)
+        var referencedAssemblies = AssemblyLoader.GetMetaReferencesContainedIn(entitySourceCode.Type)
             .Union(AssemblyLoader.CoreMetadataReferences);
 
         
