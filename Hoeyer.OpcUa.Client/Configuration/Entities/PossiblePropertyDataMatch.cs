@@ -2,8 +2,8 @@
 
 namespace Hoeyer.OpcUa.Client.Configuration.Entities;
 
-internal record PossiblePropertyDataMatch(PropertyConfiguration Property, DataValue DataValue)
+internal record PossiblePropertyDataMatch(PropertyConfiguration PropertyConfiguration, DataValue DataValue)
 {
     public DataValue DataValue { get; } = DataValue;
-    public PropertyConfiguration Property { get; } = Property;
+    public PropertyConfiguration PropertyConfiguration { get; } = PropertyConfiguration;
 }

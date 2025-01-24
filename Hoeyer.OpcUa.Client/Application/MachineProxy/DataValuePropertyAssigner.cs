@@ -25,7 +25,7 @@ public sealed class DataValuePropertyAssigner<TEntity>
             return Result.Fail($"{instanceFactory} creating {typeof(TEntity).Name} returned a null value.");
 
         return source
-            .Select(e => TryAssignToProperty(e.Property, e.DataValue, entity))
+            .Select(e => TryAssignToProperty(e.PropertyConfiguration, e.DataValue, entity))
             .Merge()
             .ToResult(entity);
     }

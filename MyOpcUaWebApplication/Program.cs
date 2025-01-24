@@ -1,6 +1,7 @@
 using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Configuration;
 using Hoeyer.OpcUa.Server.Application;
+using Hoeyer.OpcUa.Server.Entity;
 using Hoeyer.OpcUa.Server.Services;
 using MyOpcUaWebApplication;
 using MyOpcUaWebApplication.Configuration.BackgroundService;
@@ -42,7 +43,6 @@ builder.Services
 
 builder.Services.AddOpcUaEntityServerServices();
 builder.Services.AddOpcUaClientServices();
-
 
 var app = builder.Build();
 
