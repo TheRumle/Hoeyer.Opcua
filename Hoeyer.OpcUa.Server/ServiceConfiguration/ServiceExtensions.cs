@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.OpcUa.Nodes;
+using Hoeyer.OpcUa.Entity;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.ServiceConfiguration.Builder;
 using Microsoft.Extensions.DependencyInjection;

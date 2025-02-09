@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Hoeyer.OpcUa.Entity;
 using Opc.Ua;
 using Opc.Ua.Server;
 

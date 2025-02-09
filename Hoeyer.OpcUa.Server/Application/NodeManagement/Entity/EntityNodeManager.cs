@@ -1,5 +1,5 @@
 ﻿using System;
-using Hoeyer.OpcUa.Nodes;
+using Hoeyer.OpcUa.Entity;
 using Hoeyer.OpcUa.Server.ServiceConfiguration;
 using Opc.Ua;
 using Opc.Ua.Server;
@@ -10,7 +10,7 @@ public sealed class EntityNodeManager : CustomNodeManager
 {
     private readonly IEntityNodeCreator _iEntityObjectCreator;
     public readonly FolderState Folder ;
-    public NodeState EntityState { get; }
+    public NodeState EntityState => EntityNode.Entity;
     public readonly EntityNode EntityNode;
 
 
@@ -19,8 +19,7 @@ public sealed class EntityNodeManager : CustomNodeManager
     {
         _iEntityObjectCreator = entityNodeCreator;
         Folder = CreateRootFolder();
-        EntityState = _iEntityObjectCreator.CreateEntityOpcUaNode(Folder,0);
-        EntityNode = new EntityNode(Folder, EntityState);
+        EntityNode = _iEntityObjectCreator.CreateEntityOpcUaNode(Folder,0);
     }
 
 
