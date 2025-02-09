@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.OpcUa.CompileTime.Extensions;
 using Hoeyer.OpcUa.CompileTime.Generation.IncrementalProvider;
 using Hoeyer.OpcUa.CompileTime.OpcUaTypes;
 using Hoeyer.OpcUa.EntityGeneration.IncrementalProvider;
+using Hoeyer.OpcUa.Nodes;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.CompileTime.Generation;
 
@@ -37,7 +40,7 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
     }
 
     private static string CreateSourceCode(TypeContext<ClassDeclarationSyntax> typeContext, string entityName,
-        string nodeName, string className)
+        string nodeStateReference, string className)
     {
         return $$"""
                  using System;
@@ -47,25 +50,25 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
 
                  namespace Hoeyer.OpcUa.Server.Entity
                  {
-                     internal sealed class {{className}} : IEntityNodeCreator
+                     internal sealed class {{className}} : {{nameof(IEntityNodeCreator)}}
                      {
                         public {{className}}(){}
                         public string EntityName { get; } = "{{entityName}}";
-                        public NodeState CreateEntityOpcUaNode(NodeState root, ushort dynamicNamespaceIndex)
+                        public {{nameof(NodeState)}} CreateEntityOpcUaNode({{nameof(NodeState)}} root, ushort applicationNamespaceIndex)
                         {
-                            BaseObjectState {{nodeName}} = new BaseObjectState(root)
+                            {{nameof(BaseObjectState)}} {{nodeStateReference}} = new {{nameof(BaseObjectState)}}(root)
                             {
-                                BrowseName =  new QualifiedName("{{entityName}}", dynamicNamespaceIndex),
-                                NodeId = new NodeId(Guid.NewGuid(), dynamicNamespaceIndex),
+                                BrowseName =  new {{nameof(QualifiedName)}}("{{entityName}}", applicationNamespaceIndex),
+                                NodeId = new {{nameof(NodeId)}}({{nameof(Guid)}}.{{nameof(Guid.NewGuid)}}(), applicationNamespaceIndex),
                                 DisplayName = "{{entityName}}",
                             };
                         
-                            root.AddChild({{nodeName}});
+                            root.AddChild({{nodeStateReference}});
                             
                             //Assign properties
-                            {{string.Join("\n", GetPropertyCreationStatements(typeContext, nodeName))}}
+                            {{string.Join("\n", GetPropertyCreationStatements(typeContext, nodeStateReference))}}
                             
-                            return {{nodeName}};
+                            return {{nodeStateReference}};
                         }
                      }
                  }
@@ -88,8 +91,8 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
         {
             var propertyName = char.ToLower(propertyInfo.Name.Trim()[0]) + propertyInfo.Name.Trim().Substring(1);
             yield return $"""
-                          PropertyState {propertyName} = {nodeName}.AddProperty< {propertyInfo.Type}>("{propertyName}", {propertyInfo.OpcUaTypeId}, ValueRanks.Scalar);
-                                     {propertyName}.NodeId = new NodeId(Guid.NewGuid(), dynamicNamespaceIndex);
+                          {nameof(PropertyState)} {propertyName} = {nodeName}.AddProperty<{propertyInfo.Type}>("{propertyName}", {propertyInfo.OpcUaTypeId}, {propertyInfo.ValueRank});
+                                     {propertyName}.NodeId = new {nameof(NodeId)}(Guid.NewGuid(), applicationNamespaceIndex);
                           """;
         }
     }

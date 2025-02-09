@@ -2,7 +2,7 @@ using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Configuration;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Entity;
-using Hoeyer.OpcUa.Server.Services;
+using Hoeyer.OpcUa.Server.ServiceConfiguration;
 using MyOpcUaWebApplication;
 using MyOpcUaWebApplication.Configuration.BackgroundService;
 using MyOpcUaWebApplication.Configuration.OpcUa.Options;
@@ -41,7 +41,14 @@ builder.Services
     .Validate(e => Uri.TryCreate(e.ApplicationUri, UriKind.Absolute, out _), "\nApplicationUri must be absolute URI.\n")
     .ValidateBeforeStart();
 
-builder.Services.AddOpcUaEntityServerServices();
+builder.Services.AddOpcUaEntityServer((conf) => conf
+        .WithServerId("MyServer")
+        .WithServerName("My Server")
+        .WithHost("localhost")
+        .WithEndpoints(["opc.tcp://localhost:4840"])
+        .Build())
+    .WithEntityNodeGeneration();
+
 builder.Services.AddOpcUaClientServices();
 
 var app = builder.Build();

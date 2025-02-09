@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Opc.Ua;
 using Opc.Ua.Configuration;
 
 namespace Hoeyer.OpcUa.Server.Application;
@@ -27,10 +29,18 @@ public sealed class StartableEntityServer : IDisposable
     public async Task<StartedEntityServer> StartAsync()
     {
         if (_disposed) throw new ObjectDisposedException(nameof(StartableEntityServer));
-
         await ApplicationInstance.Start(EntityServer);
-        var jsonString = JsonSerializer.Serialize(EntityServer.EntityNodes.First());
+        var l = new List<BaseInstanceState>();
 
+        var gantry = EntityServer.EntityManager.ManagedEntities.First();
+        gantry.Folder.GetChildren(EntityServer.Server.DefaultSystemContext, l);
+        Console.WriteLine(gantry.Entity.BrowseName.NamespaceIndex);
+        
+        Console.WriteLine(string.Join(", ", l.Select(e=>e.BrowseName)));
+        
+        var managedEntity = EntityServer.EntityManager.ManagedEntities.First();
+        var jsonString = JsonSerializer.Serialize(managedEntity);
+        Console.WriteLine(jsonString);
         return new StartedEntityServer(this);
     }
 

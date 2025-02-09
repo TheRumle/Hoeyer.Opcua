@@ -18,7 +18,6 @@ public class PropertySelector<TEntity>
         Expression<Func<TEntity, TProperty>> expression)
     {
         var property = GetPropertyInfo(expression);
-        VerifyOrThrow(property);
         return new PropertyConfigurator<TEntity>(_context, property);
     }
 
@@ -28,12 +27,5 @@ public class PropertySelector<TEntity>
             throw new InvalidPropertyConfigurationException();
 
         return propertyInfo;
-    }
-
-    private static void VerifyOrThrow(PropertyInfo propertyInfo)
-    {
-        var type = propertyInfo.PropertyType;
-        if (!type.IsPrimitive && !type.IsEnum && type != typeof(string))
-            throw new IncompatibleTypesException(propertyInfo);
     }
 }

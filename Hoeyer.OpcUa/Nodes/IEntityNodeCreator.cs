@@ -8,5 +8,5 @@ public interface IEntityNodeCreator
     public string EntityName { get; }
 
     [Pure]
-    public NodeState CreateEntityOpcUaNode(NodeState root, ushort namespaceIndex);
+    public NodeState CreateEntityOpcUaNode(NodeState root, ushort assignedNamespace);
 }
