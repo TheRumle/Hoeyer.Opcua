@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Hoeyer.OpcUa.Entity;
+using Hoeyer.OpcUa.Server.Application.NodeManagement.Entity;
 using Hoeyer.OpcUa.Server.ServiceConfiguration;
 using Opc.Ua;
 using Opc.Ua.Configuration;
@@ -8,7 +9,8 @@ namespace Hoeyer.OpcUa.Server.Application;
 
 public sealed class OpcUaEntityServerFactory(
     EntityServerConfiguration entityServerConfiguration,
-    IEnumerable<IEntityNodeCreator> entityObjectCreators)
+    IEnumerable<IEntityNodeCreator> entityObjectCreators,
+    EntityNodeManagerFactory entityNodeManagerFactory)
 {
     
     public StartableEntityServer CreateServer()
@@ -24,7 +26,7 @@ public sealed class OpcUaEntityServerFactory(
         
         application.LoadApplicationConfiguration(false);
 
-        var server = new OpcEntityServer(new EntityMasterNodeManagerFactory(entityObjectCreators), entityServerConfiguration);
+        var server = new OpcEntityServer(entityServerConfiguration, entityObjectCreators, entityNodeManagerFactory);
         return new StartableEntityServer(application, server);
     }
 }

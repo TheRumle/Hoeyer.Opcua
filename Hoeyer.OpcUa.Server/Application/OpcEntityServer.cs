@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Hoeyer.OpcUa.Entity;
+using Hoeyer.OpcUa.Server.Application.NodeManagement;
 using Hoeyer.OpcUa.Server.Application.NodeManagement.Entity;
 using Hoeyer.OpcUa.Server.ServiceConfiguration;
 using Opc.Ua;
@@ -10,28 +12,32 @@ namespace Hoeyer.OpcUa.Server.Application;
 
 public sealed class OpcEntityServer : StandardServer
 {
-    private readonly EntityMasterNodeManagerFactory _managerFactory;
-    private readonly EntityServerConfiguration applicationProductDetails;
+    private readonly IEnumerable<IEntityNodeCreator> _nodeCreators;
+    private readonly EntityServerConfiguration _applicationProductDetails;
     
     public IServerInternal Server => ServerInternal;
-    public IEnumerable<Uri> EndPoints => CurrentInstance.EndpointAddresses;
+    public readonly IEnumerable<Uri> EndPoints;
+    private readonly EntityNodeManagerFactory _managerFactory;
     public EntityMasterNodeManager EntityManager { get; private set; }
     
-    public OpcEntityServer(EntityMasterNodeManagerFactory managerFactory, EntityServerConfiguration details)
+    public OpcEntityServer(EntityServerConfiguration details, IEnumerable<IEntityNodeCreator> nodeCreators, EntityNodeManagerFactory factory)
     {
-        _managerFactory = managerFactory;
-        applicationProductDetails = details;
+        _nodeCreators = nodeCreators;
+        _applicationProductDetails = details;
+        _managerFactory = factory;
+        EndPoints = [..details.Endpoints.Select(e=>new Uri(e))];
     }
 
-    protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server,
-        ApplicationConfiguration configuration)
+    protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server, ApplicationConfiguration configuration)
     {
-        EntityManager =  _managerFactory.Create(server, configuration, applicationProductDetails);
+        var additionalManagers = _nodeCreators
+            .Select(nodeCreator => _managerFactory.Create(server, configuration, nodeCreator))
+            .ToArray();
         
+        EntityManager = new EntityMasterNodeManager(server, configuration, additionalManagers);
         return EntityManager;
     }
-
-
+    
 
     /// <inheritdoc />
     public override ResponseHeader ActivateSession(RequestHeader requestHeader, SignatureData clientSignature,
@@ -48,10 +54,16 @@ public sealed class OpcEntityServer : StandardServer
     {
         ServerProperties properties = base.LoadServerProperties();
         properties.BuildDate = DateTime.UtcNow;
-        properties.ProductName = applicationProductDetails.ServerName;
-        properties.ProductUri = this.applicationProductDetails.Urn.ToString();
+        properties.ProductName = _applicationProductDetails.ServerName;
+        properties.ProductUri = this._applicationProductDetails.ApplicationNamespace.ToString();
         properties.SoftwareVersion = "1.0";
         return properties;
+    }
+
+    /// <inheritdoc />
+    protected override void OnNodeManagerStarted(IServerInternal server)
+    {
+        base.OnNodeManagerStarted(server);
     }
 
     /// <inheritdoc />

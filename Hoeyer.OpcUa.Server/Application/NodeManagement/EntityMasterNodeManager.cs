@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.OpcUa.Entity;
+using Hoeyer.OpcUa.Server.Application.NodeManagement.Entity;
 using Opc.Ua;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Application.NodeManagement.Entity;
+namespace Hoeyer.OpcUa.Server.Application.NodeManagement;
 
 public sealed class EntityMasterNodeManager : MasterNodeManager
 {
@@ -14,10 +15,6 @@ public sealed class EntityMasterNodeManager : MasterNodeManager
     public EntityMasterNodeManager(IServerInternal server, ApplicationConfiguration applicationConfiguration, EntityNodeManager[] additionalManagers) : base(server, applicationConfiguration, applicationConfiguration.ApplicationUri, additionalManagers)
     {
         ManagedEntities = additionalManagers.Select(e => e.EntityNode);
-
-        var references = ManagedEntities.Select((e) => new NodeStateReference(new NodeId(ReferenceTypes.Organizes), false, e.Entity) as IReference);
-        
-        this.AddReferences(new NodeId(213344), references.ToList());
     }
 
 
@@ -90,22 +87,6 @@ public sealed class EntityMasterNodeManager : MasterNodeManager
         out DiagnosticInfoCollection diagnosticInfos)
     {
         base.Browse(context, view, maxReferencesPerNode, nodesToBrowse, out results, out diagnosticInfos);
-        //var entityBrowseResult = new BrowseResult()
-        //{
-        //    StatusCode = StatusCodes.Good,
-        //    References = new ReferenceDescriptionCollection(ManagedEntities.Select(e => new ReferenceDescription()
-        //    {
-        //        BrowseName = e.Folder.BrowseName,
-        //        DisplayName = e.Folder.DisplayName,
-        //        IsForward = true,
-        //        NodeClass = NodeClass.View,
-        //        ReferenceTypeId = ReferenceTypeIds.Organizes,
-        //        NodeId = e.Folder.NodeId,
-        //        TypeDefinition = new ExpandedNodeId(e.Folder.NodeId)
-        //    })),
-        //    ContinuationPoint = []
-        //};
-        //results.Add(entityBrowseResult);
     }
 
     /// <inheritdoc />

@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 
-namespace Hoeyer.OpcUa.EntityGeneration.IncrementalProvider;
+namespace Hoeyer.OpcUa.CompileTime.Generation.IncrementalProvider;
 
 internal record struct UnloadedIncrementalValuesProvider<T>(IncrementalValuesProvider<T> source)
 {

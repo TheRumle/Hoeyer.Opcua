@@ -17,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj" />
         <ProjectReference Include="..\Hoeyer.OpcUa\Hoeyer.OpcUa.csproj"/>
     </ItemGroup>
 

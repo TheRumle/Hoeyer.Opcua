@@ -7,10 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Hoeyer.OpcUa.EntityRulesAnalysis {
-    using System;
-    
-    
+namespace Hoeyer.OpcUa.CompileTime.Diagnostics {
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>

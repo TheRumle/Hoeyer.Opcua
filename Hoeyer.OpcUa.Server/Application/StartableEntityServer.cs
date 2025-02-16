@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Hoeyer.OpcUa.Entity;
+using Hoeyer.OpcUa.Server.ServiceConfiguration;
 using Opc.Ua;
 using Opc.Ua.Configuration;
+using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
@@ -32,13 +35,14 @@ public sealed class StartableEntityServer : IDisposable
         await ApplicationInstance.Start(EntityServer);
         var l = new List<BaseInstanceState>();
 
-        var gantry = EntityServer.EntityManager.ManagedEntities.First();
+        EntityNode gantry = EntityServer.EntityManager.ManagedEntities.First();
+        gantry.PropertyStates.First().Value = 2;
         gantry.Folder.GetChildren(EntityServer.Server.DefaultSystemContext, l);
         Console.WriteLine(gantry.Entity.BrowseName.NamespaceIndex);
         
         Console.WriteLine(string.Join(", ", l.Select(e=>e.BrowseName)));
         
-        var managedEntity = EntityServer.EntityManager.ManagedEntities.First();
+        EntityNode managedEntity = EntityServer.EntityManager.ManagedEntities.First();
         var jsonString = JsonSerializer.Serialize(managedEntity);
         Console.WriteLine(jsonString);
         return new StartedEntityServer(this);

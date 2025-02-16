@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.EntityGeneration.IncrementalProvider;
+namespace Hoeyer.OpcUa.CompileTime.Generation.IncrementalProvider;
 
 public readonly struct TypeContext<T>(SemanticModel semanticModel, T node)
     where T : BaseTypeDeclarationSyntax

@@ -81,7 +81,7 @@ internal static class ServerApplicationConfigurationFactory
     {
         var config = new ApplicationConfiguration
         {
-            ApplicationUri = configuration.Urn.ToString(),
+            ApplicationUri = configuration.ApplicationNamespace.ToString(),
             ApplicationName = configuration.ServerName,
             ApplicationType = ApplicationType.Server,
             CertificateValidator = new CertificateValidator(),

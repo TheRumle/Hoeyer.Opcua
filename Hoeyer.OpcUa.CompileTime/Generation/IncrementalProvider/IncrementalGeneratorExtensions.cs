@@ -1,5 +1,4 @@
-﻿using Hoeyer.OpcUa.EntityGeneration.IncrementalProvider;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Hoeyer.OpcUa.CompileTime.Generation.IncrementalProvider;

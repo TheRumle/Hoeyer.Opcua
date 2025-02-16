@@ -5,7 +5,6 @@ using Hoeyer.OpcUa.CompileTime.Extensions;
 using Hoeyer.OpcUa.CompileTime.Generation.IncrementalProvider;
 using Hoeyer.OpcUa.CompileTime.OpcUaTypes;
 using Hoeyer.OpcUa.Entity;
-using Hoeyer.OpcUa.EntityGeneration.IncrementalProvider;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Opc.Ua;
@@ -45,13 +44,8 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
         var propertyCreationStatements = GetPropertyCreationStatements(typeContext, nodeStateReference).ToList();
         var propertyAssignments = string.Join("\n", propertyCreationStatements.Select(e=>e.CreationStatement));
 
-        var propertyNames = string.Join(", ", propertyCreationStatements.Select(e => e.PropertyName));
-        var entityNodeCreationStatement = $$"""
-                                                new {{nameof(EntityNode)}}(root, {{nodeStateReference}}, new List<{{nameof(PropertyState)}}>()
-                                                {
-                                                    {{propertyNames}}
-                                                })
-                                            """;
+        var propertyNames = string.Join(", ", propertyCreationStatements.Select(e => "\t\t\t\t"+e.PropertyName));
+        var resultReturn = $"return new {nameof(EntityNode)}(root, {nodeStateReference}, new List<{nameof(PropertyState)}>()\n\t\t\t{{\n{propertyNames}\n\t\t\t}});";
         
         return $$"""
                  using System;
@@ -67,19 +61,22 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
                         public string EntityName { get; } = "{{entityName}}";
                         public {{nameof(EntityNode)}} CreateEntityOpcUaNode({{nameof(FolderState)}} root, ushort applicationNamespaceIndex)
                         {
+                            root.AccessRestrictions = AccessRestrictionType.None;
+                        w
                             {{nameof(BaseObjectState)}} {{nodeStateReference}} = new {{nameof(BaseObjectState)}}(root)
                             {
                                 BrowseName =  new {{nameof(QualifiedName)}}("{{entityName}}", applicationNamespaceIndex),
                                 NodeId = new {{nameof(NodeId)}}({{nameof(Guid)}}.{{nameof(Guid.NewGuid)}}(), applicationNamespaceIndex),
                                 DisplayName = "{{entityName}}",
                             };
+                            {{nodeStateReference}}.AccessRestrictions = AccessRestrictionType.None;
                         
                             root.AddChild({{nodeStateReference}});
                             
                             //Assign properties
                             {{propertyAssignments}}
                             
-                            return {{entityNodeCreationStatement}};
+                            {{resultReturn}}
                         }
                      }
                  }
@@ -102,6 +99,7 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
             yield return new PropertyCreation(propertyName, $"""
                           {nameof(PropertyState)} {propertyName} = {nodeName}.AddProperty<{propertyInfo.Type}>("{propertyName}", {propertyInfo.OpcUaTypeId}, {propertyInfo.ValueRank});
                                      {propertyName}.NodeId = new {nameof(NodeId)}(Guid.NewGuid(), applicationNamespaceIndex);
+                                     {propertyName}.AccessLevel = AccessLevels.CurrentReadOrWrite;
                           """);
         }
     }
