@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Hoeyer.OpcUa.Entity;
-using Hoeyer.OpcUa.Server.Application.NodeManagement.Entity;
+using Hoeyer.OpcUa.Server.Application.Node.Entity;
 using Hoeyer.OpcUa.Server.ServiceConfiguration;
 using Opc.Ua;
 using Opc.Ua.Configuration;

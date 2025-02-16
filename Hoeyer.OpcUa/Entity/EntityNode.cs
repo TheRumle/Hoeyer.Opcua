@@ -10,9 +10,12 @@ public sealed record EntityNode(FolderState Folder, BaseObjectState Entity, IEnu
 
     public IEnumerable<PropertyState> PropertyStates { get; } =  PropertyStates;
 
+    public string? Namespace { get; set; } = null!;
+
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"Folder: {Folder.DisplayName} containing {Entity.DisplayName} with NodeId {Entity.NodeId}";
+        var namespaceText = Namespace == null ? "No Namespace assigned" : Namespace;
+        return $@"Namespace ""{namespaceText}"" with folder ""{Folder.DisplayName}"" containing entity ""{Entity.DisplayName}"" with NodeId ""{Entity.NodeId}""";
     }
 }

@@ -32,9 +32,16 @@ internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuil
         return this;
     }
 
-    public IEndpointsStep WithHost(string host)
+    public IEndpointsStep WithHttpHost(string host)
     {
-        _host = host;
+        _host = "http://" + host;
+        return this;
+    }
+
+    /// <inheritdoc />
+    public IEndpointsStep WithOpcTcpHost(string host)
+    {
+        _host ="opc.tcp://" + host;
         return this;
     }
 
@@ -46,7 +53,7 @@ internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuil
 
     public EntityServerConfiguration Build()
     {
-        var validUrn = Uri.TryCreate( string.Format(CultureInfo.InvariantCulture, "urn:{0}.{1}", _host, _serverId), UriKind.Absolute, out Uri uri);
+        var validUrn = Uri.TryCreate( string.Format(CultureInfo.InvariantCulture, "{0}", _host), UriKind.RelativeOrAbsolute, out Uri uri);
         if (!validUrn) throw new ArgumentException($"Host and serverId could not form a valid URN: {uri}");
 
         return new EntityServerConfiguration(_serverId, _serverName, _host, _endpoints, uri, additionalConfiguration);

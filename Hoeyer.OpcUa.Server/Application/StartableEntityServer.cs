@@ -33,17 +33,10 @@ public sealed class StartableEntityServer : IDisposable
     {
         if (_disposed) throw new ObjectDisposedException(nameof(StartableEntityServer));
         await ApplicationInstance.Start(EntityServer);
-        var l = new List<BaseInstanceState>();
 
         EntityNode gantry = EntityServer.EntityManager.ManagedEntities.First();
-        gantry.PropertyStates.First().Value = 2;
-        gantry.Folder.GetChildren(EntityServer.Server.DefaultSystemContext, l);
-        Console.WriteLine(gantry.Entity.BrowseName.NamespaceIndex);
-        
-        Console.WriteLine(string.Join(", ", l.Select(e=>e.BrowseName)));
-        
-        EntityNode managedEntity = EntityServer.EntityManager.ManagedEntities.First();
-        var jsonString = JsonSerializer.Serialize(managedEntity);
+        Console.WriteLine("\n\n" + gantry + "\n\n");
+        var jsonString = JsonSerializer.Serialize(gantry);
         Console.WriteLine(jsonString);
         return new StartedEntityServer(this);
     }

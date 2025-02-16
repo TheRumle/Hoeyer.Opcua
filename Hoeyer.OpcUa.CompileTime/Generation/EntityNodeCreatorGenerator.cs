@@ -62,7 +62,6 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
                         public {{nameof(EntityNode)}} CreateEntityOpcUaNode({{nameof(FolderState)}} root, ushort applicationNamespaceIndex)
                         {
                             root.AccessRestrictions = AccessRestrictionType.None;
-                        w
                             {{nameof(BaseObjectState)}} {{nodeStateReference}} = new {{nameof(BaseObjectState)}}(root)
                             {
                                 BrowseName =  new {{nameof(QualifiedName)}}("{{entityName}}", applicationNamespaceIndex),

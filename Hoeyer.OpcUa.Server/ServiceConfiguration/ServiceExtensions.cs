@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.OpcUa.Entity;
 using Hoeyer.OpcUa.Server.Application;
-using Hoeyer.OpcUa.Server.Application.NodeManagement.Entity;
+using Hoeyer.OpcUa.Server.Application.Node.Entity;
 using Hoeyer.OpcUa.Server.ServiceConfiguration.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

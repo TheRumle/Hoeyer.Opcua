@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.OpcUa.Entity;
-using Hoeyer.OpcUa.Server.Application.NodeManagement;
-using Hoeyer.OpcUa.Server.Application.NodeManagement.Entity;
+using Hoeyer.OpcUa.Server.Application.Node;
+using Hoeyer.OpcUa.Server.Application.Node.Entity;
 using Hoeyer.OpcUa.Server.ServiceConfiguration;
 using Opc.Ua;
 using Opc.Ua.Server;
@@ -31,7 +31,7 @@ public sealed class OpcEntityServer : StandardServer
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server, ApplicationConfiguration configuration)
     {
         var additionalManagers = _nodeCreators
-            .Select(nodeCreator => _managerFactory.Create(server, configuration, nodeCreator))
+            .Select(nodeCreator => _managerFactory.Create(server, _applicationProductDetails, nodeCreator))
             .ToArray();
         
         EntityManager = new EntityMasterNodeManager(server, configuration, additionalManagers);
@@ -71,7 +71,6 @@ public sealed class OpcEntityServer : StandardServer
         BrowseDescriptionCollection nodesToBrowse, out BrowseResultCollection results,
         out DiagnosticInfoCollection diagnosticInfos)
     {
-        Console.WriteLine($"browsing {string.Join(",",nodesToBrowse.Select(e=>e.NodeId.ToString()))}");
         var a = base.Browse(requestHeader, view, requestedMaxReferencesPerNode, nodesToBrowse, out results, out diagnosticInfos);
         return a;
     }

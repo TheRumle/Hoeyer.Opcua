@@ -20,4 +20,9 @@ public static class StringExtensions
     {
         return SeparatedBy(values.Select(selector), separator);
     }
+    
+    public static string NewlineSeparated(this IEnumerable<string> values)
+    {
+        return string.Join("\n", values);
+    }
 }
