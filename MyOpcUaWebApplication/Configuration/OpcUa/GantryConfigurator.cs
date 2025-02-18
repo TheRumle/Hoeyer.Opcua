@@ -6,7 +6,7 @@ using Opc.Ua;
 
 namespace MyOpcUaWebApplication.Configuration.OpcUa;
 
-public class GantryConfigurator(IOptions<GantryOptions> options, IOptions<OpcUaRootConfigOptions> rootOptions)
+public class GantryConfigurator(IOptions<GantryOptions> options)
     : IOpcEntityConfigurator<Gantry>
 {
     private readonly GantryOptions _options = options.Value;

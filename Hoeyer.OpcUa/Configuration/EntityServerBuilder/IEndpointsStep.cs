@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Hoeyer.OpcUa.Server.ServiceConfiguration.Builder;
+namespace Hoeyer.OpcUa.Configuration.EntityServerBuilder;
 
 public interface IEndpointsStep
 {

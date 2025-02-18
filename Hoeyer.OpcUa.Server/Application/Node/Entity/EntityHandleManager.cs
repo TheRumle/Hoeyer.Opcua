@@ -6,14 +6,38 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application.Node.Entity;
 
-internal class EntityHandleManager(EntityNode entityNode, ILogger? logger = null)
+public interface IEntityHandleManager
 {
-    private readonly BaseObjectState _entity = entityNode.Entity;
-    private readonly IReadOnlyDictionary<NodeId, BaseObjectState> _allNodes = new Dictionary<NodeId, BaseObjectState>
+    /// <summary>
+    /// Tries to find a managed <see cref="BaseObjectState"/> that represents an Entity or null if no matching node exists.
+    /// If the NodeId is invalid, then logs a warning specifying the node. 
+    /// </summary>
+    /// <param name="nodeId">The id of the BaseObjectState that represents a managed Entity </param>
+    /// <returns></returns>
+    BaseObjectState? GetEntityHandle(NodeId nodeId);
+
+    BaseObjectState? GetNodeForHandle(object? handle);
+    bool IsEntityHandle(object handle);
+    bool IsEntityHandle(NodeId handle);
+}
+
+internal class EntityHandleManager : IEntityHandleManager
+{
+    private readonly BaseObjectState _entity;
+    private readonly IReadOnlyDictionary<NodeId, BaseObjectState> _allNodes;
+
+    private readonly ILogger? _logger;
+
+    public EntityHandleManager(IEntityNode entityNode, ILogger? logger = null)
     {
-        [entityNode.Entity.NodeId] = entityNode.Entity,
-        [entityNode.Folder.NodeId] = entityNode.Folder
-    };
+        _logger = logger;
+        _entity = entityNode.Entity;
+        _allNodes = new Dictionary<NodeId, BaseObjectState>
+        {
+            [entityNode.Entity.NodeId] = entityNode.Entity,
+            [entityNode.Folder.NodeId] = entityNode.Folder
+        };
+    }
 
     /// <summary>
     /// Tries to find a managed <see cref="BaseObjectState"/> that represents an Entity or null if no matching node exists.
@@ -25,7 +49,7 @@ internal class EntityHandleManager(EntityNode entityNode, ILogger? logger = null
     {
         if (NodeId.IsNull(nodeId) || nodeId.Identifier is null)
         {
-            logger?.LogWarning("Invalid NodeId. The NodeId is null or does not have an identifier. NodeId: {@NodeId}",
+            _logger?.LogWarning("Invalid NodeId. The NodeId is null or does not have an identifier. NodeId: {@NodeId}",
                 nodeId);
             return null;
         }
@@ -46,7 +70,7 @@ internal class EntityHandleManager(EntityNode entityNode, ILogger? logger = null
 
         BaseObjectState LogInvalidHandle()
         {
-            logger?.LogError("Invalid source handle. The source handle '{@SourceHandle}' is not a valid.",
+            _logger?.LogError("Invalid source handle. The source handle '{@SourceHandle}' is not a valid.",
                 handle);
             throw new InvalidHandleException(handle);
         }

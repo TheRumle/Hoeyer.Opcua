@@ -9,17 +9,26 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application.Node.Entity;
 
+public interface IEntityModifier
+{
+    void AddReferences(IDictionary<NodeId, IList<IReference>> references);
+
+    ServiceResult DeleteReference(
+        object sourceHandle,
+        NodeId referenceTypeId,
+        bool isInverse,
+        ExpandedNodeId targetId);
+
+    void Write(ServerSystemContext systemContext, IList<WriteValue> nodesToWrite);
+}
+
 /// <summary>
 /// Edits entities. Handles modification of an Entity. 
 /// </summary>
-internal class EntityModifier(EntityNode entityNode, EntityHandleManager handleManager, ILogger? logger = null)
+internal class EntityModifier(IEntityNode entityNode, IEntityHandleManager handleManager, ILogger? logger = null) : IEntityModifier
 {
     private BaseObjectState Entity => entityNode.Entity;
-    
-    public EntityModifier(EntityNode entityNode, ILogger? logger = null)
-        : this(entityNode, new EntityHandleManager(entityNode, logger), logger)
-    {}
-    
+
     public void AddReferences(IDictionary<NodeId, IList<IReference>> references)
     {
         if (references.Count == 0) return;
@@ -52,9 +61,6 @@ internal class EntityModifier(EntityNode entityNode, EntityHandleManager handleM
 
     public void Write(ServerSystemContext systemContext, IList<WriteValue> nodesToWrite)
     {
-           
-        
-        
         foreach (var nodeToWrite in nodesToWrite)
         {
             if (nodeToWrite.Processed) continue;

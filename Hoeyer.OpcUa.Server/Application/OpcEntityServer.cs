@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Hoeyer.OpcUa.Configuration;
 using Hoeyer.OpcUa.Entity;
 using Hoeyer.OpcUa.Server.Application.Node;
 using Hoeyer.OpcUa.Server.Application.Node.Entity;
-using Hoeyer.OpcUa.Server.ServiceConfiguration;
 using Opc.Ua;
 using Opc.Ua.Server;
 
@@ -13,14 +13,14 @@ namespace Hoeyer.OpcUa.Server.Application;
 public sealed class OpcEntityServer : StandardServer
 {
     private readonly IEnumerable<IEntityNodeCreator> _nodeCreators;
-    private readonly EntityServerConfiguration _applicationProductDetails;
+    private readonly OpcUaEntityServerConfiguration _applicationProductDetails;
     
     public IServerInternal Server => ServerInternal;
     public readonly IEnumerable<Uri> EndPoints;
     private readonly EntityNodeManagerFactory _managerFactory;
     public EntityMasterNodeManager EntityManager { get; private set; }
     
-    public OpcEntityServer(EntityServerConfiguration details, IEnumerable<IEntityNodeCreator> nodeCreators, EntityNodeManagerFactory factory)
+    public OpcEntityServer(OpcUaEntityServerConfiguration details, IEnumerable<IEntityNodeCreator> nodeCreators, EntityNodeManagerFactory factory)
     {
         _nodeCreators = nodeCreators;
         _applicationProductDetails = details;

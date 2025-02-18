@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Hoeyer.OpcUa.Server.ServiceConfiguration.Builder;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.ServiceConfiguration;
+namespace Hoeyer.OpcUa.Configuration.EntityServerBuilder;
 
 internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuilder, IServerNameStep, IHostStep, IEndpointsStep, IAdditionalConfigurationStep
 {
@@ -12,8 +11,6 @@ internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuil
     private string _serverName = string.Empty;
     private string _host = string.Empty;
     private List<string> _endpoints = new();
-    private Action<ServerConfiguration>? additionalConfiguration;
-
     private EntityServerConfigurationBuilder()
     {
     }
@@ -51,18 +48,17 @@ internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuil
         return this;
     }
 
-    public EntityServerConfiguration Build()
+    public OpcUaEntityServerConfiguration Build()
     {
         var validUrn = Uri.TryCreate( string.Format(CultureInfo.InvariantCulture, "{0}", _host), UriKind.RelativeOrAbsolute, out Uri uri);
         if (!validUrn) throw new ArgumentException($"Host and serverId could not form a valid URN: {uri}");
 
-        return new EntityServerConfiguration(_serverId, _serverName, _host, _endpoints, uri, additionalConfiguration);
+        return new OpcUaEntityServerConfiguration(_serverId, _serverName, _host, _endpoints, uri);
     }
 
     /// <inheritdoc />
     public IEntityServerConfigurationBuildable WithAdditionalConfiguration(Action<ServerConfiguration> additionalConfigurations)
     {
-        this.additionalConfiguration = additionalConfigurations;
         return this;
     }
 }

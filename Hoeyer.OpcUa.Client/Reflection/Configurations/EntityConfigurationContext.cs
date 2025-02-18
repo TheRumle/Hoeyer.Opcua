@@ -5,22 +5,22 @@ namespace Hoeyer.OpcUa.Client.Reflection.Configurations;
 
 internal readonly record struct EntityConfigurationContext
 {
-    public readonly Type ConcreteConfiguratorInterface;
+    public readonly Type EntityConfiguratorInterface;
     public readonly Type EntityType;
-    public readonly Type ImplementorType;
+    public readonly Type EntityConfiguratorImpl;
 
-    public EntityConfigurationContext(Type implementorType, Type concreteConfiguratorInterface, Type entityType)
+    public EntityConfigurationContext(Type entityConfiguratorImpl, Type entityConfiguratorInterface, Type entityType)
     {
-        if (!concreteConfiguratorInterface.HasGenericParameterOfType(entityType))
+        if (!entityConfiguratorInterface.HasGenericParameterOfType(entityType))
             throw new ArgumentException(
-                $"The type {entityType} is not a concrete type of {concreteConfiguratorInterface.Name}<{entityType.Name}>");
+                $"The type {entityType} is not a concrete type of {entityConfiguratorInterface.Name}<{entityType.Name}>");
 
-        if (Array.Find(implementorType.GetInterfaces(), i => i == concreteConfiguratorInterface) == null)
+        if (Array.Find(entityConfiguratorImpl.GetInterfaces(), i => i == entityConfiguratorInterface) == null)
             throw new ArgumentException(
-                $"{implementorType.FullName} does not implement {concreteConfiguratorInterface.Name}<{entityType.Name}>");
+                $"{entityConfiguratorImpl.FullName} does not implement {entityConfiguratorInterface.Name}<{entityType.Name}>");
 
-        ImplementorType = implementorType;
-        ConcreteConfiguratorInterface = concreteConfiguratorInterface;
+        EntityConfiguratorImpl = entityConfiguratorImpl;
+        EntityConfiguratorInterface = entityConfiguratorInterface;
         EntityType = entityType;
     }
 }

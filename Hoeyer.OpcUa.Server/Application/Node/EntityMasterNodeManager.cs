@@ -9,12 +9,12 @@ namespace Hoeyer.OpcUa.Server.Application.Node;
 
 public sealed class EntityMasterNodeManager : MasterNodeManager
 {
-    public readonly IEnumerable<EntityNode> ManagedEntities;
+    public readonly IEnumerable<ManagedEntityNode> ManagedEntities;
     
     /// <inheritdoc />
     public EntityMasterNodeManager(IServerInternal server, ApplicationConfiguration applicationConfiguration, EntityNodeManager[] additionalManagers) : base(server, applicationConfiguration, applicationConfiguration.ApplicationUri, additionalManagers)
     {
-        ManagedEntities = additionalManagers.Select(e => e.EntityNode);
+        ManagedEntities = additionalManagers.Select(e => e.ManagedEntity);
     }
 
 

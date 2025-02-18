@@ -1,7 +1,7 @@
 ﻿using System;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.ServiceConfiguration.Builder;
+namespace Hoeyer.OpcUa.Configuration.EntityServerBuilder;
 
 public interface IAdditionalConfigurationStep : IEntityServerConfigurationBuildable
 {

@@ -10,12 +10,20 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application.Node.Entity;
 
-internal class EntityBrowser(EntityNode entityNode, EntityHandleManager handleManager, ILogger? logger = null)
-    
+public interface IEntityBrowser
+{
+    /// <inheritdoc />
+    IEnumerable<ReferenceDescription> Browse(
+        ContinuationPoint continuationPoint,
+        SystemContext systemContext);
+}
+
+internal class EntityBrowser(IEntityNode entityNode, EntityHandleManager handleManager, ILogger? logger = null) : IEntityBrowser
 {
     private readonly BaseObjectState _entity = entityNode.Entity;
 
-    public EntityBrowser(EntityNode entityNode, ILogger? logger = null):this(entityNode, new EntityHandleManager(entityNode, logger), logger)
+    public EntityBrowser(IEntityNode entityNode, ILogger? logger = null)
+        :this(entityNode, new EntityHandleManager(entityNode, logger), logger)
     {}
     
     /// <inheritdoc />

@@ -34,7 +34,7 @@ public sealed class StartableEntityServer : IDisposable
         if (_disposed) throw new ObjectDisposedException(nameof(StartableEntityServer));
         await ApplicationInstance.Start(EntityServer);
 
-        EntityNode gantry = EntityServer.EntityManager.ManagedEntities.First();
+        IEntityNode gantry = EntityServer.EntityManager.ManagedEntities.First();
         Console.WriteLine("\n\n" + gantry + "\n\n");
         var jsonString = JsonSerializer.Serialize(gantry);
         Console.WriteLine(jsonString);

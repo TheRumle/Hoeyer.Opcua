@@ -5,11 +5,10 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
 
-public class SessionFactory(OpcUaApplicationOptions applicationOptions)
+public class SessionFactory(OpcUaEntityServerConfiguration applicationOptions)
 {
-    private readonly string _opcServerUrl = applicationOptions.ApplicationUri;
+    private readonly string _opcServerUrl = applicationOptions.ApplicationNamespace.ToString();
     public readonly ApplicationConfiguration Configuration = CreateApplicationConfig();
-    private string _machineStateNodeId = "ns=2;s=MachineStateSnapshot";
 
     public async Task<Session> CreateSessionAsync()
     {

@@ -10,7 +10,7 @@ public class NoSuchManagedNodeException : EntityNodeManagementException
     /// </summary>
     /// <param name="entityNode">The entity node held by the manager</param>
     /// <param name="nodeId">The NodeId of the sought node</param>
-    public NoSuchManagedNodeException(EntityNode entityNode, NodeId nodeId):base($"The entity manager only holds the node {entityNode} and should never contain a node with node id {nodeId}")
+    public NoSuchManagedNodeException(IEntityNode entityNode, NodeId nodeId):base($"The entity manager only holds the node {entityNode} and should never contain a node with node id {nodeId}")
     {
     }
     
@@ -19,7 +19,7 @@ public class NoSuchManagedNodeException : EntityNodeManagementException
     /// </summary>
     /// <param name="entityNode">The entity node held by the manager</param>
     /// <param name="handle">The NodeId of the sought node</param>
-    public NoSuchManagedNodeException(EntityNode entityNode, object handle):base($"The entity manager only holds the node {entityNode} but was passed a reference handle to something else: {handle}")
+    public NoSuchManagedNodeException(IEntityNode entityNode, object handle):base($"The entity manager only holds the node {entityNode} but was passed a reference handle to something else: {handle}")
     {
     }
 }

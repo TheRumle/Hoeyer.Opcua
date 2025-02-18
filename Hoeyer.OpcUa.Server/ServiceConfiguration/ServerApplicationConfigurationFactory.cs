@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using Hoeyer.OpcUa.Configuration;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.ServiceConfiguration;
@@ -45,7 +46,7 @@ internal static class ServerApplicationConfigurationFactory
     };
     
     /// <inheritdoc />
-    public static ApplicationConfiguration CreateServerConfiguration(EntityServerConfiguration configuration)
+    public static ApplicationConfiguration CreateServerConfiguration(OpcUaEntityServerConfigurationSetup configuration)
     {
         var applicationConfiguration = CreateApplicationConfiguration(configuration);
         SetupDefaultValues(applicationConfiguration.ServerConfiguration, configuration);
@@ -77,7 +78,7 @@ internal static class ServerApplicationConfigurationFactory
     }
     
 
-    private static ApplicationConfiguration CreateApplicationConfiguration(EntityServerConfiguration configuration)
+    private static ApplicationConfiguration CreateApplicationConfiguration(OpcUaEntityServerConfigurationSetup configuration)
     {
         var config = new ApplicationConfiguration
         {
@@ -119,7 +120,7 @@ internal static class ServerApplicationConfigurationFactory
     }
 
 
-    private static void SetupDefaultValues(ServerConfiguration serverConfiguration, EntityServerConfiguration entityServerConfiguration)
+    private static void SetupDefaultValues(ServerConfiguration serverConfiguration, OpcUaEntityServerConfigurationSetup opcUaEntityEntityServerConfiguration)
     {
         serverConfiguration.MinRequestThreadCount = 5;
         serverConfiguration.MaxRequestThreadCount = 100;
@@ -146,7 +147,7 @@ internal static class ServerApplicationConfigurationFactory
         serverConfiguration.MaxEventQueueSize = 10000;
         serverConfiguration.MaxTrustListSize = 0;
         serverConfiguration.MultiCastDnsEnabled = false;
-        serverConfiguration.NodeManagerSaveFile = entityServerConfiguration.ServerId + ".Nodes.xml";
+        serverConfiguration.NodeManagerSaveFile = opcUaEntityEntityServerConfiguration.ServerId + ".Nodes.xml";
         serverConfiguration.ShutdownDelay = 5;
     }
 }

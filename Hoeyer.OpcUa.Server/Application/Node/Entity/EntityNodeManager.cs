@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.Common.Extensions.Exceptions;
-using Hoeyer.OpcUa.Entity;
 using Hoeyer.OpcUa.Server.Application.Node.Entity.Exceptions;
 using Hoeyer.OpcUa.Server.Application.Node.Extensions;
 using Microsoft.Extensions.Logging;
@@ -11,52 +10,22 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application.Node.Entity;
 
-public sealed class EntityNodeManager : INodeManager2
-{
-    public IEnumerable<string> NamespaceUris => [EntityNamespace];
-    public EntityNode EntityNode { get; set; }
-    private FolderState EntityFolder => EntityNode.Folder;
-    private BaseObjectState Entity => EntityNode.Entity;
-    private readonly IServerInternal _server;
-    private readonly ILogger _logger;
-    private readonly ServerSystemContext _systemContext;
-    private readonly Func<ushort, EntityNode> _nodeCreator;
-    private EntityHandleManager _handleManager;
-    public string EntityNamespace { get; }
-    public ushort EntityNamespaceIndex { get; private set; }
-    private EntityModifier _entityModifier;
-    private EntityBrowser _browser;
-
-
-    internal EntityNodeManager(
-        string entityNamespace,
-        Func<ushort, EntityNode> nodeCreator,
+public sealed class EntityNodeManager(
+        ManagedEntityNode managedEntity,
         IServerInternal server,
-        ILogger logger)
-    {
-        EntityNamespace = entityNamespace;
-        EntityNode = null!;
-        _nodeCreator = nodeCreator;
-        _server = server;
-        _systemContext = _server.DefaultSystemContext.Copy();
-        _logger = logger;
-    }
-
+        IEntityHandleManager handleManager,
+        IEntityModifier entityModifier,
+        IEntityBrowser browser,
+        ILogger logger
+    ) : INodeManager2
+{
+    public readonly ManagedEntityNode ManagedEntity = managedEntity;
+    public IEnumerable<string> NamespaceUris { get; } = [managedEntity.Namespace];
+    private readonly ServerSystemContext _systemContext = server.DefaultSystemContext;
 
     /// <inheritdoc />
     public void CreateAddressSpace(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
-        EntityNamespaceIndex = _server.NamespaceUris.GetIndexOrAppend(EntityNamespace);
-        EntityNode = _nodeCreator.Invoke(EntityNamespaceIndex);
-        
-        EntityFolder.Create(_systemContext, EntityFolder.NodeId, EntityFolder.BrowseName, Entity.DisplayName, false);
-        Entity.Create(_systemContext, Entity.NodeId, Entity.BrowseName, Entity.DisplayName, false);
-        EntityFolder.AddChild(Entity);
-
-
-        _handleManager = new EntityHandleManager(EntityNode, _logger); 
-        _entityModifier = new EntityModifier(EntityNode, _handleManager, _logger);
-        _browser = new EntityBrowser(EntityNode, _handleManager, _logger);
     }
 
 
@@ -66,26 +35,21 @@ public sealed class EntityNodeManager : INodeManager2
     }
 
     /// <inheritdoc />
-    public object? GetManagerHandle(NodeId nodeId) => _handleManager.GetEntityHandle(nodeId);
+    public object? GetManagerHandle(NodeId nodeId) => handleManager.GetEntityHandle(nodeId);
 
     /// <inheritdoc />
     public void AddReferences(IDictionary<NodeId, IList<IReference>> references)
     {
-        ThrowIfAnyExceptions(
-            references.CreateEntityViolations(EntityNode, e => e.Key, e => new NoSuchManagedNodeException(EntityNode, e.Key))
-            );
-        _entityModifier.AddReferences(references);
-    }
-    
-    private void ThrowIfAnyExceptions(IEnumerable<Exception> invalids)
-    {
-        var exceptions = invalids as Exception[] ?? invalids.ToArray();
+        var exceptions = references
+            .CreateEntityViolations(ManagedEntity, e => e.Key, e => new NoSuchManagedNodeException(ManagedEntity, e.Key))
+            .ToList();
         if (exceptions.Any())
         {
             var exception = exceptions.ToAggregateException();
-            _logger.LogError(exception.Message);
+            logger.LogError(exception.Message);
             throw exception;
         }
+        entityModifier.AddReferences(references);
     }
 
     /// <inheritdoc />
@@ -94,20 +58,20 @@ public sealed class EntityNodeManager : INodeManager2
         NodeId referenceTypeId,
         bool isInverse,
         ExpandedNodeId targetId,
-        bool deleteBidirectional) => _entityModifier.DeleteReference(sourceHandle, referenceTypeId, isInverse, targetId);
+        bool deleteBidirectional) => entityModifier.DeleteReference(sourceHandle, referenceTypeId, isInverse, targetId);
 
     /// <inheritdoc />
     public NodeMetadata GetNodeMetadata(OperationContext context, object targetHandle, BrowseResultMask resultMask)
     {
-        if (!_handleManager.IsEntityHandle(targetHandle))
+        if (!handleManager.IsEntityHandle(targetHandle))
         {
-            var e = new NoSuchManagedNodeException(EntityNode, targetHandle);
-            _logger.LogError(e.Message);
+            var e = new NoSuchManagedNodeException(ManagedEntity, targetHandle);
+            logger.LogError(e.Message);
             throw e;
         }
 
         var serverContext = _systemContext.Copy();
-        return EntityNode.ConstructMetadata(serverContext, resultMask);
+        return ManagedEntity.ConstructMetadata(serverContext);
     }
 
     /// <inheritdoc />
@@ -117,7 +81,7 @@ public sealed class EntityNodeManager : INodeManager2
         var toTake = continuationPoint.MaxResultsToReturn - references.Count;
         if (toTake <= 0) return;
         
-        foreach (var description  in _browser.Browse(continuationPoint, _systemContext.Copy(context)).Take((int)toTake))
+        foreach (var description  in browser.Browse(continuationPoint, _systemContext.Copy(context)).Take((int)toTake))
         {
             references.Add(description);
         }
@@ -126,16 +90,16 @@ public sealed class EntityNodeManager : INodeManager2
     /// <inheritdoc />
     public void Write(OperationContext context, IList<WriteValue> nodesToWrite, IList<ServiceResult> errors)
     {
-        var exceptions = nodesToWrite.CreateEntityViolations(EntityNode, wv => wv.NodeId, wv => new NoSuchManagedNodeException(EntityNode, wv.NodeId)).ToList();
+        var exceptions = nodesToWrite.CreateEntityViolations(ManagedEntity, wv => wv.NodeId, wv => new NoSuchManagedNodeException(ManagedEntity, wv.NodeId)).ToList();
 
         if (exceptions.Count != 0)
         {
             var e = exceptions.ToAggregateException();
-            _logger.LogWarning(e, "Tried to write to nodes that are not related to EntityManager for entity {@Entity}", Entity.BrowseName);
+            logger.LogWarning(e, "Entity manager for {@Entity} was invoked with write operation to node(s) that was unrelated to the entity.", ManagedEntity);
             throw e;
         }
         var systemContext = _systemContext.Copy(context);
-        _entityModifier.Write(systemContext, nodesToWrite);
+        entityModifier.Write(systemContext, nodesToWrite);
     }
     
 

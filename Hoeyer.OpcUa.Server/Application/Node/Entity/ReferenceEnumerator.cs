@@ -6,7 +6,7 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application.Node.Entity;
 
-internal class ReferenceEnumerator(INodeBrowser browser, ContinuationPoint continuationPoint, EntityHandleManager _handleManager)
+internal class ReferenceEnumerator(INodeBrowser browser, ContinuationPoint continuationPoint, EntityHandleManager handleManager)
     : IEnumerable<ReferenceDescription>
 {
     private readonly INodeBrowser _browser = browser ?? throw new ArgumentNullException(nameof(browser));
@@ -35,7 +35,7 @@ internal class ReferenceEnumerator(INodeBrowser browser, ContinuationPoint conti
             return continuationPoint.NodeClassMask != 0 ? null : description;
         }
 
-        var target = _handleManager.GetEntityHandle((NodeId)reference.TargetId);
+        var target = handleManager.GetEntityHandle((NodeId)reference.TargetId);
         // the target may be a reference to a node in another node manager. In these cases
         // the target attributes must be fetched by the caller. The Unfiltered flag tells the
         // caller to do that.
