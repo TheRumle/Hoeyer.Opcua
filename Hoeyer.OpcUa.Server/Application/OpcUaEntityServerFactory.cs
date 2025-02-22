@@ -15,7 +15,7 @@ public sealed class OpcUaEntityServerFactory(
     ILoggerFactory loggerFactory)
 {
     
-    public StartableEntityServer CreateServer()
+    public IStartableEntityServer CreateServer()
     {
         var configuration = ServerApplicationConfigurationFactory.CreateServerConfiguration(opcUaEntityServer);
         

@@ -2,5 +2,5 @@
 
 public interface IEntityServerConfigurationBuildable
 {
-    IOpcUaEntityServerConfiguration Build();
+    IOpcUaEntityServerInfo Build();
 }

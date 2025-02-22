@@ -6,7 +6,7 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.ServiceConfiguration;
 
-public sealed record OpcUaEntityServerSetup(string ServerId, string ServerName, Uri Host, ISet<Uri> Endpoints, Uri ApplicationNamespace, Action<ServerConfiguration>? AdditionalConfiguration) : IOpcUaEntityServerConfiguration
+public sealed record OpcUaEntityServerSetup(string ServerId, string ServerName, Uri Host, ISet<Uri> Endpoints, Uri ApplicationNamespace, Action<ServerConfiguration>? AdditionalConfiguration) : IOpcUaEntityServerInfo
 {
 
     public Action<ServerConfiguration> AdditionalConfiguration { get; } = AdditionalConfiguration ?? (_ =>
@@ -21,7 +21,7 @@ public sealed record OpcUaEntityServerSetup(string ServerId, string ServerName, 
     public ISet<Uri> Endpoints { get; } = Endpoints;
     public Uri ApplicationNamespace { get; } = ApplicationNamespace;
 
-    public OpcUaEntityServerSetup(IOpcUaEntityServerConfiguration root, Action<ServerConfiguration> additionalConfiguration)
+    public OpcUaEntityServerSetup(IOpcUaEntityServerInfo root, Action<ServerConfiguration> additionalConfiguration)
         : this(root.ServerId, root.ServerName, root.Host, root.Endpoints, root.ApplicationNamespace,
             additionalConfiguration)
     {

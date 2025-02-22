@@ -19,8 +19,8 @@ public static class ServiceExtensions
     {
         serviceRegistration.Collection.AddSingleton<OpcUaEntityServerSetup>(p =>
         {
-            var standardConfig = p.GetService<IOpcUaEntityServerConfiguration>()!;
-            if (standardConfig == null) throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerConfiguration)} has been registered! This should be prevented using builder pattern! SHOULD NOT HAPPEN!" );
+            var standardConfig = p.GetService<IOpcUaEntityServerInfo>()!;
+            if (standardConfig == null) throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerInfo)} has been registered! This should be prevented using builder pattern! SHOULD NOT HAPPEN!" );
             return new OpcUaEntityServerSetup(standardConfig, additionalConfiguration ?? ((value) => { }));
         });
         
@@ -28,7 +28,7 @@ public static class ServiceExtensions
         {
             var loggerFactory = p.GetService<ILoggerFactory>()!;
             var configuration = p.GetService<OpcUaEntityServerSetup>();
-            if (configuration is null) throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerConfiguration)} has been configured!");
+            if (configuration is null) throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerInfo)} has been configured!");
             return new OpcUaEntityServerFactory(configuration, [], loggerFactory);
         });
         return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
@@ -47,7 +47,7 @@ public static class ServiceExtensions
         {
             var loggerFactory = p.GetService<ILoggerFactory>()!;
             var configuration = p.GetService<OpcUaEntityServerSetup>();
-            if (configuration is null) throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerConfiguration)} has been configured!");
+            if (configuration is null) throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerInfo)} has been configured!");
             return new OpcUaEntityServerFactory(configuration, GetEntityNodeCreators(), loggerFactory);
         });
 

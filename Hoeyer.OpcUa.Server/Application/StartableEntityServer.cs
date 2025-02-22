@@ -1,14 +1,24 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Hoeyer.OpcUa.Configuration;
 using Opc.Ua.Configuration;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-public sealed class StartableEntityServer(ApplicationInstance applicationInstance, OpcEntityServer entityServer)
-    : IDisposable
+public interface IStartableEntityServer
 {
-    public readonly ApplicationInstance ApplicationInstance = applicationInstance ?? throw new ArgumentNullException(nameof(applicationInstance));
-    public readonly OpcEntityServer EntityServer = entityServer ?? throw new ArgumentNullException(nameof(entityServer));
+    Task<IStartedEntityServer> StartAsync();
+    IOpcUaEntityServerInfo ServerInfo { get; }
+    
+}
+
+public interface IStartedEntityServer : IDisposable;
+
+internal sealed class StartableEntityServer(ApplicationInstance applicationInstance, OpcEntityServer entityServer)
+    : IStartableEntityServer, IStartedEntityServer
+{
+    private readonly ApplicationInstance _applicationInstance = applicationInstance ?? throw new ArgumentNullException(nameof(applicationInstance));
+    private readonly OpcEntityServer _entityServer = entityServer ?? throw new ArgumentNullException(nameof(entityServer));
     private bool _disposed;
 
     public void Dispose()
@@ -17,21 +27,24 @@ public sealed class StartableEntityServer(ApplicationInstance applicationInstanc
         GC.SuppressFinalize(this);
     }
 
-    public async Task<StartedEntityServer> StartAsync()
+    public async Task<IStartedEntityServer> StartAsync()
     {
         if (_disposed) throw new ObjectDisposedException(nameof(StartableEntityServer));
-        await ApplicationInstance.Start(EntityServer);
-        return new StartedEntityServer(this);
+        await _applicationInstance.Start(_entityServer);
+        return this;
     }
+
+    /// <inheritdoc />
+    public IOpcUaEntityServerInfo ServerInfo => _entityServer.ServerInfo;
 
     private void Dispose(bool disposing)
     {
         if (_disposed) return;
         if (disposing)
         {
-            EntityServer.Stop();
-            ApplicationInstance.Stop();
-            EntityServer.Dispose();
+            _entityServer.Stop();
+            _applicationInstance.Stop();
+            _entityServer.Dispose();
         }
 
         _disposed = true;

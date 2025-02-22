@@ -7,7 +7,7 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Configuration;
 
-public interface IOpcUaEntityServerConfiguration
+public interface IOpcUaEntityServerInfo
 {
     string ServerId { get; }
     string ServerName { get; }
@@ -20,9 +20,9 @@ public interface IOpcUaEntityServerConfiguration
     Uri ApplicationNamespace { get; }
 }
 
-internal record OpcUaEntityServerConfiguration : IOpcUaEntityServerConfiguration
+internal record OpcUaEntityServerInfo : IOpcUaEntityServerInfo
 {
-    public OpcUaEntityServerConfiguration(string ServerId, string ServerName, Uri Host, ISet<Uri> Endpoints,
+    public OpcUaEntityServerInfo(string ServerId, string ServerName, Uri Host, ISet<Uri> Endpoints,
         Uri ApplicationNamespace)
     {
         var validation = ValidateSupportedPrototol([Host, ..Endpoints]);

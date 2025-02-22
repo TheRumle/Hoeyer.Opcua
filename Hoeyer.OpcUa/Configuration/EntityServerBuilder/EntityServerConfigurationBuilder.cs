@@ -53,12 +53,12 @@ internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuil
         return this;
     }
 
-    public IOpcUaEntityServerConfiguration Build()
+    public IOpcUaEntityServerInfo Build()
     {
         var validuri = Uri.TryCreate( string.Format(CultureInfo.InvariantCulture, "{0}", _host), UriKind.RelativeOrAbsolute, out var uri);
         if (!validuri) throw new ArgumentException($"Host and serverId could not form a valid URI: {uri}");
 
-        return new OpcUaEntityServerConfiguration(_serverId, _serverName, _host, _endpoints, uri);
+        return new OpcUaEntityServerInfo(_serverId, _serverName, _host, _endpoints, uri);
     }
 
     /// <inheritdoc />

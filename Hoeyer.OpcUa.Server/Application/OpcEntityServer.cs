@@ -7,21 +7,20 @@ using Hoeyer.OpcUa.Server.Application.EntityNode;
 using Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
-using Opc.Ua.Bindings;
 using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
 public sealed class OpcEntityServer(
-    IOpcUaEntityServerConfiguration applicationProductDetails,
+    IOpcUaEntityServerInfo applicationProductDetails,
     IEnumerable<IEntityNodeCreator> nodeCreators,
     EntityNodeManagerFactory managerFactory,
     ILogger<OpcEntityServer> logger)
     : StandardServer //ServerBase? instead? 
 {
-    public IServerInternal Server => ServerInternal;
     public readonly IEnumerable<Uri> EndPoints = [..applicationProductDetails.Endpoints];
     public EntityMasterNodeManager EntityManager { get; private set; } = null!;
+    public readonly IOpcUaEntityServerInfo ServerInfo = applicationProductDetails;
 
 
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server,
@@ -29,7 +28,7 @@ public sealed class OpcEntityServer(
     {
         logger.LogInformation("Creating entity managers");
         var additionalManagers = nodeCreators
-            .Select(nodeCreator => managerFactory.Create(server, applicationProductDetails, nodeCreator))
+            .Select(nodeCreator => managerFactory.Create(server, ServerInfo, nodeCreator))
             .ToArray();
 
         EntityManager = new EntityMasterNodeManager(server, configuration, additionalManagers);
@@ -52,12 +51,7 @@ public sealed class OpcEntityServer(
         }
         catch (Exception e)
         {
-            logger.LogCritical(e,
-                "An exception occured when trying to activate session for {@SessionInfo}.",
-                new
-                {
-                    Header = requestHeader
-                });
+            logger.LogCritical(e, "An exception occured when trying to activate session with RequestHeader {@Header}", requestHeader);
 
             diagnosticInfos = new DiagnosticInfoCollection();
             results = new StatusCodeCollection();
@@ -75,8 +69,8 @@ public sealed class OpcEntityServer(
     {
         ServerProperties properties = base.LoadServerProperties();
         properties.BuildDate = DateTime.UtcNow;
-        properties.ProductName = applicationProductDetails.ServerName;
-        properties.ProductUri = applicationProductDetails.ApplicationNamespace.ToString();
+        properties.ProductName = ServerInfo.ServerName;
+        properties.ProductUri = ServerInfo.ApplicationNamespace.ToString();
         properties.SoftwareVersion = "1.0";
         return properties;
     }
@@ -85,13 +79,6 @@ public sealed class OpcEntityServer(
     protected override void OnNodeManagerStarted(IServerInternal server)
     {
         base.OnNodeManagerStarted(server);
-    }
-
-    /// <inheritdoc />
-    protected override IList<ServiceHost> InitializeServiceHosts(ApplicationConfiguration configuration, TransportListenerBindings bindingFactory,
-        out ApplicationDescription serverDescription, out EndpointDescriptionCollection endpoints)
-    {
-        return base.InitializeServiceHosts(configuration, bindingFactory, out serverDescription, out endpoints);
     }
 
     /// <inheritdoc />

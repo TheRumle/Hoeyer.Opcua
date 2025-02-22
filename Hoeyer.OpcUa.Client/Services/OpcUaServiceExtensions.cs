@@ -85,8 +85,8 @@ public static class OpcUaServiceExtensions
                 .AddTransient<IOpcUaNodeConnectionHolder<TEntity>, OpcUaEntityReader<TEntity>>()
                 .AddSingleton<SessionFactory>(p =>
                 {
-                    var opcUaEntityServerConfiguration = p.GetService<IOpcUaEntityServerConfiguration>()!;
-                    if (opcUaEntityServerConfiguration == null) throw new InvalidOperationException($"{nameof(IOpcUaEntityServerConfiguration)} has not been configured!");
+                    var opcUaEntityServerConfiguration = p.GetService<IOpcUaEntityServerInfo>()!;
+                    if (opcUaEntityServerConfiguration == null) throw new InvalidOperationException($"{nameof(IOpcUaEntityServerInfo)} has not been configured!");
                     return new SessionFactory(opcUaEntityServerConfiguration);
                 })
                 .AddTransient<SessionManager>()
