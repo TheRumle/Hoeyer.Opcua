@@ -128,8 +128,17 @@ internal sealed class EntityNodeManager(
             return null!;
         }
 
-        var serverContext = _systemContext.Copy();
-        return ManagedEntity.ConstructMetadata(serverContext);
+        try
+        {
+            using var scope = logger.BeginScope("Getting metadata for {@TargetHandle}", targetHandle);
+            var serverContext = _systemContext.Copy();
+            return ManagedEntity.ConstructMetadata(serverContext);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to get metadata for {@TargetHandle}", targetHandle);
+        }
+        return null!;
     }
 
     /// <inheritdoc />

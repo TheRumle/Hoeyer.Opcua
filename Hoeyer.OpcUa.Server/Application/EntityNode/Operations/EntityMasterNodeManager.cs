@@ -19,47 +19,6 @@ public sealed class EntityMasterNodeManager : MasterNodeManager
     }
 
 
-    /// <inheritdoc />
-    protected override void Dispose(bool disposing)
-    {
-        base.Dispose(disposing);
-    }
-
-    /// <inheritdoc />
-    public override void Startup()
-    {
-        base.Startup();
-    }
-
-    /// <inheritdoc />
-    public override void SessionClosing(OperationContext context, NodeId sessionId, bool deleteSubscriptions)
-    {
-        base.SessionClosing(context, sessionId, deleteSubscriptions);
-    }
-
-    /// <inheritdoc />
-    public override void Shutdown()
-    {
-        base.Shutdown();
-    }
-
-    /// <inheritdoc />
-    public override object GetManagerHandle(NodeId nodeId, out INodeManager nodeManager)
-    {
-        return base.GetManagerHandle(nodeId, out nodeManager);
-    }
-
-    /// <inheritdoc />
-    public override void AddReferences(NodeId sourceId, IList<IReference> references)
-    {
-        base.AddReferences(sourceId, references);
-    }
-
-    /// <inheritdoc />
-    public override void DeleteReferences(NodeId targetId, IList<IReference> references)
-    {
-        base.DeleteReferences(targetId, references);
-    }
 
     /// <inheritdoc />
     public override void RegisterNodes(OperationContext context, NodeIdCollection nodesToRegister,
@@ -74,20 +33,6 @@ public sealed class EntityMasterNodeManager : MasterNodeManager
         base.UnregisterNodes(context, nodesToUnregister);
     }
 
-    /// <inheritdoc />
-    public override void TranslateBrowsePathsToNodeIds(OperationContext context, BrowsePathCollection browsePaths,
-        out BrowsePathResultCollection results, out DiagnosticInfoCollection diagnosticInfos)
-    {
-        base.TranslateBrowsePathsToNodeIds(context, browsePaths, out results, out diagnosticInfos);
-    }
-
-    /// <inheritdoc />
-    public override void Browse(OperationContext context, ViewDescription view, uint maxReferencesPerNode,
-        BrowseDescriptionCollection nodesToBrowse, out BrowseResultCollection results,
-        out DiagnosticInfoCollection diagnosticInfos)
-    {
-        base.Browse(context, view, maxReferencesPerNode, nodesToBrowse, out results, out diagnosticInfos);
-    }
 
     /// <inheritdoc />
     public override void BrowseNext(OperationContext context, bool releaseContinuationPoints,

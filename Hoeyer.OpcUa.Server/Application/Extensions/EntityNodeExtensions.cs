@@ -7,7 +7,7 @@ namespace Hoeyer.OpcUa.Server.Application.Extensions;
 
 public static class EntityNodeExtensions
 {
-    public static NodeMetadata ConstructMetadata(this IEntityNode entityNode, ISystemContext serverContext)
+    public static NodeMetadata ConstructMetadata(this IEntityNode entityNode, ISystemContext serverContext, byte accessLevel = AccessLevels.HistoryReadOrWrite | AccessLevels.CurrentReadOrWrite)
     {
         var entity = entityNode.Entity;
         var values = entity.ReadAttributes(
@@ -32,9 +32,9 @@ public static class EntityNodeExtensions
             DisplayName = entity.DisplayName,
             TypeDefinition = entity.TypeDefinitionId,
             ModellingRule = entity.ModellingRuleId,
-            DataType = (NodeId)values[2],
+            DataType = DataTypes.ObjectNode,
             ArrayDimensions = (IList<uint>)values[4],
-            AccessLevel = (byte)values[5] //& ((byte)values[6]))
+            AccessLevel = accessLevel
         };
 
         if (values[0] != null && values[1] != null)

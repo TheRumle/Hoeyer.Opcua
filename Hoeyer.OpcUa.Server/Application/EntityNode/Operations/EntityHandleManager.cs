@@ -55,8 +55,7 @@ internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManage
     /// <inheritdoc />
     public Result<IEntityNodeHandle> GetHandle(NodeId nodeId)
     {
-        if (IsManagedPropertyHandle(nodeId, out var propertyHandle))
-            return Result.Ok<IEntityNodeHandle>(propertyHandle);
+        if (IsManagedPropertyHandle(nodeId, out var propertyHandle)) return Result.Ok<IEntityNodeHandle>(propertyHandle);
         if (IsManagedEntityHandle(nodeId, out var entityHandle)) return Result.Ok<IEntityNodeHandle>(entityHandle);
         if (IsManagedFolderHandle(nodeId, out var folderHandle)) return Result.Ok<IEntityNodeHandle>(folderHandle);
 
