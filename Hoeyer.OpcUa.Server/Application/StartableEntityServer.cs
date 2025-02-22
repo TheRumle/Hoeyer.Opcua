@@ -7,9 +7,8 @@ namespace Hoeyer.OpcUa.Server.Application;
 
 public interface IStartableEntityServer
 {
-    Task<IStartedEntityServer> StartAsync();
     IOpcUaEntityServerInfo ServerInfo { get; }
-    
+    Task<IStartedEntityServer> StartAsync();
 }
 
 public interface IStartedEntityServer : IDisposable;
@@ -17,15 +16,13 @@ public interface IStartedEntityServer : IDisposable;
 internal sealed class StartableEntityServer(ApplicationInstance applicationInstance, OpcEntityServer entityServer)
     : IStartableEntityServer, IStartedEntityServer
 {
-    private readonly ApplicationInstance _applicationInstance = applicationInstance ?? throw new ArgumentNullException(nameof(applicationInstance));
-    private readonly OpcEntityServer _entityServer = entityServer ?? throw new ArgumentNullException(nameof(entityServer));
-    private bool _disposed;
+    private readonly ApplicationInstance _applicationInstance =
+        applicationInstance ?? throw new ArgumentNullException(nameof(applicationInstance));
 
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
+    private readonly OpcEntityServer _entityServer =
+        entityServer ?? throw new ArgumentNullException(nameof(entityServer));
+
+    private bool _disposed;
 
     public async Task<IStartedEntityServer> StartAsync()
     {
@@ -36,6 +33,12 @@ internal sealed class StartableEntityServer(ApplicationInstance applicationInsta
 
     /// <inheritdoc />
     public IOpcUaEntityServerInfo ServerInfo => _entityServer.ServerInfo;
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
     private void Dispose(bool disposing)
     {

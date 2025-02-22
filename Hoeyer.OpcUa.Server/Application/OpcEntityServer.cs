@@ -19,8 +19,10 @@ public sealed class OpcEntityServer(
     : StandardServer //ServerBase? instead? 
 {
     public readonly IEnumerable<Uri> EndPoints = [..applicationProductDetails.Endpoints];
-    public EntityMasterNodeManager EntityManager { get; private set; } = null!;
     public readonly IOpcUaEntityServerInfo ServerInfo = applicationProductDetails;
+
+    private bool _disposed;
+    public EntityMasterNodeManager EntityManager { get; private set; } = null!;
 
 
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server,
@@ -51,15 +53,16 @@ public sealed class OpcEntityServer(
         }
         catch (Exception e)
         {
-            logger.LogCritical(e, "An exception occured when trying to activate session with RequestHeader {@Header}", requestHeader);
+            logger.LogCritical(e, "An exception occured when trying to activate session with RequestHeader {@Header}",
+                requestHeader);
 
             diagnosticInfos = new DiagnosticInfoCollection();
             results = new StatusCodeCollection();
             serverNonce = null!;
-            return new ResponseHeader()
+            return new ResponseHeader
             {
                 Timestamp = DateTime.UtcNow,
-                ServiceResult = StatusCodes.BadNotConnected,
+                ServiceResult = StatusCodes.BadNotConnected
             };
         }
     }
@@ -67,7 +70,7 @@ public sealed class OpcEntityServer(
     /// <inheritdoc />
     protected override ServerProperties LoadServerProperties()
     {
-        ServerProperties properties = base.LoadServerProperties();
+        var properties = base.LoadServerProperties();
         properties.BuildDate = DateTime.UtcNow;
         properties.ProductName = ServerInfo.ServerName;
         properties.ProductUri = ServerInfo.ApplicationNamespace.ToString();
@@ -91,8 +94,6 @@ public sealed class OpcEntityServer(
             out diagnosticInfos);
         return a;
     }
-
-    private bool _disposed;
 
     /// <inheritdoc />
     protected override void Dispose(bool disposing)

@@ -9,5 +9,4 @@ public interface IEntityReader
 {
     public IEnumerable<Result<ReadResponse>> Read(IEnumerable<ReadValueId> readables);
     public Result<ReadResponse> Read(ReadValueId toRead);
-
 }

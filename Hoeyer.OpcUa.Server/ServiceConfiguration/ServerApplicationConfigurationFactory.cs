@@ -1,42 +1,43 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using Hoeyer.OpcUa.Configuration;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.ServiceConfiguration;
 
 internal static class ServerApplicationConfigurationFactory
 {
-    public static readonly IEnumerable<ServerSecurityPolicy> DefaultSupportedSecurityPolicies = new List<(string Uri, MessageSecurityMode Mode)>
-    {
-        ("http://opcfoundation.org/UA/SecurityPolicy#None", MessageSecurityMode.None),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Basic256", MessageSecurityMode.Sign),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Basic256", MessageSecurityMode.SignAndEncrypt),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Basic256", MessageSecurityMode.SignAndEncrypt),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256", MessageSecurityMode.Sign),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256", MessageSecurityMode.SignAndEncrypt),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256", MessageSecurityMode.SignAndEncrypt),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15", MessageSecurityMode.Sign),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15", MessageSecurityMode.SignAndEncrypt),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15", MessageSecurityMode.SignAndEncrypt),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Aes128_Sha256_RsaOaep", MessageSecurityMode.Sign),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Aes128_Sha256_RsaOaep", MessageSecurityMode.SignAndEncrypt),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Aes128_Sha256_RsaOaep", MessageSecurityMode.SignAndEncrypt),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Aes256_Sha256_RsaPss", MessageSecurityMode.Sign),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Aes256_Sha256_RsaPss", MessageSecurityMode.SignAndEncrypt),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Aes256_Sha256_RsaPss", MessageSecurityMode.SignAndEncrypt),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Https", MessageSecurityMode.Sign),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Https", MessageSecurityMode.SignAndEncrypt),
-        //("http://opcfoundation.org/UA/SecurityPolicy#Https", MessageSecurityMode.SignAndEncrypt)
-    }.Select(e => new ServerSecurityPolicy()
-    {
-        SecurityPolicyUri = e.Uri,
-        SecurityMode = e.Mode
-    }).ToList();
-    
-    private static readonly ServerSecurityPolicyCollection SecurityPolicyCollection = new(DefaultSupportedSecurityPolicies);
-     
+    public static readonly IEnumerable<ServerSecurityPolicy> DefaultSupportedSecurityPolicies =
+        new List<(string Uri, MessageSecurityMode Mode)>
+        {
+            ("http://opcfoundation.org/UA/SecurityPolicy#None", MessageSecurityMode.None)
+            //("http://opcfoundation.org/UA/SecurityPolicy#Basic256", MessageSecurityMode.Sign),
+            //("http://opcfoundation.org/UA/SecurityPolicy#Basic256", MessageSecurityMode.SignAndEncrypt),
+            //("http://opcfoundation.org/UA/SecurityPolicy#Basic256", MessageSecurityMode.SignAndEncrypt),
+            //("http://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256", MessageSecurityMode.Sign),
+            //("http://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256", MessageSecurityMode.SignAndEncrypt),
+            //("http://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256", MessageSecurityMode.SignAndEncrypt),
+            //("http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15", MessageSecurityMode.Sign),
+            //("http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15", MessageSecurityMode.SignAndEncrypt),
+            //("http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15", MessageSecurityMode.SignAndEncrypt),
+            //("http://opcfoundation.org/UA/SecurityPolicy#Aes128_Sha256_RsaOaep", MessageSecurityMode.Sign),
+            //("http://opcfoundation.org/UA/SecurityPolicy#Aes128_Sha256_RsaOaep", MessageSecurityMode.SignAndEncrypt),
+            //("http://opcfoundation.org/UA/SecurityPolicy#Aes128_Sha256_RsaOaep", MessageSecurityMode.SignAndEncrypt),
+            //("http://opcfoundation.org/UA/SecurityPolicy#Aes256_Sha256_RsaPss", MessageSecurityMode.Sign),
+            //("http://opcfoundation.org/UA/SecurityPolicy#Aes256_Sha256_RsaPss", MessageSecurityMode.SignAndEncrypt),
+            //("http://opcfoundation.org/UA/SecurityPolicy#Aes256_Sha256_RsaPss", MessageSecurityMode.SignAndEncrypt),
+            //("http://opcfoundation.org/UA/SecurityPolicy#Https", MessageSecurityMode.Sign),
+            //("http://opcfoundation.org/UA/SecurityPolicy#Https", MessageSecurityMode.SignAndEncrypt),
+            //("http://opcfoundation.org/UA/SecurityPolicy#Https", MessageSecurityMode.SignAndEncrypt)
+        }.Select(e => new ServerSecurityPolicy
+        {
+            SecurityPolicyUri = e.Uri,
+            SecurityMode = e.Mode
+        }).ToList();
+
+    private static readonly ServerSecurityPolicyCollection SecurityPolicyCollection =
+        new(DefaultSupportedSecurityPolicies);
+
     public static readonly IReadOnlyCollection<UserTokenPolicy> SupportedTokenPolicies = new List<UserTokenPolicy>
     {
         new(UserTokenType.Anonymous),
@@ -44,16 +45,16 @@ internal static class ServerApplicationConfigurationFactory
         new(UserTokenType.Certificate),
         new(UserTokenType.IssuedToken)
     };
-    
+
     /// <inheritdoc />
     public static ApplicationConfiguration CreateServerConfiguration(OpcUaEntityServerSetup configuration)
     {
         var applicationConfiguration = CreateApplicationConfiguration(configuration);
         SetupDefaultValues(applicationConfiguration.ServerConfiguration, configuration);
-        
+
         applicationConfiguration.SecurityConfiguration = CreateSecurityConfiguration(applicationConfiguration);
         var serverConfiguration = applicationConfiguration.ServerConfiguration;
-        
+
         configuration.AdditionalConfiguration.Invoke(applicationConfiguration.ServerConfiguration);
         serverConfiguration.Validate();
         return applicationConfiguration;
@@ -61,7 +62,7 @@ internal static class ServerApplicationConfigurationFactory
 
     private static SecurityConfiguration CreateSecurityConfiguration(ApplicationConfiguration configuration)
     {
-        var securityConfiguration = new SecurityConfiguration()
+        var securityConfiguration = new SecurityConfiguration
         {
             ApplicationCertificate = new CertificateIdentifier
             {
@@ -69,14 +70,14 @@ internal static class ServerApplicationConfigurationFactory
             },
             TrustedPeerCertificates = new CertificateTrustList(),
             RejectedCertificateStore = new CertificateTrustList(),
-            AutoAcceptUntrustedCertificates = true,
+            AutoAcceptUntrustedCertificates = true
         };
-        
+
         // Set up certificate validation to accept all certificates
         configuration.CertificateValidator.CertificateValidation += (sender, eventArgs) => { eventArgs.Accept = true; };
         return securityConfiguration;
     }
-    
+
 
     private static ApplicationConfiguration CreateApplicationConfiguration(OpcUaEntityServerSetup configuration)
     {
@@ -88,9 +89,9 @@ internal static class ServerApplicationConfigurationFactory
             CertificateValidator = new CertificateValidator(),
             ServerConfiguration = new ServerConfiguration
             {
-                BaseAddresses = new StringCollection(configuration.Endpoints.Select(e=>e.AbsoluteUri)),
+                BaseAddresses = new StringCollection(configuration.Endpoints.Select(e => e.AbsoluteUri)),
                 SecurityPolicies = SecurityPolicyCollection,
-                UserTokenPolicies = new UserTokenPolicyCollection(SupportedTokenPolicies),
+                UserTokenPolicies = new UserTokenPolicyCollection(SupportedTokenPolicies)
             },
             DisableHiResClock = false,
             TransportQuotas = new TransportQuotas
@@ -114,13 +115,14 @@ internal static class ServerApplicationConfigurationFactory
         return CertificateFactory
             .CreateCertificate(configuration.ApplicationUri,
                 configuration.ApplicationName,
-                subjectName: null,
-                domainNames: null)
+                null,
+                null)
             .CreateForRSA();
     }
 
 
-    private static void SetupDefaultValues(ServerConfiguration serverConfiguration, OpcUaEntityServerSetup opcUaEntityEntityServer)
+    private static void SetupDefaultValues(ServerConfiguration serverConfiguration,
+        OpcUaEntityServerSetup opcUaEntityEntityServer)
     {
         serverConfiguration.MinRequestThreadCount = 5;
         serverConfiguration.MaxRequestThreadCount = 100;

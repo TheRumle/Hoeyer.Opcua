@@ -10,44 +10,53 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.ServiceConfiguration;
 
-public record OnGoingOpcEntityServerServiceRegistration(IServiceCollection Collection) : OnGoingOpcEntityServiceRegistration(Collection)
-{}
+public record OnGoingOpcEntityServerServiceRegistration(IServiceCollection Collection)
+    : OnGoingOpcEntityServiceRegistration(Collection)
+{
+}
 
 public static class ServiceExtensions
 {
-    public static OnGoingOpcEntityServerServiceRegistration AddEntityOpcUaServer(this OnGoingOpcEntityServiceRegistration serviceRegistration,  Action<ServerConfiguration>? additionalConfiguration = null)
+    public static OnGoingOpcEntityServerServiceRegistration AddEntityOpcUaServer(
+        this OnGoingOpcEntityServiceRegistration serviceRegistration,
+        Action<ServerConfiguration>? additionalConfiguration = null)
     {
         serviceRegistration.Collection.AddSingleton<OpcUaEntityServerSetup>(p =>
         {
             var standardConfig = p.GetService<IOpcUaEntityServerInfo>()!;
-            if (standardConfig == null) throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerInfo)} has been registered! This should be prevented using builder pattern! SHOULD NOT HAPPEN!" );
-            return new OpcUaEntityServerSetup(standardConfig, additionalConfiguration ?? ((value) => { }));
+            if (standardConfig == null)
+                throw new InvalidOperationException(
+                    $"No {nameof(IOpcUaEntityServerInfo)} has been registered! This should be prevented using builder pattern! SHOULD NOT HAPPEN!");
+            return new OpcUaEntityServerSetup(standardConfig, additionalConfiguration ?? (value => { }));
         });
-        
+
         serviceRegistration.Collection.AddSingleton<OpcUaEntityServerFactory>(p =>
         {
             var loggerFactory = p.GetService<ILoggerFactory>()!;
             var configuration = p.GetService<OpcUaEntityServerSetup>();
-            if (configuration is null) throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerInfo)} has been configured!");
+            if (configuration is null)
+                throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerInfo)} has been configured!");
             return new OpcUaEntityServerFactory(configuration, [], loggerFactory);
         });
         return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
     }
-    
-    
+
+
     /// <summary>
-    /// Scans assembly for implementations of <see cref="IEntityNodeCreator"/> and passes them to the EntityServer. 
+    ///     Scans assembly for implementations of <see cref="IEntityNodeCreator" /> and passes them to the EntityServer.
     /// </summary>
     /// <param name="services"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public static OnGoingOpcEntityServiceRegistration WithAutomaticEntityNodeCreation(this OnGoingOpcEntityServerServiceRegistration services)
+    public static OnGoingOpcEntityServiceRegistration WithAutomaticEntityNodeCreation(
+        this OnGoingOpcEntityServerServiceRegistration services)
     {
         services.Collection.AddSingleton<OpcUaEntityServerFactory>(p =>
         {
             var loggerFactory = p.GetService<ILoggerFactory>()!;
             var configuration = p.GetService<OpcUaEntityServerSetup>();
-            if (configuration is null) throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerInfo)} has been configured!");
+            if (configuration is null)
+                throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerInfo)} has been configured!");
             return new OpcUaEntityServerFactory(configuration, GetEntityNodeCreators(), loggerFactory);
         });
 
@@ -62,6 +71,6 @@ public static class ServiceExtensions
             .Where(e => e.GetConstructor(Type.EmptyTypes) != null)
             .Select(Activator.CreateInstance)
             .Cast<IEntityNodeCreator>()
-            .ToList();//eager init
+            .ToList(); //eager init
     }
 }

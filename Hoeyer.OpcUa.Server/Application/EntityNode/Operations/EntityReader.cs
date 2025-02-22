@@ -18,13 +18,9 @@ internal class EntityReader(IEntityNode entityNode) : IEntityReader
     public Result<ReadResponse> Read(ReadValueId toRead)
     {
         if (toRead.Processed)
-        {
             return Result.Fail($"Cannot read node with NodeId {toRead.NodeId} as it is already marked as processed!");
-        }
         if (entityNode.PropertyStates.TryGetValue(toRead.NodeId, out var readNodeFunc))
-        {
             return Result.Ok(new ReadResponse(readNodeFunc.ToDataValue(), toRead));
-        }
 
         return Result.Fail($"Cannot read node with NodeId {toRead.NodeId} as it is not related to the entity!");
     }

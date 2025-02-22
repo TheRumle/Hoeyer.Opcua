@@ -5,5 +5,5 @@ namespace Hoeyer.OpcUa.Server.Application.EntityNode;
 
 public interface IEntityNodeManager : INodeManager2
 {
-    public IEntityNode ManagedEntity { get;  }
+    public IEntityNode ManagedEntity { get; }
 }

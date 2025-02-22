@@ -9,13 +9,14 @@ namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
 public sealed class EntityMasterNodeManager : MasterNodeManager
 {
     public readonly IEnumerable<IEntityNode> ManagedEntities;
-    
+
     /// <inheritdoc />
-    public EntityMasterNodeManager(IServerInternal server, ApplicationConfiguration applicationConfiguration, IEntityNodeManager[] additionalManagers) : base(server, applicationConfiguration, applicationConfiguration.ApplicationUri, additionalManagers)
+    public EntityMasterNodeManager(IServerInternal server, ApplicationConfiguration applicationConfiguration,
+        IEntityNodeManager[] additionalManagers) : base(server, applicationConfiguration,
+        applicationConfiguration.ApplicationUri, additionalManagers)
     {
         ManagedEntities = additionalManagers.Select(e => e.ManagedEntity);
     }
-
 
 
     /// <inheritdoc />
@@ -45,7 +46,6 @@ public sealed class EntityMasterNodeManager : MasterNodeManager
     /// <inheritdoc />
     public override object GetManagerHandle(NodeId nodeId, out INodeManager nodeManager)
     {
-
         return base.GetManagerHandle(nodeId, out nodeManager);
     }
 
@@ -62,7 +62,8 @@ public sealed class EntityMasterNodeManager : MasterNodeManager
     }
 
     /// <inheritdoc />
-    public override void RegisterNodes(OperationContext context, NodeIdCollection nodesToRegister, out NodeIdCollection registeredNodeIds)
+    public override void RegisterNodes(OperationContext context, NodeIdCollection nodesToRegister,
+        out NodeIdCollection registeredNodeIds)
     {
         base.RegisterNodes(context, nodesToRegister, out registeredNodeIds);
     }
@@ -89,7 +90,8 @@ public sealed class EntityMasterNodeManager : MasterNodeManager
     }
 
     /// <inheritdoc />
-    public override void BrowseNext(OperationContext context, bool releaseContinuationPoints, ByteStringCollection continuationPoints,
+    public override void BrowseNext(OperationContext context, bool releaseContinuationPoints,
+        ByteStringCollection continuationPoints,
         out BrowseResultCollection results, out DiagnosticInfoCollection diagnosticInfos)
     {
         base.BrowseNext(context, releaseContinuationPoints, continuationPoints, out results, out diagnosticInfos);
@@ -103,15 +105,19 @@ public sealed class EntityMasterNodeManager : MasterNodeManager
     }
 
     /// <inheritdoc />
-    public override void HistoryRead(OperationContext context, ExtensionObject historyReadDetails, TimestampsToReturn timestampsToReturn,
-        bool releaseContinuationPoints, HistoryReadValueIdCollection nodesToRead, out HistoryReadResultCollection results,
+    public override void HistoryRead(OperationContext context, ExtensionObject historyReadDetails,
+        TimestampsToReturn timestampsToReturn,
+        bool releaseContinuationPoints, HistoryReadValueIdCollection nodesToRead,
+        out HistoryReadResultCollection results,
         out DiagnosticInfoCollection diagnosticInfos)
     {
-        base.HistoryRead(context, historyReadDetails, timestampsToReturn, releaseContinuationPoints, nodesToRead, out results, out diagnosticInfos);
+        base.HistoryRead(context, historyReadDetails, timestampsToReturn, releaseContinuationPoints, nodesToRead,
+            out results, out diagnosticInfos);
     }
 
     /// <inheritdoc />
-    public override void Write(OperationContext context, WriteValueCollection nodesToWrite, out StatusCodeCollection results,
+    public override void Write(OperationContext context, WriteValueCollection nodesToWrite,
+        out StatusCodeCollection results,
         out DiagnosticInfoCollection diagnosticInfos)
     {
         base.Write(context, nodesToWrite, out results, out diagnosticInfos);
@@ -125,7 +131,8 @@ public sealed class EntityMasterNodeManager : MasterNodeManager
     }
 
     /// <inheritdoc />
-    public override void Call(OperationContext context, CallMethodRequestCollection methodsToCall, out CallMethodResultCollection results,
+    public override void Call(OperationContext context, CallMethodRequestCollection methodsToCall,
+        out CallMethodResultCollection results,
         out DiagnosticInfoCollection diagnosticInfos)
     {
         base.Call(context, methodsToCall, out results, out diagnosticInfos);
@@ -139,36 +146,41 @@ public sealed class EntityMasterNodeManager : MasterNodeManager
 
     /// <inheritdoc />
     public override void CreateMonitoredItems(OperationContext context, uint subscriptionId, double publishingInterval,
-        TimestampsToReturn timestampsToReturn, IList<MonitoredItemCreateRequest> itemsToCreate, IList<ServiceResult> errors, IList<MonitoringFilterResult> filterResults,
+        TimestampsToReturn timestampsToReturn, IList<MonitoredItemCreateRequest> itemsToCreate,
+        IList<ServiceResult> errors, IList<MonitoringFilterResult> filterResults,
         IList<IMonitoredItem> monitoredItems)
     {
-        base.CreateMonitoredItems(context, subscriptionId, publishingInterval, timestampsToReturn, itemsToCreate, errors, filterResults, monitoredItems);
+        base.CreateMonitoredItems(context, subscriptionId, publishingInterval, timestampsToReturn, itemsToCreate,
+            errors, filterResults, monitoredItems);
     }
 
     /// <inheritdoc />
-    public override void ModifyMonitoredItems(OperationContext context, TimestampsToReturn timestampsToReturn, IList<IMonitoredItem> monitoredItems,
-        IList<MonitoredItemModifyRequest> itemsToModify, IList<ServiceResult> errors, IList<MonitoringFilterResult> filterResults)
+    public override void ModifyMonitoredItems(OperationContext context, TimestampsToReturn timestampsToReturn,
+        IList<IMonitoredItem> monitoredItems,
+        IList<MonitoredItemModifyRequest> itemsToModify, IList<ServiceResult> errors,
+        IList<MonitoringFilterResult> filterResults)
     {
         base.ModifyMonitoredItems(context, timestampsToReturn, monitoredItems, itemsToModify, errors, filterResults);
     }
 
     /// <inheritdoc />
-    public override void TransferMonitoredItems(OperationContext context, bool sendInitialValues, IList<IMonitoredItem> monitoredItems, IList<ServiceResult> errors)
+    public override void TransferMonitoredItems(OperationContext context, bool sendInitialValues,
+        IList<IMonitoredItem> monitoredItems, IList<ServiceResult> errors)
     {
         base.TransferMonitoredItems(context, sendInitialValues, monitoredItems, errors);
     }
 
     /// <inheritdoc />
-    public override void DeleteMonitoredItems(OperationContext context, uint subscriptionId, IList<IMonitoredItem> itemsToDelete, IList<ServiceResult> errors)
+    public override void DeleteMonitoredItems(OperationContext context, uint subscriptionId,
+        IList<IMonitoredItem> itemsToDelete, IList<ServiceResult> errors)
     {
         base.DeleteMonitoredItems(context, subscriptionId, itemsToDelete, errors);
     }
 
     /// <inheritdoc />
-    public override void SetMonitoringMode(OperationContext context, MonitoringMode monitoringMode, IList<IMonitoredItem> itemsToModify, IList<ServiceResult> errors)
+    public override void SetMonitoringMode(OperationContext context, MonitoringMode monitoringMode,
+        IList<IMonitoredItem> itemsToModify, IList<ServiceResult> errors)
     {
         base.SetMonitoringMode(context, monitoringMode, itemsToModify, errors);
     }
-
-
 }

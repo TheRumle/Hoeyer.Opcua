@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using FluentResults;
 using Opc.Ua;
-using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application.EntityNode;
 

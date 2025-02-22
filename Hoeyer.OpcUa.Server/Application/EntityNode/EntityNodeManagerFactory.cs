@@ -9,13 +9,11 @@ namespace Hoeyer.OpcUa.Server.Application.EntityNode;
 
 public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
 {
-    
-
-    
-    internal IEntityNodeManager Create(IServerInternal server, IOpcUaEntityServerInfo info,  IEntityNodeCreator nodeCreator)
+    internal IEntityNodeManager Create(IServerInternal server, IOpcUaEntityServerInfo info,
+        IEntityNodeCreator nodeCreator)
     {
         var nodeNamespace = info.Host + $"Manager/{nodeCreator.EntityName}";
-        var logger = loggerFactory.CreateLogger(nodeCreator.EntityName+"Manager");
+        var logger = loggerFactory.CreateLogger(nodeCreator.EntityName + "Manager");
         var managedNode = CreatedManagedNode(server, nodeNamespace, nodeCreator);
 
         logger.LogInformation("Creating {@Manager} for {@ManagedNode}", nameof(EntityNodeManager), managedNode);
@@ -30,7 +28,8 @@ public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
             logger);
     }
 
-    private static ManagedEntityNode CreatedManagedNode(IServerInternal server, string nodeNamespace, IEntityNodeCreator nodeCreator)
+    private static ManagedEntityNode CreatedManagedNode(IServerInternal server, string nodeNamespace,
+        IEntityNodeCreator nodeCreator)
     {
         var namespaceIndex = server.NamespaceUris.GetIndexOrAppend(nodeNamespace);
         var context = server.DefaultSystemContext;
@@ -41,7 +40,7 @@ public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
         node.Folder.AddChild(node.Entity);
         return new ManagedEntityNode(node, nodeNamespace, namespaceIndex);
     }
-    
+
     private static FolderState CreateRootFolder(string folderName, ushort namespaceIndex)
     {
         // Create a root folder for this entity.
@@ -51,10 +50,9 @@ public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
             BrowseName = new QualifiedName(folderName),
             DisplayName = folderName,
             NodeId = new NodeId(folderName, namespaceIndex),
-            TypeDefinitionId = ObjectTypeIds.FolderType,
+            TypeDefinitionId = ObjectTypeIds.FolderType
         };
 
         return rootFolder;
     }
-    
 }

@@ -8,7 +8,9 @@ namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
 internal class EntityBrowser(IEntityNode entityNode, EntityHandleManager handleManager)
     : IEntityBrowser
 {
-    public EntityBrowser(IEntityNode node) : this(node, new EntityHandleManager(node)) {}
+    public EntityBrowser(IEntityNode node) : this(node, new EntityHandleManager(node))
+    {
+    }
 
     /// <inheritdoc />
     public IEnumerable<Result<ReferenceDescription>> Browse(
@@ -31,16 +33,17 @@ internal class EntityBrowser(IEntityNode entityNode, EntityHandleManager handleM
                 target.BrowseName,
                 target.DisplayName,
                 target.TypeDefinitionId);
-            
+
             yield return description;
         }
     }
-    
-    private static ReferenceDescription CreateDefaultReferenceDescription(IReference reference, BrowseResultMask resultMask)
+
+    private static ReferenceDescription CreateDefaultReferenceDescription(IReference reference,
+        BrowseResultMask resultMask)
     {
-        var description = new ReferenceDescription()
+        var description = new ReferenceDescription
         {
-            NodeId = reference.TargetId,
+            NodeId = reference.TargetId
         };
         description.SetReferenceType(resultMask, reference.ReferenceTypeId, reference.IsInverse);
         return description;
@@ -48,19 +51,10 @@ internal class EntityBrowser(IEntityNode entityNode, EntityHandleManager handleM
 
     private BaseInstanceState? GetTarget(IReference reference)
     {
-        if (handleManager.IsEntityHandle(reference.TargetId))
-        {
-            return entityNode.Entity;
-        }
+        if (handleManager.IsManagedEntityHandle(reference.TargetId)) return entityNode.Entity;
 
-        if (handleManager.IsFolderHandle(reference.TargetId))
-        {
-            return entityNode.Folder;
-        }
-        if (handleManager.IsPropertyHandle(reference, out var property))
-        {
-            return property.Value;
-        }
+        if (handleManager.IsManagedFolderHandle(reference.TargetId)) return entityNode.Folder;
+        if (handleManager.IsManagedPropertyHandle(reference, out var property)) return property.Value;
         return null;
     }
 }

@@ -6,9 +6,9 @@ namespace Hoeyer.OpcUa.Server.ServiceConfiguration.Extensions;
 
 public static class OpcUaEntityServerConfigurationExtensions
 {
-    public static OpcUaEntityServerSetup WithAdditionalServerConfiguration(IOpcUaEntityServerInfo setup, Action<ServerConfiguration> additionalConfiguration )
+    public static OpcUaEntityServerSetup WithAdditionalServerConfiguration(IOpcUaEntityServerInfo setup,
+        Action<ServerConfiguration> additionalConfiguration)
     {
         return new OpcUaEntityServerSetup(setup, additionalConfiguration);
     }
-
 }

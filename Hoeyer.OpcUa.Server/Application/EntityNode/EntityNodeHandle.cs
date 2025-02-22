@@ -3,10 +3,19 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application.EntityNode;
 
-public record EntityNodeHandle<T>(T Value, NodeState Root) where T : NodeState
+public interface IEntityNodeHandle
 {
-    internal readonly T Value = Value;
+    internal NodeState HandledNode { get; }
+}
+
+public record EntityNodeHandle<T>(T Value, NodeState Root) : IEntityNodeHandle
+    where T : NodeState
+{
     internal readonly NodeState Root = Root;
+    internal readonly T Value = Value;
+
+    /// <inheritdoc />
+    public NodeState HandledNode => Value;
 
     public static implicit operator NodeHandle(EntityNodeHandle<T> entityNodeHandle)
     {
