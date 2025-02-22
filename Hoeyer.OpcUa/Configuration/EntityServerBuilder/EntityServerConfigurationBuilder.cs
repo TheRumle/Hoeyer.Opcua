@@ -50,8 +50,8 @@ internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuil
 
     public OpcUaEntityServerConfiguration Build()
     {
-        var validUrn = Uri.TryCreate( string.Format(CultureInfo.InvariantCulture, "{0}", _host), UriKind.RelativeOrAbsolute, out Uri uri);
-        if (!validUrn) throw new ArgumentException($"Host and serverId could not form a valid URN: {uri}");
+        var validuri = Uri.TryCreate( string.Format(CultureInfo.InvariantCulture, "{0}", _host), UriKind.RelativeOrAbsolute, out var uri);
+        if (!validuri) throw new ArgumentException($"Host and serverId could not form a valid URI: {uri}");
 
         return new OpcUaEntityServerConfiguration(_serverId, _serverName, _host, _endpoints, uri);
     }

@@ -1,14 +1,13 @@
 ﻿using FluentResults;
-using Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
 using Opc.Ua;
 using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application.EntityNode;
 
-public class EntityNodeHandle<T>(T value, NodeState root) where T : NodeState
+public record EntityNodeHandle<T>(T Value, NodeState Root) where T : NodeState
 {
-    internal readonly T Value = value;
-    internal readonly NodeState Root = root;
+    internal readonly T Value = Value;
+    internal readonly NodeState Root = Root;
 
     public static implicit operator NodeHandle(EntityNodeHandle<T> entityNodeHandle)
     {

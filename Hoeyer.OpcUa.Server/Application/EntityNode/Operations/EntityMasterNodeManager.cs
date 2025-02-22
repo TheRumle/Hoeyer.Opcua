@@ -3,14 +3,14 @@ using System.Linq;
 using Opc.Ua;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode;
+namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
 
 public sealed class EntityMasterNodeManager : MasterNodeManager
 {
     public readonly IEnumerable<ManagedEntityNode> ManagedEntities;
     
     /// <inheritdoc />
-    public EntityMasterNodeManager(IServerInternal server, ApplicationConfiguration applicationConfiguration, EntityNodeManager[] additionalManagers) : base(server, applicationConfiguration, applicationConfiguration.ApplicationUri, additionalManagers)
+    public EntityMasterNodeManager(IServerInternal server, ApplicationConfiguration applicationConfiguration, IEntityNodeManager[] additionalManagers) : base(server, applicationConfiguration, applicationConfiguration.ApplicationUri, additionalManagers)
     {
         ManagedEntities = additionalManagers.Select(e => e.ManagedEntity);
     }

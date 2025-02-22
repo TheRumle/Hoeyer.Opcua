@@ -6,7 +6,7 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.ServiceConfiguration;
 
-public sealed class OpcUaEntityServerConfigurationSetup(OpcUaEntityServerConfiguration entityServerConfiguration, Action<ServerConfiguration> additionalConfiguration = null)
+public sealed class OpcUaEntityServerConfigurationSetup(OpcUaEntityServerConfiguration entityServerConfiguration, Action<ServerConfiguration>? additionalConfiguration = null)
 {
     
     public Action<ServerConfiguration> AdditionalConfiguration { get; } = additionalConfiguration ?? (_ => { /*noop*/});
@@ -17,7 +17,7 @@ public sealed class OpcUaEntityServerConfigurationSetup(OpcUaEntityServerConfigu
     public List<string> Endpoints { get; set; } = entityServerConfiguration.Endpoints;
 
     /// <summary>
-    /// For instance, http://samples.org/UA/MyApplication or something else uniqely identifying the overall resource,
+    /// For instance, http://samples.org/UA/MyApplication or something else uniquely identifying the overall resource,
     /// </summary>
     public Uri ApplicationNamespace { get; } = entityServerConfiguration.ApplicationNamespace;
 

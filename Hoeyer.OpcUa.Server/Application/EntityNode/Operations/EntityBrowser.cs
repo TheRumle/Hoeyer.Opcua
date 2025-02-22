@@ -5,12 +5,11 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
 
-internal class EntityBrowser(IEntityNode node, EntityHandleManager handleManager) : IEntityBrowser
+internal class EntityBrowser(IEntityNode entityNode, EntityHandleManager handleManager)
+    : IEntityBrowser
 {
-    
-    public EntityBrowser(IEntityNode node) :this(node, new EntityHandleManager(node))
-    {}
-    
+    public EntityBrowser(IEntityNode node) : this(node, new EntityHandleManager(node)) {}
+
     /// <inheritdoc />
     public IEnumerable<Result<ReferenceDescription>> Browse(
         BrowseResultMask resultMask,
@@ -51,12 +50,12 @@ internal class EntityBrowser(IEntityNode node, EntityHandleManager handleManager
     {
         if (handleManager.IsEntityHandle(reference.TargetId))
         {
-            return node.Entity;
+            return entityNode.Entity;
         }
 
         if (handleManager.IsFolderHandle(reference.TargetId))
         {
-            return node.Folder;
+            return entityNode.Folder;
         }
         if (handleManager.IsPropertyHandle(reference, out var property))
         {
@@ -64,5 +63,4 @@ internal class EntityBrowser(IEntityNode node, EntityHandleManager handleManager
         }
         return null;
     }
-
 }

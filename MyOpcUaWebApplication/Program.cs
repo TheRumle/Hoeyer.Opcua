@@ -3,7 +3,6 @@ using Hoeyer.OpcUa.Configuration;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.ServiceConfiguration;
 using MyOpcUaWebApplication.Configuration.BackgroundService;
-using Opc.Ua;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,10 +13,7 @@ builder.Services
     .Validate(e => e.IntervalMs > 0, $"{nameof(GantryScannerOptions.IntervalMs)} must be greater than 0")
     .ValidateOnStart();
 
-if (builder.Environment.IsDevelopment())
-{
-    builder.Logging.AddConsole();
-}
+builder.Logging.AddConsole();
 
 
 
@@ -27,9 +23,7 @@ builder.Services.AddOpcUaServerConfiguration(conf => conf
         .WithHttpHost("localhost")
         .WithEndpoints(["opc.tcp://localhost:4840"])
         .Build())
-    .AddEntityOpcUaServer(c =>
-    {
-    } )
+    .AddEntityOpcUaServer()
     .WithAutomaticEntityNodeCreation()
     .AddOpcUaClientServices();
 

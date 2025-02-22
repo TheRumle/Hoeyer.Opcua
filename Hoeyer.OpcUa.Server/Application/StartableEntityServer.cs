@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Entity;
-using Hoeyer.OpcUa.Server.ServiceConfiguration;
-using Opc.Ua;
 using Opc.Ua.Configuration;
-using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
@@ -31,21 +24,14 @@ public sealed class StartableEntityServer(ApplicationInstance applicationInstanc
         return new StartedEntityServer(this);
     }
 
-    public void Stop()
-    {
-        if (_disposed) throw new ObjectDisposedException(nameof(StartableEntityServer));
-        EntityServer.Stop();
-        ApplicationInstance.Stop();
-    }
-
     private void Dispose(bool disposing)
     {
         if (_disposed) return;
         if (disposing)
         {
             EntityServer.Stop();
-            ApplicationInstance?.Stop();
-            EntityServer?.Dispose();
+            ApplicationInstance.Stop();
+            EntityServer.Dispose();
         }
 
         _disposed = true;

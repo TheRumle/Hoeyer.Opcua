@@ -15,7 +15,7 @@ public sealed class StartedEntityServer(StartableEntityServer server) : IDisposa
 
     public void Stop()
     {
-        server.Stop();
+        server.Dispose();
         _isStopped = true;
     }
 }

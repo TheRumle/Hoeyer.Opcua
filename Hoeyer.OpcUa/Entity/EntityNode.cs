@@ -8,9 +8,9 @@ public interface IEntityNode
 {
     public BaseObjectState Entity { get; }
     public FolderState Folder { get; }
-
     public Dictionary<NodeId, PropertyState> PropertyStates { get; }
 }
+
 
 public record EntityNode(FolderState Folder, BaseObjectState Entity, Dictionary<NodeId, PropertyState> PropertyStates)
     : IEntityNode

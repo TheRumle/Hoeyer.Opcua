@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentResults;
 using Hoeyer.Common.Extensions;
+using Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
 using Hoeyer.OpcUa.Server.Application.Extensions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
@@ -10,19 +11,26 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application.EntityNode;
 
-public sealed class EntityNodeManager(
+public interface IEntityNodeManager : INodeManager2
+{
+    public ManagedEntityNode ManagedEntity { get;  }
+}
+
+public sealed class EntityNodeManager<TEntity>(
         ManagedEntityNode managedEntity,
         IServerInternal server,
         IEntityHandleManager entityHandleManager,
         IEntityModifier entityModifier,
         IEntityBrowser browser,
         IEntityReader entityReader,
+        IEntityReferenceManager referenceManager,
         ILogger logger
-    ) : CustomNodeManager(server, [managedEntity.Namespace])
+    ) : CustomNodeManager(server, [managedEntity.Namespace]),
+    IEntityNodeManager where TEntity : NodeState
 {
     
     
-    public readonly ManagedEntityNode ManagedEntity = managedEntity;
+    public ManagedEntityNode ManagedEntity { get;  } = managedEntity;
     private readonly ServerSystemContext _systemContext = server.DefaultSystemContext;
     private readonly BaseObjectState _entity = managedEntity.Entity;
 
@@ -34,8 +42,9 @@ public sealed class EntityNodeManager(
         {
             BaseObjectState e = ManagedEntity.Entity;
             FolderState rootFolder = ManagedEntity.Folder;
-            rootFolder.AddReference(ReferenceTypeIds.Organizes, true, ObjectIds.ObjectsFolder);
             rootFolder.EventNotifier = EventNotifiers.SubscribeToEvents;
+            rootFolder.AddReference(ReferenceTypeIds.Organizes, true, ObjectIds.ObjectsFolder);
+            e.EventNotifier = EventNotifiers.SubscribeToEvents;
             AddPredefinedNode(_systemContext, rootFolder);
             rootFolder.AddChild(e);
             AddPredefinedNode(_systemContext, rootFolder);
@@ -102,12 +111,12 @@ public sealed class EntityNodeManager(
     {
         if (entityHandleManager.IsEntityHandle(kvp.Key))
         {
-            return entityModifier.AddReferencesToEntity(kvp.Value);
+            return referenceManager.AddReferencesToEntity(kvp.Value);
         }
 
         if (entityHandleManager.IsFolderHandle(kvp.Key))
         {
-            return entityModifier.AddReferencesToEntity(kvp.Value);
+            return referenceManager.AddReferencesToEntity(kvp.Value);
         }
 
         return Result.Fail($"This manager does not hold a node with NodeId {kvp.Key}");
@@ -129,7 +138,7 @@ public sealed class EntityNodeManager(
             return StatusCodes.BadNodeIdUnknown;
         }
 
-        var deletion = entityModifier.DeleteReference(referenceTypeId, isInverse, targetId);
+        var deletion = referenceManager.DeleteReference(referenceTypeId, isInverse, targetId);
         if (deletion.IsSuccess) return ServiceResult.Good;
 
         logger.LogError("Failed deleting reference {Reference}: {Errors}",
@@ -250,7 +259,7 @@ public sealed class EntityNodeManager(
     public override void Call(OperationContext context, IList<CallMethodRequest> methodsToCall, IList<CallMethodResult> results,
         IList<ServiceResult> errors)
     {
-        using var scope = logger.BeginScope("Attempting to call method {Methods}", methodsToCall.Select(e=>e.MethodId));
+        using var scope = logger.BeginScope("Attempting to call method {@Methods}", methodsToCall.Select(e=>e.MethodId));
         logger.LogWarning("Calling methods is currently not supported!");
     }
 
@@ -268,9 +277,9 @@ public sealed class EntityNodeManager(
         IEventMonitoredItem monitoredItem,
         bool unsubscribe)
     {
-        using var scope = logger.BeginScope("Subscribing to all events for monitored items {@MonitoredItem}", monitoredItem);
-        logger.LogWarning("Subscribtion events are not yet supported");
-        return StatusCodes.BadNotSupported;
+        logger.LogInformation("Subscribing to all events for monitored items {@MonitoredItem}", monitoredItem);
+        logger.LogWarning("Subscribtion events are not fully yet supported");
+        return base.SubscribeToAllEvents(context, subscriptionId, monitoredItem, unsubscribe);
     }
 
     /// <inheritdoc />
@@ -332,6 +341,7 @@ public sealed class EntityNodeManager(
         IList<bool> processedItems, IList<ServiceResult> errors)
     {
         using var scope = logger.BeginScope("Transferring monitored items {Items}", monitoredItems.Select(e=>e.Id).ToNewlineSeparatedString());
+        base.TransferMonitoredItems(context, sendInitialValues, monitoredItems, processedItems, errors);
     }
 
     /// <inheritdoc />
@@ -353,18 +363,16 @@ public sealed class EntityNodeManager(
     {
         logger.LogInformation("Session {@Session} closing", sessionId);
         if (!deleteSubscriptions) return;
-        
-        using (logger.BeginScope("Deleting subscriptions held by session {@Session}", sessionId))
-        {
-            //TODO
-        }
+
+        using var beginScope = logger.BeginScope("Deleting subscriptions held by session {@Session}", sessionId);
+        logger.LogWarning("Deleting subscriptions held by a session is not supported yet!");
     }
 
     /// <inheritdoc />
     public override bool IsNodeInView(OperationContext context, NodeId viewId, object nodeHandle)
     {
         using var scope = logger.BeginScope("Accessing if node {NodeHandle} is in view '{@View}'", nodeHandle, viewId);
-        return false;
+        return base.IsNodeInView(context, viewId, nodeHandle);
     }
 
     /// <inheritdoc />
@@ -374,9 +382,8 @@ public sealed class EntityNodeManager(
         using var scope = logger.BeginScope("Getting permission metadata for {@TargetHandle}", targetHandle);
         if (!entityHandleManager.IsHandleToAnyRelatedNode(targetHandle))
         {
-            logger.LogError("Handle {@Handle} is not related to any nodes held by this manager", targetHandle);
+            logger.LogWarning("Handle {@Handle} is not related to any nodes held by this manager", targetHandle);
         }
-
-        return null;
+        return base.GetPermissionMetadata(context, targetHandle, resultMask, uniqueNodesServiceAttributesCache, permissionsOnly);
     }
 }

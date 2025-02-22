@@ -4,6 +4,7 @@ using System.Linq;
 using Hoeyer.OpcUa.Configuration;
 using Hoeyer.OpcUa.Entity;
 using Hoeyer.OpcUa.Server.Application.EntityNode;
+using Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Server;
@@ -13,7 +14,8 @@ namespace Hoeyer.OpcUa.Server.Application;
 public sealed class OpcEntityServer(OpcUaEntityServerConfiguration applicationProductDetails,
     IEnumerable<IEntityNodeCreator> nodeCreators,
     EntityNodeManagerFactory managerFactory,
-    ILogger<OpcEntityServer> logger) : StandardServer //ServerBase? instead? 
+    ILogger<OpcEntityServer> logger) 
+    : StandardServer //ServerBase? instead? 
 {
     public IServerInternal Server => ServerInternal;
     public readonly IEnumerable<Uri> EndPoints = [..applicationProductDetails.Endpoints.Select(e=>new Uri(e))];
@@ -21,6 +23,7 @@ public sealed class OpcEntityServer(OpcUaEntityServerConfiguration applicationPr
 
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server, ApplicationConfiguration configuration)
     {
+        logger.LogInformation("Creating entity managers");
         var additionalManagers = nodeCreators
             .Select(nodeCreator => managerFactory.Create(server, applicationProductDetails, nodeCreator))
             .ToArray();
@@ -38,6 +41,7 @@ public sealed class OpcEntityServer(OpcUaEntityServerConfiguration applicationPr
     {
         try
         {
+            using var scope = logger.BeginScope("ActivateSession for {@Session}", requestHeader);
             var a = base.ActivateSession(requestHeader, clientSignature, clientSoftwareCertificates, localeIds, userIdentityToken, userTokenSignature, out serverNonce, out results, out diagnosticInfos);
             return a;
         }
@@ -89,4 +93,16 @@ public sealed class OpcEntityServer(OpcUaEntityServerConfiguration applicationPr
         return a;
     }
 
+    private bool _disposed;
+
+    /// <inheritdoc />
+    protected override void Dispose(bool disposing)
+    {
+        if (_disposed) return;
+        if (!disposing) return;
+        
+        EntityManager.Dispose();
+        base.Dispose(disposing);
+        _disposed = true;
+    }
 }
