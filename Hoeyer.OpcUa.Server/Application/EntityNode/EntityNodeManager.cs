@@ -11,12 +11,7 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application.EntityNode;
 
-public interface IEntityNodeManager : INodeManager2
-{
-    public ManagedEntityNode ManagedEntity { get;  }
-}
-
-public sealed class EntityNodeManager<TEntity>(
+public sealed class EntityNodeManager(
         ManagedEntityNode managedEntity,
         IServerInternal server,
         IEntityHandleManager entityHandleManager,
@@ -26,7 +21,7 @@ public sealed class EntityNodeManager<TEntity>(
         IEntityReferenceManager referenceManager,
         ILogger logger
     ) : CustomNodeManager(server, [managedEntity.Namespace]),
-    IEntityNodeManager where TEntity : NodeState
+    IEntityNodeManager
 {
     
     
@@ -46,7 +41,6 @@ public sealed class EntityNodeManager<TEntity>(
             rootFolder.AddReference(ReferenceTypeIds.Organizes, true, ObjectIds.ObjectsFolder);
             e.EventNotifier = EventNotifiers.SubscribeToEvents;
             AddPredefinedNode(_systemContext, rootFolder);
-            rootFolder.AddChild(e);
             AddPredefinedNode(_systemContext, rootFolder);
         }
         catch (Exception exception)
@@ -299,14 +293,14 @@ public sealed class EntityNodeManager<TEntity>(
         ref long globalIdCounter)
     {
         logger.LogWarning("Monitoring items are not yet supported. This is a meaningless operation.");
-        using (logger.BeginScope("Creating monitored items {@MonitoredItems}", monitoredItems.Select(e => e.Id)))
+
+        using var beginScope = logger.BeginScope("Creating monitored items  {@MonitoredItems}",
+            monitoredItems.Select(e => e.Id));
+            
+        foreach (var item in monitoredItems)
         {
-            foreach (var item in monitoredItems)
-            {
-                logger.LogInformation("Creating monitored item {Item}", item);
-                //TODO
-                logger.LogInformation("Created monitored {Item}", item.Id);
-            }
+            logger.LogInformation("Creating monitored item {Item}", item);
+            logger.LogInformation("Created monitored {Item}", item.Id);
         }
     }
 

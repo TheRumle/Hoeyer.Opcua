@@ -20,7 +20,7 @@ builder.Logging.AddConsole();
 builder.Services.AddOpcUaServerConfiguration(conf => conf
         .WithServerId("MyServer")
         .WithServerName("My Server")
-        .WithHttpHost("localhost")
+        .WithHttpsHost("localhost", 4840)
         .WithEndpoints(["opc.tcp://localhost:4840"])
         .Build())
     .AddEntityOpcUaServer()

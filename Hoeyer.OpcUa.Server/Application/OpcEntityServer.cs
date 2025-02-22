@@ -7,31 +7,35 @@ using Hoeyer.OpcUa.Server.Application.EntityNode;
 using Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
+using Opc.Ua.Bindings;
 using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-public sealed class OpcEntityServer(OpcUaEntityServerConfiguration applicationProductDetails,
+public sealed class OpcEntityServer(
+    IOpcUaEntityServerConfiguration applicationProductDetails,
     IEnumerable<IEntityNodeCreator> nodeCreators,
     EntityNodeManagerFactory managerFactory,
-    ILogger<OpcEntityServer> logger) 
+    ILogger<OpcEntityServer> logger)
     : StandardServer //ServerBase? instead? 
 {
     public IServerInternal Server => ServerInternal;
-    public readonly IEnumerable<Uri> EndPoints = [..applicationProductDetails.Endpoints.Select(e=>new Uri(e))];
+    public readonly IEnumerable<Uri> EndPoints = [..applicationProductDetails.Endpoints];
     public EntityMasterNodeManager EntityManager { get; private set; } = null!;
 
-    protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server, ApplicationConfiguration configuration)
+
+    protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server,
+        ApplicationConfiguration configuration)
     {
         logger.LogInformation("Creating entity managers");
         var additionalManagers = nodeCreators
             .Select(nodeCreator => managerFactory.Create(server, applicationProductDetails, nodeCreator))
             .ToArray();
-        
+
         EntityManager = new EntityMasterNodeManager(server, configuration, additionalManagers);
         return EntityManager;
     }
-    
+
 
     /// <inheritdoc />
     public override ResponseHeader ActivateSession(RequestHeader requestHeader, SignatureData clientSignature,
@@ -42,7 +46,8 @@ public sealed class OpcEntityServer(OpcUaEntityServerConfiguration applicationPr
         try
         {
             using var scope = logger.BeginScope("ActivateSession for {@Session}", requestHeader);
-            var a = base.ActivateSession(requestHeader, clientSignature, clientSoftwareCertificates, localeIds, userIdentityToken, userTokenSignature, out serverNonce, out results, out diagnosticInfos);
+            var a = base.ActivateSession(requestHeader, clientSignature, clientSoftwareCertificates, localeIds,
+                userIdentityToken, userTokenSignature, out serverNonce, out results, out diagnosticInfos);
             return a;
         }
         catch (Exception e)
@@ -63,8 +68,6 @@ public sealed class OpcEntityServer(OpcUaEntityServerConfiguration applicationPr
                 ServiceResult = StatusCodes.BadNotConnected,
             };
         }
-        
- 
     }
 
     /// <inheritdoc />
@@ -85,11 +88,20 @@ public sealed class OpcEntityServer(OpcUaEntityServerConfiguration applicationPr
     }
 
     /// <inheritdoc />
-    public override ResponseHeader Browse(RequestHeader requestHeader, ViewDescription view, uint requestedMaxReferencesPerNode,
+    protected override IList<ServiceHost> InitializeServiceHosts(ApplicationConfiguration configuration, TransportListenerBindings bindingFactory,
+        out ApplicationDescription serverDescription, out EndpointDescriptionCollection endpoints)
+    {
+        return base.InitializeServiceHosts(configuration, bindingFactory, out serverDescription, out endpoints);
+    }
+
+    /// <inheritdoc />
+    public override ResponseHeader Browse(RequestHeader requestHeader, ViewDescription view,
+        uint requestedMaxReferencesPerNode,
         BrowseDescriptionCollection nodesToBrowse, out BrowseResultCollection results,
         out DiagnosticInfoCollection diagnosticInfos)
     {
-        var a = base.Browse(requestHeader, view, requestedMaxReferencesPerNode, nodesToBrowse, out results, out diagnosticInfos);
+        var a = base.Browse(requestHeader, view, requestedMaxReferencesPerNode, nodesToBrowse, out results,
+            out diagnosticInfos);
         return a;
     }
 
@@ -100,7 +112,7 @@ public sealed class OpcEntityServer(OpcUaEntityServerConfiguration applicationPr
     {
         if (_disposed) return;
         if (!disposing) return;
-        
+
         EntityManager.Dispose();
         base.Dispose(disposing);
         _disposed = true;

@@ -9,8 +9,8 @@ internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuil
 {
     private string _serverId = string.Empty;
     private string _serverName = string.Empty;
-    private string _host = string.Empty;
-    private List<string> _endpoints = new();
+    private Uri _host = null!;
+    private readonly HashSet<Uri> _endpoints = new();
     private EntityServerConfigurationBuilder()
     {
     }
@@ -29,26 +29,31 @@ internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuil
         return this;
     }
 
-    public IEndpointsStep WithHttpHost(string host)
+    public IEndpointsStep WithHttpsHost(string host, int port)
     {
-        _host = "http://" + host;
+        _host = new Uri("https://" + host + ":" + port);
+        _endpoints.Add(_host);
         return this;
     }
 
     /// <inheritdoc />
-    public IEndpointsStep WithOpcTcpHost(string host)
+    public IEndpointsStep WithOpcTcpHost(string host, int port)
     {
-        _host ="opc.tcp://" + host;
+        _host = new Uri("opc.tcp://" + host + ":" + port);
+        _endpoints.Add(_host);
         return this;
     }
-
+    
     public IEntityServerConfigurationBuildable WithEndpoints(List<string> endpoints)
     {
-        _endpoints = endpoints;
+        foreach (var e in endpoints)
+        {
+            _endpoints.Add(new Uri(e));
+        }
         return this;
     }
 
-    public OpcUaEntityServerConfiguration Build()
+    public IOpcUaEntityServerConfiguration Build()
     {
         var validuri = Uri.TryCreate( string.Format(CultureInfo.InvariantCulture, "{0}", _host), UriKind.RelativeOrAbsolute, out var uri);
         if (!validuri) throw new ArgumentException($"Host and serverId could not form a valid URI: {uri}");

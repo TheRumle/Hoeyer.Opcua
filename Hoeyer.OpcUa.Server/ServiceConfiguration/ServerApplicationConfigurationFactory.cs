@@ -46,7 +46,7 @@ internal static class ServerApplicationConfigurationFactory
     };
     
     /// <inheritdoc />
-    public static ApplicationConfiguration CreateServerConfiguration(OpcUaEntityServerConfigurationSetup configuration)
+    public static ApplicationConfiguration CreateServerConfiguration(OpcUaEntityServerSetup configuration)
     {
         var applicationConfiguration = CreateApplicationConfiguration(configuration);
         SetupDefaultValues(applicationConfiguration.ServerConfiguration, configuration);
@@ -78,7 +78,7 @@ internal static class ServerApplicationConfigurationFactory
     }
     
 
-    private static ApplicationConfiguration CreateApplicationConfiguration(OpcUaEntityServerConfigurationSetup configuration)
+    private static ApplicationConfiguration CreateApplicationConfiguration(OpcUaEntityServerSetup configuration)
     {
         var config = new ApplicationConfiguration
         {
@@ -88,7 +88,7 @@ internal static class ServerApplicationConfigurationFactory
             CertificateValidator = new CertificateValidator(),
             ServerConfiguration = new ServerConfiguration
             {
-                BaseAddresses = new StringCollection(configuration.Endpoints),
+                BaseAddresses = new StringCollection(configuration.Endpoints.Select(e=>e.AbsoluteUri)),
                 SecurityPolicies = SecurityPolicyCollection,
                 UserTokenPolicies = new UserTokenPolicyCollection(SupportedTokenPolicies),
             },
@@ -120,7 +120,7 @@ internal static class ServerApplicationConfigurationFactory
     }
 
 
-    private static void SetupDefaultValues(ServerConfiguration serverConfiguration, OpcUaEntityServerConfigurationSetup opcUaEntityEntityServerConfiguration)
+    private static void SetupDefaultValues(ServerConfiguration serverConfiguration, OpcUaEntityServerSetup opcUaEntityEntityServer)
     {
         serverConfiguration.MinRequestThreadCount = 5;
         serverConfiguration.MaxRequestThreadCount = 100;
@@ -147,7 +147,7 @@ internal static class ServerApplicationConfigurationFactory
         serverConfiguration.MaxEventQueueSize = 10000;
         serverConfiguration.MaxTrustListSize = 0;
         serverConfiguration.MultiCastDnsEnabled = false;
-        serverConfiguration.NodeManagerSaveFile = opcUaEntityEntityServerConfiguration.ServerId + ".Nodes.xml";
+        serverConfiguration.NodeManagerSaveFile = opcUaEntityEntityServer.ServerId + ".Nodes.xml";
         serverConfiguration.ShutdownDelay = 5;
     }
 }

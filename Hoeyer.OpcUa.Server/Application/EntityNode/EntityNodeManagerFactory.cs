@@ -12,14 +12,14 @@ public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
     
 
     
-    internal IEntityNodeManager Create(IServerInternal server, OpcUaEntityServerConfiguration configuration,  IEntityNodeCreator nodeCreator)
+    internal IEntityNodeManager Create(IServerInternal server, IOpcUaEntityServerConfiguration configuration,  IEntityNodeCreator nodeCreator)
     {
         var nodeNamespace = configuration.Host + $"/Manager/{nodeCreator.EntityName}";
         var logger = loggerFactory.CreateLogger(nodeCreator.EntityName + nameof(IEntityNodeManager));
         var managedNode = CreatedManagedNode(server, nodeNamespace, nodeCreator);
 
         logger.LogInformation("Creating {@Manager} for {@ManagedNode}", nameof(IEntityNodeManager), managedNode);
-        return new EntityNodeManager<BaseVariableState>(
+        return new EntityNodeManager(
             managedNode,
             server,
             new EntityHandleManager(managedNode),

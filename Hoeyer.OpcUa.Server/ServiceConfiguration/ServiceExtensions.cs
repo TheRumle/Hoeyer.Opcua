@@ -17,18 +17,18 @@ public static class ServiceExtensions
 {
     public static OnGoingOpcEntityServerServiceRegistration AddEntityOpcUaServer(this OnGoingOpcEntityServiceRegistration serviceRegistration,  Action<ServerConfiguration>? additionalConfiguration = null)
     {
-        serviceRegistration.Collection.AddSingleton<OpcUaEntityServerConfigurationSetup>(p =>
+        serviceRegistration.Collection.AddSingleton<OpcUaEntityServerSetup>(p =>
         {
-            var standardConfig = p.GetService<OpcUaEntityServerConfiguration>()!;
-            if (standardConfig == null) throw new InvalidOperationException($"No {nameof(OpcUaEntityServerConfiguration)} has been registered! This should be prevented using builder pattern! SHOULD NOT HAPPEN!" );
-            return new OpcUaEntityServerConfigurationSetup(standardConfig, additionalConfiguration ?? ((value) => { }));
+            var standardConfig = p.GetService<IOpcUaEntityServerConfiguration>()!;
+            if (standardConfig == null) throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerConfiguration)} has been registered! This should be prevented using builder pattern! SHOULD NOT HAPPEN!" );
+            return new OpcUaEntityServerSetup(standardConfig, additionalConfiguration ?? ((value) => { }));
         });
         
         serviceRegistration.Collection.AddSingleton<OpcUaEntityServerFactory>(p =>
         {
             var loggerFactory = p.GetService<ILoggerFactory>()!;
-            var configuration = p.GetService<OpcUaEntityServerConfigurationSetup>();
-            if (configuration is null) throw new InvalidOperationException($"No {nameof(OpcUaEntityServerConfiguration)} has been configured!");
+            var configuration = p.GetService<OpcUaEntityServerSetup>();
+            if (configuration is null) throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerConfiguration)} has been configured!");
             return new OpcUaEntityServerFactory(configuration, [], loggerFactory);
         });
         return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
@@ -46,8 +46,8 @@ public static class ServiceExtensions
         services.Collection.AddSingleton<OpcUaEntityServerFactory>(p =>
         {
             var loggerFactory = p.GetService<ILoggerFactory>()!;
-            var configuration = p.GetService<OpcUaEntityServerConfigurationSetup>();
-            if (configuration is null) throw new InvalidOperationException($"No {nameof(OpcUaEntityServerConfiguration)} has been configured!");
+            var configuration = p.GetService<OpcUaEntityServerSetup>();
+            if (configuration is null) throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerConfiguration)} has been configured!");
             return new OpcUaEntityServerFactory(configuration, GetEntityNodeCreators(), loggerFactory);
         });
 

@@ -15,4 +15,14 @@ public static class DictionaryExtensions
         return fallBackValue;
     }
     
+    public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key) where TValue : new() 
+    {
+        if (dict.TryGetValue(key, out var value))
+        {
+            return value;
+        }
+
+        return dict[key] = new TValue();
+    }
+
 }

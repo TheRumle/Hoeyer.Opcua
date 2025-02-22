@@ -32,4 +32,16 @@ public static class ExceptionExtensions
     {
         return new ExceptionalError(exception);
     }
+
+    public static Exception ToArgumentException(this IEnumerable<IError> errors)
+    {
+        return new ArgumentException(errors.ToNewlineSeparatedString());
+    }
+    
+    public static Exception ToInvalidOperationException(this IEnumerable<IError> errors)
+    {
+        return new ArgumentException(errors.ToNewlineSeparatedString());
+    }
+    
+    
 }

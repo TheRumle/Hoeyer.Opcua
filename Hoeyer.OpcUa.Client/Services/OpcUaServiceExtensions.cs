@@ -58,7 +58,7 @@ public static class OpcUaServiceExtensions
 
         return services;
     }
-    
+
      internal static void ConfigureServicesFor(EntityConfigurationContext configuration, IServiceCollection collection)
     {
         var configureServiceMethod = typeof(OpcUaServiceExtensions).GetMethod(nameof(RunConfigurationSetup),
@@ -85,8 +85,8 @@ public static class OpcUaServiceExtensions
                 .AddTransient<IOpcUaNodeConnectionHolder<TEntity>, OpcUaEntityReader<TEntity>>()
                 .AddSingleton<SessionFactory>(p =>
                 {
-                    var opcUaEntityServerConfiguration = p.GetService<OpcUaEntityServerConfiguration>()!;
-                    if (opcUaEntityServerConfiguration == null) throw new InvalidOperationException($"{nameof(OpcUaEntityServerConfiguration)} has not been configured!");
+                    var opcUaEntityServerConfiguration = p.GetService<IOpcUaEntityServerConfiguration>()!;
+                    if (opcUaEntityServerConfiguration == null) throw new InvalidOperationException($"{nameof(IOpcUaEntityServerConfiguration)} has not been configured!");
                     return new SessionFactory(opcUaEntityServerConfiguration);
                 })
                 .AddTransient<SessionManager>()

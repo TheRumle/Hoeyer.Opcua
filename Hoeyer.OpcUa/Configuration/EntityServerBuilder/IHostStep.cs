@@ -2,6 +2,6 @@
 
 public interface IHostStep
 {
-    IEndpointsStep WithHttpHost(string host);
-    IEndpointsStep WithOpcTcpHost(string host);
+    IEndpointsStep WithHttpsHost(string host, int port);
+    IEndpointsStep WithOpcTcpHost(string host, int port);
 }

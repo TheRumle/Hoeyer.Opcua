@@ -10,19 +10,19 @@ using Opc.Ua.Configuration;
 namespace Hoeyer.OpcUa.Server.Application;
 
 public sealed class OpcUaEntityServerFactory(
-    OpcUaEntityServerConfigurationSetup opcUaEntityServerConfiguration,
+    OpcUaEntityServerSetup opcUaEntityServer,
     IEnumerable<IEntityNodeCreator> entityObjectCreators, 
     ILoggerFactory loggerFactory)
 {
     
     public StartableEntityServer CreateServer()
     {
-        var configuration = ServerApplicationConfigurationFactory.CreateServerConfiguration(opcUaEntityServerConfiguration);
+        var configuration = ServerApplicationConfigurationFactory.CreateServerConfiguration(opcUaEntityServer);
         
         var application = new ApplicationInstance
         {
             ApplicationConfiguration = configuration,
-            ApplicationName = opcUaEntityServerConfiguration.ServerName,
+            ApplicationName = opcUaEntityServer.ServerName,
             ApplicationType = ApplicationType.Server
         };
         
@@ -31,7 +31,7 @@ public sealed class OpcUaEntityServerFactory(
         var entityNodeManagerFactory = new EntityNodeManagerFactory(loggerFactory);
         var entityServerLogger = loggerFactory.CreateLogger<OpcEntityServer>();
         
-        var server = new OpcEntityServer(opcUaEntityServerConfiguration.EntityServerConfiguration, entityObjectCreators, entityNodeManagerFactory, entityServerLogger);
+        var server = new OpcEntityServer(opcUaEntityServer, entityObjectCreators, entityNodeManagerFactory, entityServerLogger);
         return new StartableEntityServer(application, server);
     }
 }
