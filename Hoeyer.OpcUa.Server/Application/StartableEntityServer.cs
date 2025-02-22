@@ -11,17 +11,12 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-public sealed class StartableEntityServer : IDisposable
+public sealed class StartableEntityServer(ApplicationInstance applicationInstance, OpcEntityServer entityServer)
+    : IDisposable
 {
-    public readonly ApplicationInstance ApplicationInstance;
-    public readonly OpcEntityServer EntityServer;
+    public readonly ApplicationInstance ApplicationInstance = applicationInstance ?? throw new ArgumentNullException(nameof(applicationInstance));
+    public readonly OpcEntityServer EntityServer = entityServer ?? throw new ArgumentNullException(nameof(entityServer));
     private bool _disposed;
-
-    public StartableEntityServer(ApplicationInstance applicationInstance, OpcEntityServer entityServer)
-    {
-        ApplicationInstance = applicationInstance ?? throw new ArgumentNullException(nameof(applicationInstance));
-        EntityServer = entityServer ?? throw new ArgumentNullException(nameof(entityServer));
-    }
 
     public void Dispose()
     {
@@ -33,11 +28,6 @@ public sealed class StartableEntityServer : IDisposable
     {
         if (_disposed) throw new ObjectDisposedException(nameof(StartableEntityServer));
         await ApplicationInstance.Start(EntityServer);
-
-        IEntityNode gantry = EntityServer.EntityManager.ManagedEntities.First();
-        Console.WriteLine("\n\n" + gantry + "\n\n");
-        var jsonString = JsonSerializer.Serialize(gantry);
-        Console.WriteLine(jsonString);
         return new StartedEntityServer(this);
     }
 

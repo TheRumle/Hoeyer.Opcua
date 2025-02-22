@@ -4,14 +4,14 @@ using Hoeyer.Common.Extensions;
 using Hoeyer.OpcUa.Entity;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application.Node.Entity;
+namespace Hoeyer.OpcUa.Server.Application.EntityNode;
 
-public sealed record ManagedEntityNode(BaseObjectState Entity, FolderState Folder, IEnumerable<PropertyState> PropertyStates, string Namespace, ushort EntityNameSpaceIndex) : IEntityNode
+public sealed record ManagedEntityNode(BaseObjectState Entity, FolderState Folder, Dictionary<NodeId, PropertyState> PropertyStates, string Namespace, ushort EntityNameSpaceIndex) : IEntityNode
 {
     public BaseObjectState Entity { get; } = Entity;
     public FolderState Folder { get; } = Folder;
 
-    public IEnumerable<PropertyState> PropertyStates { get; } = PropertyStates;
+    public Dictionary<NodeId, PropertyState> PropertyStates { get; } = PropertyStates;
     public string Namespace { get; } = Namespace;
     public ushort EntityNameSpaceIndex { get; } = EntityNameSpaceIndex;
 
@@ -24,14 +24,15 @@ public sealed record ManagedEntityNode(BaseObjectState Entity, FolderState Folde
     public override string ToString()
     {
         return $$"""
-                  {{nameof(ManagedEntityNode)}} { Entity:
+                  {{nameof(ManagedEntityNode)}} {
                     Name: {{Entity.DisplayName}},
                     Id: {{Entity.NodeId}},
                     Namespace: {{EntityNameSpaceIndex}},
                     Folder: {{Folder.DisplayName}},
                     State: [
-                        {{PropertyStates.Select(e=> $"{{{e.DisplayName}: {e.Value}, Id: \"{e.NodeId}\"").SeparatedBy(",\n")}}
+                        {{PropertyStates.Values.Select(e=> $"{{{e.DisplayName}: {e.Value}, Id: \"{e.NodeId}\"}}").SeparatedBy(",\n")}}
                     ]
+                  }
                   """;
     }
 }

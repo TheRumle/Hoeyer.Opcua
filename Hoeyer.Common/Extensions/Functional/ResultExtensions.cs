@@ -101,4 +101,13 @@ public static class ResultExtensions
     {
         return Result.Fail(er);
     }
+
+    public static IEnumerable<Result<TOut>> Map<TIn, TOut>(this IEnumerable<Result<TIn>> results, Func<TIn, TOut> mapper)
+    {
+        foreach (var result in results)
+        {
+            if (result.IsSuccess) yield return mapper(result.Value);
+            yield return Result.Fail(result.Errors);
+        }
+    }
 }

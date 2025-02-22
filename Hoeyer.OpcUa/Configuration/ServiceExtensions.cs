@@ -18,7 +18,7 @@ public static class ServiceExtensions
         var entityServerConfiguration = configurationBuilder.Invoke();
         services.AddSingleton(entityServerConfiguration);
         return new OnGoingOpcEntityServiceRegistration(services);
-    }
+    }   
     
     
 }

@@ -3,7 +3,7 @@ using Hoeyer.OpcUa.Entity;
 using Opc.Ua;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Application.Node.Extensions;
+namespace Hoeyer.OpcUa.Server.Application.Extensions;
 
 public static class EntityNodeExtensions
 {

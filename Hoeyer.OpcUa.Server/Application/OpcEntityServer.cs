@@ -3,35 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.OpcUa.Configuration;
 using Hoeyer.OpcUa.Entity;
-using Hoeyer.OpcUa.Server.Application.Node;
-using Hoeyer.OpcUa.Server.Application.Node.Entity;
+using Hoeyer.OpcUa.Server.Application.EntityNode;
+using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-public sealed class OpcEntityServer : StandardServer
+public sealed class OpcEntityServer(OpcUaEntityServerConfiguration applicationProductDetails,
+    IEnumerable<IEntityNodeCreator> nodeCreators,
+    EntityNodeManagerFactory managerFactory,
+    ILogger<OpcEntityServer> logger) : StandardServer //ServerBase? instead? 
 {
-    private readonly IEnumerable<IEntityNodeCreator> _nodeCreators;
-    private readonly OpcUaEntityServerConfiguration _applicationProductDetails;
-    
     public IServerInternal Server => ServerInternal;
-    public readonly IEnumerable<Uri> EndPoints;
-    private readonly EntityNodeManagerFactory _managerFactory;
-    public EntityMasterNodeManager EntityManager { get; private set; }
-    
-    public OpcEntityServer(OpcUaEntityServerConfiguration details, IEnumerable<IEntityNodeCreator> nodeCreators, EntityNodeManagerFactory factory)
-    {
-        _nodeCreators = nodeCreators;
-        _applicationProductDetails = details;
-        _managerFactory = factory;
-        EndPoints = [..details.Endpoints.Select(e=>new Uri(e))];
-    }
+    public readonly IEnumerable<Uri> EndPoints = [..applicationProductDetails.Endpoints.Select(e=>new Uri(e))];
+    public EntityMasterNodeManager EntityManager { get; private set; } = null!;
 
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server, ApplicationConfiguration configuration)
     {
-        var additionalManagers = _nodeCreators
-            .Select(nodeCreator => _managerFactory.Create(server, _applicationProductDetails, nodeCreator))
+        var additionalManagers = nodeCreators
+            .Select(nodeCreator => managerFactory.Create(server, applicationProductDetails, nodeCreator))
             .ToArray();
         
         EntityManager = new EntityMasterNodeManager(server, configuration, additionalManagers);
@@ -45,8 +36,31 @@ public sealed class OpcEntityServer : StandardServer
         ExtensionObject userIdentityToken, SignatureData userTokenSignature, out byte[] serverNonce,
         out StatusCodeCollection results, out DiagnosticInfoCollection diagnosticInfos)
     {
-        var a = base.ActivateSession(requestHeader, clientSignature, clientSoftwareCertificates, localeIds, userIdentityToken, userTokenSignature, out serverNonce, out results, out diagnosticInfos);
-        return a;
+        try
+        {
+            var a = base.ActivateSession(requestHeader, clientSignature, clientSoftwareCertificates, localeIds, userIdentityToken, userTokenSignature, out serverNonce, out results, out diagnosticInfos);
+            return a;
+        }
+        catch (Exception e)
+        {
+            logger.LogCritical(e,
+                "An exception occured when trying to activate session for {@SessionInfo}.",
+                new
+                {
+                    Header = requestHeader
+                });
+
+            diagnosticInfos = new DiagnosticInfoCollection();
+            results = new StatusCodeCollection();
+            serverNonce = null!;
+            return new ResponseHeader()
+            {
+                Timestamp = DateTime.UtcNow,
+                ServiceResult = StatusCodes.BadNotConnected,
+            };
+        }
+        
+ 
     }
 
     /// <inheritdoc />
@@ -54,8 +68,8 @@ public sealed class OpcEntityServer : StandardServer
     {
         ServerProperties properties = base.LoadServerProperties();
         properties.BuildDate = DateTime.UtcNow;
-        properties.ProductName = _applicationProductDetails.ServerName;
-        properties.ProductUri = this._applicationProductDetails.ApplicationNamespace.ToString();
+        properties.ProductName = applicationProductDetails.ServerName;
+        properties.ProductUri = applicationProductDetails.ApplicationNamespace.ToString();
         properties.SoftwareVersion = "1.0";
         return properties;
     }
