@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Hoeyer.OpcUa.Entity;
 using Opc.Ua;
 using Opc.Ua.Server;
 
@@ -7,7 +8,7 @@ namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
 
 public sealed class EntityMasterNodeManager : MasterNodeManager
 {
-    public readonly IEnumerable<ManagedEntityNode> ManagedEntities;
+    public readonly IEnumerable<IEntityNode> ManagedEntities;
     
     /// <inheritdoc />
     public EntityMasterNodeManager(IServerInternal server, ApplicationConfiguration applicationConfiguration, IEntityNodeManager[] additionalManagers) : base(server, applicationConfiguration, applicationConfiguration.ApplicationUri, additionalManagers)

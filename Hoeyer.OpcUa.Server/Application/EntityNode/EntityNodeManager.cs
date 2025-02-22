@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentResults;
 using Hoeyer.Common.Extensions;
+using Hoeyer.OpcUa.Entity;
 using Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
 using Hoeyer.OpcUa.Server.Application.Extensions;
 using Microsoft.Extensions.Logging;
@@ -11,7 +12,7 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application.EntityNode;
 
-public sealed class EntityNodeManager(
+internal sealed class EntityNodeManager(
         ManagedEntityNode managedEntity,
         IServerInternal server,
         IEntityHandleManager entityHandleManager,
@@ -25,7 +26,7 @@ public sealed class EntityNodeManager(
 {
     
     
-    public ManagedEntityNode ManagedEntity { get;  } = managedEntity;
+    public IEntityNode ManagedEntity { get;  } = managedEntity;
     private readonly ServerSystemContext _systemContext = server.DefaultSystemContext;
     private readonly BaseObjectState _entity = managedEntity.Entity;
 
@@ -214,7 +215,7 @@ public sealed class EntityNodeManager(
     public override void Read(OperationContext context, double maxAge, IList<ReadValueId> nodesToRead, IList<DataValue> values,
         IList<ServiceResult> errors)
     {
-        var filtered = nodesToRead.Where(e => !e.Processed && ManagedEntity.EntityNameSpaceIndex == e.NodeId.NamespaceIndex).ToList();
+        var filtered = nodesToRead.Where(e => !e.Processed && managedEntity.EntityNameSpaceIndex == e.NodeId.NamespaceIndex).ToList();
         if (!filtered.Any()) return;
         
         

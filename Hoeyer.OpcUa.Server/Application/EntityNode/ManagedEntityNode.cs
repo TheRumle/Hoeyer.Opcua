@@ -6,7 +6,7 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application.EntityNode;
 
-public sealed record ManagedEntityNode(BaseObjectState Entity, FolderState Folder, Dictionary<NodeId, PropertyState> PropertyStates, string Namespace, ushort EntityNameSpaceIndex) : IEntityNode 
+internal sealed record ManagedEntityNode(BaseObjectState Entity, FolderState Folder, Dictionary<NodeId, PropertyState> PropertyStates, string Namespace, ushort EntityNameSpaceIndex) : IEntityNode 
 {
     public BaseObjectState Entity { get; } = Entity;
     public FolderState Folder { get; } = Folder;
