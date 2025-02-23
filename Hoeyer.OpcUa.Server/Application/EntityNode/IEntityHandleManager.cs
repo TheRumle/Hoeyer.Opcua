@@ -9,8 +9,6 @@ public interface IEntityHandleManager
 
     public bool IsManagedPropertyHandle(object? handle, out EntityNodeHandle<PropertyState> managedPropertyHandle);
     public bool IsManagedPropertyHandle(NodeId id, out EntityNodeHandle<PropertyState> managedPropertyHandle);
-    public bool IsManagedFolderHandle(object? handle);
-    public bool IsManagedFolderHandle(NodeId id,  out EntityNodeHandle<FolderState> folderHandle);
     public bool IsManagedEntityHandle(object? handle);
     public bool IsManagedEntityHandle(NodeId id, out EntityNodeHandle<BaseObjectState> entityHandle);
 

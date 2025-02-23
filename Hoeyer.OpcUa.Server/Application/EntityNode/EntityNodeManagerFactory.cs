@@ -1,18 +1,16 @@
-﻿using Hoeyer.OpcUa.Configuration;
+﻿using System;
 using Hoeyer.OpcUa.Entity;
 using Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
 using Microsoft.Extensions.Logging;
-using Opc.Ua;
 using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application.EntityNode;
 
 public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
 {
-    internal IEntityNodeManager Create(IServerInternal server, IOpcUaEntityServerInfo info,
-        IEntityNodeCreator nodeCreator)
+    internal IEntityNodeManager Create(IServerInternal server, Uri host, IEntityNodeCreator nodeCreator)
     {
-        var nodeNamespace = info.Host + $"Manager/{nodeCreator.EntityName}";
+        var nodeNamespace = host.Host + $"/{nodeCreator.EntityName}";
         var logger = loggerFactory.CreateLogger(nodeCreator.EntityName + "Manager");
         var managedNode = CreatedManagedNode(server, nodeNamespace, nodeCreator);
 
@@ -24,35 +22,16 @@ public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
             new EntityModifier(managedNode),
             new EntityBrowser(server.DefaultSystemContext),
             new EntityReader(managedNode),
-            new EntityReferenceManager(managedNode),
+            new EntityReferenceLinker(managedNode),
             logger);
     }
 
-    private static ManagedEntityNode CreatedManagedNode(IServerInternal server, string nodeNamespace,
-        IEntityNodeCreator nodeCreator)
+    private static ManagedEntityNode CreatedManagedNode(IServerInternal server, string nodeNamespace, IEntityNodeCreator nodeCreator)
     {
         var namespaceIndex = server.NamespaceUris.GetIndexOrAppend(nodeNamespace);
         var context = server.DefaultSystemContext;
-        var root = CreateRootFolder(nodeCreator.EntityName, namespaceIndex);
-        var node = nodeCreator.CreateEntityOpcUaNode(root, namespaceIndex);
-        node.Folder.Create(context, node.Folder.NodeId, node.Folder.BrowseName, node.Folder.DisplayName, false);
+        var node = nodeCreator.CreateEntityOpcUaNode(namespaceIndex);
         node.Entity.Create(context, node.Entity.NodeId, node.Entity.BrowseName, node.Entity.DisplayName, false);
-        node.Folder.AddChild(node.Entity);
         return new ManagedEntityNode(node, nodeNamespace, namespaceIndex);
-    }
-
-    private static FolderState CreateRootFolder(string folderName, ushort namespaceIndex)
-    {
-        // Create a root folder for this entity.
-        var rootFolder = new FolderState(null)
-        {
-            SymbolicName = folderName,
-            BrowseName = new QualifiedName(folderName),
-            DisplayName = folderName,
-            NodeId = new NodeId(folderName, namespaceIndex),
-            TypeDefinitionId = ObjectTypeIds.FolderType
-        };
-
-        return rootFolder;
     }
 }

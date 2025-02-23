@@ -6,12 +6,24 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
 
-public sealed class EntityMasterNodeManager : MasterNodeManager
+public interface IDomainMasterManagerFactory
 {
-    public readonly IEnumerable<IEntityNode> ManagedEntities;
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="server"></param>
+    /// <param name="applicationConfiguration"></param>
+    /// <returns></returns>
+    public DomainMasterNodeManager ConstructMasterManager(IServerInternal server, ApplicationConfiguration applicationConfiguration);
+}
+
+
+public sealed class DomainMasterNodeManager : MasterNodeManager
+{
+    public IEnumerable<IEntityNode> ManagedEntities { get; private set; }
 
     /// <inheritdoc />
-    public EntityMasterNodeManager(IServerInternal server, ApplicationConfiguration applicationConfiguration,
+    public DomainMasterNodeManager(IServerInternal server, ApplicationConfiguration applicationConfiguration,
         IEntityNodeManager[] additionalManagers) : base(server, applicationConfiguration,
         applicationConfiguration.ApplicationUri, additionalManagers)
     {

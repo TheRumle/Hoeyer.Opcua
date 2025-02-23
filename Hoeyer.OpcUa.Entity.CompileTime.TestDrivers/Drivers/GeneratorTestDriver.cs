@@ -20,18 +20,14 @@ public sealed class GeneratorTestDriver<T>(T generator, Action<string>? logger =
     public GeneratorResult RunGeneratorOn(EntitySourceCode entitySourceCode)
     {
         var compilation = _compilationFactory.CreateCompilation(entitySourceCode);
-        return RunCompilation(_driver, compilation);
+        var compilationResult = _driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out var diagnostics);
+        var result = CreateResult(compilationResult, diagnostics, _driver.GetTimingInfo());
+        return result;
     }
 
 
-    private static GeneratorResult RunCompilation(CSharpGeneratorDriver driver, Compilation compilation)
-    {
-        var compilationResult = driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out var diagnostics);
-        return CreateResult(compilationResult, diagnostics, driver.GetTimingInfo());
-    }
 
-    private static GeneratorResult CreateResult(
-        GeneratorDriver compilationResult,
+    private static GeneratorResult CreateResult(GeneratorDriver compilationResult,
         ImmutableArray<Diagnostic> diagnostics,
         GeneratorDriverTimingInfo timingInfo)
     {

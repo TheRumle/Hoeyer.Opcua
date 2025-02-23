@@ -10,7 +10,7 @@ namespace Hoeyer.OpcUa.Configuration;
 public interface IOpcUaEntityServerInfo
 {
     string ServerId { get; }
-    string ServerName { get; }
+    string ApplicationName { get; }
     Uri Host { get; }
     ISet<Uri> Endpoints { get; }
 
@@ -30,14 +30,14 @@ internal record OpcUaEntityServerInfo : IOpcUaEntityServerInfo
             throw validation.Errors.ToArgumentException();
         
         this.ServerId = ServerId;
-        this.ServerName = ServerName;
+        this.ApplicationName = ServerName;
         this.Host = Host;
         this.Endpoints = Endpoints;
         this.ApplicationNamespace = ApplicationNamespace;
     }
 
     public string ServerId { get; }
-    public string ServerName { get; }
+    public string ApplicationName { get; }
     public Uri Host { get; }
     public ISet<Uri> Endpoints { get; set; }
 

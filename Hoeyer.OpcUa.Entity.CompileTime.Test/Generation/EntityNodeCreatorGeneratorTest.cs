@@ -14,6 +14,7 @@ public class EntityNodeCreatorGeneratorTest
 
     [Test]
     [ValidEntitySourceCodeGenerator]
+    [NotInParallel]
     public async Task WhenGiven_CorrectSourceCodeInfo_ShouldGenerateSyntaxTrees(EntitySourceCode entitySourceCode)
     {
         var generationResult = _testDriver.RunGeneratorOn(entitySourceCode);

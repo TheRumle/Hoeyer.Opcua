@@ -13,9 +13,7 @@ internal class HandleCollection(IEntityNode entityNode)
 
     public readonly EntityNodeHandle<BaseObjectState> EntityNodeHandle =
         new(entityNode.Entity, entityNode.Entity.Parent);
-
-    public readonly EntityNodeHandle<FolderState> FolderHandle = new(entityNode.Folder, entityNode.Folder.Parent);
-
+    
     public IReadOnlyDictionary<PropertyState, EntityNodeHandle<PropertyState>> PropertyHandles => _propertyHandles;
 
     private EntityNodeHandle<PropertyState> AddProperty(PropertyState state)

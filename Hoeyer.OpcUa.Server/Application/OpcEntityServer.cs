@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Hoeyer.OpcUa.Configuration;
 using Hoeyer.OpcUa.Entity;
-using Hoeyer.OpcUa.Server.Application.EntityNode;
 using Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
@@ -13,8 +11,7 @@ namespace Hoeyer.OpcUa.Server.Application;
 
 public sealed class OpcEntityServer(
     IOpcUaEntityServerInfo applicationProductDetails,
-    IEnumerable<IEntityNodeCreator> nodeCreators,
-    EntityNodeManagerFactory managerFactory,
+    IDomainMasterManagerFactory managerFactory,
     ILogger<OpcEntityServer> logger)
     : StandardServer //ServerBase? instead? 
 {
@@ -22,19 +19,16 @@ public sealed class OpcEntityServer(
     public readonly IOpcUaEntityServerInfo ServerInfo = applicationProductDetails;
 
     private bool _disposed;
-    public EntityMasterNodeManager EntityManager { get; private set; } = null!;
+    public DomainMasterNodeManager DomainManager { get; private set; } = null!;
+    
+    
 
 
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server,
         ApplicationConfiguration configuration)
     {
-        logger.LogInformation("Creating entity managers");
-        var additionalManagers = nodeCreators
-            .Select(nodeCreator => managerFactory.Create(server, ServerInfo, nodeCreator))
-            .ToArray();
-
-        EntityManager = new EntityMasterNodeManager(server, configuration, additionalManagers);
-        return EntityManager;
+        logger.BeginScope("Creating master manager");
+        return managerFactory.ConstructMasterManager(server, configuration);
     }
 
 
@@ -72,7 +66,7 @@ public sealed class OpcEntityServer(
     {
         var properties = base.LoadServerProperties();
         properties.BuildDate = DateTime.UtcNow;
-        properties.ProductName = ServerInfo.ServerName;
+        properties.ProductName = ServerInfo.ApplicationName;
         properties.ProductUri = ServerInfo.ApplicationNamespace.ToString();
         properties.SoftwareVersion = "1.0";
         return properties;
@@ -101,7 +95,7 @@ public sealed class OpcEntityServer(
         if (_disposed) return;
         if (!disposing) return;
 
-        EntityManager.Dispose();
+        DomainManager.Dispose();
         base.Dispose(disposing);
         _disposed = true;
     }

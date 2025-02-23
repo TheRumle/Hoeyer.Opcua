@@ -45,7 +45,7 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
         var propertyAssignments = string.Join("\n", propertyCreationStatements.Select(e=>e.CreationStatement));
 
         var propertyNames = string.Join(", ", propertyCreationStatements.Select(e => "\t\t\t\t"+e.PropertyName));
-        var resultReturn = $"return new {nameof(EntityNode)}(root, {nodeStateReference}, new List<{nameof(PropertyState)}>()\n\t\t\t{{\n{propertyNames}\n\t\t\t}});";
+        var resultReturn = $"return new {nameof(EntityNode)}({nodeStateReference}, new List<{nameof(PropertyState)}>()\n\t\t\t{{\n{propertyNames}\n\t\t\t}});";
         
         return $$"""
                  using System;
@@ -59,18 +59,15 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
                      {
                         public {{className}}(){}
                         public string EntityName { get; } = "{{entityName}}";
-                        public {{nameof(EntityNode)}} CreateEntityOpcUaNode({{nameof(FolderState)}} root, ushort applicationNamespaceIndex)
+                        public {{nameof(EntityNode)}} CreateEntityOpcUaNode(ushort applicationNamespaceIndex)
                         {
-                            root.AccessRestrictions = AccessRestrictionType.None;
-                            {{nameof(BaseObjectState)}} {{nodeStateReference}} = new {{nameof(BaseObjectState)}}(root)
+                            {{nameof(BaseObjectState)}} {{nodeStateReference}} = new {{nameof(BaseObjectState)}}(null)
                             {
                                 BrowseName =  new {{nameof(QualifiedName)}}("{{entityName}}", applicationNamespaceIndex),
-                                NodeId = new {{nameof(NodeId)}}({{nameof(Guid)}}.{{nameof(Guid.NewGuid)}}(), applicationNamespaceIndex),
+                                NodeId = new {{nameof(NodeId)}}(EntityName, applicationNamespaceIndex),
                                 DisplayName = "{{entityName}}",
                             };
                             {{nodeStateReference}}.AccessRestrictions = AccessRestrictionType.None;
-                        
-                            root.AddChild({{nodeStateReference}});
                             
                             //Assign properties
                             {{propertyAssignments}}
@@ -104,9 +101,5 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
     }
 
 
-    private record struct PropertyCreation(string PropertyName, string CreationStatement)
-    {
-        public string CreationStatement { get; set; } = CreationStatement;
-        public string PropertyName { get; set; } = PropertyName;
-    }
+    private record struct PropertyCreation(string PropertyName, string CreationStatement);
 }

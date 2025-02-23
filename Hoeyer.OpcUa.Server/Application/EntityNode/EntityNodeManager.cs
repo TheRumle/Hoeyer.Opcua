@@ -19,7 +19,7 @@ internal sealed class EntityNodeManager(
     IEntityModifier entityModifier,
     IEntityBrowser browser,
     IEntityReader entityReader,
-    IEntityReferenceManager referenceManager,
+    IReferenceLinker referenceLinker,
     ILogger logger
 ) : CustomNodeManager(server, managedEntity.Namespace), IEntityNodeManager
 {
@@ -35,11 +35,10 @@ internal sealed class EntityNodeManager(
         logger.BeginScope("Creating address space and initializing {NodeName} nodes", managedEntity.Entity.BrowseName);
         try
         {
-            var res = referenceManager.IntitializeNodeWithReferences(externalReferences);
+            var res = referenceLinker.IntitializeNodeWithReferences(externalReferences);
             if (res.IsFailed) logger.LogError(res.Errors.ToNewlineSeparatedString());
 
             AddPredefinedNode(_systemContext, managedEntity.Entity);
-            AddPredefinedNode(_systemContext, managedEntity.Folder);
             foreach (var properties in managedEntity.PropertyStates.Values)
             {
                 logger.LogInformation("Adding {PropertyName}", properties.BrowseName);
@@ -58,7 +57,6 @@ internal sealed class EntityNodeManager(
     {
         using var scope = logger.BeginScope("Disposing entity folder, entity and entity properties");
         ManagedEntity.Entity.Dispose();
-        ManagedEntity.Folder.Dispose();
         foreach (var propertyStatesValue in ManagedEntity.PropertyStates.Values) propertyStatesValue.Dispose();
         ManagedEntity.PropertyStates.Clear();
     }
@@ -74,10 +72,9 @@ internal sealed class EntityNodeManager(
     {
         using var scope = logger.BeginScope("Adding references {References}", references);
 
-        foreach (KeyValuePair<NodeId, IList<IReference>> kvp in references.Where(e =>
-                     entityHandleManager.GetState(e.Key).IsSuccess))
+        foreach (KeyValuePair<NodeId, IList<IReference>> kvp in references)
         {
-            var result = AddReference(kvp);
+            var result = AddReference(kvp.Key, kvp.Value);
             if (!result.IsSuccess)
                 logger.LogWarning(
                     "Failed to references from {Node} --> {Targets}: {Error}",
@@ -107,7 +104,7 @@ internal sealed class EntityNodeManager(
             return StatusCodes.BadNodeIdUnknown;
         }
 
-        var deletion = referenceManager.DeleteReference(referenceTypeId, isInverse, targetId);
+        var deletion = referenceLinker.RemoveReference(referenceTypeId, isInverse, targetId);
         if (deletion.IsSuccess) return ServiceResult.Good;
 
         logger.LogError("Failed deleting reference {Reference}: {Errors}",
@@ -363,14 +360,11 @@ internal sealed class EntityNodeManager(
         if (disposing) base.Dispose();
     }
 
-    private Result AddReference(KeyValuePair<NodeId, IList<IReference>> kvp)
+    private Result AddReference(NodeId id, IList<IReference> values)
     {
-        if (entityHandleManager.IsManagedEntityHandle(kvp.Key))
-            return referenceManager.AddReferencesToEntity(kvp.Value);
+        if (entityHandleManager.IsManagedEntityHandle(id))
+            return referenceLinker.AddReferencesToEntity(values);
 
-        if (entityHandleManager.IsManagedFolderHandle(kvp.Key))
-            return referenceManager.AddReferencesToEntity(kvp.Value);
-
-        return Result.Fail($"This manager does not hold a node with NodeId {kvp.Key}");
+        return Result.Fail($"Tried adding referencex to node '{id}'. This manager only supports adding references to the Entity '{_entity.BrowseName}' with NodeId '{_entity.NodeId}'.");
     }
 }

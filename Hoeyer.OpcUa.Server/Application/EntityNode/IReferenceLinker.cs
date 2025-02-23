@@ -4,13 +4,12 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application.EntityNode;
 
-public interface IEntityReferenceManager
+public interface IReferenceLinker
 {
     Result IntitializeNodeWithReferences(IDictionary<NodeId, IList<IReference>> externalReferences);
     Result AddReferencesToEntity(IEnumerable<IReference> references);
-    Result AddReferencesToFolder(IEnumerable<IReference> references);
 
-    Result DeleteReference(
+    Result RemoveReference(
         NodeId referenceTypeId,
         bool isInverse,
         ExpandedNodeId targetId);
