@@ -22,7 +22,7 @@ public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
             server,
             new EntityHandleManager(managedNode),
             new EntityModifier(managedNode),
-            new EntityBrowser(managedNode),
+            new EntityBrowser(server.DefaultSystemContext),
             new EntityReader(managedNode),
             new EntityReferenceManager(managedNode),
             logger);

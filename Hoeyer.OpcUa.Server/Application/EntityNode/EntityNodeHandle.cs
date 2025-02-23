@@ -5,17 +5,17 @@ namespace Hoeyer.OpcUa.Server.Application.EntityNode;
 
 public interface IEntityNodeHandle
 {
-    internal NodeState HandledNode { get; }
+    internal BaseInstanceState HandledNode { get; }
 }
 
 public record EntityNodeHandle<T>(T Value, NodeState Root) : IEntityNodeHandle
-    where T : NodeState
+    where T : BaseInstanceState
 {
     internal readonly NodeState Root = Root;
     internal readonly T Value = Value;
 
     /// <inheritdoc />
-    public NodeState HandledNode => Value;
+    public BaseInstanceState HandledNode => Value;
 
     public static implicit operator NodeHandle(EntityNodeHandle<T> entityNodeHandle)
     {

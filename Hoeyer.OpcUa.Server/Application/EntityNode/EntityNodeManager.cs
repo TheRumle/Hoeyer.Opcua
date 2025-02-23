@@ -145,33 +145,22 @@ internal sealed class EntityNodeManager(
     public override void Browse(OperationContext context, ref ContinuationPoint continuationPoint,
         IList<ReferenceDescription> references)
     {
-        if (continuationPoint.NodeToBrowse is not NodeHandle nodeToBrowse)
+        using var scope = logger.BeginScope("Browsing node");
+        if (continuationPoint.NodeToBrowse is not IEntityNodeHandle nodeToBrowse)
         {
             logger.LogError(
                 "Attempted to browse the manager, but the given node to browse was not a NodeHandle but was {@NodeToBrowse}",
                 continuationPoint.NodeToBrowse);
             return;
         }
-
-        var contextCopy = _systemContext.Copy();
-        var toTake = continuationPoint.MaxResultsToReturn - references.Count;
-
-        var nodeBrowser = continuationPoint.Data as INodeBrowser ?? nodeToBrowse.Node.CreateBrowser(contextCopy,
-            continuationPoint.View,
-            continuationPoint.ReferenceTypeId,
-            continuationPoint.IncludeSubtypes,
-            continuationPoint.BrowseDirection,
-            null,
-            null,
-            false);
-
-        using var scope = logger.BeginScope("Browsing node");
-        var browsedValues = browser.Browse(continuationPoint.ResultMask, nodeBrowser).Take((int)toTake).ToList();
-
+        
+        var browsedValues = browser.Browse(continuationPoint, nodeToBrowse).Take((int)continuationPoint.MaxResultsToReturn).ToList();
         foreach (var description in browsedValues.Where(e => e.IsSuccess)) references.Add(description.Value);
 
         foreach (var failure in browsedValues.Where(e => e.IsFailed))
+        {
             logger.LogError("Browsing resulted in error(s): {Errors}", failure.Errors);
+        }
     }
 
     /// <inheritdoc />

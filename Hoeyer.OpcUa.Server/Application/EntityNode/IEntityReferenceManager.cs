@@ -2,7 +2,7 @@
 using FluentResults;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
+namespace Hoeyer.OpcUa.Server.Application.EntityNode;
 
 public interface IEntityReferenceManager
 {

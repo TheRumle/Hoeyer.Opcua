@@ -9,15 +9,19 @@ namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
 
 internal class EntityReferenceManager(IEntityNode entityNode) : IEntityReferenceManager
 {
+    /// <summary>
+    /// Initializes the nodes of the Entity and links nodes to existing references - for instance, making the folder lie under the Root/Objects of the OpcUaServer
+    /// </summary>
+    /// <param name="externalReferences"></param>
+    /// <returns></returns>
     public Result IntitializeNodeWithReferences(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
-        // Add to objects folder  EntityFolder <--> Opc.Objects
-        // EntityFolder <--> Entity
-        externalReferences.GetOrAdd(ObjectIds.ObjectsFolder,
+        externalReferences.GetOrAdd(ObjectIds.RootFolder,
         [
-            ..GetReferenceEdge(ReferenceTypeIds.Organizes, entityNode.Folder).ToEnumerable(),
-            ..GetReferenceEdge(ReferenceTypeIds.Organizes, entityNode.Entity).ToEnumerable()
+            new NodeStateReference(ReferenceTypeIds.Organizes, false, entityNode.Entity),
         ]);
+        
+        entityNode.Folder.AddReference(ReferenceTypeIds.Organizes, false, new ExpandedNodeId(entityNode.Entity.NodeId));
 
         entityNode.Entity.EventNotifier = EventNotifiers.SubscribeToEvents;
         entityNode.Folder.EventNotifier = EventNotifiers.SubscribeToEvents;
@@ -73,7 +77,9 @@ internal class EntityReferenceManager(IEntityNode entityNode) : IEntityReference
     {
         var parent = entityNode.Entity;
         parent.AddReference(referenceId, false, child.NodeId);
-        child.AddReference(referenceId, true, parent.NodeId);
-        parent.AddChild(child);
+        if (!parent.ReferenceExists(referenceId, false, new ExpandedNodeId(child.NodeId)))
+        {
+            parent.AddChild(child);
+        }
     }
 }
