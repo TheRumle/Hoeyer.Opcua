@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FluentResults;
 using Opc.Ua;
 using Opc.Ua.Server;
@@ -9,9 +10,15 @@ internal class EntityBrowser(ServerSystemContext context)
     : IEntityBrowser
 {
     /// <inheritdoc />
-    public IEnumerable<Result<ReferenceDescription>> Browse(ContinuationPoint continuationPoint, IEntityNodeHandle nodeToBrowse)
+    public IEnumerable<ReferenceDescription> Browse(ContinuationPoint continuationPoint, IEntityNodeHandle nodeToBrowse)
     {
-        var browser = CreateBrowser(continuationPoint, nodeToBrowse.HandledNode);
+        INodeBrowser browser = CreateBrowser(continuationPoint, nodeToBrowse.HandledNode);
+        return BrowseAll(continuationPoint, nodeToBrowse, browser)
+            .Skip(continuationPoint.Index);
+    }
+    private static IEnumerable<ReferenceDescription> BrowseAll(ContinuationPoint continuationPoint, IEntityNodeHandle nodeToBrowse,
+        INodeBrowser browser)
+    {
         for (var reference = browser.Next(); reference != null; reference = browser.Next())
         {
             var description = CreateDefaultReferenceDescription(reference, continuationPoint.ResultMask);
@@ -21,7 +28,6 @@ internal class EntityBrowser(ServerSystemContext context)
                 nodeToBrowse.HandledNode.DisplayName,
                 nodeToBrowse.HandledNode.TypeDefinitionId);
             
-            continuationPoint.Index += 1;
             yield return description;
         }
     }

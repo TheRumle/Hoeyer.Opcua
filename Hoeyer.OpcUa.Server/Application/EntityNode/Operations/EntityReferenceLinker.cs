@@ -7,7 +7,7 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
 
-internal class EntityReferenceLinker(IEntityNode entityNode, FolderState? container = null) : IReferenceLinker
+internal class EntityReferenceLinker(IEntityNode entityNode) : IReferenceLinker
 {
     /// <summary>
     /// Initializes the nodes of the Entity and links nodes to existing references - for instance, making the folder lie under the Root/Objects of the OpcUaServer
@@ -23,17 +23,11 @@ internal class EntityReferenceLinker(IEntityNode entityNode, FolderState? contai
 
     private void LinkEntity(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
-        if (container != null)
-        {
-            container.AddReference(ReferenceTypeIds.Organizes, false, new ExpandedNodeId(entityNode.Entity.NodeId));
-        }
-        else
-        {
-            externalReferences.GetOrAdd(ObjectIds.RootFolder,
-            [
-                new NodeStateReference(ReferenceTypeIds.Organizes, false, entityNode.Entity),
-            ]);
-        }
+
+        externalReferences.GetOrAdd(ObjectIds.RootFolder,
+        [
+            new NodeStateReference(ReferenceTypeIds.Organizes, false, entityNode.Entity),
+        ]);
 
         entityNode.Entity.EventNotifier = EventNotifiers.SubscribeToEvents;
 

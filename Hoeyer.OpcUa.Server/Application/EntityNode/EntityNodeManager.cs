@@ -151,13 +151,23 @@ internal sealed class EntityNodeManager(
             return;
         }
         
-        var browsedValues = browser.Browse(continuationPoint, nodeToBrowse).Take((int)continuationPoint.MaxResultsToReturn).ToList();
-        foreach (var description in browsedValues.Where(e => e.IsSuccess)) references.Add(description.Value);
-
-        foreach (var failure in browsedValues.Where(e => e.IsFailed))
+        var browsedValues = browser.Browse(continuationPoint, nodeToBrowse).ToList();
+        var foundValues = browsedValues
+            .Take((int)continuationPoint.MaxResultsToReturn)
+            .ToList();
+        
+        foreach (var description in foundValues)
         {
-            logger.LogError("Browsing resulted in error(s): {Errors}", failure.Errors);
+            references.Add(description);
         }
+
+        if (foundValues.Count <= continuationPoint.MaxResultsToReturn && //All values are found
+            foundValues.Count != 0) //exactly all values are found
+        {
+            continuationPoint.Index += foundValues.Count;
+            return;
+        }
+        continuationPoint = null!;
     }
 
     /// <inheritdoc />
