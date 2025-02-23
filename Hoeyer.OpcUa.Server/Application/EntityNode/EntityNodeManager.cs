@@ -38,11 +38,9 @@ internal sealed class EntityNodeManager(
             var res = referenceLinker.IntitializeNodeWithReferences(externalReferences);
             if (res.IsFailed) logger.LogError(res.Errors.ToNewlineSeparatedString());
 
-            AddPredefinedNode(_systemContext, managedEntity.Entity);
             foreach (var properties in managedEntity.PropertyStates.Values)
             {
                 logger.LogInformation("Adding {PropertyName}", properties.BrowseName);
-                AddPredefinedNode(_systemContext, properties);
             }
         }
         catch (Exception exception)
@@ -71,15 +69,15 @@ internal sealed class EntityNodeManager(
     public override void AddReferences(IDictionary<NodeId, IList<IReference>> references)
     {
         using var scope = logger.BeginScope("Adding references {References}", references);
-
+        return;
         foreach (KeyValuePair<NodeId, IList<IReference>> kvp in references)
         {
-            var result = AddReference(kvp.Key, kvp.Value);
+            var result = referenceLinker.AddReferencesToEntity(kvp.Key, kvp.Value);
             if (!result.IsSuccess)
                 logger.LogWarning(
-                    "Failed to references from {Node} --> {Targets}: {Error}",
+                    "Failed to references from '{Node}' --> '{Targets}: {Error}'",
                     kvp.Key,
-                    kvp.Value.Select(e => e.ReferenceTypeId),
+                    kvp.Value.Select(e => e.TargetId),
                     result.Errors.ToNewlineSeparatedString());
             else
                 logger.LogInformation("Node {NodeId} now references targets: {References}", _entity.BrowseName,
@@ -258,7 +256,7 @@ internal sealed class EntityNodeManager(
         IEventMonitoredItem monitoredItem,
         bool unsubscribe)
     {
-        logger.LogInformation("Subscribing to all events for monitored items {@MonitoredItem}", monitoredItem);
+        logger.LogInformation("Subscribing to all events for monitored item {@MonitoredItem}", monitoredItem);
         logger.LogWarning("Subscribtion events are not fully yet supported");
         return base.SubscribeToAllEvents(context, subscriptionId, monitoredItem, unsubscribe);
     }
@@ -360,6 +358,7 @@ internal sealed class EntityNodeManager(
         using var scope = logger.BeginScope("Getting permission metadata for {@TargetHandle}", targetHandle);
         if (!entityHandleManager.IsHandleToAnyRelatedNode(targetHandle))
             logger.LogWarning("Handle {@Handle} is not related to any nodes held by this manager", targetHandle);
+        
         return base.GetPermissionMetadata(context, targetHandle, resultMask, uniqueNodesServiceAttributesCache,
             permissionsOnly);
     }
@@ -368,13 +367,5 @@ internal sealed class EntityNodeManager(
     protected override void Dispose(bool disposing)
     {
         if (disposing) base.Dispose();
-    }
-
-    private Result AddReference(NodeId id, IList<IReference> values)
-    {
-        if (entityHandleManager.IsManagedEntityHandle(id))
-            return referenceLinker.AddReferencesToEntity(values);
-
-        return Result.Fail($"Tried adding referencex to node '{id}'. This manager only supports adding references to the Entity '{_entity.BrowseName}' with NodeId '{_entity.NodeId}'.");
     }
 }

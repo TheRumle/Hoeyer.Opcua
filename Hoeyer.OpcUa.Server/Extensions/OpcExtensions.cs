@@ -1,4 +1,5 @@
-﻿using Opc.Ua;
+﻿using System;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Extensions;
 
@@ -13,6 +14,16 @@ public static class OpcExtensions
         {
             ServerTimestamp = property.Timestamp,
             StatusCode = property.StatusCode
+        };
+    }
+
+    public static DataValue ToDataValue(this BaseObjectState entity)
+    {
+        return new DataValue()
+        {
+            Value = entity,
+            StatusCode = StatusCodes.Good,
+            ServerTimestamp = DateTime.Now,
         };
     }
 }

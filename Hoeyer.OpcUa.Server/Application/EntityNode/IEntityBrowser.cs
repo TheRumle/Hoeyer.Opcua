@@ -6,7 +6,6 @@ namespace Hoeyer.OpcUa.Server.Application.EntityNode;
 
 public interface IEntityBrowser
 {
-    /// <inheritdoc />
     IEnumerable<ReferenceDescription> Browse(ContinuationPoint continuationPoint,
         IEntityNodeHandle nodeToBrowse);
 }

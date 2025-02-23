@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FluentResults;
+using Hoeyer.Common.Extensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Entity;
 using Opc.Ua;
@@ -24,7 +25,7 @@ internal class EntityReferenceLinker(IEntityNode entityNode) : IReferenceLinker
     private void LinkEntity(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
 
-        externalReferences.GetOrAdd(ObjectIds.RootFolder,
+        externalReferences.GetOrAdd(ObjectIds.ObjectsFolder,
         [
             new NodeStateReference(ReferenceTypeIds.Organizes, false, entityNode.Entity),
         ]);
@@ -37,9 +38,10 @@ internal class EntityReferenceLinker(IEntityNode entityNode) : IReferenceLinker
         }
     }
 
-    public Result AddReferencesToEntity(IEnumerable<IReference> references)
+    public Result AddReferencesToEntity(NodeId source, IEnumerable<IReference> references)
     {
-        return AddReferenceToNode(references, entityNode.Entity);
+        var result = references.Where(e => !entityNode.Entity.ReferenceExists(e.ReferenceTypeId, e.IsInverse, e.TargetId));
+        return AddReferenceToNode( result, entityNode.Entity);
     }
 
     public Result RemoveReference(
@@ -57,7 +59,6 @@ internal class EntityReferenceLinker(IEntityNode entityNode) : IReferenceLinker
     {
         return references.Select(r =>
         {
-            if (nodeState.ReferenceExists(r.ReferenceTypeId, r.IsInverse, r.TargetId)) return Result.Fail($"Reference '{r.ReferenceTypeId}' already exists on {nodeState.BrowseName}");
             nodeState.AddReference(r.ReferenceTypeId, r.IsInverse, r.TargetId);
             return Result.Ok();
         }).Merge();

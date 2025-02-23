@@ -27,4 +27,10 @@ public record EntityNodeHandle<T>(T Value, NodeState Root) : IEntityNodeHandle
             RootId = entityNodeHandle.Root.NodeId
         };
     }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return Value.BrowseName + "," + Value.NodeId;
+    }
 }

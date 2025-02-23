@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using FluentResults;
 using Opc.Ua;
 using Opc.Ua.Server;
@@ -19,15 +21,18 @@ internal class EntityBrowser(ServerSystemContext context)
     private static IEnumerable<ReferenceDescription> BrowseAll(ContinuationPoint continuationPoint, IEntityNodeHandle nodeToBrowse,
         INodeBrowser browser)
     {
+        var i = 1;
+        var resultMask = continuationPoint.ResultMask;
         for (var reference = browser.Next(); reference != null; reference = browser.Next())
         {
-            var description = CreateDefaultReferenceDescription(reference, continuationPoint.ResultMask);
-            description.SetTargetAttributes(continuationPoint.ResultMask,
-                nodeToBrowse.HandledNode.NodeClass,
-                nodeToBrowse.HandledNode.BrowseName,
-                nodeToBrowse.HandledNode.DisplayName,
-                nodeToBrowse.HandledNode.TypeDefinitionId);
-            
+            Console.WriteLine(i);
+            Console.WriteLine(reference.TargetId);
+            Console.WriteLine(nodeToBrowse);
+            i += 1;
+            var description = CreateDefaultReferenceDescription(nodeToBrowse);
+            description.SetReferenceType(resultMask, nodeToBrowse.HandledNode.ReferenceTypeId, !reference.IsInverse);
+            description.SetTargetAttributes(resultMask, nodeToBrowse.HandledNode.NodeClass, nodeToBrowse.HandledNode.BrowseName, nodeToBrowse.HandledNode.DisplayName, nodeToBrowse.HandledNode.TypeDefinitionId);
+            Console.WriteLine(JsonSerializer.Serialize(description));
             yield return description;
         }
     }
@@ -45,14 +50,13 @@ internal class EntityBrowser(ServerSystemContext context)
             false);
     }
 
-    private static ReferenceDescription CreateDefaultReferenceDescription(IReference reference,
-        BrowseResultMask resultMask)
+    private static ReferenceDescription CreateDefaultReferenceDescription(IEntityNodeHandle nodeToBrowse)
     {
         var description = new ReferenceDescription
         {
-            NodeId = reference.TargetId
+            NodeId = nodeToBrowse.HandledNode.NodeId
         };
-        description.SetReferenceType(resultMask, reference.ReferenceTypeId, reference.IsInverse);
+
         return description;
     }
 }
