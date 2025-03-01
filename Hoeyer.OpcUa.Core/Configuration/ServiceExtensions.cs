@@ -1,8 +1,8 @@
 ﻿using System;
-using Hoeyer.OpcUa.Configuration.EntityServerBuilder;
+using Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hoeyer.OpcUa.Configuration;
+namespace Hoeyer.OpcUa.Core.Configuration;
 
 public static class ServiceExtensions
 {

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.OpcUa.Entity;
+using Hoeyer.OpcUa.Core.Entity;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Hoeyer.OpcUa.CompileTime.Model.Extensions;
+namespace Hoeyer.OpcUa.CompileTime.Analysis.Extensions;
 
 public static class TypeDeclarationSyntaxExtensions
 {
@@ -14,7 +14,7 @@ public static class TypeDeclarationSyntaxExtensions
         if (typeSyntax.AttributeLists.Count == 0) return false;
         return typeSyntax.AttributeLists.Any(attributes =>
             attributes.Attributes.Any(attribute =>
-                nameof(OpcUaEntityAttribute) == attribute.AttributeFullName(semanticModel)));
+                nameof(OpcUaEntityAttribute) == semanticModel.GetTypeInfo(attribute)!.Type!.Name));
     }
 
     public static IEnumerable<PropertyDeclarationSyntax> GetOpcEntityPropertyDeclarations(this SyntaxNodeAnalysisContext context)

@@ -4,7 +4,7 @@ using System.Linq;
 using Hoeyer.Common.Extensions;
 using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.Common.Extensions.Types;
-using Hoeyer.OpcUa.Entity;
+using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server.Extensions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;

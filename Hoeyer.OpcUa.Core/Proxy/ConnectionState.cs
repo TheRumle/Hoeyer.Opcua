@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.OpcUa.Proxy;
+﻿namespace Hoeyer.OpcUa.Core.Proxy;
 
 public record ConnectionState
 {

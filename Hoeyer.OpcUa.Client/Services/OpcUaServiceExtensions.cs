@@ -9,10 +9,10 @@ using Hoeyer.OpcUa.Client.Configuration.Entities.Builder;
 using Hoeyer.OpcUa.Client.Configuration.Entities.Exceptions;
 using Hoeyer.OpcUa.Client.Reflection.Configurations;
 using Hoeyer.OpcUa.Client.Reflection.Types;
-using Hoeyer.OpcUa.Configuration;
-using Hoeyer.OpcUa.Entity.State;
-using Hoeyer.OpcUa.Observation;
-using Hoeyer.OpcUa.Proxy;
+using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Core.Entity.State;
+using Hoeyer.OpcUa.Core.Observation;
+using Hoeyer.OpcUa.Core.Proxy;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Client.Services;

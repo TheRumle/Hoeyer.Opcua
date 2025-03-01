@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentResults;
 using Hoeyer.Common.Extensions.Functional;
-using Hoeyer.OpcUa.Entity.State;
-using Hoeyer.OpcUa.Observation;
-using Hoeyer.OpcUa.Proxy;
+using Hoeyer.OpcUa.Core.Entity.State;
+using Hoeyer.OpcUa.Core.Observation;
+using Hoeyer.OpcUa.Core.Proxy;
 using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.OpcUa.Client.Application.MachineProxy;

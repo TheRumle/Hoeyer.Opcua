@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Hoeyer.OpcUa.Entity;
+using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server.Test.Fixtures.Application;
 using Hoeyer.OpcUa.Server.Test.TestData;
 using Opc.Ua;

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using Hoeyer.OpcUa.Entity.State;
+using Hoeyer.OpcUa.Core.Entity.State;
 
-namespace Hoeyer.OpcUa.Observation;
+namespace Hoeyer.OpcUa.Core.Observation;
 
 public class StateChangeBehaviour<TState>(TState currentState) : ISubscribable<TState>
 {

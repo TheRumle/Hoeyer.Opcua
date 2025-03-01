@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Hoeyer.OpcUa.Entity;
+using Hoeyer.OpcUa.Core.Entity;
 using Opc.Ua;
 using Opc.Ua.Server;
 

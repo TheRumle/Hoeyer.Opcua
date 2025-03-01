@@ -1,6 +1,6 @@
-﻿using Hoeyer.OpcUa.Entity.State;
+﻿using Hoeyer.OpcUa.Core.Entity.State;
 
-namespace Hoeyer.OpcUa.Observation;
+namespace Hoeyer.OpcUa.Core.Observation;
 
 public interface ISubscribable<TState>
 {

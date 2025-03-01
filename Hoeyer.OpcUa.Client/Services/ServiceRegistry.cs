@@ -7,10 +7,6 @@ using Hoeyer.OpcUa.Client.Application.MachineProxy;
 using Hoeyer.OpcUa.Client.Configuration.Entities.Builder;
 using Hoeyer.OpcUa.Client.Configuration.Entities.Exceptions;
 using Hoeyer.OpcUa.Client.Reflection.Configurations;
-using Hoeyer.OpcUa.Configuration;
-using Hoeyer.OpcUa.Entity.State;
-using Hoeyer.OpcUa.Observation;
-using Hoeyer.OpcUa.Proxy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 

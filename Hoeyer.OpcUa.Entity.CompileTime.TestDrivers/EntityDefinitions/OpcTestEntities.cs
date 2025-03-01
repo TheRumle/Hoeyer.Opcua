@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Hoeyer.Common.Extensions.Reflection;
+using Hoeyer.OpcUa.Core.Entity;
 
 namespace Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 

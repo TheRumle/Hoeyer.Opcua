@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.CompileTime.Model.Extensions;
+namespace Hoeyer.OpcUa.CompileTime.Analysis.Extensions;
 
 public static class PropertyDeclarationSyntaxExtensions
 {
@@ -22,8 +22,7 @@ public static class PropertyDeclarationSyntaxExtensions
         // Therefore, any modifier text of length != 6 will restrict access
         // Thus it will not be 'fully public'
         var isPublicProperty = modifierText.Length == PUBLIC_LENGTH;
-        return isPublicProperty &&
-               property.HasPublicOnlyAccessModifier();
+        return isPublicProperty && property.HasPublicOnlyAccessModifier();
     }
 
 
@@ -44,3 +43,5 @@ public static class PropertyDeclarationSyntaxExtensions
         return property.AccessorList?.Accessors.FirstOrDefault(a => a.Kind() == SyntaxKind.SetAccessorDeclaration);
     }
 }
+
+

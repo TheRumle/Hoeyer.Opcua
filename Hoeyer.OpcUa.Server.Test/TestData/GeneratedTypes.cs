@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.Entity;
+﻿using Hoeyer.OpcUa.Core.Entity;
 
 namespace Hoeyer.OpcUa.Server.Test.TestData;
 

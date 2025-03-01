@@ -5,7 +5,7 @@ using FluentResults;
 using Hoeyer.Common.Extensions.Exceptions;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Configuration;
+namespace Hoeyer.OpcUa.Core.Configuration;
 
 public interface IOpcUaEntityServerInfo
 {

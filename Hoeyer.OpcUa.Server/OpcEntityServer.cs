@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hoeyer.OpcUa.Configuration;
+using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Server.Application;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;

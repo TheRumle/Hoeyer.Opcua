@@ -23,11 +23,7 @@ public static class OpcEntityResourceLoader
             type => AssemblyResources[type.FullName + ".cs"].Value
         );
 
-
-    /// <summary>
-    ///     Loads a resource by mapping the fully qualified name of the type to a path to a file ending with
-    ///     <paramref name="fileType" />.
-    /// </summary>
+    
     /// <param name="type">The type to be loaded as a resource</param>
     /// <returns>A string representing the full source code of the class file.</returns>
     /// <exception cref="FileNotFoundException">If no resource matching the type could be found.</exception>

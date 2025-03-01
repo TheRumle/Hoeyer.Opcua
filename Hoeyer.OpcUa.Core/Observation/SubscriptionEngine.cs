@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Hoeyer.OpcUa.Entity.State;
+using Hoeyer.OpcUa.Core.Entity.State;
 
-namespace Hoeyer.OpcUa.Observation;
+namespace Hoeyer.OpcUa.Core.Observation;
 
 public class SubscriptionEngine<T>(StateContainer<T> stateContainer)
 {

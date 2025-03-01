@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Configuration.EntityServerBuilder;
+namespace Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
 
 internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuilder, IServerNameStep, IHostStep, IEndpointsStep, IAdditionalConfigurationStep
 {

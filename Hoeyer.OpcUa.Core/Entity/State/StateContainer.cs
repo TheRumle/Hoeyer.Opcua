@@ -1,6 +1,6 @@
-﻿using Hoeyer.OpcUa.Observation;
+﻿using Hoeyer.OpcUa.Core.Observation;
 
-namespace Hoeyer.OpcUa.Entity.State;
+namespace Hoeyer.OpcUa.Core.Entity.State;
 
 public sealed class StateContainer<TState>(TState state) : ISubscribable<TState>
 {

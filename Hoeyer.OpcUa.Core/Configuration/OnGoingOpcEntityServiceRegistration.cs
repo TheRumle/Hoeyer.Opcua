@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Hoeyer.OpcUa.Configuration;
+namespace Hoeyer.OpcUa.Core.Configuration;
 
 /// <summary>
 /// A service collection where an <see cref="OpcUaEntityServerInfo"/> has been registered.

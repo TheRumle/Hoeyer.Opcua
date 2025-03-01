@@ -1,5 +1,5 @@
 ﻿using System;
-using Hoeyer.OpcUa.Configuration;
+using Hoeyer.OpcUa.Core.Configuration;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.ServiceConfiguration.Extensions;

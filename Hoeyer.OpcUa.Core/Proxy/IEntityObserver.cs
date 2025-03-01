@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using FluentResults;
-using Hoeyer.OpcUa.Entity.State;
+using Hoeyer.OpcUa.Core.Entity.State;
 
-namespace Hoeyer.OpcUa.Proxy;
+namespace Hoeyer.OpcUa.Core.Proxy;
 
 public interface IEntityObserver<TEntity>
 {

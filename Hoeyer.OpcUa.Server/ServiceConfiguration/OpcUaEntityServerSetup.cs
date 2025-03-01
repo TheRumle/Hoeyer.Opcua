@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hoeyer.OpcUa.Configuration;
+using Hoeyer.OpcUa.Core.Configuration;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.ServiceConfiguration;

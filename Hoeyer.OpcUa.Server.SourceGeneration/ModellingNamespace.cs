@@ -1,6 +1,6 @@
-﻿using Hoeyer.OpcUa.Entity;
+﻿using Hoeyer.OpcUa.Core.Entity;
 
-namespace Hoeyer.OpcUa.CompileTime.Model;
+namespace Hoeyer.OpcUa.Server.SourceGeneration;
 
 public static class ModellingNamespace
 {

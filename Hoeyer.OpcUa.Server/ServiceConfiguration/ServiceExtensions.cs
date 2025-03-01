@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.OpcUa.Configuration;
-using Hoeyer.OpcUa.Entity;
+using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Core.Entity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;

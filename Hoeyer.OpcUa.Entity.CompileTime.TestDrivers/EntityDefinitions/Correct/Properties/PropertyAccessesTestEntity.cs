@@ -1,4 +1,6 @@
-﻿namespace Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions.Correct.Properties;
+﻿using Hoeyer.OpcUa.Core.Entity;
+
+namespace Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions.Correct.Properties;
 
 [OpcUaEntity]
 public class PropertyAccessesTestEntity

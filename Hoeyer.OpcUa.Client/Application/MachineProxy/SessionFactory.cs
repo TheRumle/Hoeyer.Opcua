@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Hoeyer.OpcUa.Configuration;
+using Hoeyer.OpcUa.Core.Configuration;
 using Opc.Ua;
 using Opc.Ua.Client;
 

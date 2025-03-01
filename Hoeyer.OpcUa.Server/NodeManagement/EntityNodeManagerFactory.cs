@@ -1,5 +1,5 @@
 ﻿using System;
-using Hoeyer.OpcUa.Entity;
+using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server.Application;
 using Microsoft.Extensions.Logging;
 using Opc.Ua.Server;
