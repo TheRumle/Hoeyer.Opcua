@@ -1,4 +1,4 @@
-namespace Hoeyer.OpcUa.CompileTime.Extensions;
+namespace Hoeyer.OpcUa.CompileTime.Model.Extensions;
 
 internal enum GetterOrSetter
 {

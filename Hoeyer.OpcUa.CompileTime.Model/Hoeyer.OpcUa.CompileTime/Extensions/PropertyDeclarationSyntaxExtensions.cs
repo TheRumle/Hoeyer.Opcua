@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.CompileTime.Extensions;
+namespace Hoeyer.OpcUa.CompileTime.Model.Extensions;
 
 public static class PropertyDeclarationSyntaxExtensions
 {

@@ -1,5 +1,5 @@
-﻿using Hoeyer.OpcUa.CompileTime.Diagnostics;
-using Hoeyer.OpcUa.CompileTime.Diagnostics.Fields.Properties;
+﻿using Hoeyer.OpcUa.CompileTime.Analysis.Diagnostics;
+using Hoeyer.OpcUa.CompileTime.Analysis.Diagnostics.Fields.Properties;
 using Hoeyer.OpcUa.Entity.Analysis.Test.Data;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.Drivers;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;

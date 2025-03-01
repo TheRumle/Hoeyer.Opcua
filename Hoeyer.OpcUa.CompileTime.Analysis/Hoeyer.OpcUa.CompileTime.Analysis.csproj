@@ -12,7 +12,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.OpcUa\Hoeyer.OpcUa.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.Model\Hoeyer.OpcUa.CompileTime\Hoeyer.OpcUa.CompileTime.csproj" />
+        <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>

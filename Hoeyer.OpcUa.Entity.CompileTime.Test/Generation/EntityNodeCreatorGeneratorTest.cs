@@ -1,7 +1,7 @@
-﻿using Hoeyer.OpcUa.CompileTime.Generation;
-using Hoeyer.OpcUa.Entity.Analysis.Test.Data;
+﻿using Hoeyer.OpcUa.Entity.Analysis.Test.Data;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.Drivers;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
+using Hoeyer.OpcUa.Server.SourceGeneration.Generation;
 using JetBrains.Annotations;
 
 namespace Hoeyer.OpcUa.Entity.Analysis.Test.Generation;

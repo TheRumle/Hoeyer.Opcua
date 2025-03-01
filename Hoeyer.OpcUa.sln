@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa", "Hoeyer.OpcUa\Hoeyer.OpcUa.csproj", "{83F13633-73EC-4FF5-83E3-96C660BB5A1D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Core", "Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj", "{83F13633-73EC-4FF5-83E3-96C660BB5A1D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyOpcUaWebApplication", "MyOpcUaWebApplication\MyOpcUaWebApplication.csproj", "{6D779225-B797-4173-90B6-0CB428C2FA6F}"
 EndProject
@@ -10,7 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Client", "Hoey
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Server", "Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj", "{6E9C25A3-54AB-49C4-97AB-31E70F9D9BEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.CompileTime", "Hoeyer.OpcUa.CompileTime\Hoeyer.OpcUa.CompileTime.csproj", "{F0CB3955-A9F8-4B76-B200-3AA3BBE22656}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.CompileTime.Analysis", "Hoeyer.OpcUa.CompileTime.Analysis\Hoeyer.OpcUa.CompileTime.Analysis.csproj", "{F0CB3955-A9F8-4B76-B200-3AA3BBE22656}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A89A920F-FE1F-41A1-A62D-7E11250B5576}"
 EndProject
@@ -27,6 +27,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "unittest", "unittest", "{E8FFFC47-3286-4B5E-B95C-1025F8E36D50}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Server.Test", "Hoeyer.OpcUa.Server.Test\Hoeyer.OpcUa.Server.Test.csproj", "{CE19E989-6880-4424-9595-C02BE91E96E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.CompileTime", "Hoeyer.OpcUa.CompileTime.Model\Hoeyer.OpcUa.CompileTime\Hoeyer.OpcUa.CompileTime.csproj", "{132E8D59-8616-4BF0-8D08-44CE5DCECF0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Server.SourceGeneration", "Hoeyer.OpcUa.Server.SourceGeneration\Hoeyer.OpcUa.Server.SourceGeneration.csproj", "{2DBA8172-3BD2-4BDB-A841-0D5EB6290992}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,6 +74,14 @@ Global
 		{CE19E989-6880-4424-9595-C02BE91E96E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE19E989-6880-4424-9595-C02BE91E96E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE19E989-6880-4424-9595-C02BE91E96E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{132E8D59-8616-4BF0-8D08-44CE5DCECF0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{132E8D59-8616-4BF0-8D08-44CE5DCECF0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{132E8D59-8616-4BF0-8D08-44CE5DCECF0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{132E8D59-8616-4BF0-8D08-44CE5DCECF0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DBA8172-3BD2-4BDB-A841-0D5EB6290992}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DBA8172-3BD2-4BDB-A841-0D5EB6290992}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DBA8172-3BD2-4BDB-A841-0D5EB6290992}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DBA8172-3BD2-4BDB-A841-0D5EB6290992}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{870B9A54-BD11-469A-A8D4-7B727C0B5B43} = {A89A920F-FE1F-41A1-A62D-7E11250B5576}
@@ -84,5 +96,7 @@ Global
 		{F0CB3955-A9F8-4B76-B200-3AA3BBE22656} = {BDF28345-C176-4EF1-887D-12F7EDECF811}
 		{E8FFFC47-3286-4B5E-B95C-1025F8E36D50} = {592D1AA6-E902-4D44-BDDA-CF54EA15B5A0}
 		{CE19E989-6880-4424-9595-C02BE91E96E8} = {E8FFFC47-3286-4B5E-B95C-1025F8E36D50}
+		{132E8D59-8616-4BF0-8D08-44CE5DCECF0B} = {BDF28345-C176-4EF1-887D-12F7EDECF811}
+		{2DBA8172-3BD2-4BDB-A841-0D5EB6290992} = {BDF28345-C176-4EF1-887D-12F7EDECF811}
 	EndGlobalSection
 EndGlobal

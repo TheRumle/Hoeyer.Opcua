@@ -18,7 +18,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa\Hoeyer.OpcUa.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj" />
     </ItemGroup>
 
 </Project>

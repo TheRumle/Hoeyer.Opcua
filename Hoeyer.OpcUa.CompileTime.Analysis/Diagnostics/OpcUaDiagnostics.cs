@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.CompileTime.Diagnostics;
+namespace Hoeyer.OpcUa.CompileTime.Analysis.Diagnostics;
 
 public static class OpcUaDiagnostics
 {
@@ -13,10 +13,24 @@ public static class OpcUaDiagnostics
         DiagnosticSeverity.Error,
         true,
         "OpcUa entity properties must have a public setter.");
+    
+    public static readonly DiagnosticDescriptor MustNotHaveNullablePropertyDescriptor = new(
+        "HOEYERUA0002",
+        "Properties must not be nullable",
+        "OpcUa entities' properties can never be null",
+        "Design",
+        DiagnosticSeverity.Error,
+        true,
+        "OpcUa entity properties must not be annotated as nullable.");
 
     public static Diagnostic MustHavePublicSetter(PropertyDeclarationSyntax property)
     {
         return Diagnostic.Create(MustHavePublicSetterDescriptor, property.GetLocation(), property.Identifier);
+    }
+    
+    public static Diagnostic MustNotHaveNullableProperty(PropertyDeclarationSyntax property)
+    {
+        return Diagnostic.Create(MustNotHaveNullablePropertyDescriptor, property.GetLocation(), property.Identifier);
     }
 
 

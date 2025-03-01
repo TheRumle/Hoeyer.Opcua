@@ -29,4 +29,7 @@
     <data name="HOEYERUA0001_CODEFIX" xml:space="preserve">
         <value>Make {0} publicly accessible.</value>
     </data>
+    <data name="HOEYERUA0002" xml:space="preserve">
+        <value>OpcUa entities' properties can never be null</value>
+    </data>
 </root>

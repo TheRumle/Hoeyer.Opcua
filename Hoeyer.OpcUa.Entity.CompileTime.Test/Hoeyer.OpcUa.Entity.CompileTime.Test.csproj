@@ -23,7 +23,8 @@
 
 
     <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime\Hoeyer.OpcUa.CompileTime.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.Analysis\Hoeyer.OpcUa.CompileTime.Analysis.csproj" />
+        <ProjectReference Include="..\Hoeyer.OpcUa.Server.SourceGeneration\Hoeyer.OpcUa.Server.SourceGeneration.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Entity.CompileTime.TestDrivers\Hoeyer.OpcUa.Entity.CompileTime.TestDrivers.csproj"/>
     </ItemGroup>
 

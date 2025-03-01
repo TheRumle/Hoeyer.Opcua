@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SyntaxFactory = Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using SyntaxKind = Microsoft.CodeAnalysis.CSharp.SyntaxKind;
 
-namespace Hoeyer.OpcUa.CompileTime.Diagnostics.Fields.Properties;
+namespace Hoeyer.OpcUa.CompileTime.Analysis.Diagnostics.Fields.Properties;
 
 /// <summary>
 ///     Provides fixes for HOEYERUA0001 - OpcUa entities' properties must be fully public./>

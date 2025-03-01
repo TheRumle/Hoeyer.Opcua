@@ -1,19 +1,19 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
-using Hoeyer.OpcUa.CompileTime.Extensions;
+using Hoeyer.OpcUa.CompileTime.Model.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Hoeyer.OpcUa.CompileTime.Diagnostics.Fields.Properties;
+namespace Hoeyer.OpcUa.CompileTime.Analysis.Diagnostics.Fields.Properties;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class PropertiesMustBePublicAnalyser : DiagnosticAnalyzer
+public class PropertiesMustNotBeNullableAnalyser : DiagnosticAnalyzer
 {
     /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
-        ImmutableArray.Create(OpcUaDiagnostics.MustHavePublicSetterDescriptor);
+        ImmutableArray.Create(OpcUaDiagnostics.MustNotHaveNullablePropertyDescriptor);
 
     /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
@@ -23,18 +23,13 @@ public class PropertiesMustBePublicAnalyser : DiagnosticAnalyzer
         context.RegisterSyntaxNodeAction(AnalyzeSyntax, SyntaxKind.ClassDeclaration);
         context.RegisterSyntaxNodeAction(AnalyzeSyntax, SyntaxKind.RecordDeclaration);
     }
-
+    
     private static void AnalyzeSyntax(SyntaxNodeAnalysisContext context)
     {
-        if (context.Node is not TypeDeclarationSyntax typeSyntax ||
-            !typeSyntax.IsAnnotatedAsOpcUaEntity(context.SemanticModel))
-            return;
-
-        var properties = typeSyntax.Members
-            .OfType<PropertyDeclarationSyntax>()
-            .Where(e => !e.IsFullyPublicProperty())
-            .Select(OpcUaDiagnostics.MustHavePublicSetter);
-
+        var properties = context.GetOpcEntityPropertyDeclarations()
+            .Where(e => e.Type is NullableTypeSyntax)
+            .Select(OpcUaDiagnostics.MustNotHaveNullableProperty);
+        
         foreach (var diagnostic in properties) context.ReportDiagnostic(diagnostic);
     }
 }

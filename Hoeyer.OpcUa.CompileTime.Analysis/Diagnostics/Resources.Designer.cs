@@ -7,7 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Hoeyer.OpcUa.CompileTime.Diagnostics {
+namespace Hoeyer.OpcUa.CompileTime.Analysis.Diagnostics {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -35,7 +38,7 @@ namespace Hoeyer.OpcUa.CompileTime.Diagnostics {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Hoeyer.OpcUa.CompileTime.Diagnostics.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Hoeyer.OpcUa.Core.CompileTime.Analysis.Diagnostics.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -71,6 +74,15 @@ namespace Hoeyer.OpcUa.CompileTime.Diagnostics {
         public static string HOEYERUA0001_CODEFIX {
             get {
                 return ResourceManager.GetString("HOEYERUA0001_CODEFIX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OpcUa entities&apos; properties can never be null.
+        /// </summary>
+        public static string HOEYERUA0002 {
+            get {
+                return ResourceManager.GetString("HOEYERUA0002", resourceCulture);
             }
         }
     }
