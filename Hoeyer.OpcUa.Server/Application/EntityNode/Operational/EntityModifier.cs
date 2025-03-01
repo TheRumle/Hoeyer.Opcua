@@ -3,7 +3,7 @@ using FluentResults;
 using Hoeyer.OpcUa.Entity;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
+namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operational;
 
 /// <summary>
 ///     Edits entities. Handles modification of an Entity.

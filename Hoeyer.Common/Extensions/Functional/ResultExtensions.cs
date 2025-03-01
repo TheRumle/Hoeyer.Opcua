@@ -61,6 +61,63 @@ public static class ResultExtensions
         else onError(result.Errors);
         return result;
     }
+    
+    /// <summary>
+    /// Pipes the values of the result into a the action and returns the original result unmodified
+    /// </summary>
+    /// <param name="result">A result containing a <typeparamref name="T"/> or errors</param>
+    /// <param name="action">The action to perform only if <paramref name="result"/> is successful</param>
+    /// <typeparam name="T">The type of the content of the result</typeparam>
+    /// <returns>The original result</returns>
+    public static  Result<T> Then<T>(this Result<T> result, Action<T> action)
+    {
+        if (result.IsSuccess) action(result.Value);
+        return result;
+    }
+    
+
+    public static  Result<IEnumerable<T>> Then<T>(this IEnumerable<Result<T>> result, Action<T> onSuccess, Action<IError>? onError = null)
+    {
+        var rs = result.ToList();
+        var onFail = onError ?? ((_) => { });
+        foreach (var v in rs)
+        {
+            if (v.IsSuccess) onSuccess(v.Value);
+            else v.Errors.ForEach(onFail);
+        }
+
+        return rs.Merge();
+    }
+    
+    public static  Result<IEnumerable<T>> Then<T>(this IEnumerable<Result<T>> result, Action<IEnumerable<T>> onAllSuccess, Action<IError>? onError = null)
+    {
+        var rs = result.ToList();
+        var onFail = onError ?? ((_) => { });
+        if (rs.All(e => e.IsSuccess))
+        {
+            onAllSuccess(rs.Select(e=>e.Value));
+            return rs.Merge();
+        }
+        
+        foreach (var failed in rs.Where(e=>e.IsFailed))
+        {
+            failed.Errors.ForEach(onFail);
+        }
+        return rs.Merge();
+    }
+    
+
+    public static Result<T> Then<T>(this Result<T> result, Action<T> onSuccess, Action<List<IError>> onError)
+    {
+        if (result.IsSuccess)
+        {
+            onSuccess(result.Value);
+            return result;
+        }
+        onError.Invoke(result.Errors);
+        return result;
+    }
+
 
     public static Result<T> FailIf<T>(this T value, bool check, IError error)
     {
@@ -109,5 +166,20 @@ public static class ResultExtensions
             if (result.IsSuccess) yield return mapper(result.Value);
             yield return Result.Fail(result.Errors);
         }
+    }
+
+    public static Result<T> TryMerge<T>(Func<Result<T>> result, Func<Exception, IError> onError = null)
+    {
+        try
+        {
+            return result.Invoke();
+        }
+        catch (Exception e)
+        {
+            if (onError != null) return Result.Fail(onError(e));
+            return Result.Fail(e.Message);
+        }
+        
+        
     }
 }

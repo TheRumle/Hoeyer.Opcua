@@ -4,7 +4,7 @@ using Hoeyer.OpcUa.Entity;
 using Opc.Ua;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
+namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operational;
 
 public interface IDomainMasterManagerFactory
 {

@@ -22,5 +22,5 @@ public record EntityNode(BaseObjectState Entity, Dictionary<NodeId, PropertyStat
     public BaseObjectState Entity { get; } = Entity;
 
     public Dictionary<NodeId, PropertyState> PropertyStates { get; } = PropertyStates;
-    public IEnumerable<PropertyState> AllProperties => PropertyStates.Values;
+    public IEnumerable<BaseVariableState> AllProperties => PropertyStates.Values;
 }

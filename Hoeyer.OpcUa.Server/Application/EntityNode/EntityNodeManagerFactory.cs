@@ -1,6 +1,6 @@
 ﻿using System;
 using Hoeyer.OpcUa.Entity;
-using Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
+using Hoeyer.OpcUa.Server.Application.EntityNode.Operational;
 using Microsoft.Extensions.Logging;
 using Opc.Ua.Server;
 
@@ -15,13 +15,14 @@ public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
         var managedNode = CreatedManagedNode(server, nodeNamespace, nodeCreator);
 
         logger.LogInformation("Creating {@Manager} for {@ManagedNode}", nameof(EntityNodeManager), managedNode);
+        
         return new EntityNodeManager(
             managedNode,
             server,
             new EntityHandleManager(managedNode),
             new EntityModifier(managedNode),
-            new EntityBrowser(server.DefaultSystemContext),
-            new EntityReader(managedNode),
+            new EntityBrowser(managedNode),
+            new EntityReader(managedNode, server.DefaultSystemContext),
             new EntityReferenceLinker(managedNode),
             logger);
     }

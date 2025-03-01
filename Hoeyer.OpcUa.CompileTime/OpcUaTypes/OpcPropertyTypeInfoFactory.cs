@@ -10,24 +10,24 @@ namespace Hoeyer.OpcUa.CompileTime.OpcUaTypes;
 
 public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, SemanticModel semanticModel)
 {
-    private const string DATA_TYPE_ENUM_NAME = nameof(DataTypes);
+    private const string DATA_TYPE_ENUM_NAME = nameof(DataTypeIds);
     private const string VALUE_RANK_ENUM_NAME = nameof(ValueRanks);
     private const string VALUE_RANK_SINGLE_VALUE = VALUE_RANK_ENUM_NAME + "." + nameof(ValueRanks.Scalar);
     private const string VALUE_RANK_ONE_DIM = VALUE_RANK_ENUM_NAME + "." + nameof(ValueRanks.OneDimension);
 
-    private const string OPC_UA_BOOLEAN_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypes.Boolean);
-    private const string OPC_UA_BYTE_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypes.Byte);
-    private const string OPC_UA_INT16_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypes.Int16);
-    private const string OPC_UA_U_INT16_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypes.UInt16);
-    private const string OPC_UA_INT32_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypes.Int32);
-    private const string OPC_UA_U_INT32_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypes.UInt32);
-    private const string OPC_UA_INT64_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypes.Int64);
-    private const string OPC_UA_U_INT64_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypes.UInt64);
-    private const string OPC_UA_FLOAT_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypes.Float);
-    private const string OPC_UA_DOUBLE_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypes.Double);
-    private const string OPC_UA_STRING_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypes.String);
-    private const string OPC_UA_DATE_TIME_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypes.DateTime);
-    private const string OPC_UA_DECIMAL_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypes.Decimal);
+    private const string OPC_UA_BOOLEAN_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.Boolean);
+    private const string OPC_UA_BYTE_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.Byte);
+    private const string OPC_UA_INT16_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.Int16);
+    private const string OPC_UA_U_INT16_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.UInt16);
+    private const string OPC_UA_INT32_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.Int32);
+    private const string OPC_UA_U_INT32_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.UInt32);
+    private const string OPC_UA_INT64_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.Int64);
+    private const string OPC_UA_U_INT64_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.UInt64);
+    private const string OPC_UA_FLOAT_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.Float);
+    private const string OPC_UA_DOUBLE_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.Double);
+    private const string OPC_UA_STRING_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.String);
+    private const string OPC_UA_DATE_TIME_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.DateTime);
+    private const string OPC_UA_DECIMAL_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.Decimal);
 
     private static readonly ImmutableHashSet<string> SUPPORTED_ENUMERABLE_NAMES = ImmutableHashSet.CreateRange
     ([

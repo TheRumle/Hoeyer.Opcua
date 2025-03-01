@@ -3,7 +3,7 @@ using System.Linq;
 using Hoeyer.OpcUa.Configuration;
 using Hoeyer.OpcUa.Entity;
 using Hoeyer.OpcUa.Server.Application.EntityNode;
-using Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
+using Hoeyer.OpcUa.Server.Application.EntityNode.Operational;
 using Hoeyer.OpcUa.Server.ServiceConfiguration;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
@@ -48,20 +48,5 @@ internal sealed class DomainMasterNodeManagerFactory(EntityNodeManagerFactory en
     {
         var additionalManagers = creators.Select(e => entityManagerFactory.Create(server, info.Host, e)).ToArray();
         return new DomainMasterNodeManager(server, applicationConfiguration, additionalManagers);
-    }
-    
-    private static FolderState CreateRootFolder(string folderName, ushort namespaceIndex)
-    {
-        // Create a root folder for this entity.
-        var rootFolder = new FolderState(null)
-        {
-            SymbolicName = folderName,
-            BrowseName = new QualifiedName(folderName),
-            DisplayName = folderName,
-            NodeId = new NodeId(folderName, namespaceIndex),
-            TypeDefinitionId = ObjectTypeIds.FolderType
-        };
-
-        return rootFolder;
     }
 }

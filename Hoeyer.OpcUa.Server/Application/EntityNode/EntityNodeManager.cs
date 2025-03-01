@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentResults;
 using Hoeyer.Common.Extensions;
+using Hoeyer.Common.Extensions.Functional;
+using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Entity;
-using Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
 using Hoeyer.OpcUa.Server.Application.Extensions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Server;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace Hoeyer.OpcUa.Server.Application.EntityNode;
 
@@ -53,7 +55,7 @@ internal sealed class EntityNodeManager(
     /// <inheritdoc />
     public override void DeleteAddressSpace()
     {
-        using var scope = logger.BeginScope("Disposing entity folder, entity and entity properties");
+        using var scope = logger.BeginScope("Disposing of entity {@Entity}", ManagedEntity);
         ManagedEntity.Entity.Dispose();
         foreach (var propertyStatesValue in ManagedEntity.PropertyStates.Values) propertyStatesValue.Dispose();
         ManagedEntity.PropertyStates.Clear();
@@ -133,6 +135,7 @@ internal sealed class EntityNodeManager(
         {
             logger.LogError(e, "Failed to get metadata for {@TargetHandle}", targetHandle);
         }
+
         return null!;
     }
 
@@ -141,31 +144,20 @@ internal sealed class EntityNodeManager(
         IList<ReferenceDescription> references)
     {
         using var scope = logger.BeginScope("Browsing node");
-        if (continuationPoint.NodeToBrowse is not IEntityNodeHandle nodeToBrowse)
-        {
-            logger.LogError(
-                "Attempted to browse the manager, but the given node to browse was not a NodeHandle but was {@NodeToBrowse}",
-                continuationPoint.NodeToBrowse);
-            return;
-        }
-        
-        var browsedValues = browser.Browse(continuationPoint, nodeToBrowse).ToList();
-        var foundValues = browsedValues
-            .Take((int)continuationPoint.MaxResultsToReturn)
-            .ToList();
-        
-        foreach (var description in foundValues)
-        {
-            references.Add(description);
-        }
+        if (continuationPoint.NodeToBrowse is not IEntityNodeHandle nodeToBrowse) return;
 
-        if (foundValues.Count <= continuationPoint.MaxResultsToReturn && //All values are found
-            foundValues.Count != 0) //exactly all values are found
+        var browseResult = browser.Browse(continuationPoint, nodeToBrowse)
+            .Map(range => range.ToList())
+            .Then(
+                onSuccess: references.AddRange,
+                onError: errs =>
+                    logger.LogError("Browsing failed with error(s) {Error}", errs.ToNewlineSeparatedString())
+            );
+
+        if (browseResult.IsSuccess && browseResult.Value.Count == 0)
         {
-            continuationPoint.Index += foundValues.Count;
-            return;
+            continuationPoint = null!;
         }
-        continuationPoint = null!;
     }
 
     /// <inheritdoc />
@@ -193,21 +185,32 @@ internal sealed class EntityNodeManager(
         IList<DataValue> values,
         IList<ServiceResult> errors)
     {
-        var filtered = nodesToRead
-            .Where(e => !e.Processed && managedEntity.EntityNameSpaceIndex == e.NodeId.NamespaceIndex).ToList();
+        var filtered = nodesToRead.Where(e => !e.Processed
+                                              && (managedEntity.Entity.NodeId.Equals(e.NodeId))).ToList();
         if (!filtered.Any()) return;
 
 
-        using var scope = logger.BeginScope("Reading values {ValuesToRead}", filtered.Select(e => e.NodeId).Distinct());
-        var readResponses = entityReader.Read(filtered).ToList();
-        readResponses.LogErrors(logger);
-        foreach (var readResult in readResponses.Where(e => e.IsSuccess).Select(e => e.Value))
+        using var scope = logger.BeginScope("Session {@Session}: Reading values {@ValuesToRead}", context.Session, filtered.Select(e => e.NodeId).Distinct());
+        IEnumerable<EntityValueReadResponse> readValues = entityReader.ReadProperties(filtered);
+        
+        foreach (var r in readValues)
         {
-            var placement = nodesToRead.IndexOf(readResult.Request);
-            values[placement] = readResult.Response;
-            readResult.Request.Processed = true;
+            var requestIndex = nodesToRead.IndexOf(r.Request);
+            if (r.IsSuccess && StatusCode.IsGood(r.StatusCode))
+            {
+                logger.LogInformation("Read value attribute '{@Attribute}' with status code {@Status}", r.AttributeName, r.StatusCode);
+                values[requestIndex] = r.Response.Value;
+            }
+            else
+            {
+                logger.LogError("Failed reading for request {@Request} with status code '{@StatusCode}' and error: {@Error} ", r.Request.AttributeId, r.StatusMessage, r.Error);
+                errors[requestIndex] = r.StatusCode;
+            }
+
+            r.Request.Processed = true;
         }
     }
+
 
     /// <inheritdoc />
     public override void HistoryRead(OperationContext context, HistoryReadDetails details,

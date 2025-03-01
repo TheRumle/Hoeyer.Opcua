@@ -7,10 +7,10 @@ public interface IEntityHandleManager
 {
     public bool IsHandleToAnyRelatedNode(object? handle);
 
-    public bool IsManagedPropertyHandle(object? handle, out EntityNodeHandle<PropertyState> managedPropertyHandle);
-    public bool IsManagedPropertyHandle(NodeId id, out EntityNodeHandle<PropertyState> managedPropertyHandle);
+    public bool IsManagedPropertyHandle(object? handle, out IEntityNodeHandle managedPropertyHandle);
+    public bool IsManagedPropertyHandle(NodeId id, out IEntityNodeHandle managedPropertyHandle);
     public bool IsManagedEntityHandle(object? handle);
-    public bool IsManagedEntityHandle(NodeId id, out EntityNodeHandle<BaseObjectState> entityHandle);
+    public bool IsManagedEntityHandle(NodeId id, out IEntityNodeHandle entityHandle);
 
     /// <summary>
     /// Gets the handle object of property, entity, or folder if it exists

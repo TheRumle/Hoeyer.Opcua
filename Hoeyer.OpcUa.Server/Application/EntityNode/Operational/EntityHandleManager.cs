@@ -2,7 +2,7 @@
 using Hoeyer.OpcUa.Entity;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
+namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operational;
 
 internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManager
 {
@@ -25,9 +25,9 @@ internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManage
     }
 
 
-    public bool IsManagedPropertyHandle(object? handle, out EntityNodeHandle<PropertyState> managedPropertyHandle)
+    public bool IsManagedPropertyHandle(object? handle, out IEntityNodeHandle managedPropertyHandle)
     {
-        if (handle is EntityNodeHandle<PropertyState> p
+        if (handle is PropertyHandle p
             && entityNode.PropertyStates.TryGetValue(p.Value.NodeId, out _))
         {
             managedPropertyHandle = p;
@@ -39,7 +39,7 @@ internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManage
     }
 
     /// <inheritdoc />
-    public bool IsManagedPropertyHandle(NodeId id, out EntityNodeHandle<PropertyState> managedPropertyHandle)
+    public bool IsManagedPropertyHandle(NodeId id, out IEntityNodeHandle managedPropertyHandle)
     {
         if (entityNode.PropertyStates.TryGetValue(id, out var property))
         {
@@ -54,18 +54,18 @@ internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManage
     /// <inheritdoc />
     public Result<IEntityNodeHandle> GetHandle(NodeId nodeId)
     {
-        if (IsManagedPropertyHandle(nodeId, out var propertyHandle)) return Result.Ok<IEntityNodeHandle>(propertyHandle);
-        if (IsManagedEntityHandle(nodeId, out var entityHandle)) return Result.Ok<IEntityNodeHandle>(entityHandle);
+        if (IsManagedPropertyHandle(nodeId, out var propertyHandle)) return Result.Ok(propertyHandle);
+        if (IsManagedEntityHandle(nodeId, out var entityHandle)) return Result.Ok(entityHandle);
 
         return Result.Fail($"Entity {entityNode.Entity.BrowseName} does not have any data for state handle {nodeId}");
     }
 
 
-    public bool IsManagedEntityHandle(NodeId id, out EntityNodeHandle<BaseObjectState> entityHandle)
+    public bool IsManagedEntityHandle(NodeId id, out IEntityNodeHandle entityHandle)
     {
         if (IsManagedEntityHandle(id) || id.Equals(entityNode.Entity.NodeId))
         {
-            entityHandle = _handles.EntityNodeHandle;
+            entityHandle = _handles.ManagedHandle;
             return true;
         }
 
@@ -75,8 +75,7 @@ internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManage
 
     public bool IsManagedEntityHandle(object? handle)
     {
-        return handle is EntityNodeHandle<BaseObjectState> entityHandle &&
-               entityNode.Entity.NodeId.Equals(entityHandle.Value.NodeId);
+        return handle is EntityHandle entityHandle && entityNode.Entity.NodeId.Equals(entityHandle.Value.NodeId);
     }
 
 }

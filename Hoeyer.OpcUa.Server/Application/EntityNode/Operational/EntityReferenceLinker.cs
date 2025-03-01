@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FluentResults;
-using Hoeyer.Common.Extensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Entity;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
+namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operational;
 
 internal class EntityReferenceLinker(IEntityNode entityNode) : IReferenceLinker
 {
@@ -38,7 +37,7 @@ internal class EntityReferenceLinker(IEntityNode entityNode) : IReferenceLinker
         }
     }
 
-    public Result AddReferencesToEntity(NodeId source, IEnumerable<IReference> references)
+    public Result AddReferencesToEntity(NodeId nodeId, IEnumerable<IReference> references)
     {
         var result = references.Where(e => !entityNode.Entity.ReferenceExists(e.ReferenceTypeId, e.IsInverse, e.TargetId));
         return AddReferenceToNode( result, entityNode.Entity);

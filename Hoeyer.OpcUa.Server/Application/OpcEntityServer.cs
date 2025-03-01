@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Hoeyer.OpcUa.Configuration;
 using Hoeyer.OpcUa.Entity;
-using Hoeyer.OpcUa.Server.Application.EntityNode.Operations;
+using Hoeyer.OpcUa.Server.Application.EntityNode.Operational;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Server;
