@@ -1,6 +1,6 @@
 ﻿using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode;
+namespace Hoeyer.OpcUa.Server.NodeManagement;
 
 public interface IEntityNodeHandle
 {

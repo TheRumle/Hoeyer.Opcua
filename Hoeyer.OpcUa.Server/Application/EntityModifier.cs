@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using FluentResults;
 using Hoeyer.OpcUa.Entity;
+using Hoeyer.OpcUa.Server.NodeManagement;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operational;
+namespace Hoeyer.OpcUa.Server.Application;
 
 /// <summary>
 ///     Edits entities. Handles modification of an Entity.

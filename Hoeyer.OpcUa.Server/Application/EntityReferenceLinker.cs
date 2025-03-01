@@ -3,9 +3,10 @@ using System.Linq;
 using FluentResults;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Entity;
+using Hoeyer.OpcUa.Server.NodeManagement;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operational;
+namespace Hoeyer.OpcUa.Server.Application;
 
 internal class EntityReferenceLinker(IEntityNode entityNode) : IReferenceLinker
 {
@@ -14,7 +15,7 @@ internal class EntityReferenceLinker(IEntityNode entityNode) : IReferenceLinker
     /// </summary>
     /// <param name="externalReferences"></param>
     /// <returns>An OK result if the operation is successful and a failed on if any operation throws or it is not possible to link the references</returns>
-    public Result IntitializeNodeWithReferences(IDictionary<NodeId, IList<IReference>> externalReferences)
+    public Result InitializeToExternals(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
         return Result.Try(
             () => LinkEntity(externalReferences),
@@ -28,13 +29,7 @@ internal class EntityReferenceLinker(IEntityNode entityNode) : IReferenceLinker
         [
             new NodeStateReference(ReferenceTypeIds.Organizes, false, entityNode.Entity),
         ]);
-
         entityNode.Entity.EventNotifier = EventNotifiers.SubscribeToEvents;
-
-        foreach (var propertyState in entityNode.PropertyStates.Values)
-        {
-            entityNode.Entity.AddReference(ReferenceTypes.HasProperty, false, propertyState.NodeId);
-        }
     }
 
     public Result AddReferencesToEntity(NodeId nodeId, IEnumerable<IReference> references)

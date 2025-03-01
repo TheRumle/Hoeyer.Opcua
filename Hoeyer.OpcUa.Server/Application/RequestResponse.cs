@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using FluentResults;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operational;
+namespace Hoeyer.OpcUa.Server.Application;
 
 /// <summary>
 /// An object that represents a Request and the Answer to that request. 

@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using FluentResults;
 using Hoeyer.Common.Extensions;
 using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Entity;
-using Hoeyer.OpcUa.Server.Application.Extensions;
+using Hoeyer.OpcUa.Server.Extensions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Server;
-using Org.BouncyCastle.Asn1.Ocsp;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode;
+namespace Hoeyer.OpcUa.Server.NodeManagement;
 
 internal sealed class EntityNodeManager(
     ManagedEntityNode managedEntity,
@@ -37,7 +35,7 @@ internal sealed class EntityNodeManager(
         logger.BeginScope("Creating address space and initializing {NodeName} nodes", managedEntity.Entity.BrowseName);
         try
         {
-            var res = referenceLinker.IntitializeNodeWithReferences(externalReferences);
+            var res = referenceLinker.InitializeToExternals(externalReferences);
             if (res.IsFailed) logger.LogError(res.Errors.ToNewlineSeparatedString());
 
             foreach (var properties in managedEntity.PropertyStates.Values)
@@ -71,7 +69,6 @@ internal sealed class EntityNodeManager(
     public override void AddReferences(IDictionary<NodeId, IList<IReference>> references)
     {
         using var scope = logger.BeginScope("Adding references {References}", references);
-        return;
         foreach (KeyValuePair<NodeId, IList<IReference>> kvp in references)
         {
             var result = referenceLinker.AddReferencesToEntity(kvp.Key, kvp.Value);
@@ -185,32 +182,49 @@ internal sealed class EntityNodeManager(
         IList<DataValue> values,
         IList<ServiceResult> errors)
     {
-        var filtered = nodesToRead.Where(e => !e.Processed
-                                              && (managedEntity.Entity.NodeId.Equals(e.NodeId))).ToList();
+        var filtered = nodesToRead.Where(e => !e.Processed && IsEntityKey(e)).ToList();
         if (!filtered.Any()) return;
 
+        using var scope = logger.BeginScope("Session {@Session}: Reading values {@ValuesToRead}",
+            context.SessionId,
+            filtered.Select(e => e.NodeId).Distinct());
 
-        using var scope = logger.BeginScope("Session {@Session}: Reading values {@ValuesToRead}", context.Session, filtered.Select(e => e.NodeId).Distinct());
-        IEnumerable<EntityValueReadResponse> readValues = entityReader.ReadProperties(filtered);
+        var readValues = entityReader
+            .ReadProperties(filtered)
+            .Then(e=>e.Request.Processed = true)
+            .ToList();
         
-        foreach (var r in readValues)
+        var (fits, fails) = readValues.SplitBy(e => e.IsSuccess && StatusCode.IsGood(e.StatusCode));
+        
+        logger.LogInformation("Read attribute(s) [{@Attributes}]",
+            fits.Select(ReadResultDescription)
+                .OrderBy(text=>text)
+                .SeparatedBy(", "));
+        
+        logger.LogWarning("Failed reading attribute(s): {AttributeAndStatus}",
+            fails.Select(e=>$"{managedEntity.GetNameOfManaged(e.Request.NodeId)}.{e.AttributeName} - {e.StatusMessage}")
+                .OrderBy(text=>text)
+                .SeparatedBy(", "));
+        
+
+
+        foreach (var r in fits)
         {
             var requestIndex = nodesToRead.IndexOf(r.Request);
-            if (r.IsSuccess && StatusCode.IsGood(r.StatusCode))
-            {
-                logger.LogInformation("Read value attribute '{@Attribute}' with status code {@Status}", r.AttributeName, r.StatusCode);
-                values[requestIndex] = r.Response.Value;
-            }
-            else
-            {
-                logger.LogError("Failed reading for request {@Request} with status code '{@StatusCode}' and error: {@Error} ", r.Request.AttributeId, r.StatusMessage, r.Error);
-                errors[requestIndex] = r.StatusCode;
-            }
+            values[requestIndex] = r.Response.DataValue;
+        }
 
-            r.Request.Processed = true;
+        foreach (var r in fails)
+        {
+            var requestIndex = nodesToRead.IndexOf(r.Request);
+            errors[requestIndex] = r.StatusCode;
         }
     }
 
+    private string ReadResultDescription(EntityValueReadResponse e)
+    {
+        return $"{managedEntity.GetNameOfManaged(e.Request.NodeId)}.{e.AttributeName}";
+    }
 
     /// <inheritdoc />
     public override void HistoryRead(OperationContext context, HistoryReadDetails details,
@@ -371,4 +385,12 @@ internal sealed class EntityNodeManager(
     {
         if (disposing) base.Dispose();
     }
+    
+        
+    private bool IsEntityKey(ReadValueId e)
+    {
+        return managedEntity.Entity.NodeId.Equals(e.NodeId)
+               || managedEntity.PropertyStates.ContainsKey(e.NodeId);
+    }
+
 }

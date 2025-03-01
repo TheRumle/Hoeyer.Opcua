@@ -3,7 +3,7 @@ using FluentResults;
 using Opc.Ua;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode;
+namespace Hoeyer.OpcUa.Server.NodeManagement;
 
 public interface IEntityBrowser
 {

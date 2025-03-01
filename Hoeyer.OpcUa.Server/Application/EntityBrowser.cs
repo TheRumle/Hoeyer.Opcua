@@ -3,10 +3,11 @@ using System.Linq;
 using FluentResults;
 using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.OpcUa.Entity;
+using Hoeyer.OpcUa.Server.NodeManagement;
 using Opc.Ua;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operational;
+namespace Hoeyer.OpcUa.Server.Application;
 
 internal class EntityBrowser(IEntityNode node) : IEntityBrowser
 {
@@ -43,12 +44,12 @@ internal class EntityBrowser(IEntityNode node) : IEntityBrowser
     {
         return [new ReferenceDescription
         {
-            ReferenceTypeId = ReferenceTypeIds.HasProperty,
+            ReferenceTypeId = managed.ReferenceTypeId,
             NodeId = managed.NodeId,
             BrowseName = managed.BrowseName, 
             DisplayName = managed.DisplayName,
             NodeClass = NodeClass.Variable,
-            TypeDefinition = managed.DataType
+            TypeDefinition = managed.TypeDefinitionId
         }];
     }
 

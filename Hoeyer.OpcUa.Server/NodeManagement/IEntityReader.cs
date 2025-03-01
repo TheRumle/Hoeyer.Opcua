@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hoeyer.OpcUa.Server.Application.EntityNode.Operational;
-using Hoeyer.OpcUa.Server.Extensions;
+using Hoeyer.OpcUa.Server.Application;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode;
+namespace Hoeyer.OpcUa.Server.NodeManagement;
 
 
-public sealed class EntityValueReadResponse : RequestResponse<ReadValueId, (DataValue Value, StatusCode StatusCode)>
+public sealed class EntityValueReadResponse : RequestResponse<ReadValueId, (DataValue DataValue, StatusCode StatusCode)>
 {
     public EntityValueReadResponse(ReadValueId request, string error)
         : base(request, error)
@@ -18,8 +17,8 @@ public sealed class EntityValueReadResponse : RequestResponse<ReadValueId, (Data
     public EntityValueReadResponse(ReadValueId request, Func<(DataValue, StatusCode)> valueGet) : base(request, valueGet)
     {}  
     
-    public StatusCode StatusCode => Response == default ? StatusCodes.BadNoData : Response.StatusCode;
-    public string StatusMessage => StatusCode.LookupSymbolicId(this.StatusCode.Code);
+    public StatusCode StatusCode => Response == default ? StatusCodes.BadNodeClassInvalid : Response.StatusCode;
+    public string StatusMessage => StatusCode.LookupSymbolicId(StatusCode.Code);
     public string AttributeName => Attributes.GetBrowseName(Request.AttributeId);
 }
 

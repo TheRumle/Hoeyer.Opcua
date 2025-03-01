@@ -1,10 +1,10 @@
 ﻿using System;
 using Hoeyer.OpcUa.Entity;
-using Hoeyer.OpcUa.Server.Application.EntityNode.Operational;
+using Hoeyer.OpcUa.Server.Application;
 using Microsoft.Extensions.Logging;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode;
+namespace Hoeyer.OpcUa.Server.NodeManagement;
 
 public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
 {
@@ -22,7 +22,7 @@ public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
             new EntityHandleManager(managedNode),
             new EntityModifier(managedNode),
             new EntityBrowser(managedNode),
-            new EntityReader(managedNode, server.DefaultSystemContext),
+            new EntityReader(managedNode, new PropertyReader()),
             new EntityReferenceLinker(managedNode),
             logger);
     }

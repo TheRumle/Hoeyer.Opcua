@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.Client.Application;
 using Hoeyer.OpcUa.Client.Application.MachineProxy;
-using Hoeyer.OpcUa.Server.Application;
+using Hoeyer.OpcUa.Server;
 using Microsoft.Extensions.Options;
 using MyOpcUaWebApplication.Configuration.BackgroundService;
 using Opc.Ua;

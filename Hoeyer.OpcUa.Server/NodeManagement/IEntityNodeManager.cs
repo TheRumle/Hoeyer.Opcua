@@ -1,7 +1,7 @@
 ﻿using Hoeyer.OpcUa.Entity;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode;
+namespace Hoeyer.OpcUa.Server.NodeManagement;
 
 public interface IEntityNodeManager : INodeManager2
 {

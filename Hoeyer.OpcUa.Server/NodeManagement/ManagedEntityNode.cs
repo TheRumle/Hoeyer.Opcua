@@ -4,7 +4,7 @@ using Hoeyer.Common.Extensions;
 using Hoeyer.OpcUa.Entity;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode;
+namespace Hoeyer.OpcUa.Server.NodeManagement;
 
 internal sealed record ManagedEntityNode(
     BaseObjectState Entity,
@@ -21,6 +21,13 @@ internal sealed record ManagedEntityNode(
     public ushort EntityNameSpaceIndex { get; } = EntityNameSpaceIndex;
     public BaseObjectState Entity { get; } = Entity;
     public Dictionary<NodeId, PropertyState> PropertyStates { get; } = PropertyStates;
+
+    public string GetNameOfManaged(NodeId nodeId)
+    {
+        if (Entity.NodeId.Equals(nodeId)) return Entity.DisplayName.ToString();
+        if (PropertyStates.TryGetValue(nodeId, out var propertyState)) return propertyState.DisplayName.ToString();
+        return "???";
+    }
 
     /// <inheritdoc />
     public override string ToString()

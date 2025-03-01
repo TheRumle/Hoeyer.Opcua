@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Hoeyer.OpcUa.Configuration;
 using Opc.Ua.Configuration;
 
-namespace Hoeyer.OpcUa.Server.Application;
+namespace Hoeyer.OpcUa.Server;
 
 public interface IStartableEntityServer
 {

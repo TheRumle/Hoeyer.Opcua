@@ -118,6 +118,15 @@ public static class ResultExtensions
         return result;
     }
 
+    
+    public static IEnumerable<T> Then<T>(this IEnumerable<T> result, Action<T> stateChanger)
+    {
+        foreach (var r in result)
+        {
+            stateChanger.Invoke(r);
+            yield return r;
+        }
+    }
 
     public static Result<T> FailIf<T>(this T value, bool check, IError error)
     {
@@ -179,7 +188,5 @@ public static class ResultExtensions
             if (onError != null) return Result.Fail(onError(e));
             return Result.Fail(e.Message);
         }
-        
-        
     }
 }

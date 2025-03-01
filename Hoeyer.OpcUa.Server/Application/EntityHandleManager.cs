@@ -1,8 +1,9 @@
 ﻿using FluentResults;
 using Hoeyer.OpcUa.Entity;
+using Hoeyer.OpcUa.Server.NodeManagement;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operational;
+namespace Hoeyer.OpcUa.Server.Application;
 
 internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManager
 {

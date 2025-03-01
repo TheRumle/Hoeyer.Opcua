@@ -2,15 +2,15 @@
 using System.Linq;
 using Hoeyer.OpcUa.Configuration;
 using Hoeyer.OpcUa.Entity;
-using Hoeyer.OpcUa.Server.Application.EntityNode;
-using Hoeyer.OpcUa.Server.Application.EntityNode.Operational;
+using Hoeyer.OpcUa.Server.Application;
+using Hoeyer.OpcUa.Server.NodeManagement;
 using Hoeyer.OpcUa.Server.ServiceConfiguration;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Configuration;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Application;
+namespace Hoeyer.OpcUa.Server;
 
 
 

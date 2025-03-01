@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Hoeyer.OpcUa.Configuration;
-using Hoeyer.OpcUa.Entity;
-using Hoeyer.OpcUa.Server.Application.EntityNode.Operational;
+using Hoeyer.OpcUa.Server.Application;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Application;
+namespace Hoeyer.OpcUa.Server;
 
 public sealed class OpcEntityServer(
     IOpcUaEntityServerInfo applicationProductDetails,

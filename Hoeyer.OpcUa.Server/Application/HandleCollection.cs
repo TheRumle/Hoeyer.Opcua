@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.OpcUa.Entity;
+using Hoeyer.OpcUa.Server.NodeManagement;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application.EntityNode.Operational;
+namespace Hoeyer.OpcUa.Server.Application;
 
 internal class HandleCollection(IEntityNode entityNode)
 {

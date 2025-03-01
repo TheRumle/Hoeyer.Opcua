@@ -1,6 +1,6 @@
 using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Configuration;
-using Hoeyer.OpcUa.Server.Application;
+using Hoeyer.OpcUa.Server;
 using Hoeyer.OpcUa.Server.ServiceConfiguration;
 using MyOpcUaWebApplication.Configuration.BackgroundService;
 
