@@ -13,7 +13,7 @@ public static class OpcUaDiagnostics
         DiagnosticSeverity.Error,
         true,
         "OpcUa entity properties must have a public setter.");
-    
+
     public static readonly DiagnosticDescriptor MustNotHaveNullablePropertyDescriptor = new(
         "HOEYERUA0002",
         "Properties must not be nullable",
@@ -27,7 +27,7 @@ public static class OpcUaDiagnostics
     {
         return Diagnostic.Create(MustHavePublicSetterDescriptor, property.GetLocation(), property.Identifier);
     }
-    
+
     public static Diagnostic MustNotHaveNullableProperty(PropertyDeclarationSyntax property)
     {
         return Diagnostic.Create(MustNotHaveNullablePropertyDescriptor, property.GetLocation(), property.Identifier);

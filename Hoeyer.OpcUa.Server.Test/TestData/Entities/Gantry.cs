@@ -9,13 +9,9 @@ public class Gantry
     public bool IsMoving { get; set; }
 }
 
-
-
 [OpcUaEntity]
 public class SupportedDataTypes
 {
-
-
     public IList<int> TestIList { get; set; }
     public ICollection<int> TestICollection { get; set; }
     public IEnumerable<int> TestIEnumerable { get; set; }

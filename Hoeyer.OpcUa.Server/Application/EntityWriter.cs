@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
-using FluentResults;
 using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server.Application.RequestResponse;
-using Hoeyer.OpcUa.Server.Entity;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Opc.Ua;
-using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
@@ -24,7 +21,8 @@ internal class EntityWriter(IEntityNode entityNode) : IEntityWriter
                 continue;
             }
 
-            yield return new EntityWriteResponse(toWrite, StatusCodes.BadNoMatch, $"Cannot read node {entityNode.Entity.BrowseName} NodeId {toWrite.NodeId} as it is not related to the entity!");
+            yield return new EntityWriteResponse(toWrite, StatusCodes.BadNoMatch,
+                $"Cannot read node {entityNode.Entity.BrowseName} NodeId {toWrite.NodeId} as it is not related to the entity!");
         }
     }
 
@@ -38,6 +36,7 @@ internal class EntityWriter(IEntityNode entityNode) : IEntityWriter
         var writeR = writeResult ?? StatusCodes.BadWriteNotSupported;
         return StatusCode.IsGood(writeR.StatusCode)
             ? new EntityWriteResponse(nodeToWrite, writeR.StatusCode)
-            : new EntityWriteResponse(nodeToWrite, writeR ,$"Could not assign {entityNode.Entity.BrowseName}.{propertyState.BrowseName} to value {nodeToWrite.Value}.");
+            : new EntityWriteResponse(nodeToWrite, writeR,
+                $"Could not assign {entityNode.Entity.BrowseName}.{propertyState.BrowseName} to value {nodeToWrite.Value}.");
     }
 }

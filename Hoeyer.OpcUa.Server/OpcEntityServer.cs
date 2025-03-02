@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Hoeyer.OpcUa.Core.Configuration;
-using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Entity.Management;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
@@ -19,9 +18,7 @@ public sealed class OpcEntityServer(
     public readonly IOpcUaEntityServerInfo ServerInfo = applicationProductDetails;
 
     private bool _disposed;
-    public DomainMasterNodeManager DomainManager { get; private set; } = null!;
-    
-    
+    public DomainMasterNodeManager DomainManager { get; } = null!;
 
 
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server,
@@ -72,7 +69,6 @@ public sealed class OpcEntityServer(
         properties.SoftwareVersion = "1.0";
         return properties;
     }
-
 
 
     /// <inheritdoc />

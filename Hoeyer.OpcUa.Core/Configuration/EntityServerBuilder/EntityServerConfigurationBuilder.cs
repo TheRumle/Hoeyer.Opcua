@@ -5,27 +5,43 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
 
-internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuilder, IServerNameStep, IHostStep, IEndpointsStep, IAdditionalConfigurationStep
+internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuilder, IServerNameStep, IHostStep,
+    IEndpointsStep, IAdditionalConfigurationStep
 {
+    private readonly HashSet<Uri> _endpoints = new();
+    private Uri _host = null!;
     private string _serverId = string.Empty;
     private string _serverName = string.Empty;
-    private Uri _host = null!;
-    private readonly HashSet<Uri> _endpoints = new();
+
     private EntityServerConfigurationBuilder()
     {
     }
 
-    public static IEntityServerConfigurationBuilder Create() => new EntityServerConfigurationBuilder();
+    /// <inheritdoc />
+    public IEntityServerConfigurationBuildable WithAdditionalConfiguration(
+        Action<ServerConfiguration> additionalConfigurations)
+    {
+        return this;
+    }
+
+    public IEntityServerConfigurationBuildable WithEndpoints(List<string> endpoints)
+    {
+        foreach (var e in endpoints) _endpoints.Add(new Uri(e));
+        return this;
+    }
+
+    public IOpcUaEntityServerInfo Build()
+    {
+        var validuri = Uri.TryCreate(string.Format(CultureInfo.InvariantCulture, "{0}", _host),
+            UriKind.RelativeOrAbsolute, out var uri);
+        if (!validuri) throw new ArgumentException($"Host and serverId could not form a valid URI: {uri}");
+
+        return new OpcUaEntityServerInfo(_serverId, _serverName, _host, _endpoints, uri);
+    }
 
     public IServerNameStep WithServerId(string serverId)
     {
         _serverId = serverId;
-        return this;
-    }
-
-    public IHostStep WithServerName(string serverName)
-    {
-        _serverName = serverName;
         return this;
     }
 
@@ -43,27 +59,15 @@ internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuil
         _endpoints.Add(_host);
         return this;
     }
-    
-    public IEntityServerConfigurationBuildable WithEndpoints(List<string> endpoints)
+
+    public IHostStep WithServerName(string serverName)
     {
-        foreach (var e in endpoints)
-        {
-            _endpoints.Add(new Uri(e));
-        }
+        _serverName = serverName;
         return this;
     }
 
-    public IOpcUaEntityServerInfo Build()
+    public static IEntityServerConfigurationBuilder Create()
     {
-        var validuri = Uri.TryCreate( string.Format(CultureInfo.InvariantCulture, "{0}", _host), UriKind.RelativeOrAbsolute, out var uri);
-        if (!validuri) throw new ArgumentException($"Host and serverId could not form a valid URI: {uri}");
-
-        return new OpcUaEntityServerInfo(_serverId, _serverName, _host, _endpoints, uri);
-    }
-
-    /// <inheritdoc />
-    public IEntityServerConfigurationBuildable WithAdditionalConfiguration(Action<ServerConfiguration> additionalConfigurations)
-    {
-        return this;
+        return new EntityServerConfigurationBuilder();
     }
 }

@@ -11,21 +11,23 @@ public static class ExceptionExtensions
     {
         return new AggregateException(exceptions);
     }
-    
+
     public static TResult ToNewlineSeparated<TResult>(this IEnumerable<Exception> exceptions,
-        Func<string, TResult> newException) where TResult : Exception =>
-        ToCharSeparated(exceptions, '\n', newException);
+        Func<string, TResult> newException) where TResult : Exception
+    {
+        return ToCharSeparated(exceptions, '\n', newException);
+    }
 
     public static TResult ToCharSeparated<TResult>(this IEnumerable<Exception> exceptions, char character,
         Func<string, TResult> newException) where TResult : Exception
     {
-        return newException.Invoke(string.Join($"{character}", exceptions.Select(e=>e.Message)));
+        return newException.Invoke(string.Join($"{character}", exceptions.Select(e => e.Message)));
     }
-    
+
     public static TResult ToCharSeparated<TResult>(this IEnumerable<IError> exceptions, char character,
         Func<string, TResult> newException) where TResult : Exception
     {
-        return newException.Invoke(string.Join($"{character}", exceptions.Select(e=>e.Message)));
+        return newException.Invoke(string.Join($"{character}", exceptions.Select(e => e.Message)));
     }
 
     public static IError ToError(this Exception exception)
@@ -37,11 +39,9 @@ public static class ExceptionExtensions
     {
         return new ArgumentException(errors.ToNewlineSeparatedString());
     }
-    
+
     public static Exception ToInvalidOperationException(this IEnumerable<IError> errors)
     {
         return new ArgumentException(errors.ToNewlineSeparatedString());
     }
-    
-    
 }

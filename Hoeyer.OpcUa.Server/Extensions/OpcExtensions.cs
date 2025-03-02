@@ -19,11 +19,11 @@ public static class OpcExtensions
 
     public static DataValue ToDataValue(this BaseObjectState entity)
     {
-        return new DataValue()
+        return new DataValue
         {
             Value = entity,
             StatusCode = StatusCodes.Good,
-            ServerTimestamp = DateTime.Now,
+            ServerTimestamp = DateTime.Now
         };
     }
 }

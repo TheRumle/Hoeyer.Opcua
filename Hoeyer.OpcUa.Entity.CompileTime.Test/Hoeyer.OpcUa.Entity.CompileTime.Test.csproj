@@ -14,7 +14,7 @@
         <PackageReference Include="JetBrains.Annotations" Version="2024.3.0"/>
         <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.3.0"/>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing" Version="1.1.2"/>
-        <PackageReference Include="TUnit" Version="0.14.6" />
+        <PackageReference Include="TUnit" Version="0.14.6"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -23,7 +23,7 @@
 
 
     <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.Analysis\Hoeyer.OpcUa.CompileTime.Analysis.csproj" />
+        <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.Analysis\Hoeyer.OpcUa.CompileTime.Analysis.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Server.SourceGeneration\Hoeyer.OpcUa.Server.SourceGeneration.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Entity.CompileTime.TestDrivers\Hoeyer.OpcUa.Entity.CompileTime.TestDrivers.csproj"/>
     </ItemGroup>

@@ -23,13 +23,13 @@ public class PropertiesMustNotBeNullableAnalyser : DiagnosticAnalyzer
         context.RegisterSyntaxNodeAction(AnalyzeSyntax, SyntaxKind.ClassDeclaration);
         context.RegisterSyntaxNodeAction(AnalyzeSyntax, SyntaxKind.RecordDeclaration);
     }
-    
+
     private static void AnalyzeSyntax(SyntaxNodeAnalysisContext context)
     {
         var properties = context.GetOpcEntityPropertyDeclarations()
             .Where(e => e.Type is NullableTypeSyntax)
             .Select(OpcUaDiagnostics.MustNotHaveNullableProperty);
-        
+
         foreach (var diagnostic in properties) context.ReportDiagnostic(diagnostic);
     }
 }

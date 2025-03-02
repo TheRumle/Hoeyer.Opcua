@@ -5,5 +5,6 @@ namespace Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
 
 public interface IAdditionalConfigurationStep : IEntityServerConfigurationBuildable
 {
-    public IEntityServerConfigurationBuildable WithAdditionalConfiguration(Action<ServerConfiguration> additionalConfigurations);
+    public IEntityServerConfigurationBuildable WithAdditionalConfiguration(
+        Action<ServerConfiguration> additionalConfigurations);
 }

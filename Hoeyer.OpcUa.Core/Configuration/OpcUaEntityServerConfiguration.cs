@@ -15,7 +15,7 @@ public interface IOpcUaEntityServerInfo
     ISet<Uri> Endpoints { get; }
 
     /// <summary>
-    /// For instance, http://samples.org/UA/MyApplication or something else uniqely identifying the overall resource,
+    ///     For instance, http://samples.org/UA/MyApplication or something else uniqely identifying the overall resource,
     /// </summary>
     Uri ApplicationNamespace { get; }
 }
@@ -28,9 +28,9 @@ internal record OpcUaEntityServerInfo : IOpcUaEntityServerInfo
         var validation = ValidateSupportedPrototol([Host, ..Endpoints]);
         if (validation.IsFailed)
             throw validation.Errors.ToArgumentException();
-        
+
         this.ServerId = ServerId;
-        this.ApplicationName = ServerName;
+        ApplicationName = ServerName;
         this.Host = Host;
         this.Endpoints = Endpoints;
         this.ApplicationNamespace = ApplicationNamespace;
@@ -42,10 +42,10 @@ internal record OpcUaEntityServerInfo : IOpcUaEntityServerInfo
     public ISet<Uri> Endpoints { get; set; }
 
     /// <summary>
-    /// For instance, http://samples.org/UA/MyApplication or something else uniqely identifying the overall resource,
+    ///     For instance, http://samples.org/UA/MyApplication or something else uniqely identifying the overall resource,
     /// </summary>
     public Uri ApplicationNamespace { get; }
-    
+
     private static Result ValidateSupportedPrototol(IEnumerable<Uri> addresses)
     {
         return addresses.Select(address => address.Scheme switch

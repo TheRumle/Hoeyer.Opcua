@@ -7,8 +7,9 @@ namespace Hoeyer.OpcUa.Server.Entity.Api;
 public interface IReferenceLinker
 {
     Result InitializeToExternals(IDictionary<NodeId, IList<IReference>> externalReferences);
+
     /// <summary>
-    /// Adds a reference entity --> element
+    ///     Adds a reference entity --> element
     /// </summary>
     /// <returns></returns>
     Result AddReferencesToEntity(NodeId nodeId, IEnumerable<IReference> references);

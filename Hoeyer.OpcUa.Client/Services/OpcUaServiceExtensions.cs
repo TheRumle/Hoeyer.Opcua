@@ -38,10 +38,11 @@ public static class OpcUaServiceExtensions
         if (invalidContextExceptions.Any()) throw OpcuaConfigurationException.Merge(invalidContextExceptions);
     }
 
-    public static OnGoingOpcEntityServiceRegistration AddOpcUaClientServices(this OnGoingOpcEntityServiceRegistration services)
+    public static OnGoingOpcEntityServiceRegistration AddOpcUaClientServices(
+        this OnGoingOpcEntityServiceRegistration services)
     {
         var collection = services.Collection;
-        
+
         //Find and add all configurators to service collection and
         //build a service provider to resolve configurator dependencies s.t they can be used.
         var configurators = AppDomain.CurrentDomain
@@ -59,15 +60,15 @@ public static class OpcUaServiceExtensions
         return services;
     }
 
-     internal static void ConfigureServicesFor(EntityConfigurationContext configuration, IServiceCollection collection)
+    internal static void ConfigureServicesFor(EntityConfigurationContext configuration, IServiceCollection collection)
     {
         var configureServiceMethod = typeof(OpcUaServiceExtensions).GetMethod(nameof(RunConfigurationSetup),
             BindingFlags.NonPublic | BindingFlags.Static)!;
-        
+
         var genericMethod = configureServiceMethod.MakeGenericMethod(configuration.EntityType);
         genericMethod.Invoke(null, [collection]);
     }
-     
+
     internal static void RunConfigurationSetup<TEntity>(IServiceCollection collection) where TEntity : new()
     {
         try
@@ -86,7 +87,9 @@ public static class OpcUaServiceExtensions
                 .AddSingleton<SessionFactory>(p =>
                 {
                     var opcUaEntityServerConfiguration = p.GetService<IOpcUaEntityServerInfo>()!;
-                    if (opcUaEntityServerConfiguration == null) throw new InvalidOperationException($"{nameof(IOpcUaEntityServerInfo)} has not been configured!");
+                    if (opcUaEntityServerConfiguration == null)
+                        throw new InvalidOperationException(
+                            $"{nameof(IOpcUaEntityServerInfo)} has not been configured!");
                     return new SessionFactory(opcUaEntityServerConfiguration);
                 })
                 .AddTransient<SessionManager>()
@@ -100,7 +103,7 @@ public static class OpcUaServiceExtensions
         catch (InvalidOperationException e)
         {
             throw new OpcuaConfigurationException(
-                $"Could not setup configuration of IOpcEntityConfigurator<{typeof(TEntity).Name}>. If the implementor depends on other services these must be registered before ${nameof(OpcUaServiceExtensions.AddOpcUaClientServices)} is called. \n\n" +
+                $"Could not setup configuration of IOpcEntityConfigurator<{typeof(TEntity).Name}>. If the implementor depends on other services these must be registered before ${nameof(AddOpcUaClientServices)} is called. \n\n" +
                 e);
         }
     }

@@ -62,41 +62,36 @@ public static class ResultExtensions
         else onError(result.Errors);
         return result;
     }
-    
 
-    
 
-    public static  Result<IEnumerable<T>> Then<T>(this IEnumerable<Result<T>> result, Action<T> onSuccess, Action<IError>? onError = null)
+    public static Result<IEnumerable<T>> Then<T>(this IEnumerable<Result<T>> result, Action<T> onSuccess,
+        Action<IError>? onError = null)
     {
         var rs = result.ToList();
-        var onFail = onError ?? ((_) => { });
+        var onFail = onError ?? (_ => { });
         foreach (var v in rs)
-        {
             if (v.IsSuccess) onSuccess(v.Value);
             else v.Errors.ForEach(onFail);
-        }
 
         return rs.Merge();
     }
-    
+
     [Pure]
-    public static  Result<IEnumerable<T>> Then<T>(this IEnumerable<Result<T>> result, Action<IEnumerable<T>> onAllSuccess, Action<IError>? onError = null)
+    public static Result<IEnumerable<T>> Then<T>(this IEnumerable<Result<T>> result,
+        Action<IEnumerable<T>> onAllSuccess, Action<IError>? onError = null)
     {
         var rs = result.ToList();
-        var onFail = onError ?? ((_) => { });
+        var onFail = onError ?? (_ => { });
         if (rs.All(e => e.IsSuccess))
         {
-            onAllSuccess(rs.Select(e=>e.Value));
+            onAllSuccess(rs.Select(e => e.Value));
             return rs.Merge();
         }
-        
-        foreach (var failed in rs.Where(e=>e.IsFailed))
-        {
-            failed.Errors.ForEach(onFail);
-        }
+
+        foreach (var failed in rs.Where(e => e.IsFailed)) failed.Errors.ForEach(onFail);
         return rs.Merge();
     }
-    
+
 
     public static Result<T> Then<T>(this Result<T> result, Action<T> onSuccess, Action<List<IError>> onError)
     {
@@ -105,23 +100,24 @@ public static class ResultExtensions
             onSuccess(result.Value);
             return result;
         }
+
         onError.Invoke(result.Errors);
         return result;
     }
-    
+
     /// <summary>
-    /// Pipes the values of the result into a the action and returns the original result unmodified
+    ///     Pipes the values of the result into a the action and returns the original result unmodified
     /// </summary>
-    /// <param name="result">A result containing a <typeparamref name="T"/> or errors</param>
-    /// <param name="action">The action to perform only if <paramref name="result"/> is successful</param>
+    /// <param name="result">A result containing a <typeparamref name="T" /> or errors</param>
+    /// <param name="action">The action to perform only if <paramref name="result" /> is successful</param>
     /// <typeparam name="T">The type of the content of the result</typeparam>
     /// <returns>The original result</returns>
-    public static  Result<T> Then<T>(this Result<T> result, Action<T> action)
+    public static Result<T> Then<T>(this Result<T> result, Action<T> action)
     {
         if (result.IsSuccess) action(result.Value);
         return result;
-    }    
-    
+    }
+
     public static IEnumerable<T> Then<T>(this IEnumerable<T> result, Action<T> stateChanger)
     {
         foreach (var r in result)
@@ -130,15 +126,12 @@ public static class ResultExtensions
             yield return r;
         }
     }
-    
+
     public static void Pipe<T>(this IEnumerable<T> result, Action<T> stateChanger)
     {
-        foreach (var r in result)
-        {
-            stateChanger.Invoke(r);
-        }
+        foreach (var r in result) stateChanger.Invoke(r);
     }
-    
+
 
     public static Result<T> FailIf<T>(this T value, bool check, IError error)
     {
@@ -180,7 +173,8 @@ public static class ResultExtensions
         return Result.Fail(er);
     }
 
-    public static IEnumerable<Result<TOut>> Map<TIn, TOut>(this IEnumerable<Result<TIn>> results, Func<TIn, TOut> mapper)
+    public static IEnumerable<Result<TOut>> Map<TIn, TOut>(this IEnumerable<Result<TIn>> results,
+        Func<TIn, TOut> mapper)
     {
         foreach (var result in results)
         {

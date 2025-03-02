@@ -7,4 +7,4 @@ public record EntitySourceCode(Type Type, string SourceCodeString)
     {
         return Type.Name;
     }
-};
+}

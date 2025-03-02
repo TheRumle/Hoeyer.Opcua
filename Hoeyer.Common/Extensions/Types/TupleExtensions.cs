@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace Hoeyer.Common.Extensions.Types;
+
 public static class TupleExtensions
 {
     // For a tuple (T, T)

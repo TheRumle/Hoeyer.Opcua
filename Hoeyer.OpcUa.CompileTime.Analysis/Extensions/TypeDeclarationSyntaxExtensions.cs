@@ -17,7 +17,8 @@ public static class TypeDeclarationSyntaxExtensions
                 nameof(OpcUaEntityAttribute) == semanticModel.GetTypeInfo(attribute)!.Type!.Name));
     }
 
-    public static IEnumerable<PropertyDeclarationSyntax> GetOpcEntityPropertyDeclarations(this SyntaxNodeAnalysisContext context)
+    public static IEnumerable<PropertyDeclarationSyntax> GetOpcEntityPropertyDeclarations(
+        this SyntaxNodeAnalysisContext context)
     {
         if (context.Node is not TypeDeclarationSyntax typeSyntax ||
             !typeSyntax.IsAnnotatedAsOpcUaEntity(context.SemanticModel))

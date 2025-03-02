@@ -10,6 +10,4 @@ public static class LoggingExtensions
     {
         return new LoggingSetup(logger, level);
     }
-    
-
 }

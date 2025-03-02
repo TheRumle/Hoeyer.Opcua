@@ -41,13 +41,16 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
         string nodeStateReference, string className)
     {
         var propertyCreationStatements = GetPropertyCreationStatements(typeContext, nodeStateReference).ToList();
-        var propertyAssignments = string.Join("\n\t\t\t", propertyCreationStatements.Select(e=>e.CreationStatement));
-        
-        var addReferenceStatements = string.Join("\n\t\t\t",propertyCreationStatements.Select(e => $"{nodeStateReference}.AddReference(ReferenceTypes.HasProperty, false, {e.PropertyName}.{nameof(NodeId)});"));
+        var propertyAssignments = string.Join("\n\t\t\t", propertyCreationStatements.Select(e => e.CreationStatement));
 
-        var propertyNames = string.Join(", ", propertyCreationStatements.Select(e => "\n\t\t\t\t"+e.PropertyName));
-        var resultReturn = $"return new {nameof(EntityNode)}({nodeStateReference}, new List<{nameof(PropertyState)}>()\n\t\t\t{{\n{propertyNames}\n\t\t\t}});";
-        
+        var addReferenceStatements = string.Join("\n\t\t\t",
+            propertyCreationStatements.Select(e =>
+                $"{nodeStateReference}.AddReference(ReferenceTypes.HasProperty, false, {e.PropertyName}.{nameof(NodeId)});"));
+
+        var propertyNames = string.Join(", ", propertyCreationStatements.Select(e => "\n\t\t\t\t" + e.PropertyName));
+        var resultReturn =
+            $"return new {nameof(EntityNode)}({nodeStateReference}, new List<{nameof(PropertyState)}>()\n\t\t\t{{\n{propertyNames}\n\t\t\t}});";
+
         return $$"""
                  using System;
                  using System.Linq;
@@ -83,24 +86,25 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
                  """;
     }
 
-    private static IEnumerable<PropertyCreation> GetPropertyCreationStatements(TypeContext<ClassDeclarationSyntax> typeContext, string nodeName)
+    private static IEnumerable<PropertyCreation> GetPropertyCreationStatements(
+        TypeContext<ClassDeclarationSyntax> typeContext, string nodeName)
     {
-        IEnumerable<OpcUaProperty> t = typeContext.Node.Members
+        var t = typeContext.Node.Members
             .OfType<PropertyDeclarationSyntax>()
             .Select(property => new OpcPropertyTypeInfoFactory(property, typeContext.SemanticModel).GetTypeInfo())
             .Where(e => e.TypeIsSupported)
-            .Select(e=> e.PropertyInfo);
-        
+            .Select(e => e.PropertyInfo);
+
         foreach (var propertyInfo in t)
         {
             var propertyName = char.ToLower(propertyInfo.Name.Trim()[0]) + propertyInfo.Name.Trim().Substring(1);
             yield return new PropertyCreation(propertyName, $"""
-                          {nameof(PropertyState)} {propertyName} = {nodeName}.AddProperty<{propertyInfo.CSharpType}>("{propertyName}", {propertyInfo.OpcNativeTypeId}, {propertyInfo.ValueRank});
-                                     {propertyName}.NodeId = new {nameof(NodeId)}({nameof(Guid)}.{nameof(Guid.NewGuid)}(), applicationNamespaceIndex);
-                                     {propertyName}.AccessLevel = AccessLevels.CurrentReadOrWrite;
-                                     {propertyName}.DataType = {propertyInfo.OpcNativeTypeId};
-                                     
-                          """);
+                                                             {nameof(PropertyState)} {propertyName} = {nodeName}.AddProperty<{propertyInfo.CSharpType}>("{propertyName}", {propertyInfo.OpcNativeTypeId}, {propertyInfo.ValueRank});
+                                                                        {propertyName}.NodeId = new {nameof(NodeId)}({nameof(Guid)}.{nameof(Guid.NewGuid)}(), applicationNamespaceIndex);
+                                                                        {propertyName}.AccessLevel = AccessLevels.CurrentReadOrWrite;
+                                                                        {propertyName}.DataType = {propertyInfo.OpcNativeTypeId};
+                                                                        
+                                                             """);
         }
     }
 

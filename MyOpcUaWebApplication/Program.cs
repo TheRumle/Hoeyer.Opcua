@@ -3,9 +3,7 @@ using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Server;
 using Hoeyer.OpcUa.Server.ServiceConfiguration;
 
-
 var builder = WebApplication.CreateBuilder(args);
-
 
 
 builder.Logging.AddConsole();
@@ -29,4 +27,3 @@ await server.StartAsync();
 
 app.UseHttpsRedirection();
 await app.RunAsync();
-

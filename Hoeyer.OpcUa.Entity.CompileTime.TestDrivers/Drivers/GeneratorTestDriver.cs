@@ -26,7 +26,6 @@ public sealed class GeneratorTestDriver<T>(T generator, Action<string>? logger =
     }
 
 
-
     private static GeneratorResult CreateResult(GeneratorDriver compilationResult,
         ImmutableArray<Diagnostic> diagnostics,
         GeneratorDriverTimingInfo timingInfo)

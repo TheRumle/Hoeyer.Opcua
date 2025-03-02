@@ -44,9 +44,7 @@ internal sealed class EntityNodeManager(
                 if (res.IsFailed) logger.LogError(res.Errors.ToNewlineSeparatedString());
 
                 foreach (var properties in managedEntity.PropertyStates.Values)
-                {
                     logger.LogInformation("Adding {PropertyName}", properties.BrowseName);
-                }
             });
     }
 
@@ -123,8 +121,6 @@ internal sealed class EntityNodeManager(
     public override NodeMetadata GetNodeMetadata(OperationContext context, object targetHandle,
         BrowseResultMask resultMask)
     {
-        
-        
         return logger.LogCaughtExceptionAs(LogLevel.Error)
             .WithScope("Getting metadata for {@TargetHandle}", targetHandle)
             .WithErrorMessage("Failed to get metadata for {@TargetHandle}", targetHandle)
@@ -140,8 +136,7 @@ internal sealed class EntityNodeManager(
 
                 var serverContext = _systemContext.Copy();
                 return ManagedEntity.ConstructMetadata(serverContext);
-            });   
-        
+            });
     }
 
     /// <inheritdoc />
@@ -154,15 +149,12 @@ internal sealed class EntityNodeManager(
         var browseResult = browser.Browse(continuationPoint, nodeToBrowse)
             .Map(range => range.ToList())
             .Then(
-                onSuccess: references.AddRange,
-                onError: errs =>
+                references.AddRange,
+                errs =>
                     logger.LogError("Browsing failed with error(s) {Error}", errs.ToNewlineSeparatedString())
             );
 
-        if (browseResult.IsSuccess && browseResult.Value.Count == 0)
-        {
-            continuationPoint = null!;
-        }
+        if (browseResult.IsSuccess && browseResult.Value.Count == 0) continuationPoint = null!;
     }
 
 
@@ -173,7 +165,8 @@ internal sealed class EntityNodeManager(
     {
         logger.LogCaughtExceptionAs(LogLevel.Error)
             .WithScope("Translating browse path {Path}", relativePath.ToString())
-            .WhenExecuting(() => base.TranslateBrowsePath(context, sourceHandle, relativePath, targetIds, unresolvedTargetIds));
+            .WhenExecuting(() =>
+                base.TranslateBrowsePath(context, sourceHandle, relativePath, targetIds, unresolvedTargetIds));
     }
 
     /// <inheritdoc />
@@ -195,20 +188,20 @@ internal sealed class EntityNodeManager(
                         e => e.Request.Processed = true,
                         errorResponse => errors[nodesToRead.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode
                     )
-                    .WithLogging(logger, errorLevel: LogLevel.Error)
-                    .Process(errorFormat: ReadResultDescription);
-            }); 
+                    .WithLogging(logger, LogLevel.Error)
+                    .Process(ReadResultDescription);
+            });
     }
-
 
 
     /// <inheritdoc />
     public override void Write(OperationContext context, IList<WriteValue> nodesToWrite, IList<ServiceResult> errors)
     {
-        var filtered = nodesToWrite.Where(e => !e.Processed && entityHandleManager.GetState(e.NodeId).IsSuccess).ToList();
+        var filtered = nodesToWrite.Where(e => !e.Processed && entityHandleManager.GetState(e.NodeId).IsSuccess)
+            .ToList();
         if (!filtered.Any()) return;
 
-        
+
         logger.LogCaughtExceptionAs(LogLevel.Error)
             .WithScope("Session {Session} writes to {NodesToWrite}", nodesToWrite.Select(e => e.NodeId),
                 context.SessionId)
@@ -216,22 +209,13 @@ internal sealed class EntityNodeManager(
             {
                 var requestResponses = entityWriter.Write(filtered, _systemContext.Copy());
                 new RequestResponseProcessor<EntityWriteResponse>(requestResponses,
-                    e => e.Request.Processed = true,
-                    errorResponse => errors[nodesToWrite.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode
+                        e => e.Request.Processed = true,
+                        errorResponse =>
+                            errors[nodesToWrite.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode
                     )
-                    .WithLogging(logger, errorLevel: LogLevel.Error)
-                    .Process(errorFormat: ReadResultDescription);
+                    .WithLogging(logger, LogLevel.Error)
+                    .Process(ReadResultDescription);
             });
-    }
-
-    private string ReadResultDescription(EntityValueReadResponse e)
-    {
-        return $"{managedEntity.GetNameOfManaged(e.Request.NodeId)}.{e.AttributeName}";
-    }
-    
-    private string ReadResultDescription(EntityWriteResponse e)
-    {
-        return $"{managedEntity.GetNameOfManaged(e.Request.NodeId)}.{e.AttributeName}";
     }
 
     /// <inheritdoc />
@@ -242,9 +226,7 @@ internal sealed class EntityNodeManager(
     {
         logger.LogWarning("History reading is not currently supported!");
         for (var index = 0; index < nodesToRead.Count; index++)
-        {
             errors[index] = StatusCodes.BadHistoryOperationUnsupported;
-        }
     }
 
 
@@ -389,17 +371,26 @@ internal sealed class EntityNodeManager(
                 permissionsOnly));
     }
 
+    private string ReadResultDescription(EntityValueReadResponse e)
+    {
+        return $"{managedEntity.GetNameOfManaged(e.Request.NodeId)}.{e.AttributeName}";
+    }
+
+    private string ReadResultDescription(EntityWriteResponse e)
+    {
+        return $"{managedEntity.GetNameOfManaged(e.Request.NodeId)}.{e.AttributeName}";
+    }
+
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
         if (disposing) base.Dispose();
     }
-    
-        
+
+
     private bool IsEntityKey(ReadValueId e)
     {
         return managedEntity.Entity.NodeId.Equals(e.NodeId)
                || managedEntity.PropertyStates.ContainsKey(e.NodeId);
     }
-
 }

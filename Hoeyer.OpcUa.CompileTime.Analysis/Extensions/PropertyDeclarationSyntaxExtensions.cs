@@ -43,5 +43,3 @@ public static class PropertyDeclarationSyntaxExtensions
         return property.AccessorList?.Accessors.FirstOrDefault(a => a.Kind() == SyntaxKind.SetAccessorDeclaration);
     }
 }
-
-

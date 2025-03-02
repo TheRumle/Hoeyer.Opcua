@@ -5,9 +5,9 @@ namespace Hoeyer.OpcUa.Client.Reflection.Configurations;
 
 internal readonly record struct EntityConfigurationContext
 {
+    public readonly Type EntityConfiguratorImpl;
     public readonly Type EntityConfiguratorInterface;
     public readonly Type EntityType;
-    public readonly Type EntityConfiguratorImpl;
 
     public EntityConfigurationContext(Type entityConfiguratorImpl, Type entityConfiguratorInterface, Type entityType)
     {

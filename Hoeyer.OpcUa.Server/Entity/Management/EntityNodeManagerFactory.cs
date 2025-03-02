@@ -2,7 +2,6 @@
 using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Entity.Api;
-using Hoeyer.OpcUa.Server.Entity.Handle;
 using Microsoft.Extensions.Logging;
 using Opc.Ua.Server;
 
@@ -17,7 +16,7 @@ public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
         var managedNode = CreatedManagedNode(server, nodeNamespace, nodeCreator);
 
         logger.LogInformation("Creating {@Manager} for {@ManagedNode}", nameof(EntityNodeManager), managedNode);
-        
+
         return new EntityNodeManager(
             managedNode,
             server,
@@ -29,7 +28,8 @@ public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
             logger);
     }
 
-    private static ManagedEntityNode CreatedManagedNode(IServerInternal server, string nodeNamespace, IEntityNodeCreator nodeCreator)
+    private static ManagedEntityNode CreatedManagedNode(IServerInternal server, string nodeNamespace,
+        IEntityNodeCreator nodeCreator)
     {
         var namespaceIndex = server.NamespaceUris.GetIndexOrAppend(nodeNamespace);
         var context = server.DefaultSystemContext;
