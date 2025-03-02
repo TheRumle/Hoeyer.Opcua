@@ -9,11 +9,6 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.ServiceConfiguration;
 
-public record OnGoingOpcEntityServerServiceRegistration(IServiceCollection Collection)
-    : OnGoingOpcEntityServiceRegistration(Collection)
-{
-}
-
 public static class ServiceExtensions
 {
     public static OnGoingOpcEntityServerServiceRegistration AddEntityOpcUaServer(

@@ -1,9 +1,10 @@
 ﻿using System;
+using Hoeyer.OpcUa.Server.Entity.Api;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application.RequestResponse;
 
-public abstract record StatusCodeResponse<TRequest, TResponse> 
+public abstract record StatusCodeResponse<TRequest, TResponse>
     : IRequestResponse<TRequest, (TResponse DataValue, StatusCode StatusCode)>, IStatusCodeResponse
 {
     protected StatusCodeResponse(TRequest request, StatusCode code, string? error = null)
@@ -29,8 +30,8 @@ public abstract record StatusCodeResponse<TRequest, TResponse>
             IsSuccess = false;
             Error = e.Message;
         }
-    } 
-    
+    }
+
 
     /// <inheritdoc />
     public bool IsSuccess { get; }

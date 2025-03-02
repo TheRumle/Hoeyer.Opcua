@@ -7,22 +7,8 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Entity.Management;
 
-public interface IDomainMasterManagerFactory
-{
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="server"></param>
-    /// <param name="applicationConfiguration"></param>
-    /// <returns></returns>
-    public DomainMasterNodeManager ConstructMasterManager(IServerInternal server, ApplicationConfiguration applicationConfiguration);
-}
-
-
 public sealed class DomainMasterNodeManager : MasterNodeManager
 {
-    public IEnumerable<IEntityNode> ManagedEntities { get; private set; }
-
     /// <inheritdoc />
     public DomainMasterNodeManager(IServerInternal server, ApplicationConfiguration applicationConfiguration,
         IEntityNodeManager[] additionalManagers) : base(server, applicationConfiguration,
@@ -31,6 +17,7 @@ public sealed class DomainMasterNodeManager : MasterNodeManager
         ManagedEntities = additionalManagers.Select(e => e.ManagedEntity);
     }
 
+    public IEnumerable<IEntityNode> ManagedEntities { get; private set; }
 
 
     /// <inheritdoc />

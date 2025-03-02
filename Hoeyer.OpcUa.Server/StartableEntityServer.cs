@@ -5,14 +5,6 @@ using Opc.Ua.Configuration;
 
 namespace Hoeyer.OpcUa.Server;
 
-public interface IStartableEntityServer
-{
-    IOpcUaEntityServerInfo ServerInfo { get; }
-    Task<IStartedEntityServer> StartAsync();
-}
-
-public interface IStartedEntityServer : IDisposable;
-
 internal sealed class StartableEntityServer(ApplicationInstance applicationInstance, OpcEntityServer entityServer)
     : IStartableEntityServer, IStartedEntityServer
 {
