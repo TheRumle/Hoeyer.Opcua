@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hoeyer.Common.Extensions;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Server.Application;
 using Microsoft.Extensions.Logging;
@@ -37,26 +38,28 @@ public sealed class OpcEntityServer(
         ExtensionObject userIdentityToken, SignatureData userTokenSignature, out byte[] serverNonce,
         out StatusCodeCollection results, out DiagnosticInfoCollection diagnosticInfos)
     {
-        try
+        using (logger.BeginScope("ActivateSession for {@Session}", requestHeader))
         {
-            using var scope = logger.BeginScope("ActivateSession for {@Session}", requestHeader);
-            var a = base.ActivateSession(requestHeader, clientSignature, clientSoftwareCertificates, localeIds,
-                userIdentityToken, userTokenSignature, out serverNonce, out results, out diagnosticInfos);
-            return a;
-        }
-        catch (Exception e)
-        {
-            logger.LogCritical(e, "An exception occured when trying to activate session with RequestHeader {@Header}",
-                requestHeader);
-
-            diagnosticInfos = new DiagnosticInfoCollection();
-            results = new StatusCodeCollection();
-            serverNonce = null!;
-            return new ResponseHeader
+            try
             {
-                Timestamp = DateTime.UtcNow,
-                ServiceResult = StatusCodes.BadNotConnected
-            };
+                var a = base.ActivateSession(requestHeader, clientSignature, clientSoftwareCertificates, localeIds,
+                    userIdentityToken, userTokenSignature, out serverNonce, out results, out diagnosticInfos);
+                return a;
+            }
+            catch (Exception e)
+            {
+                logger.LogCritical(e,
+                    "An exception occured when trying to activate session with RequestHeader {@Header}",
+                    requestHeader);
+                diagnosticInfos = new DiagnosticInfoCollection();
+                results = new StatusCodeCollection();
+                serverNonce = null!;
+                return new ResponseHeader
+                {
+                    Timestamp = DateTime.UtcNow,
+                    ServiceResult = StatusCodes.BadNotConnected
+                };
+            }
         }
     }
 
@@ -71,11 +74,7 @@ public sealed class OpcEntityServer(
         return properties;
     }
 
-    /// <inheritdoc />
-    protected override void OnNodeManagerStarted(IServerInternal server)
-    {
-        base.OnNodeManagerStarted(server);
-    }
+
 
     /// <inheritdoc />
     public override ResponseHeader Browse(RequestHeader requestHeader, ViewDescription view,
