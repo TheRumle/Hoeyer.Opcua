@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentResults;
@@ -43,7 +44,7 @@ public static class ResultExtensions
     public static T GetOrThrow<T>(this Result<T> result, Func<Error, Exception> onError)
     {
         if (result.IsSuccess) return result.Value;
-        throw onError.Invoke(new Error(result.Errors.SeparatedBy("\n")));
+        throw onError.Invoke(new Error(result.Errors.SeparateBy("\n")));
     }
 
 
@@ -89,6 +90,7 @@ public static class ResultExtensions
         return rs.Merge();
     }
     
+    [Pure]
     public static  Result<IEnumerable<T>> Then<T>(this IEnumerable<Result<T>> result, Action<IEnumerable<T>> onAllSuccess, Action<IError>? onError = null)
     {
         var rs = result.ToList();

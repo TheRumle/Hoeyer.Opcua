@@ -6,19 +6,19 @@ namespace Hoeyer.Common.Extensions;
 
 public static class StringExtensions
 {
-    public static string SeparatedBy(this IEnumerable<string> strings, string separator)
+    public static string SeparateBy(this IEnumerable<string> strings, string separator)
     {
         return string.Join(separator, strings);
     }
 
-    public static string SeparatedBy<T>(this IEnumerable<T> strings, string separator)
+    public static string SeparateBy<T>(this IEnumerable<T> strings, string separator)
     {
         return string.Join(separator, strings);
     }
 
-    public static string SeparatedBy<T>(this IEnumerable<T> values, string separator, Func<T, string> selector)
+    public static string SeparateBy<T>(this IEnumerable<T> values, string separator, Func<T, string> selector)
     {
-        return SeparatedBy(values.Select(selector), separator);
+        return SeparateBy(values.Select(selector), separator);
     }
     
     public static string ToNewlineSeparatedString<T>(this IEnumerable<T> values)

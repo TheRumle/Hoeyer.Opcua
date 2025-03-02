@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.Common.Extensions;
 using Hoeyer.Common.Extensions.Functional;
+using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server.Extensions;
@@ -32,21 +33,18 @@ internal sealed class EntityNodeManager(
     /// <inheritdoc />
     public override void CreateAddressSpace(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
-        logger.BeginScope("Creating address space and initializing {NodeName} nodes", managedEntity.Entity.BrowseName);
-        try
-        {
-            var res = referenceLinker.InitializeToExternals(externalReferences);
-            if (res.IsFailed) logger.LogError(res.Errors.ToNewlineSeparatedString());
-
-            foreach (var properties in managedEntity.PropertyStates.Values)
+        logger.LogCaughtExceptionAs(LogLevel.Error)
+            .WithScope("Creating address space and initializing {EntityBrowseName} nodes", _entity.BrowseName)
+            .WhenExecuting(() =>
             {
-                logger.LogInformation("Adding {PropertyName}", properties.BrowseName);
-            }
-        }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Failed to create address space.");
-        }
+                var res = referenceLinker.InitializeToExternals(externalReferences);
+                if (res.IsFailed) logger.LogError(res.Errors.ToNewlineSeparatedString());
+
+                foreach (var properties in managedEntity.PropertyStates.Values)
+                {
+                    logger.LogInformation("Adding {PropertyName}", properties.BrowseName);
+                }
+            });
     }
 
 
@@ -68,20 +66,24 @@ internal sealed class EntityNodeManager(
     /// <inheritdoc />
     public override void AddReferences(IDictionary<NodeId, IList<IReference>> references)
     {
-        using var scope = logger.BeginScope("Adding references {References}", references);
-        foreach (KeyValuePair<NodeId, IList<IReference>> kvp in references)
-        {
-            var result = referenceLinker.AddReferencesToEntity(kvp.Key, kvp.Value);
-            if (!result.IsSuccess)
-                logger.LogWarning(
-                    "Failed to references from '{Node}' --> '{Targets}: {Error}'",
-                    kvp.Key,
-                    kvp.Value.Select(e => e.TargetId),
-                    result.Errors.ToNewlineSeparatedString());
-            else
-                logger.LogInformation("Node {NodeId} now references targets: {References}", _entity.BrowseName,
-                    kvp.Value.Select(e => e.TargetId));
-        }
+        logger.LogCaughtExceptionAs(LogLevel.Error)
+            .WithScope("Adding references {References}", references)
+            .WhenExecuting(() =>
+            {
+                foreach (var kvp in references)
+                {
+                    var result = referenceLinker.AddReferencesToEntity(kvp.Key, kvp.Value);
+                    if (!result.IsSuccess)
+                        logger.LogWarning(
+                            "Failed to references from '{Node}' --> '{Targets}: {Error}'",
+                            kvp.Key,
+                            kvp.Value.Select(e => e.TargetId),
+                            result.Errors.ToNewlineSeparatedString());
+                    else
+                        logger.LogInformation("Node {NodeId} now references targets: {References}", _entity.BrowseName,
+                            kvp.Value.Select(e => e.TargetId));
+                }
+            });
     }
 
     /// <inheritdoc />
@@ -92,48 +94,52 @@ internal sealed class EntityNodeManager(
         ExpandedNodeId targetId,
         bool deleteBidirectional)
     {
-        using var scope = logger.BeginScope("Deleting references {Reference}", referenceTypeId);
+        return logger.LogCaughtExceptionAs(LogLevel.Error)
+            .WithScope("Deleting references {Reference}", referenceTypeId)
+            .WhenExecuting(() =>
+            {
+                if (!_entity.ReferenceExists(referenceTypeId, isInverse, targetId))
+                {
+                    logger.LogError("The {@Entity} does not reference node with reference type id '{@ReferenceTypeid}'",
+                        _entity.BrowseName, referenceTypeId);
+                    return StatusCodes.BadNodeIdUnknown;
+                }
 
-        if (!_entity.ReferenceExists(referenceTypeId, isInverse, targetId))
-        {
-            logger.LogError("The {@Entity} does not reference node with reference type id '{@ReferenceTypeid}'",
-                _entity.BrowseName, referenceTypeId);
-            return StatusCodes.BadNodeIdUnknown;
-        }
+                var deletion = referenceLinker.RemoveReference(referenceTypeId, isInverse, targetId);
+                if (deletion.IsSuccess) return ServiceResult.Good;
 
-        var deletion = referenceLinker.RemoveReference(referenceTypeId, isInverse, targetId);
-        if (deletion.IsSuccess) return ServiceResult.Good;
+                logger.LogError("Failed deleting reference {Reference}: {Errors}",
+                    referenceTypeId,
+                    deletion.Errors.ToNewlineSeparatedString());
 
-        logger.LogError("Failed deleting reference {Reference}: {Errors}",
-            referenceTypeId,
-            deletion.Errors.ToNewlineSeparatedString());
-
-        return StatusCodes.BadInvalidArgument;
+                return StatusCodes.BadInvalidArgument;
+            });
     }
 
     /// <inheritdoc />
     public override NodeMetadata GetNodeMetadata(OperationContext context, object targetHandle,
         BrowseResultMask resultMask)
     {
-        if (!entityHandleManager.IsHandleToAnyRelatedNode(targetHandle))
-        {
-            logger.LogError("The handle '{TargetHandle}' is not a handle related to entity {Entity}", targetHandle,
-                _entity.BrowseName);
-            return null!;
-        }
+        
+        
+        return logger.LogCaughtExceptionAs(LogLevel.Error)
+            .WithScope("Getting metadata for {@TargetHandle}", targetHandle)
+            .WithErrorMessage("Failed to get metadata for {@TargetHandle}", targetHandle)
+            .WhenExecuting(() =>
+            {
+                if (!entityHandleManager.IsHandleToAnyRelatedNode(targetHandle))
+                {
+                    logger.LogError("The handle '{TargetHandle}' is not a handle related to entity {Entity}",
+                        targetHandle,
+                        _entity.BrowseName);
+                    return null!;
+                }
 
-        try
-        {
-            using var scope = logger.BeginScope("Getting metadata for {@TargetHandle}", targetHandle);
-            var serverContext = _systemContext.Copy();
-            return ManagedEntity.ConstructMetadata(serverContext);
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "Failed to get metadata for {@TargetHandle}", targetHandle);
-        }
-
-        return null!;
+                using var scope = logger.BeginScope("Getting metadata for {@TargetHandle}", targetHandle);
+                var serverContext = _systemContext.Copy();
+                return ManagedEntity.ConstructMetadata(serverContext);
+            });   
+        
     }
 
     /// <inheritdoc />
@@ -160,11 +166,19 @@ internal sealed class EntityNodeManager(
     /// <inheritdoc />
     public override void Write(OperationContext context, IList<WriteValue> nodesToWrite, IList<ServiceResult> errors)
     {
-        var systemContext = _systemContext.Copy(context);
-        var nodes = nodesToWrite.Where(e => !e.Processed && entityHandleManager.GetState(e.NodeId).IsSuccess).ToList();
+        logger.LogCaughtExceptionAs(LogLevel.Error)
+            .WithScope("Session {Session} writes to {NodesToWrite}", nodesToWrite.Select(e => e.NodeId), context.SessionId)
+            .WhenExecuting(() =>
+            {
+                var systemContext = _systemContext.Copy(context);
+                var writable = nodesToWrite.Where(e => !e.Processed && entityHandleManager.GetState(e.NodeId).IsSuccess);
+                
+                var (fits, fails) = entityModifier.Write(systemContext, writable)
+                    .WithSuccessCriteria(value => StatusCode.IsGood(value.StatusCode));
 
-        using var scope = logger.BeginScope("Writing nodes {NodesToWrite}", nodes.Select(e => e.NodeId));
-        entityModifier.Write(systemContext, nodes);
+                
+                // todo actually mark thing as processed an replace the write method return type with a more telling one
+            });
     }
 
 
@@ -173,8 +187,9 @@ internal sealed class EntityNodeManager(
         RelativePathElement relativePath,
         IList<ExpandedNodeId> targetIds, IList<NodeId> unresolvedTargetIds)
     {
-        using var scope = logger.BeginScope("Translating browse path {Path}", relativePath.ToString());
-        base.TranslateBrowsePath(context, sourceHandle, relativePath, targetIds, unresolvedTargetIds);
+        logger.LogCaughtExceptionAs(LogLevel.Error)
+            .WithScope("Translating browse path {Path}", relativePath.ToString())
+            .WhenExecuting(() => base.TranslateBrowsePath(context, sourceHandle, relativePath, targetIds, unresolvedTargetIds));
     }
 
     /// <inheritdoc />
@@ -184,41 +199,42 @@ internal sealed class EntityNodeManager(
     {
         var filtered = nodesToRead.Where(e => !e.Processed && IsEntityKey(e)).ToList();
         if (!filtered.Any()) return;
-
-        using var scope = logger.BeginScope("Session {@Session}: Reading values {@ValuesToRead}",
-            context.SessionId,
-            filtered.Select(e => e.NodeId).Distinct());
-
-        var readValues = entityReader
-            .ReadProperties(filtered)
-            .Then(e=>e.Request.Processed = true)
-            .ToList();
         
-        var (fits, fails) = readValues.SplitBy(e => e.IsSuccess && StatusCode.IsGood(e.StatusCode));
-        
-        logger.LogInformation("Read attribute(s) [{@Attributes}]",
-            fits.Select(ReadResultDescription)
-                .OrderBy(text=>text)
-                .SeparatedBy(", "));
-        
-        logger.LogWarning("Failed reading attribute(s): {AttributeAndStatus}",
-            fails.Select(e=>$"{managedEntity.GetNameOfManaged(e.Request.NodeId)}.{e.AttributeName} - {e.StatusMessage}")
-                .OrderBy(text=>text)
-                .SeparatedBy(", "));
-        
-
-
-        foreach (var r in fits)
+        void ReadNodes()
         {
-            var requestIndex = nodesToRead.IndexOf(r.Request);
-            values[requestIndex] = r.Response.DataValue;
-        }
+            var readValues = entityReader.ReadProperties(filtered)
+                .Then(e => e.Request.Processed = true)
+                .ToList();
 
-        foreach (var r in fails)
-        {
-            var requestIndex = nodesToRead.IndexOf(r.Request);
-            errors[requestIndex] = r.StatusCode;
+            var (fits, fails) = readValues.WithSuccessCriteria(e => e.IsSuccess && StatusCode.IsGood(e.StatusCode));
+
+            logger.LogInformation("Read attribute(s): [{@Attributes}]", fits.Select(ReadResultDescription)
+                .OrderBy(text => text)
+                .SeparateBy(", "));
+
+            logger.LogWarning("Failed reading attribute(s): [{@AttributeAndStatus}]", fails.Select(e => $"{managedEntity.GetNameOfManaged(e.Request.NodeId)}.{e.AttributeName} - {e.StatusMessage}")
+                .OrderBy(text => text)
+                .SeparateBy(", "));
+
+            foreach (var r in fits)
+            {
+                var requestIndex = nodesToRead.IndexOf(r.Request);
+                values[requestIndex] = r.Response.DataValue;
+            }
+
+            foreach (var r in fails)
+            {
+                var requestIndex = nodesToRead.IndexOf(r.Request);
+                errors[requestIndex] = r.StatusCode;
+            }
         }
+        
+        logger.LogCaughtExceptionAs(LogLevel.Error)
+            .WithScope(
+                "Session {@Session}: Reading values {@ValuesToRead}",
+                context.SessionId, filtered.Select(e => e.NodeId).Distinct())
+            .WithErrorMessage("An unexpected error occurred when trying to read nodes. ")
+            .WhenExecuting(ReadNodes);
     }
 
     private string ReadResultDescription(EntityValueReadResponse e)
@@ -232,9 +248,11 @@ internal sealed class EntityNodeManager(
         bool releaseContinuationPoints, IList<HistoryReadValueId> nodesToRead, IList<HistoryReadResult> results,
         IList<ServiceResult> errors)
     {
-        using var scope = logger.BeginScope("Reading history for nodes {ToRead} with details type: {Details}",
-            nodesToRead.Select(e => e.NodeId), details.TypeId);
         logger.LogWarning("History reading is not currently supported!");
+        for (var index = 0; index < nodesToRead.Count; index++)
+        {
+            errors[index] = StatusCodes.BadHistoryOperationUnsupported;
+        }
     }
 
 
@@ -361,10 +379,10 @@ internal sealed class EntityNodeManager(
     }
 
     /// <inheritdoc />
+    /// This is not supported for EntityNodeManagers.
     public override bool IsNodeInView(OperationContext context, NodeId viewId, object nodeHandle)
     {
-        using var scope = logger.BeginScope("Accessing if node {NodeHandle} is in view '{@View}'", nodeHandle, viewId);
-        return base.IsNodeInView(context, viewId, nodeHandle);
+        return false;
     }
 
     /// <inheritdoc />
@@ -372,12 +390,11 @@ internal sealed class EntityNodeManager(
         BrowseResultMask resultMask,
         Dictionary<NodeId, List<object>> uniqueNodesServiceAttributesCache, bool permissionsOnly)
     {
-        using var scope = logger.BeginScope("Getting permission metadata for {@TargetHandle}", targetHandle);
-        if (!entityHandleManager.IsHandleToAnyRelatedNode(targetHandle))
-            logger.LogWarning("Handle {@Handle} is not related to any nodes held by this manager", targetHandle);
-        
-        return base.GetPermissionMetadata(context, targetHandle, resultMask, uniqueNodesServiceAttributesCache,
-            permissionsOnly);
+        return logger.LogCaughtExceptionAs(LogLevel.Error)
+            .WithScope("Getting permission metadata for {@TargetHandle}", targetHandle)
+            .WhenExecuting(() => base.GetPermissionMetadata(context, targetHandle, resultMask,
+                uniqueNodesServiceAttributesCache,
+                permissionsOnly));
     }
 
     /// <inheritdoc />

@@ -34,7 +34,7 @@ public abstract class RequestResponse<TRequest, TResponse>
     public bool IsSuccess { get; }
     public bool IsFailed => !IsSuccess;
     /// <summary>
-    /// A description of the error, if any error occured.
+    /// A description of the error, if any error occurred.
     /// </summary>
     public string Error { get; } = "No error provided.";
 

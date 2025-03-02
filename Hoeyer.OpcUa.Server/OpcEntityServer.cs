@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hoeyer.Common.Extensions;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Server.Application;
 using Microsoft.Extensions.Logging;
@@ -38,34 +37,33 @@ public sealed class OpcEntityServer(
         ExtensionObject userIdentityToken, SignatureData userTokenSignature, out byte[] serverNonce,
         out StatusCodeCollection results, out DiagnosticInfoCollection diagnosticInfos)
     {
-        using (logger.BeginScope("ActivateSession for {@Session}", requestHeader))
+        try
         {
-            try
+            using (logger.BeginScope("ActivateSession for {@Session}", requestHeader))
             {
-                var a = base.ActivateSession(requestHeader, clientSignature, clientSoftwareCertificates, localeIds,
+                return base.ActivateSession(requestHeader, clientSignature, clientSoftwareCertificates, localeIds,
                     userIdentityToken, userTokenSignature, out serverNonce, out results, out diagnosticInfos);
-                return a;
             }
-            catch (Exception e)
+        }
+        catch (Exception e)
+        {
+            logger.LogCritical(e, "An exception occurred when trying to activate session with RequestHeader {@Header}",
+                requestHeader);
+            diagnosticInfos = new DiagnosticInfoCollection();
+            results = new StatusCodeCollection();
+            serverNonce = null!;
+            return new ResponseHeader
             {
-                logger.LogCritical(e,
-                    "An exception occured when trying to activate session with RequestHeader {@Header}",
-                    requestHeader);
-                diagnosticInfos = new DiagnosticInfoCollection();
-                results = new StatusCodeCollection();
-                serverNonce = null!;
-                return new ResponseHeader
-                {
-                    Timestamp = DateTime.UtcNow,
-                    ServiceResult = StatusCodes.BadNotConnected
-                };
-            }
+                Timestamp = DateTime.UtcNow,
+                ServiceResult = StatusCodes.BadNotConnected
+            };
         }
     }
 
     /// <inheritdoc />
     protected override ServerProperties LoadServerProperties()
     {
+        logger.BeginScope("Loading server properties...");
         var properties = base.LoadServerProperties();
         properties.BuildDate = DateTime.UtcNow;
         properties.ProductName = ServerInfo.ApplicationName;
@@ -92,7 +90,6 @@ public sealed class OpcEntityServer(
     {
         if (_disposed) return;
         if (!disposing) return;
-
         DomainManager.Dispose();
         base.Dispose(disposing);
         _disposed = true;

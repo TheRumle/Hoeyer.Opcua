@@ -38,7 +38,7 @@ internal sealed record ManagedEntityNode(
                    Id: {{Entity.NodeId}},
                    Namespace: {{EntityNameSpaceIndex}},
                    State: [
-                       {{PropertyStates.Values.Select(e => $"{{{e.DisplayName}: {e.Value}, Id: \"{e.NodeId}\"}}").SeparatedBy(",\n")}}
+                       {{PropertyStates.Values.Select(e => $"{{{e.DisplayName}: {e.Value}, Id: \"{e.NodeId}\"}}").SeparateBy(",\n")}}
                    ]
                  }
                  """;
