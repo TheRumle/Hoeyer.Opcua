@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.OpcUa.Core.Entity;
-using Hoeyer.OpcUa.Server.NodeManagement;
+using Hoeyer.OpcUa.Server.Entity.Handle;
+using Hoeyer.OpcUa.Server.Entity.Management;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application;

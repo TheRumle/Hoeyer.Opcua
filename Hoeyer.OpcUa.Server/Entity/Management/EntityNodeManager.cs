@@ -6,18 +6,21 @@ using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Core.Entity;
+using Hoeyer.OpcUa.Server.Application.RequestResponse;
+using Hoeyer.OpcUa.Server.Entity.Api;
+using Hoeyer.OpcUa.Server.Entity.Handle;
 using Hoeyer.OpcUa.Server.Extensions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.NodeManagement;
+namespace Hoeyer.OpcUa.Server.Entity.Management;
 
 internal sealed class EntityNodeManager(
     ManagedEntityNode managedEntity,
     IServerInternal server,
     IEntityHandleManager entityHandleManager,
-    IEntityModifier entityModifier,
+    IEntityWriter entityWriter,
     IEntityBrowser browser,
     IEntityReader entityReader,
     IReferenceLinker referenceLinker,
@@ -135,7 +138,6 @@ internal sealed class EntityNodeManager(
                     return null!;
                 }
 
-                using var scope = logger.BeginScope("Getting metadata for {@TargetHandle}", targetHandle);
                 var serverContext = _systemContext.Copy();
                 return ManagedEntity.ConstructMetadata(serverContext);
             });   
@@ -163,24 +165,6 @@ internal sealed class EntityNodeManager(
         }
     }
 
-    /// <inheritdoc />
-    public override void Write(OperationContext context, IList<WriteValue> nodesToWrite, IList<ServiceResult> errors)
-    {
-        logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithScope("Session {Session} writes to {NodesToWrite}", nodesToWrite.Select(e => e.NodeId), context.SessionId)
-            .WhenExecuting(() =>
-            {
-                var systemContext = _systemContext.Copy(context);
-                var writable = nodesToWrite.Where(e => !e.Processed && entityHandleManager.GetState(e.NodeId).IsSuccess);
-                
-                var (fits, fails) = entityModifier.Write(systemContext, writable)
-                    .WithSuccessCriteria(value => StatusCode.IsGood(value.StatusCode));
-
-                
-                // todo actually mark thing as processed an replace the write method return type with a more telling one
-            });
-    }
-
 
     /// <inheritdoc />
     public override void TranslateBrowsePath(OperationContext context, object sourceHandle,
@@ -199,45 +183,53 @@ internal sealed class EntityNodeManager(
     {
         var filtered = nodesToRead.Where(e => !e.Processed && IsEntityKey(e)).ToList();
         if (!filtered.Any()) return;
-        
-        void ReadNodes()
-        {
-            var readValues = entityReader.ReadProperties(filtered)
-                .Then(e => e.Request.Processed = true)
-                .ToList();
-
-            var (fits, fails) = readValues.WithSuccessCriteria(e => e.IsSuccess && StatusCode.IsGood(e.StatusCode));
-
-            logger.LogInformation("Read attribute(s): [{@Attributes}]", fits.Select(ReadResultDescription)
-                .OrderBy(text => text)
-                .SeparateBy(", "));
-
-            logger.LogWarning("Failed reading attribute(s): [{@AttributeAndStatus}]", fails.Select(e => $"{managedEntity.GetNameOfManaged(e.Request.NodeId)}.{e.AttributeName} - {e.StatusMessage}")
-                .OrderBy(text => text)
-                .SeparateBy(", "));
-
-            foreach (var r in fits)
-            {
-                var requestIndex = nodesToRead.IndexOf(r.Request);
-                values[requestIndex] = r.Response.DataValue;
-            }
-
-            foreach (var r in fails)
-            {
-                var requestIndex = nodesToRead.IndexOf(r.Request);
-                errors[requestIndex] = r.StatusCode;
-            }
-        }
-        
         logger.LogCaughtExceptionAs(LogLevel.Error)
             .WithScope(
                 "Session {@Session}: Reading values {@ValuesToRead}",
                 context.SessionId, filtered.Select(e => e.NodeId).Distinct())
             .WithErrorMessage("An unexpected error occurred when trying to read nodes. ")
-            .WhenExecuting(ReadNodes);
+            .WhenExecuting(() =>
+            {
+                var requestResponses = entityReader.ReadProperties(filtered);
+                new RequestResponseProcessor<EntityValueReadResponse>(requestResponses,
+                        e => e.Request.Processed = true,
+                        errorResponse => errors[nodesToRead.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode
+                    )
+                    .WithLogging(logger, errorLevel: LogLevel.Error)
+                    .Process(errorFormat: ReadResultDescription);
+            }); 
+    }
+
+
+
+    /// <inheritdoc />
+    public override void Write(OperationContext context, IList<WriteValue> nodesToWrite, IList<ServiceResult> errors)
+    {
+        var filtered = nodesToWrite.Where(e => !e.Processed && entityHandleManager.GetState(e.NodeId).IsSuccess).ToList();
+        if (!filtered.Any()) return;
+
+        
+        logger.LogCaughtExceptionAs(LogLevel.Error)
+            .WithScope("Session {Session} writes to {NodesToWrite}", nodesToWrite.Select(e => e.NodeId),
+                context.SessionId)
+            .WhenExecuting(() =>
+            {
+                var requestResponses = entityWriter.Write(filtered, _systemContext.Copy());
+                new RequestResponseProcessor<EntityWriteResponse>(requestResponses,
+                    e => e.Request.Processed = true,
+                    errorResponse => errors[nodesToWrite.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode
+                    )
+                    .WithLogging(logger, errorLevel: LogLevel.Error)
+                    .Process(errorFormat: ReadResultDescription);
+            });
     }
 
     private string ReadResultDescription(EntityValueReadResponse e)
+    {
+        return $"{managedEntity.GetNameOfManaged(e.Request.NodeId)}.{e.AttributeName}";
+    }
+    
+    private string ReadResultDescription(EntityWriteResponse e)
     {
         return $"{managedEntity.GetNameOfManaged(e.Request.NodeId)}.{e.AttributeName}";
     }

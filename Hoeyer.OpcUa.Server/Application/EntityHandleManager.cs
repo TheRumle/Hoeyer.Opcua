@@ -1,6 +1,9 @@
 ﻿using FluentResults;
 using Hoeyer.OpcUa.Core.Entity;
-using Hoeyer.OpcUa.Server.NodeManagement;
+using Hoeyer.OpcUa.Server.Entity;
+using Hoeyer.OpcUa.Server.Entity.Api;
+using Hoeyer.OpcUa.Server.Entity.Handle;
+using Hoeyer.OpcUa.Server.Entity.Management;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application;
@@ -76,7 +79,7 @@ internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManage
 
     public bool IsManagedEntityHandle(object? handle)
     {
-        return handle is EntityHandle entityHandle && entityNode.Entity.NodeId.Equals(entityHandle.Value.NodeId);
+        return handle is IEntityNodeHandle entityHandle && entityNode.Entity.NodeId.Equals(entityHandle.Value.NodeId);
     }
 
 }

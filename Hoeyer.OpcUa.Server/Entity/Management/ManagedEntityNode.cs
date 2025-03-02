@@ -4,7 +4,7 @@ using Hoeyer.Common.Extensions;
 using Hoeyer.OpcUa.Core.Entity;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.NodeManagement;
+namespace Hoeyer.OpcUa.Server.Entity.Management;
 
 internal sealed record ManagedEntityNode(
     BaseObjectState Entity,

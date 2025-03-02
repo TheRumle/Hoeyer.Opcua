@@ -3,7 +3,8 @@ using System.Linq;
 using FluentResults;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Core.Entity;
-using Hoeyer.OpcUa.Server.NodeManagement;
+using Hoeyer.OpcUa.Server.Entity;
+using Hoeyer.OpcUa.Server.Entity.Api;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application;

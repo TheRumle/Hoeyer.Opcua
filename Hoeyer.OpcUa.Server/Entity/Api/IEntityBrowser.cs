@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using FluentResults;
+using Hoeyer.OpcUa.Server.Entity.Handle;
 using Opc.Ua;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.NodeManagement;
+namespace Hoeyer.OpcUa.Server.Entity.Api;
 
 public interface IEntityBrowser
 {

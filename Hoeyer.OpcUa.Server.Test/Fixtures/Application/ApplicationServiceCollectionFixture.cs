@@ -1,13 +1,14 @@
 ﻿using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server.Application;
-using Hoeyer.OpcUa.Server.NodeManagement;
+using Hoeyer.OpcUa.Server.Entity;
+using Hoeyer.OpcUa.Server.Entity.Api;
 
 namespace Hoeyer.OpcUa.Server.Test.Fixtures.Application;
 
 public sealed record ApplicationServiceCollectionFixture
 {
     public readonly IEntityHandleManager HandleManager;
-    public readonly IEntityModifier Modifier;
+    public readonly IEntityWriter Writer;
     public readonly IEntityBrowser Browser;
     public readonly IEntityReader Reader;
     public readonly IReferenceLinker ReferenceLinker;
@@ -22,7 +23,7 @@ public sealed record ApplicationServiceCollectionFixture
         PropertyReader = new PropertyReader();
         EntityNode = managedNode;
         HandleManager = new EntityHandleManager(managedNode);
-        Modifier = new EntityModifier(managedNode);
+        Writer = new EntityWriter(managedNode);
         Browser = new EntityBrowser(managedNode);
         Reader = new EntityReader(managedNode, PropertyReader);
         ReferenceLinker = new EntityReferenceLinker(managedNode);

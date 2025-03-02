@@ -1,5 +1,5 @@
 ﻿using Hoeyer.OpcUa.Server.Application;
-using Hoeyer.OpcUa.Server.NodeManagement;
+using Hoeyer.OpcUa.Server.Application.RequestResponse;
 using Hoeyer.OpcUa.Server.Test.Fixtures.Application;
 using Hoeyer.OpcUa.Server.Test.Fixtures.OpcUa;
 using Opc.Ua;
@@ -24,7 +24,7 @@ public class PropertyReaderTest(ApplicationServiceCollectionFixture applicationS
         EntityValueReadResponse result = _propertyReader.ReadProperty(request, fixture.PropertyState);
         
         await Assert.That(result.IsSuccess).IsTrue();
-        await Assert.That(StatusCode.IsGood(result.StatusCode)).IsTrue();
+        await Assert.That(StatusCode.IsGood(result.ResponseCode)).IsTrue();
         await Assert.That(result.Response.DataValue.Value).IsNotDefault();
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.OpcUa.Core.Entity;
-using Hoeyer.OpcUa.Server.NodeManagement;
+using Hoeyer.OpcUa.Server.Application.RequestResponse;
+using Hoeyer.OpcUa.Server.Entity;
+using Hoeyer.OpcUa.Server.Entity.Api;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application;
@@ -27,7 +29,7 @@ internal class PropertyReader : IPropertyReader
             Attributes.ValueRank => new EntityValueReadResponse(readId, () => AssignValue(node.ValueRank)),
             Attributes.MinimumSamplingInterval => new EntityValueReadResponse(readId, () => AssignValue(node.MinimumSamplingInterval)),
             Attributes.DataType => new EntityValueReadResponse(readId, () => AssignValue(node.DataType)),
-            _ => new EntityValueReadResponse(readId, $"Unsupported attribute ({Attributes.GetBrowseName(readId.AttributeId)}).")
+            _ => new EntityValueReadResponse(readId, StatusCodes.BadNotSupported)
         };
     }
     
@@ -66,7 +68,7 @@ internal class EntityReader(IEntityNode entityNode, IPropertyReader reader) : IE
             return ReadEntity(toRead);
         }
         
-        return new EntityValueReadResponse(toRead, $"The entity {entityNode.Entity.DisplayName} does not have any property with id {toRead.NodeId}");
+        return new EntityValueReadResponse(toRead, StatusCodes.BadNoEntryExists, $"The entity {entityNode.Entity.DisplayName} does not have any property with id {toRead.NodeId}");
     }
     private EntityValueReadResponse ReadEntity(ReadValueId readId)
     {
@@ -78,7 +80,7 @@ internal class EntityReader(IEntityNode entityNode, IPropertyReader reader) : IE
             Attributes.DisplayName => new EntityValueReadResponse(readId, () => AssignValue(node.DisplayName)),
             Attributes.Description => new EntityValueReadResponse(readId, () => AssignValue(new LocalizedText($"The managed entity '{node.DisplayName.ToString()}'"))),
             Attributes.NodeId => new EntityValueReadResponse(readId, () => AssignValue(node.NodeId)),
-            _ => new EntityValueReadResponse(readId, $"Unsupported attribute ({Attributes.GetBrowseName(readId.AttributeId)}).")
+            _ => new EntityValueReadResponse(readId, StatusCodes.BadNotSupported)
         };
     }
     

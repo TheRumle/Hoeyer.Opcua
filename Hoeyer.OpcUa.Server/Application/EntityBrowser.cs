@@ -3,7 +3,10 @@ using System.Linq;
 using FluentResults;
 using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.OpcUa.Core.Entity;
-using Hoeyer.OpcUa.Server.NodeManagement;
+using Hoeyer.OpcUa.Server.Entity;
+using Hoeyer.OpcUa.Server.Entity.Api;
+using Hoeyer.OpcUa.Server.Entity.Handle;
+using Hoeyer.OpcUa.Server.Entity.Management;
 using Opc.Ua;
 using Opc.Ua.Server;
 
@@ -16,11 +19,10 @@ internal class EntityBrowser(IEntityNode node) : IEntityBrowser
     {
         var result =  nodeToBrowse switch
         {
-            EntityHandle { Value: var managed } when managed.Equals(node.Entity)  => Result
-                .Ok(
-                    BrowseEntity(continuationPoint)
-                    .Skip(continuationPoint.Index)
-                    .Take((int)continuationPoint.MaxResultsToReturn)
+            EntityHandle { Value: var managed } when managed.Equals(node.Entity)  => Result.Ok(
+                        BrowseEntity(continuationPoint)
+                        .Skip(continuationPoint.Index)
+                        .Take((int)continuationPoint.MaxResultsToReturn)
                     ),
             PropertyHandle {Payload: var managed} when node.PropertyStates.ContainsValue(managed) => Result.Ok(BrowseProperty(managed)),  
             _ => Result.Fail($"{nodeToBrowse.Value.DisplayName} is not associated with browser for entity {node.Entity.DisplayName}.")
