@@ -1,4 +1,5 @@
-﻿using FluentResults;
+﻿using System.Collections.Generic;
+using FluentResults;
 using Hoeyer.OpcUa.Server.Entity.Handle;
 using Opc.Ua;
 
@@ -6,6 +7,9 @@ namespace Hoeyer.OpcUa.Server.Entity.Api;
 
 public interface IEntityHandleManager
 {
+    public IEntityNodeHandle EntityHandle { get; }
+    public IEnumerable<IEntityNodeHandle> PropertyHandles { get; }
+    
     public bool IsHandleToAnyRelatedNode(object? handle);
 
     public bool IsManagedPropertyHandle(object? handle, out IEntityNodeHandle managedPropertyHandle);

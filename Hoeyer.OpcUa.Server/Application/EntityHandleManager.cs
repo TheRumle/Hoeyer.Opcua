@@ -1,4 +1,5 @@
-﻿using FluentResults;
+﻿using System.Collections.Generic;
+using FluentResults;
 using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Handle;
@@ -9,6 +10,12 @@ namespace Hoeyer.OpcUa.Server.Application;
 internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManager
 {
     private readonly HandleCollection _handles = new(entityNode);
+
+    /// <inheritdoc />
+    public IEntityNodeHandle EntityHandle => _handles.ManagedHandle;
+
+    /// <inheritdoc />
+    public IEnumerable<IEntityNodeHandle> PropertyHandles => _handles.PropertyHandles.Values;
 
     /// <inheritdoc />
     public bool IsHandleToAnyRelatedNode(object? handle)

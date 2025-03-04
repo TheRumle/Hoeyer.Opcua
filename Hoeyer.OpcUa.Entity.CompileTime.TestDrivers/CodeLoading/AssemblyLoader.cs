@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Microsoft.CodeAnalysis;
+using Assembly = System.Reflection.Assembly;
 
 namespace Hoeyer.OpcUa.Entity.CompileTime.Testing.CodeLoading;
 

@@ -1,6 +1,7 @@
 ﻿using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Entity.Api;
+using Hoeyer.OpcUa.Server.Entity.Management;
 
 namespace Hoeyer.OpcUa.Server.Test.Fixtures.Application;
 
