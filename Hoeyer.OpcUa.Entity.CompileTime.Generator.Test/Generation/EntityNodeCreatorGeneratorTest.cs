@@ -4,10 +4,12 @@ using Hoeyer.OpcUa.Entity.CompileTime.Testing.Drivers;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 using Hoeyer.OpcUa.Server.SourceGeneration.Generation;
 using JetBrains.Annotations;
+using TUnitSettings;
 
 namespace Hoeyer.OpcUa.Entity.Analysis.Test.Generation;
 
 [TestSubject(typeof(EntityNodeCreatorGenerator))]
+[ParallelLimiter<ParallelLimit>]
 public class EntityNodeCreatorGeneratorTest
 {
     private readonly GeneratorTestDriver<EntityNodeCreatorGenerator> _testDriver = new(new EntityNodeCreatorGenerator(),
