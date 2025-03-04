@@ -23,7 +23,7 @@ public sealed class EntityProxy<TMachineState>(
     public async Task<Result<TMachineState>> ReadEntityAsync(CancellationToken token)
     {
         var a = await sessionManager.ConnectAndThen(opcUaNodeConnectionHolder.ReadOpcUaEntityAsync, token);
-        return a.Tap(stateContainer.ChangeState,
+        return a.Then(stateContainer.ChangeState,
             errors => logger.LogError(
                 "Could not fetch the state of the {TYPE} entity.\n\t{ERROR}",
                 typeof(TMachineState).Name, string.Join(",", errors.Select(e => e.Message))));

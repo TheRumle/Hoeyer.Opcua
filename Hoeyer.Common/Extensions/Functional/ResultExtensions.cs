@@ -13,38 +13,31 @@ public static class ResultExtensions
     {
         return Task.WhenAll(tasks).ContinueWith(task => task.Result.AsEnumerable().Merge());
     }
-
-    public static Task<Result<IEnumerable<T>>> Traverse<T>(this IEnumerable<Task<T>> tasks)
-    {
-        return Task.FromResult(Result.Try(() => tasks.Select(async e => await e)
-            .Select(e => e.Result)));
-    }
-
-    public static Task<Result<T>> Traverse<T>(this Task<T> task)
-    {
-        return Result.Try(() => task);
-    }
-
+    
     public static Task<Result<T>> Traverse<T>(this Task<T> task, Func<Exception, Error> onError)
     {
         return Result.Try(() => task, onError);
     }
-
-    public static Task<Result<T>> Traverse<T>(this Result<Task<T>> result)
-    {
-        if (result.IsFailed) return Task.FromResult(Result.Fail<T>(result.Errors));
-        return Task.FromResult(result.Bind(e => Result.Try(() => e.Result)));
-    }
-
-    public static Task<Result<IEnumerable<T>>> Combine<T>(this IEnumerable<Task<Result<T>>> tasks)
-    {
-        return Task.WhenAll(tasks).ContinueWith(task => task.Result.AsEnumerable().Merge());
-    }
-
-    public static T GetOrThrow<T>(this Result<T> result, Func<Error, Exception> onError)
+    
+    public static Task<IEnumerable<Result<T>>> TraverseEach<T>(this IEnumerable<Task<Result<T>>> tasks) =>
+        Task.WhenAll(tasks).ContinueWith(task =>
+        {
+            var results = task.Result.ToList();
+            return results.AsEnumerable();
+        });
+    
+    
+    /// <summary>
+    /// If the result is not successful will throw a hard error!
+    /// </summary>
+    /// <param name="result">The result, which might have been failed</param>
+    /// <param name="exceptionFactory">How to create the exception</param>
+    /// <returns>The value of the result, if successful</returns>
+    /// <exception cref="Exception"></exception>
+    public static T GetOrThrow<T>(this Result<T> result, Func<Error, Exception> exceptionFactory)
     {
         if (result.IsSuccess) return result.Value;
-        throw onError.Invoke(new Error(result.Errors.SeparateBy("\n")));
+        throw exceptionFactory.Invoke(new Error(result.Errors.SeparateBy("\n")));
     }
 
 
@@ -56,43 +49,6 @@ public static class ResultExtensions
     /// <param name="onError">What will happen if the result has errored</param>
     /// <typeparam name="T">The type of the value the result can hold</typeparam>
     /// <returns>The original result without modification</returns>
-    public static Result<T> Tap<T>(this Result<T> result, Action<T> onSuccess, Action<List<IError>> onError)
-    {
-        if (result.IsSuccess) onSuccess(result.Value);
-        else onError(result.Errors);
-        return result;
-    }
-
-
-    public static Result<IEnumerable<T>> Then<T>(this IEnumerable<Result<T>> result, Action<T> onSuccess,
-        Action<IError>? onError = null)
-    {
-        var rs = result.ToList();
-        var onFail = onError ?? (_ => { });
-        foreach (var v in rs)
-            if (v.IsSuccess) onSuccess(v.Value);
-            else v.Errors.ForEach(onFail);
-
-        return rs.Merge();
-    }
-
-    [Pure]
-    public static Result<IEnumerable<T>> Then<T>(this IEnumerable<Result<T>> result,
-        Action<IEnumerable<T>> onAllSuccess, Action<IError>? onError = null)
-    {
-        var rs = result.ToList();
-        var onFail = onError ?? (_ => { });
-        if (rs.All(e => e.IsSuccess))
-        {
-            onAllSuccess(rs.Select(e => e.Value));
-            return rs.Merge();
-        }
-
-        foreach (var failed in rs.Where(e => e.IsFailed)) failed.Errors.ForEach(onFail);
-        return rs.Merge();
-    }
-
-
     public static Result<T> Then<T>(this Result<T> result, Action<T> onSuccess, Action<List<IError>> onError)
     {
         if (result.IsSuccess)
@@ -120,79 +76,12 @@ public static class ResultExtensions
 
     public static IEnumerable<T> Then<T>(this IEnumerable<T> result, Action<T> stateChanger)
     {
-        foreach (var r in result)
+        var enumerable = result as T[] ?? result.ToArray();
+        foreach (var r in enumerable)
         {
             stateChanger.Invoke(r);
-            yield return r;
         }
-    }
 
-    public static void Pipe<T>(this IEnumerable<T> result, Action<T> stateChanger)
-    {
-        foreach (var r in result) stateChanger.Invoke(r);
-    }
-
-
-    public static Result<T> FailIf<T>(this T value, bool check, IError error)
-    {
-        return check ? value.ToResult() : Result.Fail(error);
-    }
-
-    public static Result<T> FailIf<T>(this T value, bool check, string error)
-    {
-        return value.FailIf(check, new Error(error));
-    }
-
-    public static Result<T> FailIf<T>(this T value, Predicate<T> check, string error)
-    {
-        return value.FailIf(check.Invoke(value), new Error(error));
-    }
-
-    public static Result<T> FailIf<T>(this Result<T> value, bool check, IError error)
-    {
-        if (!check)
-            return !value.IsSuccess
-                ? Result.Fail(value.Errors.Concat([new Error(error.Message)]))
-                : Result.Fail(error);
-
-        return value;
-    }
-
-    public static Result<T> FailIf<T>(this Result<T> value, bool check, string error)
-    {
-        return value.FailIf(check, new Error(error));
-    }
-
-    public static Result ToFailedResult(this IError er)
-    {
-        return Result.Fail(er);
-    }
-
-    public static Result<T> ToFailedResult<T>(this IError er)
-    {
-        return Result.Fail(er);
-    }
-
-    public static IEnumerable<Result<TOut>> Map<TIn, TOut>(this IEnumerable<Result<TIn>> results,
-        Func<TIn, TOut> mapper)
-    {
-        foreach (var result in results)
-        {
-            if (result.IsSuccess) yield return mapper(result.Value);
-            yield return Result.Fail(result.Errors);
-        }
-    }
-
-    public static Result<T> TryMerge<T>(Func<Result<T>> result, Func<Exception, IError> onError = null)
-    {
-        try
-        {
-            return result.Invoke();
-        }
-        catch (Exception e)
-        {
-            if (onError != null) return Result.Fail(onError(e));
-            return Result.Fail(e.Message);
-        }
+        return enumerable;
     }
 }

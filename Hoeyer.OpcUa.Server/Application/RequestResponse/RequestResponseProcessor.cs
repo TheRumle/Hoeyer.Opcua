@@ -59,6 +59,6 @@ internal class RequestResponseProcessor<T>(
                         .SeparateBy(", "));
         }
 
-        fails.Pipe(processError);
+        fails.Then(processError);
     }
 }
