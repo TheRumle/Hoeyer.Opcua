@@ -7,6 +7,6 @@ public sealed record PropertyAttributeFixture(uint AttributeId, PropertyState Pr
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{EntityName}: {PropertyState.BrowseName}({Attributes.GetBrowseName(AttributeId)})";
+        return $"{EntityName}.{PropertyState.BrowseName}: {Attributes.GetBrowseName(AttributeId)}";
     }
 }

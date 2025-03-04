@@ -7,6 +7,12 @@ namespace Hoeyer.OpcUa.Server.Test.Fixtures.Application;
 
 public sealed record ApplicationServiceCollectionFixture
 {
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"ServiceCollectionFixture, {EntityNode.Entity.DisplayName.ToString()}";
+    }
+
     public readonly IEntityBrowser Browser;
     public readonly EntityNode EntityNode;
     public readonly IEntityHandleManager HandleManager;

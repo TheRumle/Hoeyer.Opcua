@@ -25,6 +25,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "compiletime", "compiletime", "{BDF28345-C176-4EF1-887D-12F7EDECF811}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "unittest", "unittest", "{E8FFFC47-3286-4B5E-B95C-1025F8E36D50}"
+	ProjectSection(SolutionItems) = preProject
+		TUnit\ParallelLimit.cs = TUnit\ParallelLimit.cs
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Server.Test", "Hoeyer.OpcUa.Server.Test\Hoeyer.OpcUa.Server.Test.csproj", "{CE19E989-6880-4424-9595-C02BE91E96E8}"
 EndProject

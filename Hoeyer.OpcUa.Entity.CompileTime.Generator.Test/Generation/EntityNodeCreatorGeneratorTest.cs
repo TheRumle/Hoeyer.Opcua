@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.Entity.Analysis.Test.Data;
+﻿using Hoeyer.OpcUa.Core.Entity;
+using Hoeyer.OpcUa.Entity.CompileTime.Testing.Data;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.Drivers;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 using Hoeyer.OpcUa.Server.SourceGeneration.Generation;
@@ -14,15 +15,26 @@ public class EntityNodeCreatorGeneratorTest
 
     [Test]
     [ValidEntitySourceCodeGenerator]
+    [DisplayName("Can generate syntax tree for '$entitySourceCode'")]
     public async Task WhenGiven_CorrectSourceCodeInfo_ShouldGenerateSyntaxTrees(EntitySourceCode entitySourceCode)
     {
         var generationResult = _testDriver.RunGeneratorOn(entitySourceCode);
         await Assert.That(generationResult.GeneratedTrees).IsNotEmpty().Because("Source code should be generated.");
     }
+    
+    [Test]
+    [ValidEntitySourceCodeGenerator]
+    [DisplayName($"Generates {nameof(IEntityNodeCreator)} for $sourceCode")]
+    public async Task WhenGiven_CorrectSourceCode_GeneratesIEntityNodeCreator(EntitySourceCode sourceCode)
+    {
+        var generationResult = _testDriver.RunGeneratorOn(sourceCode);
+        await Assert.That(generationResult.SourceCode).Contains($"IEntityNodeCreator<{sourceCode.Type.Name}>");
+    }
 
 
     [Test]
     [EntitySourceCodeGenerator]
+    [DisplayName("Will not produce any diagnostic")]
     public async Task Generator_ShouldNeverProduceDiagnostics(EntitySourceCode entitySourceCode)
     {
         var generationResult = _testDriver.RunGeneratorOn(entitySourceCode);

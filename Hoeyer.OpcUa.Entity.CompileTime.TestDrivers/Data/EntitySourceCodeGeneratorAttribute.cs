@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 
-namespace Hoeyer.OpcUa.Entity.Analysis.Test.Data;
+namespace Hoeyer.OpcUa.Entity.CompileTime.Testing.Data;
 
 [SuppressMessage("Design", "S3993", Justification = "TUnits' attributeusage must not and cannot be overwritten.")]
 public sealed class EntitySourceCodeGeneratorAttribute : DataSourceGeneratorAttribute<EntitySourceCode>

@@ -2,7 +2,7 @@
 using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 
-namespace Hoeyer.OpcUa.Entity.Analysis.Test.Data;
+namespace Hoeyer.OpcUa.Entity.CompileTime.Testing.Data;
 
 public static class EntitySourceCodeTestSet
 {

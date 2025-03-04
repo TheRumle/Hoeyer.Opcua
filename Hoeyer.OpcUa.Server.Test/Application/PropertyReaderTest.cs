@@ -12,7 +12,7 @@ public class PropertyReaderTest(ApplicationServiceCollectionFixture applicationS
 
     [Test]
     [ReadablePropertyAttributesGenerator]
-    [DisplayName("Reading $fixture gives good status code")]
+    [DisplayName("$fixture")]
     public async Task CanReadProperty(PropertyAttributeFixture fixture)
     {
         var request = new ReadValueId

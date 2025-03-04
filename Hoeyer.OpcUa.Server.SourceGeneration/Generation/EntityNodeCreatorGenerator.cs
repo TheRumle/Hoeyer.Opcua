@@ -52,6 +52,7 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
             $"return new {nameof(EntityNode)}({nodeStateReference}, new List<{nameof(PropertyState)}>()\n\t\t\t{{\n{propertyNames}\n\t\t\t}});";
 
         return $$"""
+                 using {{typeContext.GetNamespace}};
                  using System;
                  using System.Linq;
                  using Hoeyer.OpcUa.Core.Entity;
@@ -59,7 +60,7 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
 
                  namespace Hoeyer.OpcUa.Core.Server.Entity
                  {
-                     internal sealed class {{className}} : {{nameof(IEntityNodeCreator)}}
+                     internal sealed class {{className}} : {{nameof(IEntityNodeCreator)}}<{{entityName}}>
                      {
                         public {{className}}(){}
                         public string EntityName { get; } = "{{entityName}}";

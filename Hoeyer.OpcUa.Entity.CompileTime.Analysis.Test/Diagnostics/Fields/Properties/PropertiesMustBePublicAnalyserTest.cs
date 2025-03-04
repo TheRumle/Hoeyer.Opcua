@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.CompileTime.Analysis.Diagnostics;
 using Hoeyer.OpcUa.CompileTime.Analysis.Diagnostics.Fields.Properties;
-using Hoeyer.OpcUa.Entity.Analysis.Test.Data;
+using Hoeyer.OpcUa.Entity.CompileTime.Testing.Data;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.Drivers;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 using JetBrains.Annotations;
@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 
 namespace Hoeyer.OpcUa.Entity.Analysis.Test.Diagnostics.Fields.Properties;
 
+[NotInParallel]
 [TestSubject(typeof(PropertiesMustBePublicAnalyser))]
 public class PropertiesMustBePublicAnalyserTest
 {
