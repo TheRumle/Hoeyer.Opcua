@@ -2,31 +2,33 @@
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Handle;
 using Hoeyer.OpcUa.Server.Test.Fixtures.Application;
+using Hoeyer.OpcUa.Server.Test.Fixtures.Application.NodeServices;
+using Hoeyer.OpcUa.Server.Test.Generators;
 using Opc.Ua;
 using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Test.Application;
 
 [ApplicationServiceCollectionGenerator]
-public class EntityBrowserTest(ApplicationServiceCollectionFixture applicationServices)
+public class EntityBrowserTest(ApplicationServiceCollectionFixture fixture)
 {
-    private readonly IEntityBrowser _entityBrowser = applicationServices.Browser;
-    private readonly IEntityNodeHandle _node = applicationServices.HandleManager.EntityHandle;
-    private readonly EntityNode _entity = applicationServices.EntityNode;
+    private readonly IEntityBrowser _entityBrowser = fixture.Browser;
+    private readonly IEntityNodeHandle entityHandle = fixture.HandleManager.EntityHandle;
+    private readonly EntityNode _entity = fixture.EntityNode;
     
     [Test]
     public async Task WhenBrowsingEntity_BrowseIsSuccess()
     {
-        var continuation = CreateContinuationPoint(_node.Value);
-        var browseResult = _entityBrowser.Browse(continuation, _node);
+        var continuation = CreateContinuationPoint(_entity.Entity);
+        var browseResult = _entityBrowser.Browse(continuation, fixture.EntityHandle);
         await Assert.That(browseResult.IsSuccess).IsTrue();
     }
 
     [Test]
     public async Task WhenBrowsingEntity_GetsAsManyResultsAsProperties()
     {
-        var continuation = CreateContinuationPoint(_node.Value);
-        var browseResult = _entityBrowser.Browse(continuation, _node);
+        var continuation = CreateContinuationPoint(entityHandle.Value);
+        var browseResult = _entityBrowser.Browse(continuation, entityHandle);
         await Assert.That(browseResult.Value.Count()).IsEqualTo(_entity.PropertyStates.Count);
     }
 

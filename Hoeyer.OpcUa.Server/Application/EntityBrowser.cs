@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentResults;
 using Hoeyer.Common.Extensions.Functional;
@@ -21,7 +22,7 @@ internal class EntityBrowser(IEntityNode node) : IEntityBrowser
             EntityHandle { Value: var managed } when managed.Equals(node.Entity) => Result.Ok(
                 BrowseEntity(continuationPoint)
                     .Skip(continuationPoint.Index)
-                    .Take((int)continuationPoint.MaxResultsToReturn)
+                    .Take((int)Math.Min(continuationPoint.MaxResultsToReturn, int.MaxValue))
             ),
             PropertyHandle { Payload: var managed } when node.PropertyStates.ContainsValue(managed) => Result.Ok(
                 BrowseProperty(managed)),
