@@ -3,9 +3,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.Common.Extensions.LoggingExtensions;
 
-internal class LoggingSetup(ILogger logger, LogLevel logLevel)
+internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel)
     : ILogLevelSelected, IMessageSelected, IScopeAndMessageSelected, IScopeSelected
 {
+
     private string? _message;
     private object[]? _messageArgs;
     private string? _scope;
@@ -24,11 +25,18 @@ internal class LoggingSetup(ILogger logger, LogLevel logLevel)
     }
 
     /// <inheritdoc />
-    public T WhenExecuting<T>(Func<T> action)
+    public T WhenExecuting<T>(Func<T> action, LogLevel logLevel = LogLevel.None)
     {
-        if (HasScope) return ExecuteAndLogWithScope(action);
+        if (HasScope)
+        {
+            var a = ExecuteAndLogWithScope(action);
+            if (a != null) logger.Log(logLevel, "Got {Values}", a);
+            return a;
+        }
 
-        return ExecuteAndLog(action);
+        var res = ExecuteAndLog(action);
+        if (res != null) logger.Log(logLevel, "Got {Values}", res);
+        return res;
     }
 
     /// <inheritdoc />
@@ -101,7 +109,6 @@ internal class LoggingSetup(ILogger logger, LogLevel logLevel)
             throw;
         }
     }
-
 
     private void LogException(Exception e)
     {

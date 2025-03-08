@@ -6,5 +6,5 @@ namespace Hoeyer.OpcUa.Server.Entity.Api;
 
 public interface IEntityReader
 {
-    public IEnumerable<EntityValueReadResponse> ReadProperties(IEnumerable<ReadValueId> valuesToRead);
+    public IEnumerable<EntityValueReadResponse> ReadAttributes(IEnumerable<ReadValueId> valuesToRead);
 }

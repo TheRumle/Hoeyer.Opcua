@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using Hoeyer.Common.Extensions;
 using Hoeyer.OpcUa.Core.Entity;
 using Opc.Ua;
@@ -32,7 +33,8 @@ internal sealed record ManagedEntityNode(
     /// <inheritdoc />
     public override string ToString()
     {
-        return $$"""
+        
+        var a = $$"""
                  {{nameof(ManagedEntityNode)}} {
                    Name: {{Entity.DisplayName}},
                    Id: {{Entity.NodeId}},
@@ -42,5 +44,18 @@ internal sealed record ManagedEntityNode(
                    ]
                  }
                  """;
+        
+        return JsonSerializer.Serialize(new
+        {
+            Name = Entity.DisplayName.ToString(),
+            Id = Entity.NodeId.ToString(),
+            Namespace = EntityNameSpaceIndex.ToString(),
+            State = PropertyStates.Values.Select(e => new
+            {
+                Name = e.DisplayName.ToString(),
+                Value = e.Value.ToString(),
+                Id = e.NodeId.ToString()
+            })
+        }, new JsonSerializerOptions { WriteIndented = true });
     }
 }

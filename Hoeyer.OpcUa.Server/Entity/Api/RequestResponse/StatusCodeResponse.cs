@@ -1,8 +1,7 @@
 ﻿using System;
-using Hoeyer.OpcUa.Server.Entity.Api;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application.RequestResponse;
+namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 
 public abstract record StatusCodeResponse<TRequest, TResponse>
     : IRequestResponse<TRequest, (TResponse DataValue, StatusCode StatusCode)>, IStatusCodeResponse

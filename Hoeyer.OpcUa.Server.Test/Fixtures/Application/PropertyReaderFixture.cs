@@ -10,7 +10,7 @@ public sealed record PropertyReaderFixture(PropertyState PropertyState, string E
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{EntityName}, {PropertyState.BrowseName.Name}";
+        return $"{EntityName}, {PropertyState.BrowseName.Name} ({PropertyState.TypeDefinitionId})";
     }
 }
 

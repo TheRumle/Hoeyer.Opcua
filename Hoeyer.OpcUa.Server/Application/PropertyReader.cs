@@ -10,28 +10,20 @@ internal class PropertyReader : IPropertyReader
     {
         return readId.AttributeId switch
         {
-            Attributes.BrowseName => new EntityValueReadResponse(readId, () => AssignValue(node.BrowseName)),
-            Attributes.NodeClass => new EntityValueReadResponse(readId, () => AssignValue((int)NodeClass.Variable)),
-            Attributes.DisplayName => new EntityValueReadResponse(readId, () => AssignValue(node.DisplayName)),
-            Attributes.Description => new EntityValueReadResponse(readId,
-                () => AssignValue(new LocalizedText(GetPropertyDescription(node)))),
-            Attributes.NodeId => new EntityValueReadResponse(readId, () => AssignValue(node.NodeId)),
-            Attributes.Value => new EntityValueReadResponse(readId, () => AssignValue(node.Value)),
-            Attributes.ValueRank => new EntityValueReadResponse(readId, () => AssignValue(node.ValueRank)),
-            Attributes.MinimumSamplingInterval => new EntityValueReadResponse(readId,
-                () => AssignValue(node.MinimumSamplingInterval)),
-            Attributes.DataType => new EntityValueReadResponse(readId, () => AssignValue(node.DataType)),
-            _ => new EntityValueReadResponse(readId, StatusCodes.BadNotSupported)
+            Attributes.BrowseName =>  CreateResponse(readId, node.BrowseName),
+            Attributes.NodeClass =>  CreateResponse(readId, (int)NodeClass.Variable),
+            Attributes.DisplayName =>  CreateResponse(readId, node.DisplayName),
+            Attributes.Description =>  CreateResponse(readId, new LocalizedText(GetPropertyDescription(node))),
+            Attributes.NodeId =>  CreateResponse(readId, node.NodeId),
+            Attributes.Value =>  CreateResponse(readId, node.Value),
+            Attributes.ValueRank =>  CreateResponse(readId, node.ValueRank),
+            Attributes.MinimumSamplingInterval =>  CreateResponse(readId, node.MinimumSamplingInterval),
+            Attributes.DataType =>  CreateResponse(readId, node.DataType),
+            _ => CreateResponse(readId, StatusCodes.BadNotSupported)
         };
     }
 
-    private static (DataValue dataValue, StatusCode Good) AssignValue(object value)
-    {
-        var dataValue = new DataValue();
-        dataValue.StatusCode = StatusCodes.Good;
-        dataValue.Value = value;
-        return (dataValue, StatusCodes.Good);
-    }
+
 
     private static string GetPropertyDescription(PropertyState node)
     {
@@ -39,5 +31,16 @@ internal class PropertyReader : IPropertyReader
         var type = node.WrappedValue.TypeInfo.BuiltInType;
         var typeDescr = $"{DataTypes.GetBrowseName((int)type)}{rank}";
         return $"The property {node.DisplayName.ToString()} of type '{typeDescr}'";
+    }
+    
+    private static EntityValueReadResponse CreateResponse<T>(ReadValueId readId, T value)
+    {
+        return new EntityValueReadResponse(readId, () =>
+        {
+            var dataValue = new DataValue();
+            dataValue.StatusCode = StatusCodes.Good;
+            dataValue.Value = value;
+            return (dataValue, StatusCodes.Good);
+        });
     }
 }

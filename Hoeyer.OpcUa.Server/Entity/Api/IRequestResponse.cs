@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.Server.Application.RequestResponse;
+﻿using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 
 namespace Hoeyer.OpcUa.Server.Entity.Api;
 

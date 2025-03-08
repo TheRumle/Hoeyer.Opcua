@@ -4,12 +4,13 @@ using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 using Opc.Ua;
+using NodeClass = Opc.Ua.NodeClass;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-internal class EntityReader(IEntityNode entityNode, IPropertyReader reader) : IEntityReader
+internal class EntityReader(IEntityNode entityNode, IPropertyReader propertyReader) : IEntityReader
 {
-    public IEnumerable<EntityValueReadResponse> ReadProperties(IEnumerable<ReadValueId> valuesToRead)
+    public IEnumerable<EntityValueReadResponse> ReadAttributes(IEnumerable<ReadValueId> valuesToRead)
     {
         return valuesToRead.Select(Read);
     }
@@ -17,7 +18,7 @@ internal class EntityReader(IEntityNode entityNode, IPropertyReader reader) : IE
     private EntityValueReadResponse Read(ReadValueId toRead)
     {
         if (entityNode.PropertyStates.TryGetValue(toRead.NodeId, out var propertyHandle))
-            return reader.ReadProperty(toRead, propertyHandle);
+            return propertyReader.ReadProperty(toRead, propertyHandle);
         if (entityNode.Entity.NodeId.Equals(toRead.NodeId)) return ReadEntity(toRead);
 
         return new EntityValueReadResponse(toRead, StatusCodes.BadNoEntryExists,
@@ -29,22 +30,28 @@ internal class EntityReader(IEntityNode entityNode, IPropertyReader reader) : IE
         var node = entityNode.Entity;
         return readId.AttributeId switch
         {
-            Attributes.BrowseName => new EntityValueReadResponse(readId, () => AssignValue(node.BrowseName)),
-            Attributes.NodeClass => new EntityValueReadResponse(readId, () => AssignValue((int)NodeClass.Object)),
-            Attributes.DisplayName => new EntityValueReadResponse(readId, () => AssignValue(node.DisplayName)),
-            Attributes.Description => new EntityValueReadResponse(readId,
-                () => AssignValue(new LocalizedText($"The managed entity '{node.DisplayName.ToString()}'"))),
-            Attributes.NodeId => new EntityValueReadResponse(readId, () => AssignValue(node.NodeId)),
-            _ => new EntityValueReadResponse(readId, StatusCodes.BadNotSupported)
+            Attributes.AccessLevel => CreateResponse(readId, AccessLevels.CurrentReadOrWrite),
+            Attributes.DataType => CreateResponse(readId, DataTypes.ObjectNode),
+            Attributes.BrowseName =>CreateResponse(readId, node.BrowseName),
+            Attributes.NodeClass => CreateResponse(readId, (int)NodeClass.Object),
+            Attributes.DisplayName => CreateResponse(readId, node.DisplayName),
+            Attributes.Description => CreateResponse(readId, new LocalizedText($"The managed entity '{node.DisplayName.ToString()}'")),
+            Attributes.NodeId => CreateResponse(readId, node.NodeId),
+            _ => new EntityValueReadResponse(readId, StatusCodes.BadNotSupported, $"Not supported")
         };
     }
 
 
-    private static (DataValue dataValue, StatusCode Good) AssignValue(object value)
+    private static (DataValue dataValue, StatusCode Good) AssignValue<T>(T value)
     {
         var dataValue = new DataValue();
         dataValue.StatusCode = StatusCodes.Good;
         dataValue.Value = value;
         return (dataValue, StatusCodes.Good);
+    }
+
+    private static EntityValueReadResponse CreateResponse<T>(ReadValueId readId, T valueGet)
+    {
+        return new EntityValueReadResponse(readId, () => AssignValue(valueGet));
     }
 }

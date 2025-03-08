@@ -1,3 +1,7 @@
 ﻿namespace Hoeyer.Common.Extensions.LoggingExtensions;
 
-public interface IScopeAndMessageSelected : IFinishedLoggingSetup;
+public interface IScopeAndMessageSelected : IFinishedLoggingSetup
+{
+}
+
+

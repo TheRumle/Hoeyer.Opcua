@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Hoeyer.OpcUa.Server.Application.RequestResponse;
+using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Entity.Api;

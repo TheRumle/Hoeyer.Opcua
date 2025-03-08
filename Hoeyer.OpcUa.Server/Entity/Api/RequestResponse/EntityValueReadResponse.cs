@@ -5,7 +5,8 @@ namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 
 public sealed record EntityValueReadResponse : StatusCodeResponse<ReadValueId, DataValue>
 {
-    public EntityValueReadResponse(ReadValueId request, StatusCode code, string? error = null)
+
+    public EntityValueReadResponse(ReadValueId request, StatusCode code, string error)
         : base(request, code, error)
     {
     }
@@ -16,4 +17,11 @@ public sealed record EntityValueReadResponse : StatusCodeResponse<ReadValueId, D
     }
 
     public string AttributeName => Attributes.GetBrowseName(Request.AttributeId);
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        if (IsSuccess) return AttributeName;
+        return $"{AttributeName} : {Error}";
+    }
 }

@@ -29,6 +29,7 @@ internal sealed class EntityNodeManager(
 {
     private readonly BaseObjectState _entity = managedEntity.Entity;
     private readonly ServerSystemContext _systemContext = server.DefaultSystemContext;
+    private readonly RequestResponseProcessorFactory _processorFactory = new(LogLevel.Error, LogLevel.Information);
 
 
     public IEntityNode ManagedEntity { get; } = managedEntity;
@@ -42,9 +43,8 @@ internal sealed class EntityNodeManager(
             {
                 var res = referenceLinker.InitializeToExternals(externalReferences);
                 if (res.IsFailed) logger.LogError(res.Errors.ToNewlineSeparatedString());
-
-                foreach (var properties in managedEntity.PropertyStates.Values)
-                    logger.LogInformation("Adding {PropertyName}", properties.BrowseName);
+                
+                logger.LogInformation("Adding {PropertiesName}", managedEntity.PropertyStates.Values.Select(e=> e.BrowseName));
             });
     }
 
@@ -122,7 +122,7 @@ internal sealed class EntityNodeManager(
         BrowseResultMask resultMask)
     {
         return logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithScope("Getting metadata for {@TargetHandle}", targetHandle)
+            .WithSessionContextScope(context, "{SessionId}, Getting metadata for {@TargetHandle}", context.SessionId.ToString() ,targetHandle)
             .WithErrorMessage("Failed to get metadata for {@TargetHandle}", targetHandle)
             .WhenExecuting(() =>
             {
@@ -143,20 +143,22 @@ internal sealed class EntityNodeManager(
     public override void Browse(OperationContext context, ref ContinuationPoint continuationPoint,
         IList<ReferenceDescription> references)
     {
-        using var scope = logger.BeginScope("Browsing node");
         if (continuationPoint.NodeToBrowse is not IEntityNodeHandle nodeToBrowse) return;
+        var cPoint = continuationPoint;
+        
+        continuationPoint = logger.LogCaughtExceptionAs(LogLevel.Error)
+            .WithSessionContextScope(context, "Browsing node")
+            .WithErrorMessage("Failed to browse node")
+            .WhenExecuting(() =>
+            {
+                return browser
+                    .Browse(cPoint, nodeToBrowse)
+                    .Then(result => references.AddRange(result.RelatedEntities))
+                    .Then(result => logger.LogInformation("Browsed [{Result}]", result))
+                    .ValueOrDefault
+                    ?.ContinuationPoint;
+            })!;
 
-        var browseResult = browser.Browse(continuationPoint, nodeToBrowse);
-
-        if (browseResult.IsSuccess)
-        {
-            references.AddRange(browseResult.Value.RelatedEntities);
-            continuationPoint = browseResult.Value.ContinuationPoint!;
-        }
-        else
-        {
-            continuationPoint = null!;
-        }
     }
 
 
@@ -166,7 +168,7 @@ internal sealed class EntityNodeManager(
         IList<ExpandedNodeId> targetIds, IList<NodeId> unresolvedTargetIds)
     {
         logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithScope("Translating browse path {Path}", relativePath.ToString())
+            .WithSessionContextScope(context, "Translating browse path {Path}", relativePath.ToString())
             .WhenExecuting(() =>
                 base.TranslateBrowsePath(context, sourceHandle, relativePath, targetIds, unresolvedTargetIds));
     }
@@ -178,21 +180,25 @@ internal sealed class EntityNodeManager(
     {
         var filtered = nodesToRead.Where(e => !e.Processed && IsEntityKey(e)).ToList();
         if (!filtered.Any()) return;
+        
         logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithScope(
-                "Session {@Session}: Reading values {@ValuesToRead}",
-                context.SessionId, filtered.Select(e => e.NodeId).Distinct())
+            .WithSessionContextScope(context, "Reading values {@ValuesToRead}", filtered.Select(e => e.NodeId).Distinct())
             .WithErrorMessage("An unexpected error occurred when trying to read nodes. ")
             .WhenExecuting(() =>
             {
-                var requestResponses = entityReader.ReadProperties(filtered);
-                new RequestResponseProcessor<EntityValueReadResponse>(requestResponses,
-                        e => e.Request.Processed = true,
-                        errorResponse => errors[nodesToRead.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode
-                    )
-                    .WithLogging(logger, LogLevel.Error)
-                    .Process(ReadResultDescription);
+                IEnumerable<EntityValueReadResponse> requestResponses = entityReader.ReadAttributes(filtered);
+                _processorFactory.GetProcessorWithLoggingFor("Read", requestResponses,
+                    processSuccess: e =>
+                    {
+                        e.Request.Processed = true;
+                        values[nodesToRead.IndexOf(e.Request)] = e.Response.DataValue;
+                    },
+                    processError: errorResponse => errors[nodesToRead.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode,
+                    logger
+                ).Process();
             });
+        
+    
     }
 
 
@@ -203,20 +209,16 @@ internal sealed class EntityNodeManager(
             .ToList();
         if (!filtered.Any()) return;
 
-
         logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithScope("Session {Session} writes to {NodesToWrite}", nodesToWrite.Select(e => e.NodeId),
+            .WithSessionContextScope(context, "Session {Session} writes to {NodesToWrite}", nodesToWrite.Select(e => e.NodeId),
                 context.SessionId)
             .WhenExecuting(() =>
             {
                 var requestResponses = entityWriter.Write(filtered, _systemContext.Copy());
-                new RequestResponseProcessor<EntityWriteResponse>(requestResponses,
-                        e => e.Request.Processed = true,
-                        errorResponse =>
-                            errors[nodesToWrite.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode
-                    )
-                    .WithLogging(logger, LogLevel.Error)
-                    .Process(ReadResultDescription);
+                _processorFactory.GetProcessorWithLoggingFor("Write", requestResponses,
+                    e => e.Request.Processed = true,
+                    errorResponse => errors[nodesToWrite.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode,
+                    logger);
             });
     }
 
@@ -367,16 +369,12 @@ internal sealed class EntityNodeManager(
         Dictionary<NodeId, List<object>> uniqueNodesServiceAttributesCache, bool permissionsOnly)
     {
         return logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithScope("Getting permission metadata for {@TargetHandle}", targetHandle)
+            .WithSessionContextScope(context, "Getting permission metadata for {@TargetHandle}", targetHandle)
             .WhenExecuting(() => base.GetPermissionMetadata(context, targetHandle, resultMask,
                 uniqueNodesServiceAttributesCache,
                 permissionsOnly));
     }
 
-    private string ReadResultDescription(EntityValueReadResponse e)
-    {
-        return $"{managedEntity.GetNameOfManaged(e.Request.NodeId)}.{e.AttributeName}";
-    }
 
     private string ReadResultDescription(EntityWriteResponse e)
     {

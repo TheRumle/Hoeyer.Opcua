@@ -17,6 +17,7 @@ internal class EntityBrowser(IEntityNode node) : IEntityBrowser
     public Result<EntityBrowseResponse> Browse(ContinuationPoint continuationPoint,
         IEntityNodeHandle nodeToBrowse)
     {
+        
         var browseResult = nodeToBrowse switch
         {
             EntityHandle entityHandle
@@ -32,18 +33,12 @@ internal class EntityBrowser(IEntityNode node) : IEntityBrowser
             .Map(values => values
                 .Skip(continuationPoint.Index)
                 .Take((int)Math.Min(continuationPoint.MaxResultsToReturn, int.MaxValue)))                
-            .Map(foundValues => CreateBrowseResponse(foundValues.ToList(), continuationPoint));
+            .Map(foundValues => CreateBrowseResponse(foundValues.ToList()));
     }
 
-    private EntityBrowseResponse CreateBrowseResponse(IList<ReferenceDescription> foundValues, ContinuationPoint continuationPoint)
+    private EntityBrowseResponse CreateBrowseResponse(IList<ReferenceDescription> foundValues)
     {
-        //Browsing entity means giving references out to all properties
-        var maxThingsToBrowse = node.PropertyStates.Count;
-        if (foundValues.Count + continuationPoint.Index >= maxThingsToBrowse)
-            return new EntityBrowseResponse(null, foundValues);
-        
-        continuationPoint.Index += foundValues.Count;
-        return new EntityBrowseResponse(continuationPoint, foundValues);
+        return new EntityBrowseResponse(null, foundValues);
     }
 
 

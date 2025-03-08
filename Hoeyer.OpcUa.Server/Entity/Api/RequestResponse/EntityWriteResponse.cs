@@ -1,6 +1,6 @@
 ﻿using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application.RequestResponse;
+namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 
 public sealed record EntityWriteResponse : StatusCodeResponse<WriteValue, ServiceResult>
 {
