@@ -7,7 +7,6 @@ using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server.Entity.Api;
-using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 using Hoeyer.OpcUa.Server.Entity.Handle;
 using Hoeyer.OpcUa.Server.Extensions;
 using Microsoft.Extensions.Logging;
@@ -186,7 +185,7 @@ internal sealed class EntityNodeManager(
             .WithErrorMessage("An unexpected error occurred when trying to read nodes. ")
             .WhenExecuting(() =>
             {
-                IEnumerable<EntityValueReadResponse> requestResponses = entityReader.ReadAttributes(filtered);
+                var requestResponses = entityReader.ReadAttributes(filtered);
                 _processorFactory.GetProcessorWithLoggingFor("Read", requestResponses,
                     processSuccess: e =>
                     {
@@ -195,7 +194,7 @@ internal sealed class EntityNodeManager(
                     },
                     processError: errorResponse => errors[nodesToRead.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode,
                     logger
-                ).Process();
+                ).Process(errorFilter: e => !StatusCodes.BadNotSupported.Equals(e.ResponseCode.Code));
             });
         
     
@@ -375,11 +374,6 @@ internal sealed class EntityNodeManager(
                 permissionsOnly));
     }
 
-
-    private string ReadResultDescription(EntityWriteResponse e)
-    {
-        return $"{managedEntity.GetNameOfManaged(e.Request.NodeId)}.{e.AttributeName}";
-    }
 
     /// <inheritdoc />
     protected override void Dispose(bool disposing)

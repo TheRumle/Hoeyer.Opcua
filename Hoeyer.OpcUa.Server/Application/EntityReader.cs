@@ -37,7 +37,7 @@ internal class EntityReader(IEntityNode entityNode, IPropertyReader propertyRead
             Attributes.DisplayName => CreateResponse(readId, node.DisplayName),
             Attributes.Description => CreateResponse(readId, new LocalizedText($"The managed entity '{node.DisplayName.ToString()}'")),
             Attributes.NodeId => CreateResponse(readId, node.NodeId),
-            _ => new EntityValueReadResponse(readId, StatusCodes.BadNotSupported, $"Not supported")
+            _ => new EntityValueReadResponse(readId, StatusCodes.BadNotSupported, "Not supported")
         };
     }
 
