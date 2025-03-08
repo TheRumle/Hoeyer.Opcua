@@ -14,9 +14,9 @@ public static class ResultExtensions
         return Task.WhenAll(tasks).ContinueWith(task => task.Result.AsEnumerable().Merge());
     }
     
-    public static Task<Result<T>> Traverse<T>(this Task<T> task, Func<Exception, Error> onError)
+    public static Task<Result<T>> Traverse<T>(this Task<T> task, Func<Exception, string> onError)
     {
-        return Result.Try(() => task, onError);
+        return Result.Try(() => task, e => new Error(onError.Invoke(e)));
     }
     
     public static Task<IEnumerable<Result<T>>> TraverseEach<T>(this IEnumerable<Task<Result<T>>> tasks) =>

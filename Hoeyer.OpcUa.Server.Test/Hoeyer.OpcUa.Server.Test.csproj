@@ -9,16 +9,12 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj"/>
-        <ProjectReference Include="..\TUnitSettings\TUnitSettings.csproj" />
+        <ProjectReference Include="..\Hoeyer.TUnit.Configuration\Hoeyer.TUnit.Configuration.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.Analysis\Hoeyer.OpcUa.CompileTime.Analysis.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Server.SourceGeneration\Hoeyer.OpcUa.Server.SourceGeneration.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Fixtures\Application\" />
     </ItemGroup>
 
 

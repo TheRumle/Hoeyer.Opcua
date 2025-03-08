@@ -1,7 +1,7 @@
 ﻿using System;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application.RequestResponse;
+namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 
 public sealed record EntityValueReadResponse : StatusCodeResponse<ReadValueId, DataValue>
 {

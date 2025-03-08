@@ -32,9 +32,7 @@ public sealed class OpcUaEntityReader<TEntity>(
     {
         return session.ReadValueAsync(propertyConfiguration.GetNodeId())
             .Traverse(ex =>
-                new Error(
-                    $"Could not read value for property {propertyConfiguration.PropertyInfo.Name} at server node '{propertyConfiguration.GetNodeId()}'. Does the node id match what is on the server? \n{ex.Message}",
-                    new Error(ex.Message)))
+                $"Could not read value for property {propertyConfiguration.PropertyInfo.Name} at server node '{propertyConfiguration.GetNodeId()}'. Does the node id match what is on the server? \n{ex.Message}")
             .Map(dataValue => new PossiblePropertyDataMatch(
                 propertyConfiguration,
                 dataValue

@@ -6,8 +6,8 @@ using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Core.Entity;
-using Hoeyer.OpcUa.Server.Application.RequestResponse;
 using Hoeyer.OpcUa.Server.Entity.Api;
+using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 using Hoeyer.OpcUa.Server.Entity.Handle;
 using Hoeyer.OpcUa.Server.Extensions;
 using Microsoft.Extensions.Logging;
@@ -146,15 +146,17 @@ internal sealed class EntityNodeManager(
         using var scope = logger.BeginScope("Browsing node");
         if (continuationPoint.NodeToBrowse is not IEntityNodeHandle nodeToBrowse) return;
 
-        var browseResult = browser.Browse(continuationPoint, nodeToBrowse)
-            .Map(range => range.ToList())
-            .Then(
-                references.AddRange,
-                errs =>
-                    logger.LogError("Browsing failed with error(s) {Error}", errs.ToNewlineSeparatedString())
-            );
+        var browseResult = browser.Browse(continuationPoint, nodeToBrowse);
 
-        if (browseResult.IsSuccess && browseResult.Value.Count == 0) continuationPoint = null!;
+        if (browseResult.IsSuccess)
+        {
+            references.AddRange(browseResult.Value.RelatedEntities);
+            continuationPoint = browseResult.Value.ContinuationPoint!;
+        }
+        else
+        {
+            continuationPoint = null!;
+        }
     }
 
 

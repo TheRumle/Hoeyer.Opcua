@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.OpcUa.Server.Application.RequestResponse;
+﻿namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 
 public interface IRequestResponse
 {

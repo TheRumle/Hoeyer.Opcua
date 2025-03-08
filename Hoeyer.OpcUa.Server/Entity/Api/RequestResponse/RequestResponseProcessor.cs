@@ -4,11 +4,10 @@ using System.Linq;
 using Hoeyer.Common.Extensions;
 using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.Common.Extensions.Types;
-using Hoeyer.OpcUa.Server.Entity.Api;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application.RequestResponse;
+namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 
 internal class RequestResponseProcessor<T>(
     IEnumerable<T> valuesToProcess,

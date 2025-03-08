@@ -1,9 +1,9 @@
 ﻿using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Handle;
+using Hoeyer.OpcUa.Server.Test.Fixtures;
 using Hoeyer.OpcUa.Server.Test.Fixtures.Application;
-using Hoeyer.OpcUa.Server.Test.Fixtures.Application.NodeServices;
-using Hoeyer.OpcUa.Server.Test.Generators;
+using Hoeyer.OpcUa.Server.Test.Fixtures.Generators;
 using Opc.Ua;
 using Opc.Ua.Server;
 
@@ -29,7 +29,7 @@ public class EntityBrowserTest(ApplicationServiceCollectionFixture fixture)
     {
         var continuation = CreateContinuationPoint(entityHandle.Value);
         var browseResult = _entityBrowser.Browse(continuation, entityHandle);
-        await Assert.That(browseResult.Value.Count()).IsEqualTo(_entity.PropertyStates.Count);
+        await Assert.That(browseResult.Value.RelatedEntities.Count).IsEqualTo(_entity.PropertyStates.Count);
     }
 
     private static ContinuationPoint CreateContinuationPoint(NodeState node)

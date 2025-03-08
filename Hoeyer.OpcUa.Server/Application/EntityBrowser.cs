@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentResults;
-using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server.Entity.Api;
+using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 using Hoeyer.OpcUa.Server.Entity.Handle;
 using Opc.Ua;
 using Opc.Ua.Server;
@@ -14,39 +14,50 @@ namespace Hoeyer.OpcUa.Server.Application;
 internal class EntityBrowser(IEntityNode node) : IEntityBrowser
 {
     /// <inheritdoc />
-    public Result<IEnumerable<ReferenceDescription>> Browse(ContinuationPoint continuationPoint,
+    public Result<EntityBrowseResponse> Browse(ContinuationPoint continuationPoint,
         IEntityNodeHandle nodeToBrowse)
     {
-        var result = nodeToBrowse switch
+        var browseResult = nodeToBrowse switch
         {
-            EntityHandle { Value: var managed } when managed.Equals(node.Entity) => Result.Ok(
-                BrowseEntity(continuationPoint)
-                    .Skip(continuationPoint.Index)
-                    .Take((int)Math.Min(continuationPoint.MaxResultsToReturn, int.MaxValue))
-            ),
-            PropertyHandle { Payload: var managed } when node.PropertyStates.ContainsValue(managed) => Result.Ok(
-                BrowseProperty(managed)),
-            _ => Result.Fail(
-                $"{nodeToBrowse.Value.DisplayName} is not associated with browser for entity {node.Entity.DisplayName}.")
+            EntityHandle entityHandle
+                when entityHandle.Payload.Equals(node.Entity) => BrowseEntity(continuationPoint),
+
+            PropertyHandle propertyHandle
+                when node.PropertyStates.ContainsValue(propertyHandle.Payload) => BrowseProperty(propertyHandle.Payload),
+            
+            _ => Result.Fail($"{nodeToBrowse.Value.BrowseName} is not related to the entity {node.Entity.BrowseName}")
         };
 
-        return result
-            .Map(values => values.ToList())
-            .Then(foundValues => { continuationPoint.Index += foundValues.Count; })
-            .Map(IEnumerable<ReferenceDescription> (values) => values);
+        return browseResult
+            .Map(values => values
+                .Skip(continuationPoint.Index)
+                .Take((int)Math.Min(continuationPoint.MaxResultsToReturn, int.MaxValue)))                
+            .Map(foundValues => CreateBrowseResponse(foundValues.ToList(), continuationPoint));
     }
+
+    private EntityBrowseResponse CreateBrowseResponse(IList<ReferenceDescription> foundValues, ContinuationPoint continuationPoint)
+    {
+        //Browsing entity means giving references out to all properties
+        var maxThingsToBrowse = node.PropertyStates.Count;
+        if (foundValues.Count + continuationPoint.Index >= maxThingsToBrowse)
+            return new EntityBrowseResponse(null, foundValues);
+        
+        continuationPoint.Index += foundValues.Count;
+        return new EntityBrowseResponse(continuationPoint, foundValues);
+    }
+
 
     /// <inheritdoc />
-    public IEnumerable<ReferenceDescription> BrowseEntity(ContinuationPoint continuationPoint)
+    public Result<IEnumerable<ReferenceDescription>> BrowseEntity(ContinuationPoint continuationPoint)
     {
-        return node.PropertyStates.Values.Select(propertyState => CreateDescription(propertyState, continuationPoint));
+        return Result.Ok(node.PropertyStates.Values.Select(propertyState => CreateDescription(propertyState, continuationPoint)));
     }
 
-    private static IEnumerable<ReferenceDescription> BrowseProperty(PropertyState managed)
+    private static Result<IEnumerable<ReferenceDescription>> BrowseProperty(PropertyState managed)
     {
-        return
+        IEnumerable<ReferenceDescription> descriptions =
         [
-            new ReferenceDescription
+            new()
             {
                 ReferenceTypeId = managed.ReferenceTypeId,
                 NodeId = managed.NodeId,
@@ -56,6 +67,7 @@ internal class EntityBrowser(IEntityNode node) : IEntityBrowser
                 TypeDefinition = managed.TypeDefinitionId
             }
         ];
+        return Result.Ok(descriptions);
     }
 
 

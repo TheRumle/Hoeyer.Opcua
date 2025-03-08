@@ -4,19 +4,7 @@ using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Handle;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Test.Fixtures.Application.NodeServices;
-
-public abstract record EntityNodeFixture(IEntityNode entityNode)
-{
-    protected EntityNodeFixture(IEntityNodeCreator NodeCreator) : this(NodeCreator.CreateEntityOpcUaNode(1))
-    {}
-    
-    private readonly IEntityHandleManager HandleManager = new EntityHandleManager(entityNode);
-    public string EntityName => entityNode.Entity.BrowseName.Name;
-    public IEntityNodeHandle EntityHandle => HandleManager.EntityHandle;
-    public IEnumerable<IEntityNodeHandle> PropertyHandles => HandleManager.PropertyHandles;
-    public Dictionary<NodeId, PropertyState> PropertyStates => entityNode.PropertyStates;
-}
+namespace Hoeyer.OpcUa.Server.Test.Fixtures;
 
 public sealed record ApplicationServiceCollectionFixture
 {
@@ -32,8 +20,7 @@ public sealed record ApplicationServiceCollectionFixture
     public IEntityNodeHandle EntityHandle => HandleManager.EntityHandle;
     public IEnumerable<IEntityNodeHandle> PropertyHandles => HandleManager.PropertyHandles;
     public Dictionary<NodeId, PropertyState> PropertyStates => EntityNode.PropertyStates;
-
-
+    
     public ApplicationServiceCollectionFixture(IEntityNodeCreator NodeCreator)
     {
         this.NodeCreator = NodeCreator;
@@ -46,10 +33,9 @@ public sealed record ApplicationServiceCollectionFixture
         Reader = new EntityReader(managedNode, PropertyReader);
         ReferenceLinker = new EntityReferenceLinker(managedNode);
     }
-    
+
     public override string ToString()
     {
         return $"ServiceCollectionFixture, {EntityNode.Entity.DisplayName.ToString()}";
     }
-
 }
