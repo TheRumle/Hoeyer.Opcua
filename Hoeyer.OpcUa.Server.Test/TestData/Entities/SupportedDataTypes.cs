@@ -24,5 +24,4 @@ public class SupportedDataTypes
     public float TestFloat { get; set; }
     public double TestDouble { get; set; }
     public string TestString { get; set; } = "Test";
-    public decimal TestDecimal { get; set; }
 }

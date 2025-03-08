@@ -13,7 +13,7 @@ public class PropertiesMustNotBeNullableAnalyser : DiagnosticAnalyzer
 {
     /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
-        ImmutableArray.Create(OpcUaDiagnostics.MustNotHaveNullablePropertyDescriptor);
+        ImmutableArray.Create(OpcUaDiagnostics.MustNotBeNullablePropertyDescriptor);
 
     /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
@@ -28,7 +28,7 @@ public class PropertiesMustNotBeNullableAnalyser : DiagnosticAnalyzer
     {
         var properties = context.GetOpcEntityPropertyDeclarations()
             .Where(e => e.Type is NullableTypeSyntax)
-            .Select(OpcUaDiagnostics.MustNotHaveNullableProperty);
+            .Select(OpcUaDiagnostics.MustNotBeNullableProperty);
 
         foreach (var diagnostic in properties) context.ReportDiagnostic(diagnostic);
     }

@@ -85,5 +85,14 @@ namespace Hoeyer.OpcUa.CompileTime.Analysis.Diagnostics {
                 return ResourceManager.GetString("HOEYERUA0002", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type of the property is not supported..
+        /// </summary>
+        public static string HOEYERUA0003 {
+            get {
+                return ResourceManager.GetString("HOEYERUA0003", resourceCulture);
+            }
+        }
     }
 }

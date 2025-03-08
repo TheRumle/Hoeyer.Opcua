@@ -33,4 +33,7 @@
     <data name="HOEYERUA0002" xml:space="preserve">
         <value>OpcUa entities' properties can never be null</value>
     </data>
+    <data name="HOEYERUA0003" xml:space="preserve">
+        <value>The type of the property is not supported.</value>
+    </data>
 </root>

@@ -14,7 +14,7 @@ public static class OpcUaDiagnostics
         true,
         "OpcUa entity properties must have a public setter.");
 
-    public static readonly DiagnosticDescriptor MustNotHaveNullablePropertyDescriptor = new(
+    public static readonly DiagnosticDescriptor MustNotBeNullablePropertyDescriptor = new(
         "HOEYERUA0002",
         "Properties must not be nullable",
         "OpcUa entities' properties can never be null",
@@ -22,34 +22,30 @@ public static class OpcUaDiagnostics
         DiagnosticSeverity.Error,
         true,
         "OpcUa entity properties must not be annotated as nullable.");
+    
+    public static readonly DiagnosticDescriptor MustBeSupportedTypeDescriptor = new(
+        "HOEYERUA0003",
+        "Unsupported type",
+        "The type of the property is not supported",
+        "Design",
+        DiagnosticSeverity.Error,
+        true,
+        "The type of the property is not supported.");
 
     public static Diagnostic MustHavePublicSetter(PropertyDeclarationSyntax property)
     {
         return Diagnostic.Create(MustHavePublicSetterDescriptor, property.GetLocation(), property.Identifier);
     }
 
-    public static Diagnostic MustNotHaveNullableProperty(PropertyDeclarationSyntax property)
+    public static Diagnostic MustNotBeNullableProperty(PropertyDeclarationSyntax property)
     {
-        return Diagnostic.Create(MustNotHaveNullablePropertyDescriptor, property.GetLocation(), property.Identifier);
+        return Diagnostic.Create(MustNotBeNullablePropertyDescriptor, property.GetLocation(), property.Identifier);
+    }
+    
+    public static Diagnostic MustBeSupportedType(PropertyDeclarationSyntax property)
+    {
+        return Diagnostic.Create(MustBeSupportedTypeDescriptor, property.GetLocation(), property.Identifier);
     }
 
 
-    public static DiagnosticDescriptor UnsupportedOpdUaTypeDescriptor(PropertyDeclarationSyntax syntax)
-    {
-        return new DiagnosticDescriptor(
-            "HOEYERUA0002",
-            "Unsupported property type",
-            $"{syntax.Identifier.ToFullString()} has type '{syntax.Type.ToFullString()}' which is not supported yet",
-            "Design",
-            DiagnosticSeverity.Error,
-            true,
-            $"The property '{syntax.Identifier.ToFullString()}' has type '{syntax.Type.ToFullString()}' which is not supported by OpcUa",
-            "https://reference.opcfoundation.org/Core/Part6/v104/docs/5.1.2");
-    }
-
-    public static Diagnostic UnsupportedOpcUaType(PropertyDeclarationSyntax property)
-    {
-        return Diagnostic.Create(UnsupportedOpdUaTypeDescriptor(property), property.GetLocation(),
-            property.Type.ToFullString(), property.Identifier);
-    }
 }
