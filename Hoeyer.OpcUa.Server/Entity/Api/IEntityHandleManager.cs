@@ -27,4 +27,6 @@ public interface IEntityHandleManager
     public Result<IEntityNodeHandle> GetHandle(NodeId nodeId);
 
     public Result<BaseInstanceState> GetState(NodeId nodeId);
+    
+    public bool IsManaged(NodeId nodeId);
 }

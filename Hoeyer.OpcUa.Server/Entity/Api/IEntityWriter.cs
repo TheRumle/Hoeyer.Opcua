@@ -6,5 +6,5 @@ namespace Hoeyer.OpcUa.Server.Entity.Api;
 
 public interface IEntityWriter
 {
-    public IEnumerable<EntityWriteResponse> Write(IEnumerable<WriteValue> nodesToWrite, ISystemContext context);
+    public IEnumerable<EntityWriteResponse> Write(IEnumerable<WriteValue> nodesToWrite);
 }

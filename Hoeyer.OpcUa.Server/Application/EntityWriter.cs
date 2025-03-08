@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
@@ -9,15 +10,15 @@ namespace Hoeyer.OpcUa.Server.Application;
 /// <summary>
 ///     Edits entities. Handles modification of an Entity.
 /// </summary>
-internal class EntityWriter(IEntityNode entityNode) : IEntityWriter
+internal class EntityWriter(IEntityNode entityNode, Func<ISystemContext> contextProvider) : IEntityWriter
 {
-    public IEnumerable<EntityWriteResponse> Write(IEnumerable<WriteValue> nodesToWrite, ISystemContext context)
+    public IEnumerable<EntityWriteResponse> Write(IEnumerable<WriteValue> nodesToWrite)
     {
         foreach (var toWrite in nodesToWrite)
         {
             if (entityNode.PropertyStates.TryGetValue(toWrite.NodeId, out var property))
             {
-                yield return Write(toWrite, property, context);
+                yield return Write(toWrite, property);
                 continue;
             }
 
@@ -26,8 +27,9 @@ internal class EntityWriter(IEntityNode entityNode) : IEntityWriter
         }
     }
 
-    private EntityWriteResponse Write(WriteValue nodeToWrite, PropertyState propertyState, ISystemContext context)
+    private EntityWriteResponse Write(WriteValue nodeToWrite, PropertyState propertyState)
     {
+        var context = contextProvider.Invoke();
         var writeResult = propertyState.WriteAttribute(context,
             nodeToWrite.AttributeId,
             nodeToWrite.ParsedIndexRange,

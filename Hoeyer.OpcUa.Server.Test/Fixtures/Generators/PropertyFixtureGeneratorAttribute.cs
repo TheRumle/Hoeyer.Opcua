@@ -17,10 +17,10 @@ public sealed class PropertyFixtureGeneratorAttribute : DataSourceGeneratorAttri
                     new PropertyReaderFixture(property.Value, serviceCollection.EntityName)));
     }
 
-    private static IEnumerable<ApplicationServiceCollectionFixture> CreateServiceCollection(
+    private static IEnumerable<EntityBrowserFixture> CreateServiceCollection(
         DataGeneratorMetadata dataGeneratorMetadata)
     {
-        return new ApplicationServiceCollectionGeneratorAttribute()
+        return new EntityBrowserFixtureGeneratorAttribute()
             .GenerateDataSources(dataGeneratorMetadata)
             .Select(e => e.Invoke());
     }
@@ -37,10 +37,10 @@ public sealed class EntityFixtureGeneratorAttribute : DataSourceGeneratorAttribu
             .SelectFunc(e => new EntityReaderFixture(e.EntityNode, e.EntityName, e.PropertyStates.Values.ToHashSet()));
     }
 
-    private static IEnumerable<ApplicationServiceCollectionFixture> CreateServiceCollection(
+    private static IEnumerable<EntityBrowserFixture> CreateServiceCollection(
         DataGeneratorMetadata dataGeneratorMetadata)
     {
-        return new ApplicationServiceCollectionGeneratorAttribute()
+        return new EntityBrowserFixtureGeneratorAttribute()
             .GenerateDataSources(dataGeneratorMetadata)
             .Select(e => e.Invoke());
     }

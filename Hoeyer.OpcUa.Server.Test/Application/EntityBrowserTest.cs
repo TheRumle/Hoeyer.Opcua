@@ -1,19 +1,19 @@
 ﻿using Hoeyer.OpcUa.Core.Entity;
+using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Handle;
 using Hoeyer.OpcUa.Server.Test.Fixtures;
-using Hoeyer.OpcUa.Server.Test.Fixtures.Application;
 using Hoeyer.OpcUa.Server.Test.Fixtures.Generators;
 using Opc.Ua;
 using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Test.Application;
 
-[ApplicationServiceCollectionGenerator]
-public class EntityBrowserTest(ApplicationServiceCollectionFixture fixture)
+[EntityBrowserFixtureGenerator]
+public class EntityBrowserTest(EntityBrowserFixture fixture)
 {
-    private readonly IEntityBrowser _entityBrowser = fixture.Browser;
-    private readonly IEntityNodeHandle entityHandle = fixture.HandleManager.EntityHandle;
+    private readonly IEntityBrowser _entityBrowser = new EntityBrowser(fixture.EntityNode);
+    private readonly IEntityNodeHandle _entityHandle = fixture.HandleManager.EntityHandle;
     private readonly EntityNode _entity = fixture.EntityNode;
     
     [Test]
@@ -27,8 +27,8 @@ public class EntityBrowserTest(ApplicationServiceCollectionFixture fixture)
     [Test]
     public async Task WhenBrowsingEntity_GetsAsManyResultsAsProperties()
     {
-        var continuation = CreateContinuationPoint(entityHandle.Value);
-        var browseResult = _entityBrowser.Browse(continuation, entityHandle);
+        var continuation = CreateContinuationPoint(_entityHandle.Value);
+        var browseResult = _entityBrowser.Browse(continuation, _entityHandle);
         await Assert.That(browseResult.Value.RelatedEntities.Count).IsEqualTo(_entity.PropertyStates.Count);
     }
 

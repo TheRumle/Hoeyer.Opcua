@@ -33,6 +33,14 @@ internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManage
         return Result.Fail($"Entity {entityNode.Entity.BrowseName} does not have any data for state {nodeId}");
     }
 
+    /// <inheritdoc />
+    public bool IsManaged(NodeId nodeId)
+    {
+        if (entityNode.Entity.NodeId.Equals(nodeId)) return true;
+        if (entityNode.PropertyStates.TryGetValue(nodeId, out var propertyState)) return true;
+        return false;
+    }
+
 
     public bool IsManagedPropertyHandle(object? handle, out IEntityNodeHandle managedPropertyHandle)
     {

@@ -177,7 +177,7 @@ internal sealed class EntityNodeManager(
         IList<DataValue> values,
         IList<ServiceResult> errors)
     {
-        var filtered = nodesToRead.Where(e => !e.Processed && IsEntityKey(e)).ToList();
+        var filtered = nodesToRead.Where(e => !e.Processed && entityHandleManager.IsManaged(e.NodeId)).ToList();
         if (!filtered.Any()) return;
         
         logger.LogCaughtExceptionAs(LogLevel.Error)
@@ -200,20 +200,17 @@ internal sealed class EntityNodeManager(
     
     }
 
-
     /// <inheritdoc />
     public override void Write(OperationContext context, IList<WriteValue> nodesToWrite, IList<ServiceResult> errors)
     {
-        var filtered = nodesToWrite.Where(e => !e.Processed && entityHandleManager.GetState(e.NodeId).IsSuccess)
-            .ToList();
+        var filtered = nodesToWrite.Where(e => !e.Processed && entityHandleManager.IsManaged(e.NodeId)).ToList();
         if (!filtered.Any()) return;
 
         logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithSessionContextScope(context, "Session {Session} writes to {NodesToWrite}", nodesToWrite.Select(e => e.NodeId),
-                context.SessionId)
+            .WithSessionContextScope(context, "Writing nodes {@Nodes}", nodesToWrite.Select(e => e.NodeId), context.SessionId)
             .WhenExecuting(() =>
             {
-                var requestResponses = entityWriter.Write(filtered, _systemContext.Copy());
+                var requestResponses = entityWriter.Write(filtered);
                 _processorFactory.GetProcessorWithLoggingFor("Write", requestResponses,
                     e => e.Request.Processed = true,
                     errorResponse => errors[nodesToWrite.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode,
