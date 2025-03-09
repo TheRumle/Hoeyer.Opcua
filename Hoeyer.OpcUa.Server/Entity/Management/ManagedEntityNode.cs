@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.Json;
 using Hoeyer.Common.Extensions;
-using Hoeyer.OpcUa.Core.Entity;
+using Hoeyer.OpcUa.Core.Entity.Node;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Entity.Management;
@@ -33,18 +33,6 @@ internal sealed record ManagedEntityNode(
     /// <inheritdoc />
     public override string ToString()
     {
-        
-        var a = $$"""
-                 {{nameof(ManagedEntityNode)}} {
-                   Name: {{Entity.DisplayName}},
-                   Id: {{Entity.NodeId}},
-                   Namespace: {{EntityNameSpaceIndex}},
-                   State: [
-                       {{PropertyStates.Values.Select(e => $"{{{e.DisplayName}: {e.Value}, Id: \"{e.NodeId}\"}}").SeparateBy(",\n")}}
-                   ]
-                 }
-                 """;
-        
         return JsonSerializer.Serialize(new
         {
             Name = Entity.DisplayName.ToString(),

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 
-namespace Hoeyer.OpcUa.Core.Entity;
+namespace Hoeyer.OpcUa.Core.Entity.Node;
 
 public interface IEntityNodeCreator<out T> : IEntityNodeCreator;
 

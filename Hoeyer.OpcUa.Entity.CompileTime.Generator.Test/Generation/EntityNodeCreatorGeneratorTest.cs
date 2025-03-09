@@ -1,4 +1,5 @@
 ﻿using Hoeyer.OpcUa.Core.Entity;
+using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.Data;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.Drivers;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;

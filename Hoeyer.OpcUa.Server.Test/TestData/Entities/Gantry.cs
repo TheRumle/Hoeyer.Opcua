@@ -1,4 +1,5 @@
 ﻿using Hoeyer.OpcUa.Core.Entity;
+using Hoeyer.OpcUa.Core.Entity.Node;
 
 namespace Hoeyer.OpcUa.Server.Test.TestData.Entities;
 

@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Hoeyer.OpcUa.Server.Test.Fixtures;
 using Hoeyer.OpcUa.Server.Test.TestData;
 using TUnitSettings.Extensions;
 
-namespace Hoeyer.OpcUa.Server.Test.Fixtures.Generators;
+namespace Hoeyer.OpcUa.Server.Test.Application.Generators;
 
 [SuppressMessage("Design", "S3993", Justification = "TUnits' attributeusage must not and cannot be overwritten.")]
 public sealed class EntityBrowserFixtureGeneratorAttribute : DataSourceGeneratorAttribute<EntityBrowserFixture>

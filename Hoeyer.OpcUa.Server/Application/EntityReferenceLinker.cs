@@ -2,7 +2,7 @@
 using System.Linq;
 using FluentResults;
 using Hoeyer.Common.Extensions.Types;
-using Hoeyer.OpcUa.Core.Entity;
+using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Opc.Ua;
 

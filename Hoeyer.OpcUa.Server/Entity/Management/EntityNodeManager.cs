@@ -5,7 +5,7 @@ using Hoeyer.Common.Extensions;
 using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Extensions.Types;
-using Hoeyer.OpcUa.Core.Entity;
+using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Handle;
 using Hoeyer.OpcUa.Server.Extensions;
@@ -214,7 +214,8 @@ internal sealed class EntityNodeManager(
                 _processorFactory.GetProcessorWithLoggingFor("Write", requestResponses,
                     e => e.Request.Processed = true,
                     errorResponse => errors[nodesToWrite.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode,
-                    logger);
+                    logger)
+                    .Process();
             });
     }
 
@@ -376,12 +377,5 @@ internal sealed class EntityNodeManager(
     protected override void Dispose(bool disposing)
     {
         if (disposing) base.Dispose();
-    }
-
-
-    private bool IsEntityKey(ReadValueId e)
-    {
-        return managedEntity.Entity.NodeId.Equals(e.NodeId)
-               || managedEntity.PropertyStates.ContainsKey(e.NodeId);
     }
 }

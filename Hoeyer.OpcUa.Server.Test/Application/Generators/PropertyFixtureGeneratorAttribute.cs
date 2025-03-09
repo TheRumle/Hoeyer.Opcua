@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Hoeyer.OpcUa.Server.Test.Fixtures.Application;
+using Hoeyer.OpcUa.Server.Test.Application.Fixtures;
+using Hoeyer.OpcUa.Server.Test.Fixtures;
 using TUnitSettings.Extensions;
 
-namespace Hoeyer.OpcUa.Server.Test.Fixtures.Generators;
+namespace Hoeyer.OpcUa.Server.Test.Application.Generators;
 
 [SuppressMessage("Design", "S3993", Justification = "TUnits' attributeusage must not and cannot be overwritten.")]
 public sealed class PropertyFixtureGeneratorAttribute : DataSourceGeneratorAttribute<PropertyReaderFixture>
@@ -34,7 +35,7 @@ public sealed class EntityFixtureGeneratorAttribute : DataSourceGeneratorAttribu
         DataGeneratorMetadata dataGeneratorMetadata)
     {
         return CreateServiceCollection(dataGeneratorMetadata)
-            .SelectFunc(e => new EntityReaderFixture(e.EntityNode, e.EntityName, e.PropertyStates.Values.ToHashSet()));
+            .SelectFunc(e => new EntityReaderFixture(e.EntityNode, e.PropertyStates.Values.ToHashSet()));
     }
 
     private static IEnumerable<EntityBrowserFixture> CreateServiceCollection(

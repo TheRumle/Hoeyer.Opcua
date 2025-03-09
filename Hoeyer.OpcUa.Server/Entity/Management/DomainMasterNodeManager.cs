@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.OpcUa.Core.Entity;
+using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Opc.Ua;
 using Opc.Ua.Server;

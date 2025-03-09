@@ -2,7 +2,7 @@
 using System.Linq;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Entity;
+namespace Hoeyer.OpcUa.Core.Entity.Node;
 
 public interface IEntityNode
 {

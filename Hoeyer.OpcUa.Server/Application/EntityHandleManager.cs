@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using FluentResults;
-using Hoeyer.OpcUa.Core.Entity;
+using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Handle;
 using Opc.Ua;
@@ -37,7 +37,7 @@ internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManage
     public bool IsManaged(NodeId nodeId)
     {
         if (entityNode.Entity.NodeId.Equals(nodeId)) return true;
-        if (entityNode.PropertyStates.TryGetValue(nodeId, out var propertyState)) return true;
+        if (entityNode.PropertyStates.ContainsKey(nodeId)) return true;
         return false;
     }
 

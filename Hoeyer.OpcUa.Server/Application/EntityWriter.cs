@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hoeyer.OpcUa.Core.Entity;
+using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 using Opc.Ua;
@@ -14,6 +14,7 @@ internal class EntityWriter(IEntityNode entityNode, Func<ISystemContext> context
 {
     public IEnumerable<EntityWriteResponse> Write(IEnumerable<WriteValue> nodesToWrite)
     {
+        //TODO fix - BAD USER ACCESS DENIED (just assign directly!)
         foreach (var toWrite in nodesToWrite)
         {
             if (entityNode.PropertyStates.TryGetValue(toWrite.NodeId, out var property))
@@ -36,9 +37,8 @@ internal class EntityWriter(IEntityNode entityNode, Func<ISystemContext> context
             nodeToWrite.Value);
 
         var writeR = writeResult ?? StatusCodes.BadWriteNotSupported;
-        return StatusCode.IsGood(writeR.StatusCode)
+        return ServiceResult.IsGood(writeResult)
             ? new EntityWriteResponse(nodeToWrite, writeR.StatusCode)
-            : new EntityWriteResponse(nodeToWrite, writeR,
-                $"Could not assign {entityNode.Entity.BrowseName}.{propertyState.BrowseName} to value {nodeToWrite.Value}.");
+            : new EntityWriteResponse(nodeToWrite, writeR, $"Could not assign {entityNode.Entity.BrowseName}.{propertyState.BrowseName} to value {nodeToWrite.Value}.");
     }
 }

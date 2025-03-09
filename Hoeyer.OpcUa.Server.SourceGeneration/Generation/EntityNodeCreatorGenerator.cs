@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.OpcUa.Core.Entity;
+using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.SourceGeneration.Generation.IncrementalProvider;
 using Hoeyer.OpcUa.Server.SourceGeneration.OpcUaTypes;
 using Microsoft.CodeAnalysis;
@@ -9,6 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.SourceGeneration.Generation;
+
 
 [Generator]
 public class EntityNodeCreatorGenerator : IIncrementalGenerator
@@ -55,7 +57,7 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
                  using {{typeContext.GetNamespace}};
                  using System;
                  using System.Linq;
-                 using Hoeyer.OpcUa.Core.Entity;
+                 using {{ModellingNamespace.ENTITY_NODE_NAMESPACE}};
                  using Opc.Ua;
 
                  namespace Hoeyer.OpcUa.Core.Server.Entity

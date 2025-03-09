@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentResults;
-using Hoeyer.OpcUa.Core.Entity;
+using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 using Hoeyer.OpcUa.Server.Entity.Handle;
@@ -36,7 +36,7 @@ internal class EntityBrowser(IEntityNode node) : IEntityBrowser
             .Map(foundValues => CreateBrowseResponse(foundValues.ToList()));
     }
 
-    private EntityBrowseResponse CreateBrowseResponse(IList<ReferenceDescription> foundValues)
+    private static EntityBrowseResponse CreateBrowseResponse(IList<ReferenceDescription> foundValues)
     {
         return new EntityBrowseResponse(null, foundValues);
     }

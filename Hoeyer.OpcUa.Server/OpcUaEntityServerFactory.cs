@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Hoeyer.OpcUa.Core.Entity;
+using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Entity.Management;
 using Hoeyer.OpcUa.Server.ServiceConfiguration;
 using Microsoft.Extensions.Logging;

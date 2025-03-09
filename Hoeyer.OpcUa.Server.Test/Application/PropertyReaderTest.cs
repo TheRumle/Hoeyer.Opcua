@@ -1,7 +1,7 @@
 ﻿using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Entity.Api;
-using Hoeyer.OpcUa.Server.Test.Fixtures.Application;
-using Hoeyer.OpcUa.Server.Test.Fixtures.Generators;
+using Hoeyer.OpcUa.Server.Test.Application.Fixtures;
+using Hoeyer.OpcUa.Server.Test.Application.Generators;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Test.Application;
