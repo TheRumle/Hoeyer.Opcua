@@ -29,8 +29,8 @@ internal class EntityReferenceLinker(IEntityNode entityNode) : IReferenceLinker
     public Result AddReferencesToEntity(NodeId nodeId, IEnumerable<IReference> references)
     {
         var result = references.Where(e =>
-            !entityNode.Entity.ReferenceExists(e.ReferenceTypeId, e.IsInverse, e.TargetId));
-        return AddReferenceToNode(result, entityNode.Entity);
+            !entityNode.BaseObject.ReferenceExists(e.ReferenceTypeId, e.IsInverse, e.TargetId));
+        return AddReferenceToNode(result, entityNode.BaseObject);
     }
 
     public Result RemoveReference(
@@ -38,19 +38,19 @@ internal class EntityReferenceLinker(IEntityNode entityNode) : IReferenceLinker
         bool isInverse,
         ExpandedNodeId targetId)
     {
-        return entityNode.Entity.RemoveReference(referenceTypeId, isInverse, targetId)
+        return entityNode.BaseObject.RemoveReference(referenceTypeId, isInverse, targetId)
             ? Result.Ok()
             : Result.Fail(
-                $"The managed Entity {entityNode.Entity.BrowseName} does not hold a reference with id {targetId}.");
+                $"The managed Entity {entityNode.BaseObject.BrowseName} does not hold a reference with id {targetId}.");
     }
 
     private void LinkEntity(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
         externalReferences.GetOrAdd(ObjectIds.ObjectsFolder,
         [
-            new NodeStateReference(ReferenceTypeIds.Organizes, false, entityNode.Entity)
+            new NodeStateReference(ReferenceTypeIds.Organizes, false, entityNode.BaseObject)
         ]);
-        entityNode.Entity.EventNotifier = EventNotifiers.SubscribeToEvents;
+        entityNode.BaseObject.EventNotifier = EventNotifiers.SubscribeToEvents;
     }
 
     private static Result AddReferenceToNode(IEnumerable<IReference> references, NodeState nodeState)

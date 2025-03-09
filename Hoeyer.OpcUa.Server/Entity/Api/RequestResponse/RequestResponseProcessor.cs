@@ -5,21 +5,20 @@ using Hoeyer.Common.Extensions;
 using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.Common.Extensions.Types;
 using Microsoft.Extensions.Logging;
-using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 
-public interface IRequestResponseProcessor<T> where T : IStatusCodeResponse, IRequestResponse
+public interface IRequestResponseProcessor<out T>
 {
     /// <summary>
     /// Begin processing of the values.
     /// </summary>
+    /// <param name="additionalSuccessCriteria">A predicate that dictates whether the response is 'good' or 'bad'</param>
     /// <param name="errorFormat">How to format error messages.</param>
-    /// <param name="errorFilter">A filter for which errors to include</param>
     /// <param name="successFormat">How to format successMessages</param>
     void Process(
+        Predicate<T> additionalSuccessCriteria = null,
         Func<T, string>? errorFormat = null,
-        Predicate<T> errorFilter = null,
         Func<T, string>? successFormat = null
         );
 }
@@ -29,7 +28,7 @@ internal class RequestResponseProcessor<T>(
     Action<T> processSuccess,
     Action<T> processError,
     string? operationName = null
-) : IRequestResponseProcessor<T> where T : IStatusCodeResponse, IRequestResponse
+) : IRequestResponseProcessor<T> where T : IRequestResponse
 {
     private LogLevel _errorLevel;
     private ILogger? _logger;
@@ -51,29 +50,28 @@ internal class RequestResponseProcessor<T>(
 
     /// <inheritdoc/>
     public void Process(
+        Predicate<T>? additionalSuccessCriteria = null,
         Func<T, string>? errorFormat = null,
-        Predicate<T> errorFilter = null,
         Func<T, string>? successFormat = null)
     {
         var formatError = errorFormat ?? (e => e.ToString());
-        var errorPred = errorFilter ?? (e => true);
         var formatSuccess = successFormat ?? (e => e.ToString());
+        var successFilter = additionalSuccessCriteria ?? (e => e.IsSuccess);
         
         var (fits, fails) = valuesToProcess
             .Then(processSuccess.Invoke)
-            .WithSuccessCriteria(e => e.IsSuccess && StatusCode.IsGood(e.ResponseCode));
+            .WithSuccessCriteria(successFilter);
         
-        var failures = fails.FindAll(errorPred);
 
         if (_logger != null)
         {
             if (_successLevel != LogLevel.None)
                 LogSuccess(fits, formatSuccess);
 
-            if (_errorLevel != LogLevel.None && failures.Any())
-                LogErrors(failures, formatError);
+            if (_errorLevel != LogLevel.None && fails.Any())
+                LogErrors(fails, formatError);
         }
-        failures.Then(processError);
+        fails.Then(processError);
     }
 
     private void LogSuccess(List<T> fits, Func<T, string> formatSuccess)

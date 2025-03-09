@@ -11,7 +11,7 @@ public sealed record EntityBrowserFixture
 {
     public readonly EntityNode EntityNode;
     public readonly IEntityHandleManager HandleManager;
-    public string EntityName => EntityNode.Entity.BrowseName.Name;
+    public string EntityName => EntityNode.BaseObject.BrowseName.Name;
     public IEntityNodeHandle EntityHandle => HandleManager.EntityHandle;
     public Dictionary<NodeId, PropertyState> PropertyStates => EntityNode.PropertyStates;
     
@@ -24,6 +24,6 @@ public sealed record EntityBrowserFixture
 
     public override string ToString()
     {
-        return $"{EntityNode.Entity.DisplayName.ToString()}";
+        return $"{EntityNode.BaseObject.DisplayName.ToString()}";
     }
 }

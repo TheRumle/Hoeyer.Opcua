@@ -7,6 +7,7 @@ using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Entity.Api;
+using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 using Hoeyer.OpcUa.Server.Entity.Handle;
 using Hoeyer.OpcUa.Server.Extensions;
 using Microsoft.Extensions.Logging;
@@ -26,7 +27,7 @@ internal sealed class EntityNodeManager(
     ILogger logger
 ) : CustomNodeManager(server, managedEntity.Namespace), IEntityNodeManager
 {
-    private readonly BaseObjectState _entity = managedEntity.Entity;
+    private readonly BaseObjectState _entity = managedEntity.BaseObject;
     private readonly ServerSystemContext _systemContext = server.DefaultSystemContext;
     private readonly RequestResponseProcessorFactory _processorFactory = new(LogLevel.Error, LogLevel.Information);
 
@@ -52,7 +53,7 @@ internal sealed class EntityNodeManager(
     public override void DeleteAddressSpace()
     {
         using var scope = logger.BeginScope("Disposing of entity {@Entity}", ManagedEntity);
-        ManagedEntity.Entity.Dispose();
+        ManagedEntity.BaseObject.Dispose();
         foreach (var propertyStatesValue in ManagedEntity.PropertyStates.Values) propertyStatesValue.Dispose();
         ManagedEntity.PropertyStates.Clear();
     }
@@ -192,9 +193,13 @@ internal sealed class EntityNodeManager(
                         e.Request.Processed = true;
                         values[nodesToRead.IndexOf(e.Request)] = e.Response.DataValue;
                     },
-                    processError: errorResponse => errors[nodesToRead.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode,
+                    processError: errorResponse =>
+                        errors[nodesToRead.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode,
                     logger
-                ).Process(errorFilter: e => !StatusCodes.BadNotSupported.Equals(e.ResponseCode.Code));
+                ).Process(
+                    additionalSuccessCriteria: e =>
+                        e.IsSuccess && StatusCode.IsGood(e.ResponseCode) ||
+                        e.ResponseCode.Equals(StatusCodes.BadNotSupported));
             });
         
     
@@ -215,7 +220,7 @@ internal sealed class EntityNodeManager(
                     e => e.Request.Processed = true,
                     errorResponse => errors[nodesToWrite.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode,
                     logger)
-                    .Process();
+                    .Process(e => e.IsSuccess && StatusCode.IsGood(e.ResponseCode));
             });
     }
 

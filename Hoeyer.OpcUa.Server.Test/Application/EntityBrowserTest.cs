@@ -20,7 +20,7 @@ public class EntityBrowserTest(EntityBrowserFixture fixture)
     [Test]
     public async Task WhenBrowsingEntity_BrowseIsSuccess()
     {
-        var continuation = CreateContinuationPoint(_entity.Entity);
+        var continuation = CreateContinuationPoint(_entity.BaseObject);
         var browseResult = _entityBrowser.Browse(continuation, fixture.EntityHandle);
         await Assert.That(browseResult.IsSuccess).IsTrue();
     }

@@ -6,11 +6,11 @@ namespace Hoeyer.OpcUa.Core.Entity.Node;
 
 public interface IEntityNode
 {
-    public BaseObjectState Entity { get; }
+    public BaseObjectState BaseObject { get; }
     public Dictionary<NodeId, PropertyState> PropertyStates { get; }
 }
 
-public record EntityNode(BaseObjectState Entity, Dictionary<NodeId, PropertyState> PropertyStates)
+public record EntityNode(BaseObjectState BaseObject, Dictionary<NodeId, PropertyState> PropertyStates)
     : IEntityNode
 {
     public EntityNode(BaseObjectState entity, IEnumerable<PropertyState> propertyStates)
@@ -21,7 +21,7 @@ public record EntityNode(BaseObjectState Entity, Dictionary<NodeId, PropertyStat
     public IEnumerable<BaseVariableState> AllProperties => PropertyStates.Values;
 
 
-    public BaseObjectState Entity { get; } = Entity;
+    public BaseObjectState BaseObject { get; } = BaseObject;
 
     public Dictionary<NodeId, PropertyState> PropertyStates { get; } = PropertyStates;
 }

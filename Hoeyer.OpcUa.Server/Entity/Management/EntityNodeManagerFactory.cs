@@ -34,7 +34,7 @@ public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
         var namespaceIndex = server.NamespaceUris.GetIndexOrAppend(nodeNamespace);
         var context = server.DefaultSystemContext;
         var node = nodeCreator.CreateEntityOpcUaNode(namespaceIndex);
-        node.Entity.Create(context, node.Entity.NodeId, node.Entity.BrowseName, node.Entity.DisplayName, false);
+        node.BaseObject.Create(context, node.BaseObject.NodeId, node.BaseObject.BrowseName, node.BaseObject.DisplayName, false);
         return new ManagedEntityNode(node, nodeNamespace, namespaceIndex);
     }
 }

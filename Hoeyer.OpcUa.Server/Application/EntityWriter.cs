@@ -14,31 +14,31 @@ internal class EntityWriter(IEntityNode entityNode, Func<ISystemContext> context
 {
     public IEnumerable<EntityWriteResponse> Write(IEnumerable<WriteValue> nodesToWrite)
     {
-        //TODO fix - BAD USER ACCESS DENIED (just assign directly!)
         foreach (var toWrite in nodesToWrite)
         {
+            if (toWrite.AttributeId != Attributes.Value) yield return EntityWriteResponse.AttributeNotSupported(toWrite);
+            
             if (entityNode.PropertyStates.TryGetValue(toWrite.NodeId, out var property))
             {
                 yield return Write(toWrite, property);
-                continue;
             }
-
-            yield return new EntityWriteResponse(toWrite, StatusCodes.BadNoMatch,
-                $"Cannot read node {entityNode.Entity.BrowseName} NodeId {toWrite.NodeId} as it is not related to the entity!");
+            else
+            {
+                yield return EntityWriteResponse.NoMatch(toWrite);
+            }
         }
     }
 
-    private EntityWriteResponse Write(WriteValue nodeToWrite, PropertyState propertyState)
+    private static EntityWriteResponse Write(WriteValue nodeToWrite, PropertyState propertyState)
     {
-        var context = contextProvider.Invoke();
-        var writeResult = propertyState.WriteAttribute(context,
-            nodeToWrite.AttributeId,
-            nodeToWrite.ParsedIndexRange,
-            nodeToWrite.Value);
-
-        var writeR = writeResult ?? StatusCodes.BadWriteNotSupported;
-        return ServiceResult.IsGood(writeResult)
-            ? new EntityWriteResponse(nodeToWrite, writeR.StatusCode)
-            : new EntityWriteResponse(nodeToWrite, writeR, $"Could not assign {entityNode.Entity.BrowseName}.{propertyState.BrowseName} to value {nodeToWrite.Value}.");
+        try
+        {
+            propertyState.Value = nodeToWrite.Value.Value;
+            return new EntityWriteResponse(nodeToWrite, StatusCodes.Good);
+        }
+        catch (Exception e)
+        {
+            return EntityWriteResponse.AssignmentFailure(nodeToWrite, propertyState);
+        }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Text.Json;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 
-public abstract record StatusCodeResponse<TRequest, TResponse>
+public abstract class StatusCodeResponse<TRequest, TResponse>
     : IRequestResponse<TRequest, (TResponse DataValue, StatusCode StatusCode)>, IStatusCodeResponse
 {
     protected StatusCodeResponse(TRequest request, StatusCode code, string? error = null)
@@ -11,6 +12,7 @@ public abstract record StatusCodeResponse<TRequest, TResponse>
         Request = request;
         ResponseCode = code;
         if (error != null) Error = error;
+        Response = new ValueTuple<TResponse, StatusCode>(default!, code.Code);
     }
 
     protected StatusCodeResponse(TRequest request, Func<(TResponse, StatusCode)> response)
@@ -46,4 +48,43 @@ public abstract record StatusCodeResponse<TRequest, TResponse>
 
     /// <inheritdoc />
     public StatusCode ResponseCode { get; }
+    
+    public override string ToString()
+    {
+        if (IsSuccess)
+        {
+            return SuccessDetails();
+        }
+        return ErrorDetails();
+    }
+
+    /// <summary>
+    /// Provides information about the <see cref="Request"/>, the <see cref="Error"/> and the <see cref="ResponseCode"/> s.t a meaningful log can be created.
+    /// </summary>
+    /// <returns></returns>
+    private string ErrorDetails()
+    {
+        return JsonSerializer.Serialize(new
+        {
+            Error,
+            Request = RequestString(),
+            ResponseCode = ResponseCode.ToString()
+        }, new JsonSerializerOptions { WriteIndented = true });
+    }
+
+    /// <summary>
+    /// Provide information about the <see cref="Request"/> and the <see cref="Response"/> to provide a meaningful history log.
+    /// </summary>
+    /// <returns></returns>
+    private string SuccessDetails()
+    {
+        return JsonSerializer.Serialize(new
+        {
+            Request = RequestString(),
+            Response = ResponseCode.ToString(),
+        }, new JsonSerializerOptions { WriteIndented = false});
+    }
+
+    protected abstract string RequestString();
+
 }

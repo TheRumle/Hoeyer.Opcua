@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.SourceGeneration.Generation.IncrementalProvider;
 using Hoeyer.OpcUa.Server.SourceGeneration.OpcUaTypes;
@@ -33,26 +32,13 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
         SourceProductionContext context)
     {
         var entityName = typeContext.Node.Identifier.ToString();
-        var nodeName = entityName + "Node";
         var className = $"{entityName}OpcUaNodeCreator";
-        var sourceCode = CreateSourceCode(typeContext, entityName, nodeName, className);
+        var sourceCode = CreateSourceCode(typeContext, entityName, className);
         context.AddSource(className + ".g.cs", sourceCode);
     }
 
-    private static string CreateSourceCode(TypeContext<ClassDeclarationSyntax> typeContext, string entityName,
-        string nodeStateReference, string className)
+    private static string CreateSourceCode(TypeContext<ClassDeclarationSyntax> typeContext, string entityName, string className)
     {
-        var propertyCreationStatements = GetPropertyCreationStatements(typeContext, nodeStateReference).ToList();
-        var propertyAssignments = string.Join("\n\t\t\t", propertyCreationStatements.Select(e => e.CreationStatement));
-
-        var addReferenceStatements = string.Join("\n\t\t\t",
-            propertyCreationStatements.Select(e =>
-                $"{nodeStateReference}.AddReference(ReferenceTypes.HasProperty, false, {e.PropertyName}.{nameof(NodeId)});"));
-
-        var propertyNames = string.Join(", ", propertyCreationStatements.Select(e => "\n\t\t\t\t" + e.PropertyName));
-        var resultReturn =
-            $"return new {nameof(EntityNode)}({nodeStateReference}, new List<{nameof(PropertyState)}>()\n\t\t\t{{\n{propertyNames}\n\t\t\t}});";
-
         return $$"""
                  using {{typeContext.GetNamespace}};
                  using System;
@@ -68,49 +54,63 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
                         public string EntityName { get; } = "{{entityName}}";
                         public {{nameof(EntityNode)}} CreateEntityOpcUaNode(ushort applicationNamespaceIndex)
                         {
-                            {{nameof(BaseObjectState)}} {{nodeStateReference}} = new {{nameof(BaseObjectState)}}(null)
-                            {
-                                BrowseName =  new {{nameof(QualifiedName)}}("{{entityName}}", applicationNamespaceIndex),
-                                NodeId = new {{nameof(NodeId)}}(EntityName, applicationNamespaceIndex),
-                                DisplayName = "{{entityName}}",
-                            };
-                            {{nodeStateReference}}.AccessRestrictions = AccessRestrictionType.None;
+                            var entity = GetBaseObjectOpcUaNode(applicationNamespaceIndex);
+                            IEnumerable<PropertyState> properties = CreateProperties(entity, applicationNamespaceIndex);
+                            AssignPropertyReferences(entity, properties);
                             
-                            //Assign properties
-                            {{propertyAssignments}}
-                            
-                            //Add as property references
-                            {{addReferenceStatements}}
-                            
-                            {{resultReturn}}
+                            return new {{nameof(EntityNode)}}(entity, properties.ToList());
                         }
-                     }
+                     
+                        private {{nameof(BaseObjectState)}} GetBaseObjectOpcUaNode(ushort applicationNamespaceIndex)
+                        {
+                            {{nameof(BaseObjectState)}} entity = new {{nameof(BaseObjectState)}}(null)
+                            {
+                                BrowseName =  new {{nameof(QualifiedName)}}(EntityName, applicationNamespaceIndex),
+                                NodeId = new {{nameof(NodeId)}}(EntityName, applicationNamespaceIndex),
+                                DisplayName = EntityName,
+                            };
+                            entity.AccessRestrictions = AccessRestrictionType.None;
+                            return entity;
+                        }
+                         
+                        private IEnumerable<{{nameof(PropertyState)}}> CreateProperties({{nameof(BaseObjectState)}} entity, ushort applicationNamespaceIndex)
+                        {
+                           {{string.Join("\n\t\t  ", GetPropertyCreationStatements(typeContext))}}
+                        }
+                        
+                        private void AssignPropertyReferences({{nameof(BaseObjectState)}} entity, IEnumerable<{{nameof(PropertyState)}}> properties)
+                        {
+                           foreach (var property in properties)
+                           {
+                               entity.AddReference(ReferenceTypes.HasProperty, false, property.NodeId);;
+                           }
+                        }
+                    }
                  }
                  """;
     }
 
-    private static IEnumerable<PropertyCreation> GetPropertyCreationStatements(
-        TypeContext<ClassDeclarationSyntax> typeContext, string nodeName)
+    private static IEnumerable<string> GetPropertyCreationStatements(
+        TypeContext<ClassDeclarationSyntax> typeContext)
     {
-        var t = typeContext.Node.Members
+        return typeContext.Node.Members
             .OfType<PropertyDeclarationSyntax>()
             .Select(property => new OpcPropertyTypeInfoFactory(property, typeContext.SemanticModel).GetTypeInfo())
             .Where(e => e.TypeIsSupported)
-            .Select(e => e.PropertyInfo);
-
-        foreach (var propertyInfo in t)
-        {
-            var propertyName = char.ToLower(propertyInfo.Name.Trim()[0]) + propertyInfo.Name.Trim().Substring(1);
-            yield return new PropertyCreation(propertyName, $"""
-                                                             {nameof(PropertyState)} {propertyName} = {nodeName}.AddProperty<{propertyInfo.CSharpType}>("{propertyName}", {propertyInfo.OpcNativeTypeId}, {propertyInfo.ValueRank});
-                                                                        {propertyName}.NodeId = new {nameof(NodeId)}({nameof(Guid)}.{nameof(Guid.NewGuid)}(), applicationNamespaceIndex);
-                                                                        {propertyName}.AccessLevel = AccessLevels.CurrentReadOrWrite;
-                                                                        {propertyName}.DataType = {propertyInfo.OpcNativeTypeId};
-                                                                        
-                                                             """);
-        }
+            .Select(e => e.PropertyInfo)
+            .Select(propertyInfo =>
+            {
+                var propertyName = char.ToLower(propertyInfo.Name.Trim()[0]) + propertyInfo.Name.Trim().Substring(1);
+                return
+                    $"""
+                       {nameof(PropertyState)} {propertyName} = entity.AddProperty<{propertyInfo.CSharpType}>("{propertyName}", {propertyInfo.OpcNativeTypeId}, {propertyInfo.ValueRank});
+                                 {propertyName}.NodeId = new {nameof(NodeId)}({nameof(Guid)}.{nameof(Guid.NewGuid)}(), applicationNamespaceIndex);
+                                 {propertyName}.AccessLevel = AccessLevels.CurrentReadOrWrite;
+                                 {propertyName}.AccessRestrictions = AccessRestrictionType.None;
+                                 {propertyName}.DataType = {propertyInfo.OpcNativeTypeId};
+                                 yield return {propertyName};
+                                
+                     """;
+            });
     }
-
-
-    private record struct PropertyCreation(string PropertyName, string CreationStatement);
 }

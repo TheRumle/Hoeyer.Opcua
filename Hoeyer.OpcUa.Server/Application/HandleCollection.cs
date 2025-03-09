@@ -11,7 +11,7 @@ internal class HandleCollection(IEntityNode entityNode)
     private readonly Dictionary<PropertyState, PropertyHandle> _propertyHandles
         = entityNode.PropertyStates.ToDictionary(e => e.Value, PropertyHandle (e) => new PropertyHandle(e.Value));
 
-    public readonly EntityHandle ManagedHandle = new(entityNode.Entity);
+    public readonly EntityHandle ManagedHandle = new(entityNode.BaseObject);
 
     public IReadOnlyDictionary<PropertyState, PropertyHandle> PropertyHandles => _propertyHandles;
 

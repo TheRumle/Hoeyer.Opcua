@@ -21,12 +21,12 @@ internal class EntityBrowser(IEntityNode node) : IEntityBrowser
         var browseResult = nodeToBrowse switch
         {
             EntityHandle entityHandle
-                when entityHandle.Payload.Equals(node.Entity) => BrowseEntity(continuationPoint),
+                when entityHandle.Payload.Equals(node.BaseObject) => BrowseEntity(continuationPoint),
 
             PropertyHandle propertyHandle
                 when node.PropertyStates.ContainsValue(propertyHandle.Payload) => BrowseProperty(propertyHandle.Payload),
             
-            _ => Result.Fail($"{nodeToBrowse.Value.BrowseName} is not related to the entity {node.Entity.BrowseName}")
+            _ => Result.Fail($"{nodeToBrowse.Value.BrowseName} is not related to the entity {node.BaseObject.BrowseName}")
         };
 
         return browseResult

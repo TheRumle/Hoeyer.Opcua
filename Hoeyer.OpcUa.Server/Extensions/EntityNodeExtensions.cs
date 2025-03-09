@@ -10,7 +10,7 @@ public static class EntityNodeExtensions
     public static NodeMetadata ConstructMetadata(this IEntityNode entityNode, ISystemContext serverContext,
         byte accessLevel = AccessLevels.HistoryReadOrWrite | AccessLevels.CurrentReadOrWrite)
     {
-        var entity = entityNode.Entity;
+        var entity = entityNode.BaseObject;
         var values = entity.ReadAttributes(
             serverContext,
             Attributes.WriteMask,
