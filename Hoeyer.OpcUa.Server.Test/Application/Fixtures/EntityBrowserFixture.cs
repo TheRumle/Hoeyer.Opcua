@@ -1,11 +1,10 @@
-﻿using Hoeyer.OpcUa.Core.Entity;
-using Hoeyer.OpcUa.Core.Entity.Node;
+﻿using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Handle;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Test.Fixtures;
+namespace Hoeyer.OpcUa.Server.Test.Application.Fixtures;
 
 public sealed record EntityBrowserFixture
 {

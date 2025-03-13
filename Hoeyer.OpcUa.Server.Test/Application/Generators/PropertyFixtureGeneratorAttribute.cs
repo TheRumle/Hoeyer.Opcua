@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Hoeyer.OpcUa.Server.Test.Application.Fixtures;
-using Hoeyer.OpcUa.Server.Test.Fixtures;
 using TUnitSettings.Extensions;
 
 namespace Hoeyer.OpcUa.Server.Test.Application.Generators;

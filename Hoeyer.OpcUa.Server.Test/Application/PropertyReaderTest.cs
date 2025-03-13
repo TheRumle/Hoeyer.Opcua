@@ -7,16 +7,17 @@ using Opc.Ua;
 namespace Hoeyer.OpcUa.Server.Test.Application;
 
 [Category(nameof(PropertyReader))]
-[PropertyFixtureGenerator]
-public class PropertyReaderTest(PropertyReaderFixture propertyReaderFixture)
+[EntityFixtureGenerator]
+public class PropertyReaderTest(EntityReaderFixture propertyReaderFixture) 
 {
-    /// <inheritdoc />
+    private readonly IPropertyReader _propertyReader = new PropertyReader();
     public override string ToString()
     {
         return propertyReaderFixture.ToString();
     }
+    
+    public IEnumerable<PropertyState> PropertyStates() => propertyReaderFixture.Properties;
 
-    private readonly IPropertyReader _propertyReader = new PropertyReader();
     public static IEnumerable<TestInput> ObligatoryAttributes() => new[]
     {
         Attributes.BrowseName,
@@ -30,7 +31,7 @@ public class PropertyReaderTest(PropertyReaderFixture propertyReaderFixture)
         Attributes.MinimumSamplingInterval
     }.Select(e=> new TestInput(e));
 
-    public readonly record struct TestInput(uint Attribute)
+    public record TestInput(uint Attribute)
     {
         public static implicit operator uint(TestInput value) => value.Attribute;
 
@@ -42,16 +43,17 @@ public class PropertyReaderTest(PropertyReaderFixture propertyReaderFixture)
     } 
 
     [Test]
-    [MethodDataSource(nameof(ObligatoryAttributes))]
-    [DisplayName("$attribute")]
-    public async Task CanReadProperty(TestInput attribute)
+    [MatrixDataSource]
+    public async Task CanReadProperty(
+        [MatrixInstanceMethod<PropertyReaderTest>(nameof(PropertyStates))] PropertyState propertyState,
+        [MatrixInstanceMethod<PropertyReaderTest>(nameof(ObligatoryAttributes))] TestInput attribute)
     {
         var request = new ReadValueId
         {
             AttributeId = attribute
         };
 
-        var result = _propertyReader.ReadProperty(request, propertyReaderFixture.PropertyState);
+        var result = _propertyReader.ReadProperty(request, propertyState);
         await Assert.That(StatusCode.IsGood(result.ResponseCode)).IsTrue();
     }
 }

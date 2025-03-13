@@ -1,7 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core.Entity;
-using Hoeyer.OpcUa.Core.Entity.Node;
 
-namespace Hoeyer.OpcUa.Server.Test.TestData.Entities;
+namespace Hoeyer.OpcUa.Test.Entities;
 
 [OpcUaEntity]
 public class SupportedDataTypes
