@@ -1,12 +1,10 @@
-﻿using Hoeyer.OpcUa.Core.Entity;
-using Hoeyer.OpcUa.Core.Entity.Node;
+﻿using Hoeyer.OpcUa.Core;
 
 namespace MyOpcUaWebApplication;
 
 [OpcUaEntity]
 public class Gantry
 {
-    public int Speed { get; set; }
-    public IEnumerable<int> Speeds { get; set; }
-
-}
+    public IList<int> Speeds { get; set; }
+    
+}   

@@ -2,7 +2,10 @@
 
 namespace Hoeyer.OpcUa.Core.Entity.Node;
 
-public interface IEntityNodeCreator<out T> : IEntityNodeCreator;
+public interface IEntityNodeCreator<out T> : IEntityNodeCreator
+{
+    public T RepresentedEntity { get; }
+}
 
 public interface IEntityNodeCreator
 {

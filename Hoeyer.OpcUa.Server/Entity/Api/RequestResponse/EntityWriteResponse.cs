@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.Core.Extensions;
+﻿using System;
+using Hoeyer.OpcUa.Core.Extensions;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
@@ -19,9 +20,9 @@ public sealed class EntityWriteResponse : StatusCodeResponse<WriteValue, Service
         return new EntityWriteResponse(request, StatusCodes.BadNotSupported, "The current implementation does not support the reading the attribute.");
     }
     
-    public static EntityWriteResponse AssignmentFailure(WriteValue request, NodeState state)
+    public static EntityWriteResponse AssignmentFailure(WriteValue request, NodeState state, Exception e)
     {
-        return new EntityWriteResponse(request, StatusCodes.BadNotSupported, $"Assignment to {state.BrowseName.Name} failed");
+        return new EntityWriteResponse(request, StatusCodes.BadNotSupported, $"Assignment to {state.BrowseName.Name} failed: \n " + e.Message);
     }
     
     public static EntityWriteResponse NoMatch(WriteValue request)

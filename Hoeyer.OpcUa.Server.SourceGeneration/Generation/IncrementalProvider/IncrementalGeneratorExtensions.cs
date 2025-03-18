@@ -10,7 +10,7 @@ internal static class IncrementalGeneratorExtensions
         where T : BaseTypeDeclarationSyntax
     {
         var valueProvider = context.SyntaxProvider.ForAttributeWithMetadataName(attributeMetaName,
-            (decoratedClass, cancellationToken) => decoratedClass is T,
+            predicate: (_,_) => true,
             (attributeSyntaxContext, cancellationToken) =>
                 new TypeContext<T>(attributeSyntaxContext.SemanticModel, (T)attributeSyntaxContext.TargetNode));
         return new UnloadedIncrementalValuesProvider<TypeContext<T>>(valueProvider);

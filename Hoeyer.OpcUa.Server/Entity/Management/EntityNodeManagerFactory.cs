@@ -21,7 +21,7 @@ public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
             managedNode,
             server,
             new EntityHandleManager(managedNode),
-            new EntityWriter(managedNode, () => server.DefaultSystemContext.Copy()),
+            new EntityWriter(managedNode),
             new EntityBrowser(managedNode),
             new EntityReader(managedNode, new PropertyReader()),
             new EntityReferenceLinker(managedNode),

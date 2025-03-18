@@ -14,6 +14,16 @@ public static class ServiceExtensions
         return new OnGoingOpcEntityServiceRegistration(services);
     }
 
+    
+    public static OnGoingOpcEntityServiceRegistration AddOpcUaServerConfiguration(this IServiceCollection services,
+        Func<IServiceProvider, IEntityServerConfigurationBuilder, IOpcUaEntityServerInfo> configurationBuilder)
+    {
+        services.AddSingleton((p) => configurationBuilder.Invoke(p, EntityServerConfigurationBuilder.Create()));
+        return new OnGoingOpcEntityServiceRegistration(services);
+    }
+
+    
+    
     public static OnGoingOpcEntityServiceRegistration AddOpcUaServerConfiguration(this IServiceCollection services,
         Func<IOpcUaEntityServerInfo> configurationBuilder)
     {

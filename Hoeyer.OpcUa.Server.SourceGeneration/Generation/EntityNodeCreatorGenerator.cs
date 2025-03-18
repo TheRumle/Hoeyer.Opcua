@@ -5,19 +5,19 @@ using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.SourceGeneration.Generation.IncrementalProvider;
 using Hoeyer.OpcUa.Server.SourceGeneration.OpcUaTypes;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Opc.Ua;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Hoeyer.OpcUa.Server.SourceGeneration.Generation;
 
-
-[Generator]
 public class EntityNodeCreatorGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var decoratedRecordsProvider = context
-            .GetTypeDeclarationsDecoratedWith<ClassDeclarationSyntax>(ModellingNamespace.ENTITY_ATTRIBUTE_FULLNAME)
+            .GetTypeDeclarationsDecoratedWith<ClassDeclarationSyntax>("Hoeyer.OpcUa.Core.OpcUaEntityAttribute")
             .Select((e, c) => new TypeContext<ClassDeclarationSyntax>(e.SemanticModel, e.Node));
 
         context.RegisterImplementationSourceOutput(
@@ -33,29 +33,39 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
     {
         var entityName = typeContext.Node.Identifier.ToString();
         var className = $"{entityName}OpcUaNodeCreator";
-        var sourceCode = CreateSourceCode(typeContext, entityName, className);
+        var sourceCode = CreateSourceCode(typeContext, className);
         context.AddSource(className + ".g.cs", sourceCode);
     }
 
-    private static string CreateSourceCode(TypeContext<ClassDeclarationSyntax> typeContext, string entityName, string className)
+    private static string CreateSourceCode(TypeContext<ClassDeclarationSyntax> typeContext, string className)
     {
+        var entityName = typeContext.Node.Identifier;
+        var properties = typeContext.Node.Members.OfType<PropertyDeclarationSyntax>().ToList();
+
+        var propertyInitialisations = CreateEntityPropertyInitialisations(properties, typeContext.SemanticModel);
+        
         return $$"""
                  using {{typeContext.GetNamespace}};
                  using System;
                  using System.Linq;
-                 using {{ModellingNamespace.ENTITY_NODE_NAMESPACE}};
+                 using Hoeyer.OpcUa.Entity;
                  using Opc.Ua;
 
                  namespace Hoeyer.OpcUa.Core.Server.Entity
                  {
                      internal sealed class {{className}} : {{nameof(IEntityNodeCreator)}}<{{entityName}}>
                      {
+                        public {{entityName}} {{nameof(IEntityNodeCreator<int>.RepresentedEntity)}} {get;} = new {{entityName}}
+                        {
+                            {{propertyInitialisations}}
+                        };
+                     
                         public {{className}}(){}
                         public string EntityName { get; } = "{{entityName}}";
                         public {{nameof(EntityNode)}} CreateEntityOpcUaNode(ushort applicationNamespaceIndex)
                         {
                             var entity = GetBaseObjectOpcUaNode(applicationNamespaceIndex);
-                            IEnumerable<PropertyState> properties = CreateProperties(entity, applicationNamespaceIndex);
+                            IEnumerable<{{nameof(PropertyState)}}> properties = CreateProperties(entity, applicationNamespaceIndex);
                             AssignPropertyReferences(entity, properties);
                             
                             return new {{nameof(EntityNode)}}(entity, properties.ToList());
@@ -69,13 +79,13 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
                                 NodeId = new {{nameof(NodeId)}}(EntityName, applicationNamespaceIndex),
                                 DisplayName = EntityName,
                             };
-                            entity.AccessRestrictions = AccessRestrictionType.None;
+                            entity.AccessRestrictions = {{nameof(AccessRestrictionType)}}.{{nameof(AccessRestrictionType.None)}};
                             return entity;
                         }
                          
                         private IEnumerable<{{nameof(PropertyState)}}> CreateProperties({{nameof(BaseObjectState)}} entity, ushort applicationNamespaceIndex)
                         {
-                           {{string.Join("\n\t\t  ", GetPropertyCreationStatements(typeContext))}}
+                           {{string.Join("\n\t\t  ", GetPropertyCreationStatements(properties, typeContext.SemanticModel))}}
                         }
                         
                         private void AssignPropertyReferences({{nameof(BaseObjectState)}} entity, IEnumerable<{{nameof(PropertyState)}}> properties)
@@ -89,13 +99,33 @@ public class EntityNodeCreatorGenerator : IIncrementalGenerator
                  }
                  """;
     }
+    
 
-    private static IEnumerable<string> GetPropertyCreationStatements(
-        TypeContext<ClassDeclarationSyntax> typeContext)
+    private static string CreateEntityPropertyInitialisations(List<PropertyDeclarationSyntax> properties, SemanticModel semanticModel)
     {
-        return typeContext.Node.Members
-            .OfType<PropertyDeclarationSyntax>()
-            .Select(property => new OpcPropertyTypeInfoFactory(property, typeContext.SemanticModel).GetTypeInfo())
+        AssignmentExpressionSyntax CreateAssignmentExpression(PropertyDeclarationSyntax e)
+        {
+            var typeSymbol = semanticModel.GetTypeInfo(e.Type).Type!;
+
+            var assignedValue =
+                SupportedAssignments.CollectionTypes.GetNewDefaultCollectionForType(typeSymbol) as ExpressionSyntax
+                ?? SupportedAssignments.SimpleTypes.GetNewDefaultCollectionForType(typeSymbol) as ExpressionSyntax
+                ?? DefaultExpression(ParseTypeName(typeSymbol.ToDisplayString()));
+
+            return AssignmentExpression(
+                SyntaxKind.SimpleAssignmentExpression,
+                IdentifierName(e.Identifier),
+                assignedValue!
+            );
+        }
+        
+        return string.Join(",\n \t\t", properties.Select(CreateAssignmentExpression).Select(e => $"{e.ToFullString()};"));
+    }
+
+    private static IEnumerable<string> GetPropertyCreationStatements(List<PropertyDeclarationSyntax> properties, SemanticModel semanticModel)
+    {
+        return properties
+            .Select(property => new OpcPropertyTypeInfoFactory(property, semanticModel).GetTypeInfo())
             .Where(e => e.TypeIsSupported)
             .Select(e => e.PropertyInfo)
             .Select(propertyInfo =>

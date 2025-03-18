@@ -1,7 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Hoeyer.Common.Extensions.Reflection;
-using Hoeyer.OpcUa.Core.Entity;
-using Hoeyer.OpcUa.Core.Entity.Node;
+using Hoeyer.OpcUa.Core;
 
 namespace Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 
@@ -21,7 +20,7 @@ public static class OpcTestEntities
         .Where(type => type.FullName!.Contains($"{nameof(EntityDefinitions)}.Correct"))
         .ToImmutableHashSet();
 
-    public static readonly ImmutableHashSet<Type> Invalid = All
-        .Where(type => type.FullName!.Contains($"{nameof(EntityDefinitions)}.{nameof(Incorrect)}"))
+    public static readonly ImmutableHashSet<Type> PropertyAccessViolations = All
+        .Where(type => type.FullName!.Contains($"{nameof(EntityDefinitions)}.{nameof(Incorrect)}.{nameof(Incorrect.PropertyAccess)}"))
         .ToImmutableHashSet();
 }

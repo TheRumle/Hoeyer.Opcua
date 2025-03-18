@@ -25,3 +25,20 @@ public record EntityNode(BaseObjectState BaseObject, Dictionary<NodeId, Property
 
     public Dictionary<NodeId, PropertyState> PropertyStates { get; } = PropertyStates;
 }
+
+public sealed record EntityNode<T>(BaseObjectState BaseObject, Dictionary<NodeId, PropertyState> PropertyStates)
+    : IEntityNode
+{
+    T Entity { get; }
+    public EntityNode(BaseObjectState entity, IEnumerable<PropertyState> propertyStates)
+        : this(entity, propertyStates.ToDictionary(e => e.NodeId, e => e))
+    {
+    }
+
+    public IEnumerable<BaseVariableState> AllProperties => PropertyStates.Values;
+
+
+    public BaseObjectState BaseObject { get; } = BaseObject;
+
+    public Dictionary<NodeId, PropertyState> PropertyStates { get; } = PropertyStates;
+}

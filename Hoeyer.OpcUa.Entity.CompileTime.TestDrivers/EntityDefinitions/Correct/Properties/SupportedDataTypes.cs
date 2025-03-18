@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.Core.Entity;
+﻿using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
 
 namespace Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions.Correct.Properties;
@@ -26,4 +27,5 @@ public class SupportedDataTypes
     public double TestDouble { get; set; }
     public string TestString { get; set; }
     public decimal TestDecimal { get; set; }
+    public IList<int> Speeds { get; set; } 
 }

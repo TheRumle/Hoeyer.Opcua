@@ -17,7 +17,7 @@ public interface IRequestResponseProcessor<out T>
     /// <param name="errorFormat">How to format error messages.</param>
     /// <param name="successFormat">How to format successMessages</param>
     void Process(
-        Predicate<T> additionalSuccessCriteria = null,
+        Predicate<T>? additionalSuccessCriteria = null,
         Func<T, string>? errorFormat = null,
         Func<T, string>? successFormat = null
         );
@@ -61,22 +61,16 @@ internal class RequestResponseProcessor<T>(
         var (fits, fails) = valuesToProcess
             .Then(processSuccess.Invoke)
             .WithSuccessCriteria(successFilter);
+
+        if (_successLevel != LogLevel.None) LogSuccess(fits, formatSuccess);
+        if (_errorLevel != LogLevel.None && fails.Any()) LogErrors(fails, formatError);
         
-
-        if (_logger != null)
-        {
-            if (_successLevel != LogLevel.None)
-                LogSuccess(fits, formatSuccess);
-
-            if (_errorLevel != LogLevel.None && fails.Any())
-                LogErrors(fails, formatError);
-        }
         fails.Then(processError);
     }
 
     private void LogSuccess(List<T> fits, Func<T, string> formatSuccess)
     {
-        _logger.Log(_successLevel, "{OperationName} : [{@Attributes}]",
+        _logger?.Log(_successLevel, "{OperationName} : [{@Attributes}]",
             _operationName,
             fits.Select(formatSuccess)
                 .OrderBy(text => text)
@@ -86,7 +80,7 @@ internal class RequestResponseProcessor<T>(
     private void LogErrors(List<T> fails, Func<T, string> formatError)
     {
         
-        _logger.Log(_errorLevel, "Failed {OperationName} : [{@AttributeAndStatus}]",
+        _logger?.Log(_errorLevel, "Failed {OperationName} : [{@AttributeAndStatus}]",
             _operationName,
             fails.Select(formatError)
                 .OrderBy(text => text)

@@ -1,5 +1,6 @@
 using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server;
 using Hoeyer.OpcUa.Server.ServiceConfiguration;
 

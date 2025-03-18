@@ -13,13 +13,6 @@
         </Content>
     </ItemGroup>
 
-
-    <ItemGroup>
-        <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.5.374.158"/>
-        <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.5.374.158"/>
-    </ItemGroup>
-
-
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.Client\Hoeyer.OpcUa.Client.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj"/>
@@ -27,7 +20,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.Analysis\Hoeyer.OpcUa.CompileTime.Analysis.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.CodeFix\Hoeyer.OpcUa.CompileTime.CodeFix.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Server.SourceGeneration\Hoeyer.OpcUa.Server.SourceGeneration.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
-
+    
 </Project>

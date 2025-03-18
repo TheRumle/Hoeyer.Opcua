@@ -10,7 +10,7 @@ namespace Hoeyer.OpcUa.Server.Application;
 /// <summary>
 ///     Edits entities. Handles modification of an Entity.
 /// </summary>
-internal class EntityWriter(IEntityNode entityNode, Func<ISystemContext> contextProvider) : IEntityWriter
+internal class EntityWriter(IEntityNode entityNode) : IEntityWriter
 {
     public IEnumerable<EntityWriteResponse> Write(IEnumerable<WriteValue> nodesToWrite)
     {
@@ -38,7 +38,7 @@ internal class EntityWriter(IEntityNode entityNode, Func<ISystemContext> context
         }
         catch (Exception e)
         {
-            return EntityWriteResponse.AssignmentFailure(nodeToWrite, propertyState);
+            return EntityWriteResponse.AssignmentFailure(nodeToWrite, propertyState, e);
         }
     }
 }

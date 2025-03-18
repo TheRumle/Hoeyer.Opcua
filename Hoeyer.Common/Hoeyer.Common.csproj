@@ -10,9 +10,5 @@
         <PackageReference Include="FluentResults" Version="3.16.0"/>
         <PackageReference Include="JetBrains.Annotations" Version="2024.3.0"/>
     </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="Monadic\Result.cs" />
-    </ItemGroup>
-
+    
 </Project>

@@ -78,7 +78,7 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
         ImmutableHashSet.CreateRange(SpecialTypeAndEquivalentOpcTypes.Keys);
 
 
-    private (string SimpleType, string OpcType, string ValueRank)? FindSupportedTypes()
+    private (string SimpleType, string OpcType, string ValueRank)? FindSupportedType()
     {
         var typeSyntax = property.Type;
         var syntaxKind = typeSyntax.Kind();
@@ -88,7 +88,7 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
                 SyntaxKindsAndEquivalentOpcTypes[syntaxKind],
                 VALUE_RANK_SINGLE_VALUE);
 
-        var typeInfo = semanticModel.GetTypeInfo(property.Type).Type;
+        var typeInfo = semanticModel.GetTypeInfo(typeSyntax).Type;
         if (typeInfo == null) return null;
 
         if (SupportedSimpleSpecialtypes.Contains(typeInfo.SpecialType))
@@ -100,7 +100,7 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
         if (typeInfo is INamedTypeSymbol { IsGenericType: true, TypeArguments.Length: 1 } namedTypeSymbol)
         {
             var span = namedTypeSymbol.ConstructUnboundGenericType().ToString().AsSpan();
-            var lastDot = span.LastIndexOf('.') + 1; //even if no . then it returns index 0! : )
+            var lastDot = span.LastIndexOf('.') + 1; //even if no . then it returns index 0! :-)
 
             var startIndex = span.Slice(lastDot).IndexOf('<');
             var endIndex = span.IndexOf('>');
@@ -131,7 +131,7 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
     public (OpcUaProperty PropertyInfo, bool TypeIsSupported, PropertyDeclarationSyntax PropertyDecleration)
         GetTypeInfo()
     {
-        var typeDetails = FindSupportedTypes();
+        var typeDetails = FindSupportedType();
         if (typeDetails == null) return (new OpcUaProperty(), false, property);
 
         return

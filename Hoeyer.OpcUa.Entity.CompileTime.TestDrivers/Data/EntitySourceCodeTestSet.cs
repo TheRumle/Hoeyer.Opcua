@@ -9,10 +9,10 @@ public static class EntitySourceCodeTestSet
     internal static readonly IReadOnlyList<EntitySourceCode>
         Valid = LoadSourceCodeDefinitionFor(OpcTestEntities.Valid).ToList();
 
-    internal static readonly IReadOnlyList<EntitySourceCode> Invalid =
-        LoadSourceCodeDefinitionFor(OpcTestEntities.Invalid).ToList();
+    internal static readonly IReadOnlyList<EntitySourceCode> PropertyAccessViolations =
+        LoadSourceCodeDefinitionFor(OpcTestEntities.PropertyAccessViolations).ToList();
 
-    internal static readonly IReadOnlyList<EntitySourceCode> All = Invalid.Union(Valid).ToList();
+    internal static readonly IReadOnlyList<EntitySourceCode> All = PropertyAccessViolations.Union(Valid).ToList();
 
     private static IEnumerable<EntitySourceCode> LoadSourceCodeDefinitionFor(IEnumerable<Type> types)
     {

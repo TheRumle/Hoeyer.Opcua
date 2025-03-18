@@ -17,6 +17,6 @@ public sealed class AnalyzerTestDriver<T>(T analyzer, Action<string>? logger = n
         var statistics = compilation.GetAnalyzerTelemetryInfoAsync(analyzer, cancellationToken);
         await Task.WhenAll(diagnostics, statistics);
 
-        return new AnalyzerResult(await diagnostics, await statistics);
+        return new AnalyzerResult(diagnostics.Result, statistics.Result);
     }
 }

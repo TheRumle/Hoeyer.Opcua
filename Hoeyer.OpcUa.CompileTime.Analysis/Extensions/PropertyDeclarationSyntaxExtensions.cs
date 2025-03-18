@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,7 +16,7 @@ public static class PropertyDeclarationSyntaxExtensions
 
     public static bool IsFullyPublicProperty(this PropertyDeclarationSyntax property)
     {
-        var modifierText = property.Modifiers.ToString().AsSpan();
+        var modifierText = property.Modifiers.ToString();
         // The only keyword of length 6 is "public" and no other modifiers must restrict the property.
         // Therefore, any modifier text of length != 6 will restrict access
         // Thus it will not be 'fully public'
