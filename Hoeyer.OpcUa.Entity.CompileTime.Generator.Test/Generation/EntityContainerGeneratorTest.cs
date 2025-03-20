@@ -8,11 +8,11 @@ using TUnitSettings;
 
 namespace Hoeyer.OpcUa.Entity.Analysis.Test.Generation;
 
-[TestSubject(typeof(EntityNodeCreatorGenerator))]
+[TestSubject(typeof(EntityContainerGenerator))]
 [ParallelLimiter<ParallelLimit>]
-public class EntityNodeCreatorGeneratorTest
+public class EntityContainerGeneratorTest
 {
-    private readonly GeneratorTestDriver<EntityNodeCreatorGenerator> _testDriver = new(new EntityNodeCreatorGenerator(),
+    private readonly GeneratorTestDriver<EntityContainerGenerator> _testDriver = new(new EntityContainerGenerator(),
         Console.WriteLine);
 
     [Test]
@@ -30,7 +30,7 @@ public class EntityNodeCreatorGeneratorTest
     public async Task WhenGiven_CorrectSourceCode_GeneratesIEntityNodeCreator(EntitySourceCode sourceCode)
     {
         var generationResult = _testDriver.RunGeneratorOn(sourceCode);
-        await Assert.That(generationResult.SourceCode).Contains($"IEntityNodeCreator<{sourceCode.Type.Name}>");
+        await Assert.That(generationResult.SourceCode).Contains($"{sourceCode.Type.Name}Container");
     }
 
 

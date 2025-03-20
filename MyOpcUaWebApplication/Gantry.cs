@@ -6,5 +6,4 @@ namespace MyOpcUaWebApplication;
 public class Gantry
 {
     public IList<int> Speeds { get; set; }
-    
-}   
+}

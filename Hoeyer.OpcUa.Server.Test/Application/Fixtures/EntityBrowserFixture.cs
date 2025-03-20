@@ -8,7 +8,7 @@ namespace Hoeyer.OpcUa.Server.Test.Application.Fixtures;
 
 public sealed record EntityBrowserFixture
 {
-    public readonly EntityNode EntityNode;
+    public readonly IEntityNode EntityNode;
     public readonly IEntityHandleManager HandleManager;
     public string EntityName => EntityNode.BaseObject.BrowseName.Name;
     public IEntityNodeHandle EntityHandle => HandleManager.EntityHandle;

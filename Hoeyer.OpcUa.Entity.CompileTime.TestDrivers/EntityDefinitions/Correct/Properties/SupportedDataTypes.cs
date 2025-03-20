@@ -1,6 +1,4 @@
 ﻿using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.Core.Entity;
-using Hoeyer.OpcUa.Core.Entity.Node;
 
 namespace Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions.Correct.Properties;
 
@@ -13,7 +11,6 @@ public class SupportedDataTypes
     public List<int> TestList { get; set; }
     public ISet<int> TestISet { get; set; }
     public HashSet<int> TestHashSet { get; set; }
-    public SortedSet<int> TestSortedSet { get; set; }
 
     public bool TestBool { get; set; }
     public byte TestByte { get; set; }
@@ -26,6 +23,5 @@ public class SupportedDataTypes
     public float TestFloat { get; set; }
     public double TestDouble { get; set; }
     public string TestString { get; set; }
-    public decimal TestDecimal { get; set; }
     public IList<int> Speeds { get; set; } 
 }

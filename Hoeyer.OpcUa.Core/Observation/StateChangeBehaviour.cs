@@ -30,6 +30,7 @@ public class StateChangeBehaviour<TState>(TState currentState) : ISubscribable<T
 
         Subscriptions = Subscriptions.Where(e => e.IsActive).ToList();
         _tail = new StateChange<TState>(_tail.ReachedState, newState, DateTime.Now);
-        foreach (var subscription in Subscriptions) subscription.ReportStateChange(_tail);
+        
+        foreach (var subscription in Subscriptions) subscription.ReportStateChange(_tail.ReachedState);
     }
 }

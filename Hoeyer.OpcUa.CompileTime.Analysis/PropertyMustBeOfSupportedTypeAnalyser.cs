@@ -36,6 +36,6 @@ public class PropertyMustBeOfSupportedTypeAnalyser() : ConcurrentAnalyzer([Rules
         if (SupportedTypes.Simple.Supports(semanticModel.GetDeclaredSymbol(property))) return true;
         return SupportedTypes.Collection.Supports(property.Type, semanticModel);
     }
-    
 }
+
 

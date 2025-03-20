@@ -12,5 +12,5 @@ public interface IEntityNodeCreator
     public string EntityName { get; }
 
     [Pure]
-    public EntityNode CreateEntityOpcUaNode(ushort assignedNamespace);
+    public IEntityNode CreateEntityOpcUaNode(ushort assignedNamespace);
 }

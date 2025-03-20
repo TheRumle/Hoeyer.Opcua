@@ -3,7 +3,6 @@ using Hoeyer.OpcUa.Core.Entity;
 
 namespace Hoeyer.OpcUa.Test.Entities;
 
-[OpcUaEntity]
 public class SupportedDataTypes
 {
     public IList<int> TestIList { get; set; } = [];
@@ -12,8 +11,7 @@ public class SupportedDataTypes
     public List<int> TestList { get; set; } = [];
     public ISet<int> TestISet { get; set; } = new HashSet<int>();
     public HashSet<int> TestHashSet { get; set; } = [];
-    public SortedSet<int> TestSortedSet { get; set; } = new();
-
+    
     public bool TestBool { get; set; }
     public byte TestByte { get; set; } 
     public short TestShort { get; set; }

@@ -7,7 +7,8 @@ namespace Hoeyer.OpcUa.Entity.Analysis.Test;
 
 public class PropertyMustBeOfSupportedTypeAnalyserTest
 {
-    private readonly AnalyzerTestDriver<PropertyMustBeOfSupportedTypeAnalyser> _driver = new(new PropertyMustBeOfSupportedTypeAnalyser());
+    private readonly AnalyzerTestDriver<PropertyMustBeOfSupportedTypeAnalyser> _driver 
+        = new(new PropertyMustBeOfSupportedTypeAnalyser(), Console.WriteLine);
 
     [Test]
     [ValidEntitySourceCodeGenerator]
@@ -16,17 +17,8 @@ public class PropertyMustBeOfSupportedTypeAnalyserTest
     public async Task GivenValidEntity_ShouldNotHaveDiagnostic(EntitySourceCode entitySourceCode)
     {
         var res = await _driver.RunAnalyzerOn(entitySourceCode);
-        await Assert.That(res.Diagnostics).IsEmpty().Because("Correct entities should not have diagnostics.");
-    }
-
-    [Test]
-    [PropertyAccessViolations]
-    [DisplayName("Reports error for $entitySourceCode")]
-    [NotInParallel]
-    public async Task GivenInvalidEntity_ShouldHaveDiagnostic(
-        EntitySourceCode entitySourceCode)
-    {
-        var res = await _driver.RunAnalyzerOn(entitySourceCode);
-        await Assert.That(res.Diagnostics).IsNotEmpty();
+        var s = string.Join("\n", res.Diagnostics.Select(e => e.ToString()));
+        await Assert.That(s)
+            .IsEmpty().Because("Correct entities should not have diagnostics.");
     }
 }

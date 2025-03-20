@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Hoeyer.OpcUa.CompileTime.Analysis.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -61,27 +62,28 @@ public static class SupportedTypes
 
     public static class Collection
     {
-        private static readonly ISet<TypeSyntax> SupportedCollectionTypes = new HashSet<string>
+        private static readonly ISet<string> SupportedCollectionTypes = new HashSet<string>
         {
-            "global::System.Collections.Generic.IList'1",
-            "global::System.Collections.Generic.ICollection'1",
-            "global::System.Collections.Generic.IEnumerable'1",
-            "global::System.Collections.Generic.List'1",
-            "global::System.Collections.Generic.ISet'1",
-            "global::System.Collections.Generic.HashSet'1",
-            "global::System.Collections.Generic.SortedSet'1",
-            "global::System.Collections.Generic.SortedList'1"
-        }.Select(e => SyntaxFactory.ParseTypeName(e)).ToFrozenSet();
+            "global::System.Collections.Generic.IList",
+            "global::System.Collections.Generic.ICollection",
+            "global::System.Collections.Generic.IEnumerable",
+            "global::System.Collections.Generic.List",
+            "global::System.Collections.Generic.ISet",
+            "global::System.Collections.Generic.HashSet",
+        }.ToImmutableHashSet();
 
 
         public static bool Supports(TypeSyntax typeSymbol, SemanticModel model)
         {
-            SymbolEqualityComparer comparer = SymbolEqualityComparer.Default;
-            return (from supported in SupportedCollectionTypes 
-                let actual = model.GetTypeInfo(typeSymbol).Type 
-                let expected = model.GetTypeInfo(supported).Type 
-                where comparer.Equals(expected, actual) select actual)
-                .Any();
+            ITypeSymbol actual = model.GetTypeInfo(typeSymbol).Type;
+            if (actual is INamedTypeSymbol { Arity: 1, IsGenericType: true } namedTypeSymbol)
+            {
+                var unTypedVersion = namedTypeSymbol.ConstructUnboundGenericType();
+                return SupportedCollectionTypes.Contains(unTypedVersion.GloballyQualifiedNonGeneric()) &&
+                    Simple.Supports(namedTypeSymbol.TypeArguments.First());
+            }
+
+            return false;
         }
 
     }

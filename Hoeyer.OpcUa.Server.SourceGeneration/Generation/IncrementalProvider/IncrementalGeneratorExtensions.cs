@@ -7,7 +7,7 @@ internal static class IncrementalGeneratorExtensions
 {
     public static UnloadedIncrementalValuesProvider<TypeContext<T>> GetTypeDeclarationsDecoratedWith<T>(
         this IncrementalGeneratorInitializationContext context, string attributeMetaName)
-        where T : BaseTypeDeclarationSyntax
+        where T : TypeDeclarationSyntax
     {
         var valueProvider = context.SyntaxProvider.ForAttributeWithMetadataName(attributeMetaName,
             predicate: (_,_) => true,
