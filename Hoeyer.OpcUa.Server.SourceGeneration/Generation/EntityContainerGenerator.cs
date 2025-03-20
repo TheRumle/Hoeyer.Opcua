@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Hoeyer.OpcUa.Server.SourceGeneration.Generation;
 
+[Generator]
 public class EntityContainerGenerator : IIncrementalGenerator
 {
     private record struct Generated(CompilationUnitSyntax CompilationUnit, ClassDeclarationSyntax ClassDeclarationSyntax);

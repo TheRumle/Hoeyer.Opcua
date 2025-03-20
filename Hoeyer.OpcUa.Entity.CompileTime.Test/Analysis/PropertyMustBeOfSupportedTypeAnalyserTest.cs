@@ -1,9 +1,9 @@
 ﻿using Hoeyer.OpcUa.CompileTime.Analysis;
-using Hoeyer.OpcUa.Entity.CompileTime.Testing.Data;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.Drivers;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
+using Hoeyer.OpcUa.Entity.CompileTime.Testing.Fixtures.Generator;
 
-namespace Hoeyer.OpcUa.Entity.Analysis.Test;
+namespace Hoeyer.OpcUa.Entity.Analysis.Test.Analysis;
 
 public class PropertyMustBeOfSupportedTypeAnalyserTest
 {

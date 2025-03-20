@@ -39,8 +39,12 @@ public static class SupportedTypes
                 _ => false
             };
 
-        public static bool Supports(ITypeSymbol type) =>
-            SupportedSyntaxKinds.Values.Contains(type?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+        public static bool Supports(ITypeSymbol type)
+        {
+            if (SpecialTypes.Contains(type.SpecialType)) return true;
+            return SupportedSyntaxKinds.Values.Contains(
+                type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+        }
 
         public static readonly ImmutableDictionary<SyntaxKind, string> SupportedSyntaxKinds =
             new Dictionary<SyntaxKind, string>
@@ -73,10 +77,9 @@ public static class SupportedTypes
         }.ToImmutableHashSet();
 
 
-        public static bool Supports(TypeSyntax typeSymbol, SemanticModel model)
+        public static bool Supports(ITypeSymbol typeSymbol)
         {
-            ITypeSymbol actual = model.GetTypeInfo(typeSymbol).Type;
-            if (actual is INamedTypeSymbol { Arity: 1, IsGenericType: true } namedTypeSymbol)
+            if (typeSymbol is INamedTypeSymbol { Arity: 1, IsGenericType: true } namedTypeSymbol)
             {
                 var unTypedVersion = namedTypeSymbol.ConstructUnboundGenericType();
                 return SupportedCollectionTypes.Contains(unTypedVersion.GloballyQualifiedNonGeneric()) &&
@@ -85,6 +88,17 @@ public static class SupportedTypes
 
             return false;
         }
+    }
 
+    public static bool IsSupported(ITypeSymbol symbol)
+    {
+        return Simple.Supports(symbol) || Collection.Supports(symbol);
+    }
+    
+    public static bool IsSupported(TypeSyntax syntax, SemanticModel model)
+    {
+        var symbol = model.GetTypeInfo(syntax).Type;
+        if (symbol == null) return false;
+        return Simple.Supports(symbol) || Collection.Supports(symbol);
     }
 }

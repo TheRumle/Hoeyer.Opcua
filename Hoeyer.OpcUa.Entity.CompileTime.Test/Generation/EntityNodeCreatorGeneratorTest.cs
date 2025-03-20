@@ -1,7 +1,8 @@
-﻿using Hoeyer.OpcUa.Core.Entity.Node;
-using Hoeyer.OpcUa.Entity.CompileTime.Testing.Data;
+﻿using Hoeyer.Opc.Ua.Test.TUnit;
+using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.Drivers;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
+using Hoeyer.OpcUa.Entity.CompileTime.Testing.Fixtures.Generator;
 using Hoeyer.OpcUa.Server.SourceGeneration.Generation;
 using JetBrains.Annotations;
 using TUnitSettings;

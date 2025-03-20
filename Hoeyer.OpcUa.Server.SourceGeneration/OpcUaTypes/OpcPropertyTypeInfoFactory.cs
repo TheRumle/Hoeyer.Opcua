@@ -27,8 +27,9 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
     private const string OPC_UA_DOUBLE_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.Double);
     private const string OPC_UA_STRING_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.String);
     private const string OPC_UA_DATE_TIME_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.DateTime);
+    private const string OPC_UA_DECIMAL_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.Decimal);
 
-    private static readonly ImmutableHashSet<string> SupportedEnumerableNames = ImmutableHashSet.CreateRange
+    private static readonly ImmutableHashSet<string> SUPPORTED_ENUMERABLE_NAMES = ImmutableHashSet.CreateRange
     ([
         "IList<>",
         "ICollection<>",
@@ -40,7 +41,7 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
         "SortedList<>"
     ]);
 
-    private static readonly Dictionary<SpecialType, string> SpecialTypeAndEquivalentOpcTypes = new()
+    private static readonly Dictionary<SpecialType, string> SPECIAL_TYPE_OPC_NATIVE_TYPES = new()
     {
         { SpecialType.System_Boolean, OPC_UA_BOOLEAN_TYPE },
         { SpecialType.System_Byte, OPC_UA_BYTE_TYPE },
@@ -54,9 +55,10 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
         { SpecialType.System_Double, OPC_UA_DOUBLE_TYPE },
         { SpecialType.System_String, OPC_UA_STRING_TYPE },
         { SpecialType.System_DateTime, OPC_UA_DATE_TIME_TYPE },
+        { SpecialType.System_Decimal, OPC_UA_DECIMAL_TYPE }
     };
 
-    private static readonly Dictionary<SyntaxKind, string> SyntaxKindsAndEquivalentOpcTypes = new()
+    private static readonly Dictionary<SyntaxKind, string> OPC_NATIVE_TYPES = new()
     {
         { SyntaxKind.BoolKeyword, OPC_UA_BOOLEAN_TYPE },
         { SyntaxKind.ByteKeyword, OPC_UA_BYTE_TYPE },
@@ -69,38 +71,39 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
         { SyntaxKind.FloatKeyword, OPC_UA_FLOAT_TYPE },
         { SyntaxKind.DoubleKeyword, OPC_UA_DOUBLE_TYPE },
         { SyntaxKind.StringKeyword, OPC_UA_STRING_TYPE },
+        { SyntaxKind.DecimalKeyword, OPC_UA_DATE_TIME_TYPE }
     };
 
-    private static readonly ImmutableHashSet<SyntaxKind> SupportedSimpleTypesSyntaxKind =
-        ImmutableHashSet.CreateRange(SyntaxKindsAndEquivalentOpcTypes.Keys);
+    private static readonly ImmutableHashSet<SyntaxKind> SUPPORTED_SIMPLE_TYPES_SYNTAX_KIND =
+        ImmutableHashSet.CreateRange(OPC_NATIVE_TYPES.Keys);
 
-    private static readonly ImmutableHashSet<SpecialType> SupportedSimpleSpecialtypes =
-        ImmutableHashSet.CreateRange(SpecialTypeAndEquivalentOpcTypes.Keys);
+    private static readonly ImmutableHashSet<SpecialType> SUPPORTED_SIMPLE_SPECIALTYPES =
+        ImmutableHashSet.CreateRange(SPECIAL_TYPE_OPC_NATIVE_TYPES.Keys);
 
 
-    private (string SimpleType, string OpcType, string ValueRank)? FindSupportedType()
+    private (string SimpleType, string OpcType, string ValueRank)? FindSupportedTypes()
     {
         var typeSyntax = property.Type;
         var syntaxKind = typeSyntax.Kind();
-        if (SupportedSimpleTypesSyntaxKind.Contains(syntaxKind))
+        if (SUPPORTED_SIMPLE_TYPES_SYNTAX_KIND.Contains(syntaxKind))
             return (
                 typeSyntax.ToFullString(),
-                SyntaxKindsAndEquivalentOpcTypes[syntaxKind],
+                OPC_NATIVE_TYPES[syntaxKind],
                 VALUE_RANK_SINGLE_VALUE);
 
-        var typeInfo = semanticModel.GetTypeInfo(typeSyntax).Type;
+        var typeInfo = semanticModel.GetTypeInfo(property.Type).Type;
         if (typeInfo == null) return null;
 
-        if (SupportedSimpleSpecialtypes.Contains(typeInfo.SpecialType))
+        if (SUPPORTED_SIMPLE_SPECIALTYPES.Contains(typeInfo.SpecialType))
             return (typeInfo.ToString(),
-                SpecialTypeAndEquivalentOpcTypes[typeInfo.SpecialType],
+                SPECIAL_TYPE_OPC_NATIVE_TYPES[typeInfo.SpecialType],
                 VALUE_RANK_SINGLE_VALUE);
 
 
         if (typeInfo is INamedTypeSymbol { IsGenericType: true, TypeArguments.Length: 1 } namedTypeSymbol)
         {
             var span = namedTypeSymbol.ConstructUnboundGenericType().ToString().AsSpan();
-            var lastDot = span.LastIndexOf('.') + 1; //even if no . then it returns index 0! :-)
+            var lastDot = span.LastIndexOf('.') + 1; //even if no . then it returns index 0! : )
 
             var startIndex = span.Slice(lastDot).IndexOf('<');
             var endIndex = span.IndexOf('>');
@@ -112,7 +115,7 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
 
             if (TryGetSupportedParam(collectionTypeGenericName.ToString(), namedTypeSymbol, out var typeArgument))
                 return (typeArgument.ToDisplayString(),
-                    SpecialTypeAndEquivalentOpcTypes[typeArgument.SpecialType],
+                    SPECIAL_TYPE_OPC_NATIVE_TYPES[typeArgument.SpecialType],
                     VALUE_RANK_ONE_DIM);
         }
 
@@ -123,15 +126,15 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
         out ITypeSymbol genericParam)
     {
         genericParam = namedTypeSymbol.TypeArguments[0];
-        return SupportedEnumerableNames.Contains(genericTypeName)
-               && SupportedSimpleSpecialtypes.Contains(genericParam.SpecialType);
+        return SUPPORTED_ENUMERABLE_NAMES.Contains(genericTypeName)
+               && SUPPORTED_SIMPLE_SPECIALTYPES.Contains(genericParam.SpecialType);
     }
 
 
     public (OpcUaProperty PropertyInfo, bool TypeIsSupported, PropertyDeclarationSyntax PropertyDecleration)
         GetTypeInfo()
     {
-        var typeDetails = FindSupportedType();
+        var typeDetails = FindSupportedTypes();
         if (typeDetails == null) return (new OpcUaProperty(), false, property);
 
         return

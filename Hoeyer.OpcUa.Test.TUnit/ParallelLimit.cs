@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using TUnit.Core.Interfaces;
 
-namespace TUnitSettings;
+namespace Hoeyer.Opc.Ua.Test.TUnit;
 public class ParallelLimit : IParallelLimit
 {
     private const int LIMIT = 1;

@@ -11,7 +11,6 @@
       <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj" />
     </ItemGroup>
 
-
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.Analysis\Hoeyer.OpcUa.CompileTime.Analysis.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Server.SourceGeneration\Hoeyer.OpcUa.Server.SourceGeneration.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
