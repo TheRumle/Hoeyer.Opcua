@@ -10,6 +10,10 @@ public static class Rules
     public static readonly DiagnosticDescriptor MustHavePublicSetter = CreateErrorDescriptor("HOEYERUA0001",
         DesignCategory, "Entities property must have a public setter.");
 
+
+    public static readonly DiagnosticDescriptor MustBeSupportedOpcUaType = CreateErrorDescriptor("HOEYERUA0002", DesignCategory, "The type '{0}' is not supported for OpcUa entities. It must be either a native OpcUa type or an ICollection with default constructor.");
+     
+
     public static readonly DiagnosticDescriptor MustNotBeNullablePropertyDescriptor = new(
         "HOEYERUA0002",
         "Properties must not be nullable",
@@ -18,10 +22,7 @@ public static class Rules
         DiagnosticSeverity.Error,
         true,
         "OpcUa entity properties must not be annotated as nullable.");
-
-    public static readonly DiagnosticDescriptor MustBeSupportedType =
-        CreateErrorDescriptor("HOEYERUA0002", DesignCategory, "The type of this field is not supported");
-
+    
     public static Diagnostic MustNotBeNullableProperty(PropertyDeclarationSyntax property)
     {
         return Diagnostic.Create(MustNotBeNullablePropertyDescriptor, property.GetLocation(), property.Identifier);

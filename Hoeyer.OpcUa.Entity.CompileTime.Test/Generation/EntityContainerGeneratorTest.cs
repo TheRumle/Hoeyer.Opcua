@@ -5,7 +5,6 @@ using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.Fixtures.Generator;
 using Hoeyer.OpcUa.Server.SourceGeneration.Generation;
 using JetBrains.Annotations;
-using TUnitSettings;
 
 namespace Hoeyer.OpcUa.Entity.Analysis.Test.Generation;
 
@@ -13,8 +12,7 @@ namespace Hoeyer.OpcUa.Entity.Analysis.Test.Generation;
 [ParallelLimiter<ParallelLimit>]
 public class EntityContainerGeneratorTest
 {
-    private readonly GeneratorTestDriver<EntityContainerGenerator> _testDriver = new(new EntityContainerGenerator(),
-        Console.WriteLine);
+    private readonly GeneratorTestDriver<EntityContainerGenerator> _testDriver = new(new EntityContainerGenerator(),Console.WriteLine);
 
     [Test]
     [ValidEntitySourceCodeGenerator]
@@ -23,6 +21,7 @@ public class EntityContainerGeneratorTest
     {
         var generationResult = _testDriver.RunGeneratorOn(entitySourceCode);
         await Assert.That(generationResult.GeneratedTrees).IsNotEmpty().Because("Source code should be generated.");
+        
     }
     
     [Test]

@@ -12,45 +12,33 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Hoeyer.OpcUa.Server.SourceGeneration.Generation;
 
 [Generator]
-public class EntityContainerGenerator : IIncrementalGenerator
+public sealed class EntityContainerGenerator : IIncrementalGenerator
 {
-    private record struct Generated(CompilationUnitSyntax CompilationUnit, ClassDeclarationSyntax ClassDeclarationSyntax);
     
     private static readonly string STATECONTAINER = nameof(StateContainer<int>).Split('`')[0];
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var decoratedRecordsProvider = context
-            .GetTypeDeclarationsDecoratedWith<ClassDeclarationSyntax>("Hoeyer.OpcUa.Core.OpcUaEntityAttribute")
-            .Select((e, _) => new TypeContext<ClassDeclarationSyntax>(e.SemanticModel, e.Node))
+            .GetTypeContextForOpcEntities<ClassDeclarationSyntax>()
             .Select(async (typeContext,cancel) => await CreateSourceCodeAsync(typeContext, cancel));
 
         context.RegisterImplementationSourceOutput(decoratedRecordsProvider.Collect(), AddContainerSourceCode);
     }
-
-    private static void AddContainerSourceCode(SourceProductionContext context, ImmutableArray<Task<Generated>> generatedUnits)
+    
+    private static void AddContainerSourceCode(SourceProductionContext context, ImmutableArray<Task<GeneratedClass<ClassDeclarationSyntax>>> generatedUnits)
     {
-        foreach (var generated in generatedUnits.Select(e => e.Result))
-        {
-            context.AddSource(generated.ClassDeclarationSyntax.Identifier +".g.cs", 
-                generated.CompilationUnit.NormalizeWhitespace().ToString());
-        }
+        //Not yet supported and will not be it for a while
     }
 
-    private static async Task<Generated> CreateSourceCodeAsync<T>(TypeContext<T> context, CancellationToken cancellationToken) where T : TypeDeclarationSyntax
+    private static async Task<GeneratedClass<T>> CreateSourceCodeAsync<T>(TypeContext<T> context, CancellationToken cancellationToken) where T : TypeDeclarationSyntax
     {
-        var usingDirectives = await context.GetImports(cancellationToken);
-        var usingStatements = SyntaxFactory.List(usingDirectives.Union([Locations.ObservabilityNamespace]));
-        
         var classDeclaration = GetClassDeclaration(context, cancellationToken);
-        var namespaceDeclaration = Locations.GeneratedPlacement
-            .AddUsings(usingStatements.ToArray())
-            .AddMembers(classDeclaration);
+        var unit = await context.CreateCompilationUnitFor(classDeclaration, Locations.Utilities , cancellationToken: cancellationToken);
         
-        var compilationUnit = SyntaxFactory.CompilationUnit()
-            .AddUsings(usingStatements.ToArray())
-            .AddMembers(namespaceDeclaration);
-
-        return new Generated(compilationUnit, classDeclaration);
+ 
+        
+        
+        return new GeneratedClass<T>(unit, classDeclaration, context.Node);
     }
 
     private static ClassDeclarationSyntax GetClassDeclaration<T>(TypeContext<T> typeContext, CancellationToken cancellationToken)
@@ -63,11 +51,6 @@ public class EntityContainerGenerator : IIncrementalGenerator
             .WithTypeArgumentList(SyntaxFactory.TypeArgumentList(
                 SyntaxFactory.SingletonSeparatedList<TypeSyntax>(
                     SyntaxFactory.IdentifierName(entityName))));
-        
-        var publicSealedPartial = SyntaxFactory.TokenList(
-            SyntaxFactory.Token(SyntaxKind.PublicKeyword),
-            SyntaxFactory.Token(SyntaxKind.SealedKeyword),
-            SyntaxFactory.Token(SyntaxKind.PartialKeyword));
 
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -83,6 +66,9 @@ public class EntityContainerGenerator : IIncrementalGenerator
             .OfType<PropertyDeclarationSyntax>()
             .Select(CreateNotifyingSetter);
 
+        var publicSealedPartial = SyntaxFactory.TokenList(
+            SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+            SyntaxFactory.Token(SyntaxKind.SealedKeyword));
 
         var classDeclaration = SyntaxFactory.ClassDeclaration(className)
             .WithModifiers(publicSealedPartial)
@@ -123,7 +109,7 @@ public class EntityContainerGenerator : IIncrementalGenerator
             .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
             .WithParameterList(parameters)
             .WithBody(SyntaxFactory.Block(
-                AssignmentExpression(identifier),
+                AssignmentExpression(identifier, lowerIdentifier),
                 StateChangeCall()
             ));
     }
@@ -141,7 +127,7 @@ public class EntityContainerGenerator : IIncrementalGenerator
             .WithArgumentList(args));
     }
 
-    private static ExpressionStatementSyntax AssignmentExpression(string identifier)
+    private static ExpressionStatementSyntax AssignmentExpression(string left, string right)
     {
         return SyntaxFactory.ExpressionStatement(
             SyntaxFactory.AssignmentExpression(
@@ -149,7 +135,8 @@ public class EntityContainerGenerator : IIncrementalGenerator
                 SyntaxFactory.MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
                     SyntaxFactory.IdentifierName(nameof(StateContainer<int>.State)),
-                    SyntaxFactory.IdentifierName(identifier)),
-                SyntaxFactory.IdentifierName(identifier)));
+                    SyntaxFactory.IdentifierName(left)),
+                SyntaxFactory.IdentifierName(right)));
     }
+   
 }

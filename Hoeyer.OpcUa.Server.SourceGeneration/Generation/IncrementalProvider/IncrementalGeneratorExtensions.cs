@@ -5,14 +5,15 @@ namespace Hoeyer.OpcUa.Server.SourceGeneration.Generation.IncrementalProvider;
 
 internal static class IncrementalGeneratorExtensions
 {
-    public static UnloadedIncrementalValuesProvider<TypeContext<T>> GetTypeDeclarationsDecoratedWith<T>(
-        this IncrementalGeneratorInitializationContext context, string attributeMetaName)
+    public static UnloadedIncrementalValuesProvider<TypeContext<T>> GetTypeContextForOpcEntities<T>(this IncrementalGeneratorInitializationContext context) 
         where T : TypeDeclarationSyntax
     {
-        var valueProvider = context.SyntaxProvider.ForAttributeWithMetadataName(attributeMetaName,
+        var valueProvider = context.SyntaxProvider.ForAttributeWithMetadataName("Hoeyer.OpcUa.Core.OpcUaEntityAttribute",
             predicate: (_,_) => true,
-            (attributeSyntaxContext, cancellationToken) =>
-                new TypeContext<T>(attributeSyntaxContext.SemanticModel, (T)attributeSyntaxContext.TargetNode));
+            (attributeSyntaxContext, cancellationToken) => new TypeContext<T>(attributeSyntaxContext.SemanticModel, (T)attributeSyntaxContext.TargetNode))
+            .Select((e, c) => new TypeContext<T>(e.SemanticModel, e.Node));
+        
         return new UnloadedIncrementalValuesProvider<TypeContext<T>>(valueProvider);
+
     }
 }

@@ -5,11 +5,7 @@ namespace Hoeyer.OpcUa.Test.Entities;
 
 public class SupportedDataTypes
 {
-    public IList<int> TestIList { get; set; } = [];
-    public ICollection<int> TestICollection { get; set; } = [];
-    public IEnumerable<int> TestIEnumerable { get; set; } = [];
     public List<int> TestList { get; set; } = [];
-    public ISet<int> TestISet { get; set; } = new HashSet<int>();
     public HashSet<int> TestHashSet { get; set; } = [];
     
     public bool TestBool { get; set; }

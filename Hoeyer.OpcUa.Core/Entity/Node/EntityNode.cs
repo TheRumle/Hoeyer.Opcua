@@ -8,9 +8,10 @@ public interface IEntityNode
 {
     public BaseObjectState BaseObject { get; }
     public Dictionary<NodeId, PropertyState> PropertyStates { get; }
+    public Dictionary<string, PropertyState> PropertyByBrowseName { get; }
 }
 
-public record EntityNode(BaseObjectState BaseObject, Dictionary<NodeId, PropertyState> PropertyStates)
+public sealed record EntityNode(BaseObjectState BaseObject, Dictionary<NodeId, PropertyState> PropertyStates)
     : IEntityNode
 {
     public EntityNode(BaseObjectState entity, IEnumerable<PropertyState> propertyStates)
@@ -18,27 +19,10 @@ public record EntityNode(BaseObjectState BaseObject, Dictionary<NodeId, Property
     {
     }
 
-    public IEnumerable<BaseVariableState> AllProperties => PropertyStates.Values;
-
-
+    public readonly IEnumerable<BaseVariableState> AllProperties = PropertyStates.Values;
     public BaseObjectState BaseObject { get; } = BaseObject;
 
     public Dictionary<NodeId, PropertyState> PropertyStates { get; } = PropertyStates;
-}
 
-public sealed record EntityNode<T>(BaseObjectState BaseObject, Dictionary<NodeId, PropertyState> PropertyStates)
-    : IEntityNode
-{
-    T Entity { get; }
-    public EntityNode(BaseObjectState entity, IEnumerable<PropertyState> propertyStates)
-        : this(entity, propertyStates.ToDictionary(e => e.NodeId, e => e))
-    {
-    }
-
-    public IEnumerable<BaseVariableState> AllProperties => PropertyStates.Values;
-
-
-    public BaseObjectState BaseObject { get; } = BaseObject;
-
-    public Dictionary<NodeId, PropertyState> PropertyStates { get; } = PropertyStates;
+    public Dictionary<string, PropertyState> PropertyByBrowseName { get;  } = PropertyStates.ToDictionary(e=>e.Value.BrowseName.Name, e => e.Value);
 }

@@ -16,33 +16,22 @@ public class MustBePublicAnalyser() : ConcurrentAnalyzer([Rules.MustHavePublicSe
         context.RegisterSymbolAction(AnalyseSymbol, SymbolKind.NamedType);
     }
 
-    private void AnalyseSymbol(SymbolAnalysisContext context)
+    private static void AnalyseSymbol(SymbolAnalysisContext context)
     {
         // Ensure the symbol is a class or record
-        if (context.Symbol is not INamedTypeSymbol { TypeKind: TypeKind.Class } classDefinition) return;
-        if (!classDefinition.IsAnnotatedAsOpcUaEntity()) return;
+        if (context.Symbol is not INamedTypeSymbol { TypeKind: TypeKind.Class } typeDefinition) return;
+        if (!typeDefinition.IsAnnotatedAsOpcUaEntity()) return;
 
-        var properties = classDefinition
+        var properties = typeDefinition
             .GetMembers()
             .OfType<IPropertySymbol>()
-            .Where(e => e.SetMethod is not { DeclaredAccessibility: Accessibility.Public })
+            .Where(e => e.SetMethod is null // No setter at all (read-only property)
+                        || e.SetMethod.DeclaredAccessibility != Accessibility.Public
+                        || e.SetMethod.Name == "" 
+                        || e.SetMethod.IsInitOnly)
             .Select(e => Diagnostic.Create(Rules.MustHavePublicSetter, e.Locations.First()));
         
         foreach (var diagnostic in properties) context.ReportDiagnostic(diagnostic);
     }
 
-    private static void AnalyzeSyntax(SyntaxNodeAnalysisContext context)
-    {
-        if (context.Node is not TypeDeclarationSyntax typeSyntax ||
-            !typeSyntax.IsAnnotatedAsOpcUaEntity(context.SemanticModel))
-            return;
-        
-
-        var properties = typeSyntax.Members
-            .OfType<PropertyDeclarationSyntax>()
-            .Where(e => !e.IsFullyPublicProperty())
-            .Select(e => Diagnostic.Create(Rules.MustHavePublicSetter, e.GetLocation()));
-
-        foreach (var diagnostic in properties) context.ReportDiagnostic(diagnostic);
-    }
 }

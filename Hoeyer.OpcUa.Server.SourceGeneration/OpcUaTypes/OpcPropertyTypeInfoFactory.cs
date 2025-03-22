@@ -14,7 +14,6 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
     private const string VALUE_RANK_ENUM_NAME = nameof(ValueRanks);
     private const string VALUE_RANK_SINGLE_VALUE = VALUE_RANK_ENUM_NAME + "." + nameof(ValueRanks.Scalar);
     private const string VALUE_RANK_ONE_DIM = VALUE_RANK_ENUM_NAME + "." + nameof(ValueRanks.OneDimension);
-
     private const string OPC_UA_BOOLEAN_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.Boolean);
     private const string OPC_UA_BYTE_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.Byte);
     private const string OPC_UA_INT16_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.Int16);
@@ -28,6 +27,9 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
     private const string OPC_UA_STRING_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.String);
     private const string OPC_UA_DATE_TIME_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.DateTime);
     private const string OPC_UA_DECIMAL_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.Decimal);
+    
+    
+    
 
     private static readonly ImmutableHashSet<string> SUPPORTED_ENUMERABLE_NAMES = ImmutableHashSet.CreateRange
     ([

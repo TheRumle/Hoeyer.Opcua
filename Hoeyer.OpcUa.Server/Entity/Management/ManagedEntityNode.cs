@@ -22,6 +22,8 @@ internal sealed record ManagedEntityNode(
     public BaseObjectState BaseObject { get; } = BaseObject;
     public Dictionary<NodeId, PropertyState> PropertyStates { get; } = PropertyStates;
 
+    public Dictionary<string, PropertyState> PropertyByBrowseName => PropertyStates.ToDictionary(e=>e.Value.BrowseName.Name, e => e.Value);
+
     public string GetNameOfManaged(NodeId nodeId)
     {
         if (BaseObject.NodeId.Equals(nodeId)) return BaseObject.DisplayName.ToString();

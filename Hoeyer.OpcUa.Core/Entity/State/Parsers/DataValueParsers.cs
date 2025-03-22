@@ -1,41 +1,42 @@
 ﻿using System.Collections.Generic;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Entity.State.Parsers;
 
 public static class DataValueParsers
 {
-    public static ResultValueParser<int>  NewIntResultValueParser => new();
-    public static DefaultValueParser<int>  NewIntValueParser => new(0);
-    public static ResultValueParser<float>  NewFloatResultParser => new();
-    public static DefaultValueParser<float>  NewFloatParser => new(0f);
-    public static ResultValueParser<double>  NewDoubleResultParser => new();
-    public static DefaultValueParser<double>  NewDoubleParser => new(0.0);
-    public static ResultValueParser<decimal>  NewDecimalResultParser => new();
-    public static DefaultValueParser<decimal>  NewDecimalParser => new(0m);
-    public static ResultValueParser<long>  NewLongResultParser => new();
-    public static DefaultValueParser<long>  NewLongParser => new(0L);
-    public static ResultValueParser<short>  NewShortResultParser => new();
-    public static DefaultValueParser<short>  NewShortParser => new(0);
-    public static ResultValueParser<byte>  NewByteResultParser => new();
-    public static DefaultValueParser<byte>  NewByteParser => new(0);
-    public static ResultValueParser<sbyte>  NewSByteResultParser => new();
-    public static DefaultValueParser<sbyte>  NewSByteParser => new(0);
-    public static ResultValueParser<ushort>  NewUShortResultParser => new();
-    public static DefaultValueParser<ushort>  NewUShortParser => new(0);
-    public static ResultValueParser<uint>  NewUIntResultParser => new();
-    public static DefaultValueParser<uint>  NewUIntParser => new(0);
-    public static ResultValueParser<ulong>  NewULongResultParser => new();
-    public static DefaultValueParser<ulong>  NewULongParser => new(0);
-    public static ResultValueParser<string>  NewStringResultParser => new();
-    public static DefaultValueParser<string>  NewStringParser => new(string.Empty);
+    public static ResultDataValueParser<int>  NewIntResultDataValueParser => new();
+    public static DefaultDataValueParser<int>  NewIntDataValueParser => new(0);
+    public static ResultDataValueParser<float>  NewFloatResultDataParser => new();
+    public static DefaultDataValueParser<float>  NewFloatParser => new(0f);
+    public static ResultDataValueParser<double>  NewDoubleResultDataParser => new();
+    public static DefaultDataValueParser<double>  NewDoubleParser => new(0.0);
+    public static ResultDataValueParser<decimal>  NewDecimalResultDataParser => new();
+    public static DefaultDataValueParser<decimal>  NewDecimalParser => new(0m);
+    public static ResultDataValueParser<long>  NewLongResultDataParser => new();
+    public static DefaultDataValueParser<long>  NewLongParser => new(0L);
+    public static ResultDataValueParser<short>  NewShortResultDataParser => new();
+    public static DefaultDataValueParser<short>  NewShortParser => new(0);
+    public static ResultDataValueParser<byte>  NewByteResultDataParser => new();
+    public static DefaultDataValueParser<byte>  NewByteParser => new(0);
+    public static ResultDataValueParser<sbyte>  NewSByteResultDataParser => new();
+    public static DefaultDataValueParser<sbyte>  NewSByteParser => new(0);
+    public static ResultDataValueParser<ushort>  NewUShortResultDataParser => new();
+    public static DefaultDataValueParser<ushort>  NewUShortParser => new(0);
+    public static ResultDataValueParser<uint>  NewUIntResultDataParser => new();
+    public static DefaultDataValueParser<uint>  NewUIntParser => new(0);
+    public static ResultDataValueParser<ulong>  NewULongResultDataParser => new();
+    public static DefaultDataValueParser<ulong>  NewULongParser => new(0);
+    public static ResultDataValueParser<string>  NewStringResultDataParser => new();
+    public static DefaultDataValueParser<string>  NewStringParser => new(string.Empty);
 
-    public static CollectionValueParser<IList<T>, T> NewListValueParser<T>()
+    public static CollectionDataValueParser<IList<T>, T> NewListValueParser<T>()
     {
-        return new CollectionValueParser<IList<T>, T>(() => []);
+        return new CollectionDataValueParser<IList<T>, T>(() => []);
     } 
     
-    public static CollectionValueParser<ISet<T>, T> NewSetValueParser<T>()
+    public static CollectionDataValueParser<ISet<T>, T> NewSetValueParser<T>()
     {
-        return new CollectionValueParser<ISet<T>, T>(() => new HashSet<T>());
+        return new CollectionDataValueParser<ISet<T>, T>(() => new HashSet<T>());
     } 
 }

@@ -17,8 +17,9 @@ public class PropertyMustBeOfSupportedTypeAnalyserTest
     public async Task GivenValidEntity_ShouldNotHaveDiagnostic(EntitySourceCode entitySourceCode)
     {
         var res = await _driver.RunAnalyzerOn(entitySourceCode);
-        var s = string.Join("\n", res.Diagnostics.Select(e => e.ToString()));
-        await Assert.That(s)
-            .IsEmpty().Because("Correct entities should not have diagnostics.");
+        var diagnosticDescriptions = string.Join("\n", res.Diagnostics.Select(e => e.ToString()));
+        await Assert.That(diagnosticDescriptions)
+            .IsEmpty()
+            .Because("correct entities should not have diagnostics.");
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Hoeyer.OpcUa.CompileTime.Analysis;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class PropertyMustBeOfSupportedTypeAnalyser() : ConcurrentAnalyzer([Rules.MustBeSupportedType])
+public class PropertyMustBeOfSupportedTypeAnalyser() : ConcurrentAnalyzer([Rules.MustBeSupportedOpcUaType])
 {
     protected override void InitializeAnalyzer(AnalysisContext context)
     {
@@ -27,7 +27,7 @@ public class PropertyMustBeOfSupportedTypeAnalyser() : ConcurrentAnalyzer([Rules
             .Where(property => !SupportedTypes.IsSupported(property.Type, context.SemanticModel));
 
         foreach (var property in properties)
-            context.ReportDiagnostic(Diagnostic.Create(Rules.MustBeSupportedType, property.GetLocation()));
+            context.ReportDiagnostic(Diagnostic.Create(Rules.MustBeSupportedOpcUaType, property.GetLocation(), property.Type.ToString()));
     }
 }
 

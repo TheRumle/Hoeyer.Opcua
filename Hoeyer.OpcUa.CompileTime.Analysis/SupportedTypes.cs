@@ -66,26 +66,20 @@ public static class SupportedTypes
 
     public static class Collection
     {
-        private static readonly ISet<string> SupportedCollectionTypes = new HashSet<string>
-        {
-            "global::System.Collections.Generic.IList",
-            "global::System.Collections.Generic.ICollection",
-            "global::System.Collections.Generic.IEnumerable",
-            "global::System.Collections.Generic.List",
-            "global::System.Collections.Generic.ISet",
-            "global::System.Collections.Generic.HashSet",
-        }.ToImmutableHashSet();
-
-
         public static bool Supports(ITypeSymbol typeSymbol)
         {
+            var implementsICollection = typeSymbol
+                .AllInterfaces
+                .Any(i => i.OriginalDefinition.SpecialType == SpecialType.System_Collections_Generic_ICollection_T);
+            
             if (typeSymbol is INamedTypeSymbol { Arity: 1, IsGenericType: true } namedTypeSymbol)
             {
-                var unTypedVersion = namedTypeSymbol.ConstructUnboundGenericType();
-                return SupportedCollectionTypes.Contains(unTypedVersion.GloballyQualifiedNonGeneric()) &&
-                    Simple.Supports(namedTypeSymbol.TypeArguments.First());
+                return Simple.Supports(namedTypeSymbol.TypeArguments.First())
+                       && implementsICollection
+                       && namedTypeSymbol.Constructors.Any(c =>
+                           c.Parameters.Length == 0 && // Check for no parameters
+                           c.DeclaredAccessibility == Accessibility.Public);
             }
-
             return false;
         }
     }

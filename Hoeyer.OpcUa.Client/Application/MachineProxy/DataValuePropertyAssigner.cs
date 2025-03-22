@@ -53,12 +53,6 @@ public sealed class DataValuePropertyAssigner<TEntity>
             BuiltInType.String => TryGetAssignment<string>(conf, dataValue, entity),
             BuiltInType.DateTime => TryGetAssignment<DateTime>(conf, dataValue, entity),
             BuiltInType.Guid => TryGetAssignment<Guid>(conf, dataValue, entity),
-
-            BuiltInType.Null or BuiltInType.SByte or BuiltInType.ByteString or
-                BuiltInType.XmlElement or BuiltInType.NodeId or BuiltInType.ExpandedNodeId or
-                BuiltInType.StatusCode or BuiltInType.QualifiedName or BuiltInType.LocalizedText or
-                BuiltInType.ExtensionObject or BuiltInType.DataValue or BuiltInType.Variant or
-                BuiltInType.DiagnosticInfo or BuiltInType.Number or BuiltInType.Enumeration => throwException.Invoke(),
             _ => throwException.Invoke()
         };
     }

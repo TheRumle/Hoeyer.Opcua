@@ -13,8 +13,7 @@ namespace Hoeyer.OpcUa.Entity.Analysis.Test.Generation;
 [ParallelLimiter<ParallelLimit>]
 public class EntityNodeCreatorGeneratorTest
 {
-    private readonly GeneratorTestDriver<EntityNodeCreatorGenerator> _testDriver = new(new EntityNodeCreatorGenerator(),
-        Console.WriteLine);
+    private readonly GeneratorTestDriver<EntityNodeCreatorGenerator> _testDriver = new(new EntityNodeCreatorGenerator(), Console.WriteLine);
 
     [Test]
     [ValidEntitySourceCodeGenerator]
