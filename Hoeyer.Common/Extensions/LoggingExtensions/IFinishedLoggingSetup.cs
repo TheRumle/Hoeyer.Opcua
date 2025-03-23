@@ -9,5 +9,5 @@ public interface IFinishedLoggingSetup
     void WhenExecuting(Action action);
 
     [Pure]
-    T WhenExecuting<T>(Func<T> action, LogLevel logResultsAs = LogLevel.None);
+    T WhenExecuting<T>(Func<T> action, LogLevel logResultAs = LogLevel.None);
 }
