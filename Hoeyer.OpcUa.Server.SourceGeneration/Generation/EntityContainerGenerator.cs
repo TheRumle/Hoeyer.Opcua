@@ -14,39 +14,40 @@ namespace Hoeyer.OpcUa.Server.SourceGeneration.Generation;
 [Generator]
 public sealed class EntityContainerGenerator : IIncrementalGenerator
 {
-    
     private static readonly string STATECONTAINER = nameof(StateContainer<int>).Split('`')[0];
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var decoratedRecordsProvider = context
             .GetTypeContextForOpcEntities<ClassDeclarationSyntax>()
-            .Select(async (typeContext,cancel) => await CreateSourceCodeAsync(typeContext, cancel));
+            .Select(async (typeContext, cancel) => await CreateSourceCodeAsync(typeContext, cancel));
 
         context.RegisterImplementationSourceOutput(decoratedRecordsProvider.Collect(), AddContainerSourceCode);
     }
-    
-    private static void AddContainerSourceCode(SourceProductionContext context, ImmutableArray<Task<GeneratedClass<ClassDeclarationSyntax>>> generatedUnits)
+
+    private static void AddContainerSourceCode(SourceProductionContext context,
+        ImmutableArray<Task<GeneratedClass<ClassDeclarationSyntax>>> generatedUnits)
     {
         //Not yet supported and will not be it for a while
     }
 
-    private static async Task<GeneratedClass<T>> CreateSourceCodeAsync<T>(TypeContext<T> context, CancellationToken cancellationToken) where T : TypeDeclarationSyntax
+    private static async Task<GeneratedClass<T>> CreateSourceCodeAsync<T>(TypeContext<T> context,
+        CancellationToken cancellationToken) where T : TypeDeclarationSyntax
     {
         var classDeclaration = GetClassDeclaration(context, cancellationToken);
-        var unit = await context.CreateCompilationUnitFor(classDeclaration, Locations.Utilities , cancellationToken: cancellationToken);
-        
- 
-        
-        
+        var unit = await context.CreateCompilationUnitFor(classDeclaration, Locations.Utilities, cancellationToken);
+
+
         return new GeneratedClass<T>(unit, classDeclaration, context.Node);
     }
 
-    private static ClassDeclarationSyntax GetClassDeclaration<T>(TypeContext<T> typeContext, CancellationToken cancellationToken)
+    private static ClassDeclarationSyntax GetClassDeclaration<T>(TypeContext<T> typeContext,
+        CancellationToken cancellationToken)
         where T : TypeDeclarationSyntax
     {
         var entityName = typeContext.Node.Identifier;
         var className = typeContext.Node.Identifier + "Container";
-        
+
         var containerName = SyntaxFactory.GenericName(SyntaxFactory.Identifier(STATECONTAINER))
             .WithTypeArgumentList(SyntaxFactory.TypeArgumentList(
                 SyntaxFactory.SingletonSeparatedList<TypeSyntax>(
@@ -58,10 +59,10 @@ public sealed class EntityContainerGenerator : IIncrementalGenerator
             SyntaxFactory.SingletonSeparatedList(
                 SyntaxFactory.Parameter(SyntaxFactory.Identifier("entity"))
                     .WithType(SyntaxFactory.IdentifierName(entityName))));
-        
+
         var constructor = GetConstructor(className, constructorParams);
-        
-        var notifyingSettersMethods =  typeContext.Node
+
+        var notifyingSettersMethods = typeContext.Node
             .Members
             .OfType<PropertyDeclarationSyntax>()
             .Select(CreateNotifyingSetter);
@@ -82,7 +83,7 @@ public sealed class EntityContainerGenerator : IIncrementalGenerator
     private static ConstructorDeclarationSyntax GetConstructor(string className, ParameterListSyntax constructorParams)
     {
         var baseArgs = SyntaxFactory.ArgumentList([SyntaxFactory.Argument(SyntaxFactory.IdentifierName("entity"))]);
-        
+
         return SyntaxFactory.ConstructorDeclaration(className)
             .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
             .WithParameterList(constructorParams)
@@ -104,7 +105,7 @@ public sealed class EntityContainerGenerator : IIncrementalGenerator
                 SyntaxFactory
                     .Parameter(SyntaxFactory.Identifier($"{lowerIdentifier}"))
                     .WithType(property.Type)));
-        
+
         return SyntaxFactory.MethodDeclaration(returnType, setMethodName)
             .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
             .WithParameterList(parameters)
@@ -120,9 +121,9 @@ public sealed class EntityContainerGenerator : IIncrementalGenerator
         var args = SyntaxFactory.ArgumentList(
             SyntaxFactory.SingletonSeparatedList(
                 SyntaxFactory.Argument(SyntaxFactory.IdentifierName(nameof(StateContainer<int>.State)))
-                )
-            );
-        
+            )
+        );
+
         return SyntaxFactory.ExpressionStatement(SyntaxFactory.InvocationExpression(methodToCall)
             .WithArgumentList(args));
     }
@@ -138,5 +139,4 @@ public sealed class EntityContainerGenerator : IIncrementalGenerator
                     SyntaxFactory.IdentifierName(left)),
                 SyntaxFactory.IdentifierName(right)));
     }
-   
 }

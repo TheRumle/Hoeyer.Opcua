@@ -2,7 +2,8 @@
 
 namespace Hoeyer.OpcUa.Core.Entity.State.Parsers;
 
-public sealed class ResultDataValueParser<T>() : DataValueParser<Result<T>>(() => Result.Fail<T>("Could not extract target value"))
+public sealed class ResultDataValueParser<T>()
+    : DataValueParser<Result<T>>(() => Result.Fail<T>("Could not extract target value"))
 {
     protected override bool TryGetTargetOrIdentity(object value, out Result<T> target)
     {

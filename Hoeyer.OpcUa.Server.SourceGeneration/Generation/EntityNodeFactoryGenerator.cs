@@ -6,7 +6,6 @@ using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.SourceGeneration.Constants;
 using Hoeyer.OpcUa.Server.SourceGeneration.Generation.IncrementalProvider;
 using Hoeyer.OpcUa.Server.SourceGeneration.OpcUaTypes;
-using Hoeyer.OpcUa.Server.SourceGeneration.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -21,19 +20,18 @@ public class EntityNodeFactoryGenerator : IIncrementalGenerator
     {
         var classProviders = context
             .GetTypeContextForOpcEntities<TypeDeclarationSyntax>()
-            .Select(async (typeContext, cancellationToken) => await CreateNodeFactoryCompilationUnit(typeContext, cancellationToken))
-            .Select((e,c)=>e.Result);
+            .Select(async (typeContext, cancellationToken) =>
+                await CreateNodeFactoryCompilationUnit(typeContext, cancellationToken))
+            .Select((e, c) => e.Result);
 
         context.RegisterImplementationSourceOutput(classProviders.Collect(), (productionContext, compilations) =>
         {
-            foreach (var factoryAndContext in compilations)
-            {
-                factoryAndContext.AddToContext(productionContext);
-            }
+            foreach (var factoryAndContext in compilations) factoryAndContext.AddToContext(productionContext);
         });
     }
 
-    private static async Task<GeneratedClass<T>> CreateNodeFactoryCompilationUnit<T>(TypeContext<T> typeContext, CancellationToken cancellationToken) where T : TypeDeclarationSyntax
+    private static async Task<GeneratedClass<T>> CreateNodeFactoryCompilationUnit<T>(TypeContext<T> typeContext,
+        CancellationToken cancellationToken) where T : TypeDeclarationSyntax
     {
         var propertyInfos = typeContext.Node.Members
             .OfType<PropertyDeclarationSyntax>()
@@ -43,18 +41,19 @@ public class EntityNodeFactoryGenerator : IIncrementalGenerator
 
         var classString = GetClassString(typeContext.Node.Identifier.ToString().TrimEnd(), propertyInfos);
         var classDcl = (await CSharpSyntaxTree
-            .ParseText(classString)
-            .GetRootAsync(cancellationToken))
+                .ParseText(classString)
+                .GetRootAsync(cancellationToken))
             .DescendantNodes()
             .OfType<ClassDeclarationSyntax>()
             .FirstOrDefault()!;
 
-        var compilation = await typeContext.CreateCompilationUnitFor(classDcl, additionalUsings: Locations.Utilities,
-            cancellationToken: cancellationToken);
-        return new GeneratedClass<T>(compilation, classDcl,  typeContext.Node);
+        var compilation = await typeContext.CreateCompilationUnitFor(classDcl, Locations.Utilities,
+            cancellationToken);
+        return new GeneratedClass<T>(compilation, classDcl, typeContext.Node);
     }
-    
-    private static IEnumerable<string> GetPropertyNodeDefinitions(string entityName, IEnumerable<OpcUaProperty> properties)
+
+    private static IEnumerable<string> GetPropertyNodeDefinitions(string entityName,
+        IEnumerable<OpcUaProperty> properties)
     {
         return properties.Select(prop =>
         {
@@ -63,13 +62,13 @@ public class EntityNodeFactoryGenerator : IIncrementalGenerator
             var rank = prop.ValueRank.TrimEnd();
             var cSharpType = prop.CSharpType.TrimEnd();
             return $"""
-                     {nameof(PropertyState)} {propertyName} = entity.{nameof(BaseInstanceState.AddProperty)}<{cSharpType}>("{propertyName}", {dataType}, {rank});
-                     {propertyName}.{nameof(BaseObjectState.NodeId)} = new {nameof(NodeId)}("{entityName}.{propertyName}", applicationNamespaceIndex);
-                     {propertyName}.{nameof(PropertyState.AccessLevel)} = {nameof(AccessLevels)}.{nameof(AccessLevels.CurrentReadOrWrite)};
-                     entity.{nameof(BaseInstanceState.AddReference)}({nameof(ReferenceTypes)}.{nameof(ReferenceTypes.HasProperty)}, false, {propertyName}.{nameof(PropertyState.NodeId)});
-                     {propertyName}.{nameof(PropertyState.Value)} = state.{propertyName};
-                     yield return {propertyName};
-                     """;
+                    {nameof(PropertyState)} {propertyName} = entity.{nameof(BaseInstanceState.AddProperty)}<{cSharpType}>("{propertyName}", {dataType}, {rank});
+                    {propertyName}.{nameof(BaseObjectState.NodeId)} = new {nameof(NodeId)}("{entityName}.{propertyName}", applicationNamespaceIndex);
+                    {propertyName}.{nameof(PropertyState.AccessLevel)} = {nameof(AccessLevels)}.{nameof(AccessLevels.CurrentReadOrWrite)};
+                    entity.{nameof(BaseInstanceState.AddReference)}({nameof(ReferenceTypes)}.{nameof(ReferenceTypes.HasProperty)}, false, {propertyName}.{nameof(PropertyState.NodeId)});
+                    {propertyName}.{nameof(PropertyState.Value)} = state.{propertyName};
+                    yield return {propertyName};
+                    """;
         });
     }
 
@@ -77,44 +76,45 @@ public class EntityNodeFactoryGenerator : IIncrementalGenerator
     {
         var propertyYieldReturns = string.Join("\n\n", GetPropertyNodeDefinitions(entityName, properties));
         return $$"""
-              public sealed class {{entityName}}EntityNodeFactory : {{nameof(IEntityNodeFactory)}}<{{entityName}}>
-              {
-                  private readonly {{entityName}} _state;
-                  public {{entityName}}EntityNodeFactory({{entityName}} state)
-                  {
-                    _state = state;
-                  }
+                 public sealed class {{entityName}}EntityNodeFactory : {{nameof(IEntityNodeFactory)}}<{{entityName}}>
+                 {
+                     public string EntityName { get; } = "{{entityName}}";
+                     private readonly {{entityName}} _state;
+                     public {{entityName}}EntityNodeFactory({{entityName}} state)
+                     {
+                       _state = state;
+                     }
 
-                  public {{nameof(IEntityNode)}} Create({{entityName}} state, ushort applicationNamespaceIndex)
-                  {
-                      var entity = CreateEntityBaseObjectState(applicationNamespaceIndex);
-                      var properties = CreateProperties(_state, applicationNamespaceIndex, entity);
-                      return CreateEntityNode(entity, properties);
-                  }
-                  
-                  private static BaseObjectState CreateEntityBaseObjectState(ushort applicationNamespaceIndex)
-                  {
-                      BaseObjectState entity = new BaseObjectState(null)
-                      {
-                          BrowseName =  new QualifiedName("{{entityName}}", applicationNamespaceIndex),
-                          NodeId = new NodeId("{{entityName}}", applicationNamespaceIndex),
-                          DisplayName = "{{entityName}}",
-                      };
-                      entity.AccessRestrictions = AccessRestrictionType.None;
-                      return entity;
-                  }
+                     public {{nameof(IEntityNode)}} Create(ushort applicationNamespaceIndex)
+                     {
+                         var entity = CreateEntityBaseObjectState(applicationNamespaceIndex);
+                         var properties = CreateProperties(_state, applicationNamespaceIndex, entity);
+                         return CreateEntityNode(entity, properties);
+                     }
+                     
+                     private static BaseObjectState CreateEntityBaseObjectState(ushort applicationNamespaceIndex)
+                     {
+                         BaseObjectState entity = new BaseObjectState(null)
+                         {
+                             BrowseName =  new QualifiedName("{{entityName}}", applicationNamespaceIndex),
+                             NodeId = new NodeId("{{entityName}}", applicationNamespaceIndex),
+                             DisplayName = "{{entityName}}",
+                         };
+                         entity.AccessRestrictions = AccessRestrictionType.None;
+                         return entity;
+                     }
 
 
-                  private static {{nameof(IEntityNode)}} CreateEntityNode({{nameof(BaseObjectState)}} entity, IEnumerable<{{nameof(PropertyState)}}> properties)
-                  {
-                      return new {{nameof(EntityNode)}}(entity, properties.ToList());
-                  }
+                     private static {{nameof(IEntityNode)}} CreateEntityNode({{nameof(BaseObjectState)}} entity, IEnumerable<{{nameof(PropertyState)}}> properties)
+                     {
+                         return new {{nameof(EntityNode)}}(entity, properties.ToList());
+                     }
 
-                  private static IEnumerable<{{nameof(PropertyState)}}> CreateProperties({{entityName}} state, ushort applicationNamespaceIndex, {{nameof(BaseObjectState)}} entity)
-                  {
-                    {{propertyYieldReturns}}
-                  }
-              }
-              """;
+                     private static IEnumerable<{{nameof(PropertyState)}}> CreateProperties({{entityName}} state, ushort applicationNamespaceIndex, {{nameof(BaseObjectState)}} entity)
+                     {
+                       {{propertyYieldReturns}}
+                     }
+                 }
+                 """;
     }
 }

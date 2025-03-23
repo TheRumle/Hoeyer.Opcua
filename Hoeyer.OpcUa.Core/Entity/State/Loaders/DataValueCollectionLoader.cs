@@ -4,7 +4,8 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Entity.State.Loaders;
 
-public sealed class DataValueCollectionLoader<TTarget, TCollection> : DataValueLoader<TCollection> where TCollection : IEnumerable<TTarget>
+public sealed class DataValueCollectionLoader<TTarget, TCollection> : DataValueLoader<TCollection>
+    where TCollection : IEnumerable<TTarget>
 {
     public override DataValue Parse(TCollection value)
     {

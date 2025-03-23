@@ -27,8 +27,7 @@ public class PropertyMustBeOfSupportedTypeAnalyser() : ConcurrentAnalyzer([Rules
             .Where(property => !SupportedTypes.IsSupported(property.Type, context.SemanticModel));
 
         foreach (var property in properties)
-            context.ReportDiagnostic(Diagnostic.Create(Rules.MustBeSupportedOpcUaType, property.GetLocation(), property.Type.ToString()));
+            context.ReportDiagnostic(Diagnostic.Create(Rules.MustBeSupportedOpcUaType, property.GetLocation(),
+                property.Type.ToString()));
     }
 }
-
-

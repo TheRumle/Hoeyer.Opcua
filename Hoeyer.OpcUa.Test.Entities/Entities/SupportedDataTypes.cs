@@ -1,15 +1,12 @@
-﻿using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.Core.Entity;
-
-namespace Hoeyer.OpcUa.Test.Entities;
+﻿namespace Hoeyer.OpcUa.Test.Entities;
 
 public class SupportedDataTypes
 {
     public List<int> TestList { get; set; } = [];
     public HashSet<int> TestHashSet { get; set; } = [];
-    
+
     public bool TestBool { get; set; }
-    public byte TestByte { get; set; } 
+    public byte TestByte { get; set; }
     public short TestShort { get; set; }
     public ushort TestUShort { get; set; }
     public int TestInt { get; set; }

@@ -7,13 +7,15 @@ namespace Hoeyer.OpcUa.Core.Observation;
 public class StateContainer<TState>(TState state) : ISubscribable<TState>
 {
     public TState State { get; private set; } = state;
+    private List<StateChangeSubscription<TState>> Subscriptions { get; set; } = new();
+
     public StateChangeSubscription<TState> Subscribe(IStateChangeSubscriber<TState> stateChangeSubscriber)
     {
         var subscription = new StateChangeSubscription<TState>(stateChangeSubscriber);
         Subscriptions.Add(subscription);
         return subscription;
     }
-    private List<StateChangeSubscription<TState>> Subscriptions { get; set; } = new();
+
     public void ChangeState(TState newState)
     {
         State = newState;

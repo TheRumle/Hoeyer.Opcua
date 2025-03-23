@@ -1,0 +1,22 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using Opc.Ua;
+
+namespace Hoeyer.OpcUa.Core.Entity.State.Parsers;
+
+public sealed class PropertyValueCollectionParser<T> : IValueParser<PropertyState, T[]?>
+{
+    private readonly DataValueParser<T[]?> dataValueParser = new DefaultDataValueParser<T[]>(default);
+
+    public T[]? Parse(PropertyState dataValue)
+    {
+        var val = dataValue.Value;
+        return val switch
+        {
+            T singleton => [singleton],
+            IEnumerable<T> dv => dv.ToArray(),
+            DataValue dv => dataValueParser.Parse(dv),
+            _ => null
+        };
+    }
+}

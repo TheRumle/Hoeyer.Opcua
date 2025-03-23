@@ -11,14 +11,14 @@ public static class TypeDeclarationSyntaxExtensions
 {
     public static bool IsAnnotatedAsOpcUaEntity(this TypeDeclarationSyntax typeSyntax, SemanticModel semanticModel)
     {
-        ISymbol? symbol = semanticModel.GetDeclaredSymbol(typeSyntax);
+        var symbol = semanticModel.GetDeclaredSymbol(typeSyntax);
         var isAnnotated = symbol?
             .GetAttributes()
             .Any(IsOpcEntityAttributeSymbol);
 
         return isAnnotated != null && isAnnotated.Value;
     }
-    
+
     public static bool IsAnnotatedAsOpcUaEntity(this INamedTypeSymbol symbol)
     {
         var isAnnotated = symbol?
@@ -30,8 +30,7 @@ public static class TypeDeclarationSyntaxExtensions
 
     private static bool IsOpcEntityAttributeSymbol(AttributeData x)
     {
-        return WellKnown
-            .FullyQualifiedAttribute
+        return WellKnown.FullyQualifiedAttribute
             .EntityAttribute
             .WithGlobalPrefix.Equals(x.AttributeClass?.GloballyQualifiedNonGeneric());
     }

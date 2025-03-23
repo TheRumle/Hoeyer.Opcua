@@ -13,9 +13,9 @@ public static class SymbolDisplayFormats
         SymbolDisplayExtensionMethodStyle.Default,
         SymbolDisplayParameterOptions.IncludeType,
         SymbolDisplayPropertyStyle.NameOnly,
-        SymbolDisplayLocalOptions.IncludeType, 
-        SymbolDisplayKindOptions.None, 
-        SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier | SymbolDisplayMiscellaneousOptions.UseSpecialTypes
+        SymbolDisplayLocalOptions.IncludeType,
+        SymbolDisplayKindOptions.None,
+        SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier |
+        SymbolDisplayMiscellaneousOptions.UseSpecialTypes
     );
-    
 }

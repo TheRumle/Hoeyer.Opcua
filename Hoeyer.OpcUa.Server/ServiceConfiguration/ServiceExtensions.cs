@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Entity.Node;
+using Hoeyer.OpcUa.Server.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
@@ -11,7 +11,7 @@ namespace Hoeyer.OpcUa.Server.ServiceConfiguration;
 
 public static class ServiceExtensions
 {
-    public static OnGoingOpcEntityServerServiceRegistration AddEntityOpcUaServer(
+    public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServer(
         this OnGoingOpcEntityServiceRegistration serviceRegistration,
         Action<ServerConfiguration>? additionalConfiguration = null)
     {
@@ -24,47 +24,25 @@ public static class ServiceExtensions
             return new OpcUaEntityServerSetup(standardConfig, additionalConfiguration ?? (value => { }));
         });
 
-        serviceRegistration.Collection.AddSingleton<OpcUaEntityServerFactory>(p =>
+        serviceRegistration.Collection.AddSingleton(p =>
         {
             var loggerFactory = p.GetService<ILoggerFactory>()!;
             var configuration = p.GetService<OpcUaEntityServerSetup>();
+            var factories = p.GetService<IEnumerable<IEntityNodeFactory>>() ?? [];
             if (configuration is null)
                 throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerInfo)} has been configured!");
-            return new OpcUaEntityServerFactory(configuration, [], loggerFactory);
+
+            return new OpcUaEntityServerFactory(configuration, factories, loggerFactory);
         });
         return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
     }
 
-
-    /// <summary>
-    ///     Scans assembly for implementations of <see cref="IEntityNodeCreator" /> and passes them to the EntityServer.
-    /// </summary>
-    /// <param name="services"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    public static OnGoingOpcEntityServiceRegistration WithAutomaticEntityNodeCreation(
-        this OnGoingOpcEntityServerServiceRegistration services)
+    public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServerAsBackgroundService(
+        this OnGoingOpcEntityServiceRegistration serviceRegistration,
+        Action<ServerConfiguration>? additionalConfiguration = null)
     {
-        services.Collection.AddSingleton<OpcUaEntityServerFactory>(p =>
-        {
-            var loggerFactory = p.GetService<ILoggerFactory>()!;
-            var configuration = p.GetService<OpcUaEntityServerSetup>();
-            if (configuration is null)
-                throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerInfo)} has been configured!");
-            return new OpcUaEntityServerFactory(configuration, GetEntityNodeCreators(), loggerFactory);
-        });
-
-        return services;
-    }
-
-    private static IEnumerable<IEntityNodeCreator> GetEntityNodeCreators()
-    {
-        return AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(assembly => assembly.GetTypes())
-            .Where(type => typeof(IEntityNodeCreator).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
-            .Where(e => e.GetConstructor(Type.EmptyTypes) != null)
-            .Select(Activator.CreateInstance)
-            .Cast<IEntityNodeCreator>()
-            .ToList(); //eager init
+        var serverConfig = serviceRegistration.WithOpcUaServer(additionalConfiguration);
+        serverConfig.Collection.AddHostedService<OpcUaServerBackgroundService>();
+        return serverConfig;
     }
 }

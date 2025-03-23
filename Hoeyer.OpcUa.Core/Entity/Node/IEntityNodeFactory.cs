@@ -1,7 +1,9 @@
 ﻿namespace Hoeyer.OpcUa.Core.Entity.Node;
 
-public interface IEntityNodeFactory;
-public interface IEntityNodeFactory<in T> : IEntityNodeFactory
+public interface IEntityNodeFactory
 {
-    IEntityNode Create(T state, ushort applicationNamespaceIndex);
+    public string EntityName { get; }
+    IEntityNode Create(ushort applicationNamespaceIndex);
 }
+
+public interface IEntityNodeFactory<in T> : IEntityNodeFactory;

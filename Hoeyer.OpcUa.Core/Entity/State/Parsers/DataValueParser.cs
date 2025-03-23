@@ -12,6 +12,7 @@ public abstract class DataValueParser<TTarget> : IValueParser<DataValue?, TTarge
     {
         Identity = identity;
     }
+
     public TTarget Parse(DataValue? dataValue)
     {
         if (dataValue == null) return Identity();
@@ -20,10 +21,10 @@ public abstract class DataValueParser<TTarget> : IValueParser<DataValue?, TTarge
         if (TryGetTargetOrIdentity(dataValue.Value, out var l)) return l;
         if (TryGetTargetOrIdentity(dataValue.WrappedValue, out l)) return l;
         if (TryGetTargetOrIdentity(dataValue.WrappedValue.Value, out l)) return l;
-        
-        TypeInfo? wrappedTypeInfo = dataValue.WrappedValue.TypeInfo;
+
+        var wrappedTypeInfo = dataValue.WrappedValue.TypeInfo;
         if (wrappedTypeInfo is null) return Identity.Invoke();
-        
+
         if (TryGetTargetOrIdentity(OpcUaTypes.ToType(wrappedTypeInfo.BuiltInType), out l)) return l;
         return Identity.Invoke();
     }

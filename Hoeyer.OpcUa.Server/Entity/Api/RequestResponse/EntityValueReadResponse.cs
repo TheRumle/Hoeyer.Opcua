@@ -6,7 +6,6 @@ namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 
 public sealed class EntityValueReadResponse : StatusCodeResponse<ReadValueId, DataValue>
 {
-
     public EntityValueReadResponse(ReadValueId request, StatusCode code, string error)
         : base(request, code, error)
     {

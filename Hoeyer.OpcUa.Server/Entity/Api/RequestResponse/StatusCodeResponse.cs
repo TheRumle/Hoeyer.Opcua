@@ -33,12 +33,12 @@ public abstract class StatusCodeResponse<TRequest, TResponse>
         }
     }
 
+    /// <inheritdoc />
+    public string Error { get; } = "";
+
 
     /// <inheritdoc />
     public bool IsSuccess { get; }
-
-    /// <inheritdoc />
-    public string Error { get; } = "";
 
     /// <inheritdoc />
     public TRequest Request { get; }
@@ -48,18 +48,16 @@ public abstract class StatusCodeResponse<TRequest, TResponse>
 
     /// <inheritdoc />
     public StatusCode ResponseCode { get; }
-    
+
     public override string ToString()
     {
-        if (IsSuccess)
-        {
-            return SuccessDetails();
-        }
+        if (IsSuccess) return SuccessDetails();
         return ErrorDetails();
     }
 
     /// <summary>
-    /// Provides information about the <see cref="Request"/>, the <see cref="Error"/> and the <see cref="ResponseCode"/> s.t a meaningful log can be created.
+    ///     Provides information about the <see cref="Request" />, the <see cref="Error" /> and the <see cref="ResponseCode" />
+    ///     s.t a meaningful log can be created.
     /// </summary>
     /// <returns></returns>
     private string ErrorDetails()
@@ -73,7 +71,8 @@ public abstract class StatusCodeResponse<TRequest, TResponse>
     }
 
     /// <summary>
-    /// Provide information about the <see cref="Request"/> and the <see cref="Response"/> to provide a meaningful history log.
+    ///     Provide information about the <see cref="Request" /> and the <see cref="Response" /> to provide a meaningful
+    ///     history log.
     /// </summary>
     /// <returns></returns>
     private string SuccessDetails()
@@ -81,10 +80,9 @@ public abstract class StatusCodeResponse<TRequest, TResponse>
         return JsonSerializer.Serialize(new
         {
             Request = RequestString(),
-            Response = ResponseCode.ToString(),
-        }, new JsonSerializerOptions { WriteIndented = false});
+            Response = ResponseCode.ToString()
+        }, new JsonSerializerOptions { WriteIndented = false });
     }
 
     protected abstract string RequestString();
-
 }

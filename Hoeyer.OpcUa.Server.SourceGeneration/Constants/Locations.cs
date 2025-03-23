@@ -8,9 +8,11 @@ namespace Hoeyer.OpcUa.Server.SourceGeneration.Constants;
 
 public static class Locations
 {
-    public static readonly NamespaceDeclarationSyntax GeneratedPlacement = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName("Hoeyer.OpcUa.Server.Generated"));
-    
-    public static readonly ImmutableArray<UsingDirectiveSyntax> Utilities = [
+    public static readonly NamespaceDeclarationSyntax GeneratedPlacement =
+        SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName("Hoeyer.OpcUa.Server.Generated"));
+
+    public static readonly ImmutableArray<UsingDirectiveSyntax> Utilities =
+    [
         ..new List<string>
             {
                 "Opc.Ua",
@@ -21,9 +23,9 @@ public static class Locations
                 "Hoeyer.OpcUa.Core.Entity",
                 "Hoeyer.OpcUa.Core.Observation",
                 "Hoeyer.OpcUa.Core.Entity.Node",
-                "Hoeyer.OpcUa.Core.Entity.State"}
+                "Hoeyer.OpcUa.Core.Entity.State"
+            }
             .Select(e => SyntaxFactory.ParseName(e))
             .Select(SyntaxFactory.UsingDirective)
     ];
-
 }

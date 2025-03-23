@@ -74,7 +74,8 @@ internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManage
         if (IsManagedPropertyHandle(nodeId, out var propertyHandle)) return Result.Ok(propertyHandle);
         if (IsManagedEntityHandle(nodeId, out var entityHandle)) return Result.Ok(entityHandle);
 
-        return Result.Fail($"Entity {entityNode.BaseObject.BrowseName} does not have any data for state handle {nodeId}");
+        return Result.Fail(
+            $"Entity {entityNode.BaseObject.BrowseName} does not have any data for state handle {nodeId}");
     }
 
 
@@ -92,6 +93,7 @@ internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManage
 
     public bool IsManagedEntityHandle(object? handle)
     {
-        return handle is IEntityNodeHandle entityHandle && entityNode.BaseObject.NodeId.Equals(entityHandle.Value.NodeId);
+        return handle is IEntityNodeHandle entityHandle &&
+               entityNode.BaseObject.NodeId.Equals(entityHandle.Value.NodeId);
     }
 }

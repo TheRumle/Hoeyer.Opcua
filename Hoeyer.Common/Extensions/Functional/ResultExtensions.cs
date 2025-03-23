@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentResults;
@@ -13,22 +12,24 @@ public static class ResultExtensions
     {
         return Task.WhenAll(tasks).ContinueWith(task => task.Result.AsEnumerable().Merge());
     }
-    
+
     public static Task<Result<T>> Traverse<T>(this Task<T> task, Func<Exception, string> onError)
     {
         return Result.Try(() => task, e => new Error(onError.Invoke(e)));
     }
-    
-    public static Task<IEnumerable<Result<T>>> TraverseEach<T>(this IEnumerable<Task<Result<T>>> tasks) =>
-        Task.WhenAll(tasks).ContinueWith(task =>
+
+    public static Task<IEnumerable<Result<T>>> TraverseEach<T>(this IEnumerable<Task<Result<T>>> tasks)
+    {
+        return Task.WhenAll(tasks).ContinueWith(task =>
         {
             var results = task.Result.ToList();
             return results.AsEnumerable();
         });
-    
-    
+    }
+
+
     /// <summary>
-    /// If the result is not successful will throw a hard error!
+    ///     If the result is not successful will throw a hard error!
     /// </summary>
     /// <param name="result">The result, which might have been failed</param>
     /// <param name="exceptionFactory">How to create the exception</param>
@@ -77,10 +78,7 @@ public static class ResultExtensions
     public static IEnumerable<T> Then<T>(this IEnumerable<T> result, Action<T> stateChanger)
     {
         var enumerable = result as T[] ?? result.ToArray();
-        foreach (var r in enumerable)
-        {
-            stateChanger.Invoke(r);
-        }
+        foreach (var r in enumerable) stateChanger.Invoke(r);
 
         return enumerable;
     }

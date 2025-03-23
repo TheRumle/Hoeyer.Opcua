@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using FluentResults;
 using Hoeyer.OpcUa.Core.Entity.Node;
-using Hoeyer.OpcUa.Server.Entity.Handle;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Entity.Api;
@@ -10,7 +9,7 @@ public interface IEntityHandleManager
 {
     public IEntityNodeHandle EntityHandle { get; }
     public IEnumerable<IEntityNodeHandle> PropertyHandles { get; }
-    
+
     public bool IsHandleToAnyRelatedNode(object? handle);
 
     public bool IsManagedPropertyHandle(object? handle, out IEntityNodeHandle managedPropertyHandle);
@@ -28,6 +27,6 @@ public interface IEntityHandleManager
     public Result<IEntityNodeHandle> GetHandle(NodeId nodeId);
 
     public Result<BaseInstanceState> GetState(NodeId nodeId);
-    
+
     public bool IsManaged(NodeId nodeId);
 }

@@ -1,46 +1,10 @@
 ﻿using Hoeyer.Opc.Ua.Test.TUnit;
-using Hoeyer.OpcUa.Core.Entity.Node;
-using Hoeyer.OpcUa.Entity.CompileTime.Testing.Drivers;
-using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
-using Hoeyer.OpcUa.Entity.CompileTime.Testing.Fixtures.Generator;
 using Hoeyer.OpcUa.Server.SourceGeneration.Generation;
 using JetBrains.Annotations;
 
-namespace Hoeyer.OpcUa.Entity.Analysis.Test.Generation;
+namespace Hoeyer.OpcUa.Entity.CompileTime.Test.Generation;
 
 [TestSubject(typeof(EntityContainerGenerator))]
 [ParallelLimiter<ParallelLimit>]
-public class EntityContainerGeneratorTest
-{
-    private readonly GeneratorTestDriver<EntityContainerGenerator> _testDriver = new(new EntityContainerGenerator(),Console.WriteLine);
-
-    [Test]
-    [ValidEntitySourceCodeGenerator]
-    [DisplayName("Can generate syntax tree for '$entitySourceCode'")]
-    public async Task WhenGiven_CorrectSourceCodeInfo_ShouldGenerateSyntaxTrees(EntitySourceCode entitySourceCode)
-    {
-        var generationResult = _testDriver.RunGeneratorOn(entitySourceCode);
-        await Assert.That(generationResult.GeneratedTrees).IsNotEmpty().Because("Source code should be generated.");
-        
-    }
-    
-    [Test]
-    [ValidEntitySourceCodeGenerator]
-    [DisplayName($"Generates {nameof(IEntityNodeCreator)} for $sourceCode")]
-    public async Task WhenGiven_CorrectSourceCode_GeneratesIEntityNodeCreator(EntitySourceCode sourceCode)
-    {
-        var generationResult = _testDriver.RunGeneratorOn(sourceCode);
-        await Assert.That(generationResult.SourceCode).Contains($"{sourceCode.Type.Name}Container");
-    }
-
-
-    [Test]
-    [EntitySourceCodeGenerator]
-    [DisplayName("Will not produce any diagnostic")]
-    public async Task Generator_ShouldNeverProduceDiagnostics(EntitySourceCode entitySourceCode)
-    {
-        var generationResult = _testDriver.RunGeneratorOn(entitySourceCode);
-        await Assert.That(generationResult.Errors).IsEmpty().Because(
-            "The generator should not be responsible for analyzing source code, only production of generated code.");
-    }
-}
+[InheritsTests]
+public sealed class EntityContainerGeneratorTest : GeneratorTest<EntityContainerGenerator>;

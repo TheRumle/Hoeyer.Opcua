@@ -9,11 +9,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-       <ProjectReference Include="..\Hoeyer.OpcUa.Client\Hoeyer.OpcUa.Client.csproj" />
-       <ProjectReference Include="..\Hoeyer.OpcUa.Test.Entities\Hoeyer.OpcUa.Test.Entities.csproj"/>
-       <ProjectReference Include="..\Hoeyer.OpcUa.Test.IntegrationTest.Configuration\Hoeyer.OpcUa.Test.IntegrationTest.Configuration.csproj" />
-       <ProjectReference Include="..\Hoeyer.OpcUa.Test.TUnit\Hoeyer.OpcUa.Test.TUnit.csproj" />
-       <PackageReference Include="Testcontainers" Version="4.3.0" />
+        <ProjectReference Include="..\Hoeyer.OpcUa.Client\Hoeyer.OpcUa.Client.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Test.Entities\Hoeyer.OpcUa.Test.Entities.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Test.IntegrationTest.Configuration\Hoeyer.OpcUa.Test.IntegrationTest.Configuration.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Test.TUnit\Hoeyer.OpcUa.Test.TUnit.csproj"/>
+        <PackageReference Include="Testcontainers" Version="4.3.0"/>
     </ItemGroup>
 
 </Project>

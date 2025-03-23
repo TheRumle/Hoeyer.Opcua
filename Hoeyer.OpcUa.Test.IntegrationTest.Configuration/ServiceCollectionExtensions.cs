@@ -5,7 +5,8 @@ namespace TestConfiguration;
 
 public static class ServiceCollectionExtensions
 {
-    public static OnGoingOpcEntityServiceRegistration AddTestAddOpcUaServerConfiguration(this IServiceCollection collection, int port)
+    public static OnGoingOpcEntityServiceRegistration AddTestAddOpcUaServerConfiguration(
+        this IServiceCollection collection, int port)
     {
         return collection.AddOpcUaServerConfiguration(conf => conf
             .WithServerId("TestServer")
@@ -14,5 +15,4 @@ public static class ServiceCollectionExtensions
             .WithEndpoints([$"opc.tcp://localhost:{port}"])
             .Build());
     }
-    
 }

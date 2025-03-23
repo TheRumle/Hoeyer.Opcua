@@ -32,10 +32,11 @@ internal class EntityReader(IEntityNode entityNode, IPropertyReader propertyRead
         {
             Attributes.AccessLevel => CreateResponse(readId, AccessLevels.CurrentReadOrWrite),
             Attributes.DataType => CreateResponse(readId, DataTypes.ObjectNode),
-            Attributes.BrowseName =>CreateResponse(readId, node.BrowseName),
+            Attributes.BrowseName => CreateResponse(readId, node.BrowseName),
             Attributes.NodeClass => CreateResponse(readId, (int)NodeClass.Object),
             Attributes.DisplayName => CreateResponse(readId, node.DisplayName),
-            Attributes.Description => CreateResponse(readId, new LocalizedText($"The managed entity '{node.DisplayName.ToString()}'")),
+            Attributes.Description => CreateResponse(readId,
+                new LocalizedText($"The managed entity '{node.DisplayName.ToString()}'")),
             Attributes.NodeId => CreateResponse(readId, node.NodeId),
             _ => new EntityValueReadResponse(readId, StatusCodes.BadNotSupported, "Not supported")
         };

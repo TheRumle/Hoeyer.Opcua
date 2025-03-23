@@ -2,12 +2,15 @@
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.Drivers;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.Fixtures.Generator;
+using Hoeyer.OpcUa.Server.SourceGeneration.Generation;
+using JetBrains.Annotations;
 
-namespace Hoeyer.OpcUa.Entity.Analysis.Test.Analysis;
+namespace Hoeyer.OpcUa.Entity.CompileTime.Test.Analysis;
 
+[TestSubject(typeof(EntityContainerGenerator))]
 public class PropertyMustBeOfSupportedTypeAnalyserTest
 {
-    private readonly AnalyzerTestDriver<PropertyMustBeOfSupportedTypeAnalyser> _driver 
+    private readonly AnalyzerTestDriver<PropertyMustBeOfSupportedTypeAnalyser> _driver
         = new(new PropertyMustBeOfSupportedTypeAnalyser(), Console.WriteLine);
 
     [Test]

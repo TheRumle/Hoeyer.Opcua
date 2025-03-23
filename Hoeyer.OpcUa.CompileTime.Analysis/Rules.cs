@@ -11,8 +11,10 @@ public static class Rules
         DesignCategory, "Entities property must have a public setter.");
 
 
-    public static readonly DiagnosticDescriptor MustBeSupportedOpcUaType = CreateErrorDescriptor("HOEYERUA0002", DesignCategory, "The type '{0}' is not supported for OpcUa entities. It must be either a native OpcUa type or an ICollection with default constructor.");
-     
+    public static readonly DiagnosticDescriptor MustBeSupportedOpcUaType = CreateErrorDescriptor("HOEYERUA0002",
+        DesignCategory,
+        "The type '{0}' is not supported for OpcUa entities. It must be either a native OpcUa type or an ICollection with default constructor.");
+
 
     public static readonly DiagnosticDescriptor MustNotBeNullablePropertyDescriptor = new(
         "HOEYERUA0002",
@@ -22,12 +24,12 @@ public static class Rules
         DiagnosticSeverity.Error,
         true,
         "OpcUa entity properties must not be annotated as nullable.");
-    
+
     public static Diagnostic MustNotBeNullableProperty(PropertyDeclarationSyntax property)
     {
         return Diagnostic.Create(MustNotBeNullablePropertyDescriptor, property.GetLocation(), property.Identifier);
     }
-    
+
     private static DiagnosticDescriptor CreateDescriptor(
         string diagnosticId,
         string category,
@@ -35,18 +37,20 @@ public static class Rules
         string message)
     {
         return new DiagnosticDescriptor(
-            id: diagnosticId,
-            title: message,
-            messageFormat: message,
-            category: category,
-            defaultSeverity: severity,
-            isEnabledByDefault: true,
-            description: message);
+            diagnosticId,
+            message,
+            message,
+            category,
+            severity,
+            true,
+            message);
     }
-    
+
     private static DiagnosticDescriptor CreateErrorDescriptor(
         string diagnosticId,
         string category,
-        string message) =>
-        CreateDescriptor(diagnosticId, category, DiagnosticSeverity.Error, message);
+        string message)
+    {
+        return CreateDescriptor(diagnosticId, category, DiagnosticSeverity.Error, message);
+    }
 }

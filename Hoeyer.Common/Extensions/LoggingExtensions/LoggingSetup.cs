@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.Common.Extensions.LoggingExtensions;
@@ -6,7 +7,6 @@ namespace Hoeyer.Common.Extensions.LoggingExtensions;
 internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel)
     : ILogLevelSelected, IMessageSelected, IScopeAndMessageSelected, IScopeSelected
 {
-
     private string? _message;
     private object[]? _messageArgs;
     private string? _scope;
@@ -25,17 +25,17 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel)
     }
 
     /// <inheritdoc />
-    public T WhenExecuting<T>(Func<T> action, LogLevel logLevel = LogLevel.None)
+    public T WhenExecuting<T>(Func<T> action, LogLevel logResultAs = LogLevel.None)
     {
         if (HasScope)
         {
             var a = ExecuteAndLogWithScope(action);
-            if (a != null) logger.Log(logLevel, "Got {Values}", a);
+            if (EqualityComparer<T>.Default.Equals(a, default!)) logger.Log(logResultAs, "Got {Values}", a);
             return a;
         }
 
         var res = ExecuteAndLog(action);
-        if (res != null) logger.Log(logLevel, "Got {Values}", res);
+        if (EqualityComparer<T>.Default.Equals(res, default!)) logger.Log(logResultAs, "Got {Values}", res);
         return res;
     }
 

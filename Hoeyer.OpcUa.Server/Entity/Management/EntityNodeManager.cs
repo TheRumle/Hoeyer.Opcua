@@ -7,8 +7,6 @@ using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Entity.Api;
-using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
-using Hoeyer.OpcUa.Server.Entity.Handle;
 using Hoeyer.OpcUa.Server.Extensions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
@@ -28,8 +26,8 @@ internal sealed class EntityNodeManager(
 ) : CustomNodeManager(server, managedEntity.Namespace), IEntityNodeManager
 {
     private readonly BaseObjectState _entity = managedEntity.BaseObject;
-    private readonly ServerSystemContext _systemContext = server.DefaultSystemContext;
     private readonly RequestResponseProcessorFactory _processorFactory = new(LogLevel.Error, LogLevel.Information);
+    private readonly ServerSystemContext _systemContext = server.DefaultSystemContext;
 
 
     public IEntityNode ManagedEntity { get; } = managedEntity;
@@ -43,8 +41,9 @@ internal sealed class EntityNodeManager(
             {
                 var res = referenceLinker.InitializeToExternals(externalReferences);
                 if (res.IsFailed) logger.LogError(res.Errors.ToNewlineSeparatedString());
-                
-                logger.LogInformation("Adding {PropertiesName}", managedEntity.PropertyStates.Values.Select(e=> e.BrowseName));
+
+                logger.LogInformation("Adding {PropertiesName}",
+                    managedEntity.PropertyStates.Values.Select(e => e.BrowseName));
             });
     }
 
@@ -122,7 +121,8 @@ internal sealed class EntityNodeManager(
         BrowseResultMask resultMask)
     {
         return logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithSessionContextScope(context, "{SessionId}, Getting metadata for {@TargetHandle}", context.SessionId.ToString() ,targetHandle)
+            .WithSessionContextScope(context, "{SessionId}, Getting metadata for {@TargetHandle}",
+                context.SessionId.ToString(), targetHandle)
             .WithErrorMessage("Failed to get metadata for {@TargetHandle}", targetHandle)
             .WhenExecuting(() =>
             {
@@ -145,7 +145,7 @@ internal sealed class EntityNodeManager(
     {
         if (continuationPoint.NodeToBrowse is not IEntityNodeHandle nodeToBrowse) return;
         var cPoint = continuationPoint;
-        
+
         continuationPoint = logger.LogCaughtExceptionAs(LogLevel.Error)
             .WithSessionContextScope(context, "Browsing node")
             .WithErrorMessage("Failed to browse node")
@@ -158,7 +158,6 @@ internal sealed class EntityNodeManager(
                     .ValueOrDefault
                     ?.ContinuationPoint;
             })!;
-
     }
 
 
@@ -180,29 +179,27 @@ internal sealed class EntityNodeManager(
     {
         var filtered = nodesToRead.Where(e => !e.Processed && entityHandleManager.IsManaged(e.NodeId)).ToList();
         if (!filtered.Any()) return;
-        
+
         logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithSessionContextScope(context, "Reading values {@ValuesToRead}", filtered.Select(e => e.NodeId).Distinct())
+            .WithSessionContextScope(context, "Reading values {@ValuesToRead}",
+                filtered.Select(e => e.NodeId).Distinct())
             .WithErrorMessage("An unexpected error occurred when trying to read nodes. ")
             .WhenExecuting(() =>
             {
                 var requestResponses = entityReader.ReadAttributes(filtered);
                 _processorFactory.GetProcessorWithLoggingFor("Read", requestResponses,
-                    processSuccess: e =>
+                    e =>
                     {
                         e.Request.Processed = true;
                         values[nodesToRead.IndexOf(e.Request)] = e.Response.DataValue;
                     },
-                    processError: errorResponse =>
+                    errorResponse =>
                         errors[nodesToRead.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode,
                     logger
-                ).Process(
-                    additionalSuccessCriteria: e =>
-                        e.IsSuccess && StatusCode.IsGood(e.ResponseCode) ||
-                        e.ResponseCode.Equals(StatusCodes.BadNotSupported));
+                ).Process(e =>
+                    (e.IsSuccess && StatusCode.IsGood(e.ResponseCode)) ||
+                    e.ResponseCode.Equals(StatusCodes.BadNotSupported));
             });
-        
-    
     }
 
     /// <inheritdoc />
@@ -212,14 +209,16 @@ internal sealed class EntityNodeManager(
         if (!filtered.Any()) return;
 
         logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithSessionContextScope(context, "Writing nodes {@Nodes}", nodesToWrite.Select(e => e.NodeId), context.SessionId)
+            .WithSessionContextScope(context, "Writing nodes {@Nodes}", nodesToWrite.Select(e => e.NodeId),
+                context.SessionId)
             .WhenExecuting(() =>
             {
                 var requestResponses = entityWriter.Write(filtered);
                 _processorFactory.GetProcessorWithLoggingFor("Write", requestResponses,
-                    e => e.Request.Processed = true,
-                    errorResponse => errors[nodesToWrite.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode,
-                    logger)
+                        e => e.Request.Processed = true,
+                        errorResponse =>
+                            errors[nodesToWrite.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode,
+                        logger)
                     .Process(e => e.IsSuccess && StatusCode.IsGood(e.ResponseCode));
             });
     }

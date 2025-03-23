@@ -27,5 +27,8 @@ public static class OpcExtensions
         };
     }
 
-    public static string StringName(this NodeState property) => property.BrowseName.Name;
+    public static string StringName(this NodeState property)
+    {
+        return property.BrowseName.Name;
+    }
 }

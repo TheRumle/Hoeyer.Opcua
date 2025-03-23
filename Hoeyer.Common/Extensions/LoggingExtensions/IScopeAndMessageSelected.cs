@@ -3,5 +3,3 @@
 public interface IScopeAndMessageSelected : IFinishedLoggingSetup
 {
 }
-
-

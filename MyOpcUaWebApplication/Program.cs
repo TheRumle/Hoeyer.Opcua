@@ -1,6 +1,5 @@
-using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Core.Configuration;
-using Hoeyer.OpcUa.Server;
+using Hoeyer.OpcUa.Server.Core;
 using Hoeyer.OpcUa.Server.ServiceConfiguration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,9 +13,8 @@ builder.Services.AddOpcUaServerConfiguration(conf => conf
         .WithHttpsHost("localhost", 4840)
         .WithEndpoints(["opc.tcp://localhost:4840"])
         .Build())
-    .AddEntityOpcUaServer()
-    .WithAutomaticEntityNodeCreation()
-    .AddOpcUaClientServices();
+    .WithEntityServices()
+    .WithOpcUaServer();
 
 var app = builder.Build();
 

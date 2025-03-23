@@ -1,7 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Entity.Api;
-using Hoeyer.OpcUa.Server.Entity.Handle;
 using Hoeyer.OpcUa.Server.Test.Application.Fixtures;
 using Hoeyer.OpcUa.Server.Test.Application.Generators;
 using Opc.Ua;
@@ -12,10 +11,10 @@ namespace Hoeyer.OpcUa.Server.Test.Application;
 [EntityFixtureGenerator]
 public class EntityBrowserTest(EntityReaderFixture fixture)
 {
+    private readonly IEntityNode _entity = fixture.Node;
     private readonly IEntityBrowser _entityBrowser = new EntityBrowser(fixture.Node);
     private readonly IEntityNodeHandle _entityHandle = fixture.EntityHandle;
-    private readonly IEntityNode _entity = fixture.Node;
-    
+
     [Test]
     public async Task WhenBrowsingEntity_BrowseIsSuccess()
     {
@@ -47,5 +46,4 @@ public class EntityBrowserTest(EntityReaderFixture fixture)
             ReferenceTypeId = ReferenceTypes.References
         };
     }
-
 }

@@ -7,17 +7,17 @@ namespace Hoeyer.OpcUa.Server.Extensions;
 
 public static class LoggingExtensions
 {
-    public static IScopeSelected WithSessionContextScope(this ILogLevelSelected logger, IOperationContext context, [StructuredMessageTemplate] string scope, params object[] messageArguments)
+    public static IScopeSelected WithSessionContextScope(this ILogLevelSelected logger, IOperationContext context,
+        [StructuredMessageTemplate] string scope, params object[] messageArguments)
     {
         var identity = JsonSerializer.Serialize(new
         {
             Session = context.SessionId.ToString(),
-            UserIdentity = context.UserIdentity.DisplayName,
+            UserIdentity = context.UserIdentity.DisplayName
         }, new JsonSerializerOptions { WriteIndented = true });
 
         // Prepend a prefix to the message without breaking structured formatting
-        string prefixedMessage = $"[{identity}] {scope}";
+        var prefixedMessage = $"[{identity}] {scope}";
         return logger.WithScope(prefixedMessage, messageArguments);
-
     }
 }

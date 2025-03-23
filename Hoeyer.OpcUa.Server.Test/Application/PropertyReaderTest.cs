@@ -8,45 +8,43 @@ namespace Hoeyer.OpcUa.Server.Test.Application;
 
 [Category(nameof(PropertyReader))]
 [EntityFixtureGenerator]
-public class PropertyReaderTest(EntityReaderFixture propertyReaderFixture) 
+public class PropertyReaderTest(EntityReaderFixture propertyReaderFixture)
 {
     private readonly IPropertyReader _propertyReader = new PropertyReader();
+
     public override string ToString()
     {
         return propertyReaderFixture.ToString();
     }
-    
-    public IEnumerable<PropertyState> PropertyStates() => propertyReaderFixture.Properties;
 
-    public static IEnumerable<TestInput> ObligatoryAttributes() => new[]
+    public IEnumerable<PropertyState> PropertyStates()
     {
-        Attributes.BrowseName,
-        Attributes.NodeId,
-        Attributes.NodeClass,
-        Attributes.DisplayName,
-        Attributes.Description,
-        Attributes.Value,
-        Attributes.ValueRank,
-        Attributes.DataType,
-        Attributes.MinimumSamplingInterval
-    }.Select(e=> new TestInput(e));
+        return propertyReaderFixture.Properties;
+    }
 
-    public record TestInput(uint Attribute)
+    public static IEnumerable<TestInput> ObligatoryAttributes()
     {
-        public static implicit operator uint(TestInput value) => value.Attribute;
-
-        /// <inheritdoc />
-        public override string ToString()
+        return new[]
         {
-            return Attributes.GetBrowseName(Attribute);
-        }
-    } 
+            Attributes.BrowseName,
+            Attributes.NodeId,
+            Attributes.NodeClass,
+            Attributes.DisplayName,
+            Attributes.Description,
+            Attributes.Value,
+            Attributes.ValueRank,
+            Attributes.DataType,
+            Attributes.MinimumSamplingInterval
+        }.Select(e => new TestInput(e));
+    }
 
     [Test]
     [MatrixDataSource]
     public async Task CanReadProperty(
-        [MatrixInstanceMethod<PropertyReaderTest>(nameof(PropertyStates))] PropertyState propertyState,
-        [MatrixInstanceMethod<PropertyReaderTest>(nameof(ObligatoryAttributes))] TestInput attribute)
+        [MatrixInstanceMethod<PropertyReaderTest>(nameof(PropertyStates))]
+        PropertyState propertyState,
+        [MatrixInstanceMethod<PropertyReaderTest>(nameof(ObligatoryAttributes))]
+        TestInput attribute)
     {
         var request = new ReadValueId
         {
@@ -55,5 +53,19 @@ public class PropertyReaderTest(EntityReaderFixture propertyReaderFixture)
 
         var result = _propertyReader.ReadProperty(request, propertyState);
         await Assert.That(StatusCode.IsGood(result.ResponseCode)).IsTrue();
+    }
+
+    public record TestInput(uint Attribute)
+    {
+        public static implicit operator uint(TestInput value)
+        {
+            return value.Attribute;
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Attributes.GetBrowseName(Attribute);
+        }
     }
 }

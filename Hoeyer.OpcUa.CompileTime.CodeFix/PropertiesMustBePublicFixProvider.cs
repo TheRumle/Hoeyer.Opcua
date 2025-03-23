@@ -40,7 +40,7 @@ public sealed class PropertiesMustBePublicFixProvider : CodeFixProvider
             CodeAction.Create(
                 "Make property publicly available",
                 c => MakeFullyPublic(context.Document, declaration, root!),
-                Resources.HOEYERUA0001Title.ToString()),
+                Resources.HOEYERUA0001Title),
             diagnostic);
     }
 

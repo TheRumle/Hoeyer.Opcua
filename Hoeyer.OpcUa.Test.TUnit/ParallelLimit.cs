@@ -2,6 +2,7 @@
 using TUnit.Core.Interfaces;
 
 namespace Hoeyer.Opc.Ua.Test.TUnit;
+
 public class ParallelLimit : IParallelLimit
 {
     private const int LIMIT = 1;

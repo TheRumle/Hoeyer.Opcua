@@ -17,22 +17,23 @@ internal class EntityBrowser(IEntityNode node) : IEntityBrowser
     public Result<EntityBrowseResponse> Browse(ContinuationPoint continuationPoint,
         IEntityNodeHandle nodeToBrowse)
     {
-        
         var browseResult = nodeToBrowse switch
         {
             EntityHandle entityHandle
                 when entityHandle.Payload.Equals(node.BaseObject) => BrowseEntity(continuationPoint),
 
             PropertyHandle propertyHandle
-                when node.PropertyStates.ContainsValue(propertyHandle.Payload) => BrowseProperty(propertyHandle.Payload),
-            
-            _ => Result.Fail($"{nodeToBrowse.Value.BrowseName} is not related to the entity {node.BaseObject.BrowseName}")
+                when node.PropertyStates.ContainsValue(propertyHandle.Payload) =>
+                BrowseProperty(propertyHandle.Payload),
+
+            _ => Result.Fail(
+                $"{nodeToBrowse.Value.BrowseName} is not related to the entity {node.BaseObject.BrowseName}")
         };
 
         return browseResult
             .Map(values => values
                 .Skip(continuationPoint.Index)
-                .Take((int)Math.Min(continuationPoint.MaxResultsToReturn, int.MaxValue)))                
+                .Take((int)Math.Min(continuationPoint.MaxResultsToReturn, int.MaxValue)))
             .Map(foundValues => CreateBrowseResponse(foundValues.ToList()));
     }
 
@@ -45,7 +46,8 @@ internal class EntityBrowser(IEntityNode node) : IEntityBrowser
     /// <inheritdoc />
     public Result<IEnumerable<ReferenceDescription>> BrowseEntity(ContinuationPoint continuationPoint)
     {
-        return Result.Ok(node.PropertyStates.Values.Select(propertyState => CreateDescription(propertyState, continuationPoint)));
+        return Result.Ok(node.PropertyStates.Values.Select(propertyState =>
+            CreateDescription(propertyState, continuationPoint)));
     }
 
     private static Result<IEnumerable<ReferenceDescription>> BrowseProperty(PropertyState managed)

@@ -5,12 +5,13 @@ using FluentResults;
 using FluentResults.Extensions;
 using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.OpcUa.Client.Application.MachineProxy;
-using Hoeyer.OpcUa.Client.Configuration.Entities;
+using Hoeyer.OpcUa.Core.Entity.State;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application;
 
 public sealed class OpcUaEntityReader<TEntity>(
+    IEntityTranslator<TEntity> translator,
     DataValuePropertyAssigner<TEntity> assigner,
     EntityConfiguration<TEntity> settings) :
     IOpcUaNodeConnectionHolder<TEntity> where TEntity : new()

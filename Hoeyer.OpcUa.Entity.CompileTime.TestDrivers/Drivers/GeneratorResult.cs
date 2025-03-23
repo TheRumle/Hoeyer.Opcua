@@ -8,6 +8,6 @@ public record GeneratorResult(
     TimeSpan TimingInformation)
 {
     public IEnumerable<Diagnostic> Errors => Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error);
-    
+
     public string SourceCode => string.Join(Environment.NewLine, GeneratedTrees);
 }

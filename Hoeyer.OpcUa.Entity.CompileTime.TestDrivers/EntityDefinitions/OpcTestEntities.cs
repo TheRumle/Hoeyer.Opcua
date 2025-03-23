@@ -21,6 +21,8 @@ public static class OpcTestEntities
         .ToImmutableHashSet();
 
     public static readonly ImmutableHashSet<Type> PropertyAccessViolations = All
-        .Where(type => type.FullName!.Contains($"{nameof(EntityDefinitions)}.{nameof(Incorrect)}.{nameof(Incorrect.PropertyAccess)}"))
+        .Where(type =>
+            type.FullName!.Contains(
+                $"{nameof(EntityDefinitions)}.{nameof(Incorrect)}.{nameof(Incorrect.PropertyAccess)}"))
         .ToImmutableHashSet();
 }

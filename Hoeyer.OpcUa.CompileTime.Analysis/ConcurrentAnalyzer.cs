@@ -8,7 +8,7 @@ public abstract class ConcurrentAnalyzer(ImmutableArray<DiagnosticDescriptor> de
 {
     /// <inheritdoc />
     public sealed override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = descriptors;
-    
+
     /// <inheritdoc />
     public sealed override void Initialize(AnalysisContext context)
     {
