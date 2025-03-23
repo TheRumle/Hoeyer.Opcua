@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core.Entity.Node;
 
-namespace Hoeyer.OpcUa.Core.Entity.State;
+namespace Hoeyer.OpcUa.Core.Entity;
 
 public interface IEntityTranslator;
 

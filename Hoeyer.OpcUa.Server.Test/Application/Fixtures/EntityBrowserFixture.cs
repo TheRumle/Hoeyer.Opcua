@@ -10,7 +10,7 @@ public sealed record EntityBrowserFixture
     public readonly IEntityNode EntityNode;
     public readonly IEntityHandleManager HandleManager;
 
-    public EntityBrowserFixture(IEntityNodeFactory nodeCreator)
+    public EntityBrowserFixture(IEntityNodeStructureFactory nodeCreator)
     {
         var managedNode = nodeCreator.Create(2);
         EntityNode = managedNode;

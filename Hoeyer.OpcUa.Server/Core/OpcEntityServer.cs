@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Server.Entity.Management;
 using Microsoft.Extensions.Logging;
@@ -35,9 +36,15 @@ public sealed class OpcEntityServer(
         ExtensionObject userIdentityToken, SignatureData userTokenSignature, out byte[] serverNonce,
         out StatusCodeCollection results, out DiagnosticInfoCollection diagnosticInfos)
     {
+        
         try
         {
-            using (logger.BeginScope("ActivateSession for {@Session}", requestHeader))
+            using (logger.BeginScope("Activating session for {@SessionDetails}", new
+                   {
+                       ClientSignature = clientSignature.Signature,
+                       UserTokenSignature = userTokenSignature.Signature,
+                       UserIdentityToken = userIdentityToken.Body,
+                   }))
             {
                 return base.ActivateSession(requestHeader, clientSignature, clientSoftwareCertificates, localeIds,
                     userIdentityToken, userTokenSignature, out serverNonce, out results, out diagnosticInfos);

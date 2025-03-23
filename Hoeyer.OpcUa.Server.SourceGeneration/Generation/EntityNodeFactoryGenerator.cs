@@ -66,7 +66,6 @@ public class EntityNodeFactoryGenerator : IIncrementalGenerator
                     {propertyName}.{nameof(BaseObjectState.NodeId)} = new {nameof(NodeId)}("{entityName}.{propertyName}", applicationNamespaceIndex);
                     {propertyName}.{nameof(PropertyState.AccessLevel)} = {nameof(AccessLevels)}.{nameof(AccessLevels.CurrentReadOrWrite)};
                     entity.{nameof(BaseInstanceState.AddReference)}({nameof(ReferenceTypes)}.{nameof(ReferenceTypes.HasProperty)}, false, {propertyName}.{nameof(PropertyState.NodeId)});
-                    {propertyName}.{nameof(PropertyState.Value)} = state.{propertyName};
                     yield return {propertyName};
                     """;
         });
@@ -76,19 +75,14 @@ public class EntityNodeFactoryGenerator : IIncrementalGenerator
     {
         var propertyYieldReturns = string.Join("\n\n", GetPropertyNodeDefinitions(entityName, properties));
         return $$"""
-                 public sealed class {{entityName}}EntityNodeFactory : {{nameof(IEntityNodeFactory)}}<{{entityName}}>
+                 public sealed class {{entityName}}EntityNodeFactory : {{nameof(IEntityNodeStructureFactory)}}<{{entityName}}>
                  {
                      public string EntityName { get; } = "{{entityName}}";
-                     private readonly {{entityName}} _state;
-                     public {{entityName}}EntityNodeFactory({{entityName}} state)
-                     {
-                       _state = state;
-                     }
-
+    
                      public {{nameof(IEntityNode)}} Create(ushort applicationNamespaceIndex)
                      {
                          var entity = CreateEntityBaseObjectState(applicationNamespaceIndex);
-                         var properties = CreateProperties(_state, applicationNamespaceIndex, entity);
+                         var properties = CreateProperties(applicationNamespaceIndex, entity);
                          return CreateEntityNode(entity, properties);
                      }
                      
@@ -110,7 +104,7 @@ public class EntityNodeFactoryGenerator : IIncrementalGenerator
                          return new {{nameof(EntityNode)}}(entity, properties.ToList());
                      }
 
-                     private static IEnumerable<{{nameof(PropertyState)}}> CreateProperties({{entityName}} state, ushort applicationNamespaceIndex, {{nameof(BaseObjectState)}} entity)
+                     private static IEnumerable<{{nameof(PropertyState)}}> CreateProperties(ushort applicationNamespaceIndex, {{nameof(BaseObjectState)}} entity)
                      {
                        {{propertyYieldReturns}}
                      }

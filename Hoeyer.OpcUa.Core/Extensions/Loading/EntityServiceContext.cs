@@ -43,6 +43,27 @@ internal readonly record struct EntityServiceContext
                 $"The type {ImplementationType} is not parameterized with {entity} but was instead concrete type of {ConcreteServiceType}");
     }
 
+    public static bool TryCreateFromTypeImplementing(Type type, Type service, out EntityServiceContext context)
+    {
+        var implementedServiceInterface = type
+            .GetInterfaces()
+            .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == service);
+
+        if (implementedServiceInterface == null)
+        {
+            context = default;
+            return false;
+        }
+        var entityType = implementedServiceInterface.GenericTypeArguments.FirstOrDefault()!;
+
+        if (entityType.GetCustomAttribute<OpcUaEntityAttribute>() == null)
+            throw new OpcUaServiceConfigurationException(
+                $"The type '{entityType.FullName}' is not annotated as an OpcUaEntity using the {nameof(OpcUaEntityAttribute)}");
+
+        context = new EntityServiceContext(type, service, entityType);
+        return true;
+    }
+
 
     public ServiceDescriptor ToServiceDescriptor(ServiceLifetime lifetime)
     {

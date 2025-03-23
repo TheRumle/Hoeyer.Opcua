@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Hoeyer.Common.Extensions.Types;
+using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Core.Entity.State;
 using Hoeyer.OpcUa.Server.SourceGeneration.Constants;
@@ -54,7 +56,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
     private static string GetClassDefinitionString(string entityName, List<PropertyDeclarationSyntax> properties,
         SemanticModel model)
     {
-        var assignments = string.Join("\n\n", properties.Select(GetNodeAssignmentStatements));
+        var assignments = string.Join("\n\n", properties.Select(p => GetNodeAssignmentStatements(p, model)));
         var translateStatements = string.Join("\n\n", GetTranslationMethodCalls(properties, model));
 
         var fieldAssignments =
@@ -90,13 +92,18 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
                  """;
     }
 
-    private static string GetNodeAssignmentStatements(PropertyDeclarationSyntax e)
+    private static string GetNodeAssignmentStatements(PropertyDeclarationSyntax property, SemanticModel model)
     {
-        var propName = e.Identifier.Text;
+        var propName = property.Identifier.Text;
+
+        var toArrayExpr = model.GetTypeInfo(property.Type)!.Type is INamedTypeSymbol { Arity: 1, IsGenericType: true }
+            ? $".{nameof(Enumerable.ToArray)}()"
+            : "";
+        
         return $$"""
                  if (node.{{nameof(IEntityNode.PropertyByBrowseName)}}.ContainsKey("{{propName}}"))
                  {
-                     node.{{nameof(IEntityNode.PropertyByBrowseName)}}["{{propName}}"].Value = state.{{propName}};
+                     node.{{nameof(IEntityNode.PropertyByBrowseName)}}["{{propName}}"].Value = state.{{propName}}{{toArrayExpr}};
                  }
                  else
                  {
@@ -105,28 +112,45 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
                  """;
     }
 
-    private static IEnumerable<string> GetTranslationMethodCalls(List<PropertyDeclarationSyntax> properties,
+    private static string TranslateCollection(PropertyDeclarationSyntax property,  SemanticModel model)
+    {
+        var namedTypeSymbol= (model.GetTypeInfo(property.Type)!.Type as INamedTypeSymbol)!; 
+        var propName = property.Identifier.Text;
+        var typeSyntax = property.Type;
+        var collectionType = namedTypeSymbol.TypeArguments.First();
+        var translationMethod = $"{nameof(DataTypeToTranslator)}" +
+                                $".{nameof(DataTypeToTranslator.TranslateToCollection)}<{typeSyntax.ToString()}, {collectionType}>(state, \"{propName}\")";
+
+        return $$"""
+                 {{typeSyntax.ToString()}} {{property.Identifier.Text}} = {{translationMethod}};
+                 if ({{propName}} == default) return null;
+                 """;
+    }
+
+    private static string TranslateSingletonValue(PropertyDeclarationSyntax property)
+    {
+        var propName = property.Identifier.Text;
+        var typeSyntax = property.Type;
+        return $$"""
+                 {{typeSyntax.ToString()}} {{property.Identifier.Text}} = {{nameof(DataTypeToTranslator)}}.{{nameof(DataTypeToTranslator.TranslateToSingle)}}<{{typeSyntax.ToString()}}>(state, "{{propName}}");
+                 if ({{propName}} == default) return null;
+                 """;
+    }
+
+    private static IEnumerable<string> GetTranslationMethodCalls(
+        List<PropertyDeclarationSyntax> properties,
         SemanticModel model)
     {
-        return properties.Select(property =>
-        {
-            var propName = property.Identifier.Text;
-            var typeSyntax = property.Type;
-            var typeSymbol = ModelExtensions.GetTypeInfo(model, typeSyntax).Type;
-            if (typeSymbol is not INamedTypeSymbol { Arity: 1, IsGenericType: true } namedTypeSymbol)
-                return $$"""
-                         {{typeSyntax.ToString()}} {{property.Identifier.Text}} = {{nameof(DataTypeToTranslator)}}.{{nameof(DataTypeToTranslator.TranslateToSingle)}}<{{typeSyntax.ToString()}}>(state, "{{propName}}");
-                         if ({{propName}} == default) return null;
-                         """;
+        
 
-            var collectionType = namedTypeSymbol.TypeArguments.First();
-            var translationMethod = $"{nameof(DataTypeToTranslator)}" +
-                                    $".{nameof(DataTypeToTranslator.TranslateToCollection)}<{typeSyntax.ToString()}, {collectionType}>(state, \"{propName}\")";
-
-            return $$"""
-                     {{typeSyntax.ToString()}} {{property.Identifier.Text}} = {{translationMethod}};
-                     if ({{propName}} == default) return null;
-                     """;
-        });
+        var collectionProperties = properties.Where(property =>
+            model.GetTypeInfo(property.Type).Type is INamedTypeSymbol
+            {
+                Arity: 1, IsGenericType: true
+            }).ToList();
+        
+        var singletonAssignments = properties.Except(collectionProperties).Select(TranslateSingletonValue);
+        var collectionAssignments = collectionProperties.Select(property => TranslateCollection(property, model));
+        return [..singletonAssignments, ..collectionAssignments];
     }
 }

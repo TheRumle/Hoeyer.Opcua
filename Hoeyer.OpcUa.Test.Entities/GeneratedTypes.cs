@@ -4,5 +4,5 @@ namespace Hoeyer.OpcUa.Test;
 
 public static class GeneratedTypes
 {
-    public static IReadOnlySet<IEntityNodeFactory> EntityNodeCreators { get; } = new HashSet<IEntityNodeFactory>();
+    public static IReadOnlySet<IEntityNodeStructureFactory> EntityNodeCreators { get; } = new HashSet<IEntityNodeStructureFactory>();
 }

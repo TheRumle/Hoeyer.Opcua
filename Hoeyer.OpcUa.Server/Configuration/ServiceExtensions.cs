@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Core;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,21 +20,13 @@ public static class ServiceExtensions
         {
             var standardConfig = p.GetService<IOpcUaEntityServerInfo>()!;
             if (standardConfig == null)
-                throw new InvalidOperationException(
-                    $"No {nameof(IOpcUaEntityServerInfo)} has been registered! This should be prevented using builder pattern! SHOULD NOT HAPPEN!");
+            {
+                throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerInfo)} has been registered! This should be prevented using builder pattern! SHOULD NOT HAPPEN!");
+            }
             return new OpcUaEntityServerSetup(standardConfig, additionalConfiguration ?? (value => { }));
         });
 
-        serviceRegistration.Collection.AddSingleton(p =>
-        {
-            var loggerFactory = p.GetService<ILoggerFactory>()!;
-            var configuration = p.GetService<OpcUaEntityServerSetup>();
-            var factories = p.GetService<IEnumerable<IEntityNodeFactory>>() ?? [];
-            if (configuration is null)
-                throw new InvalidOperationException($"No {nameof(IOpcUaEntityServerInfo)} has been configured!");
-
-            return new OpcUaEntityServerFactory(configuration, factories, loggerFactory);
-        });
+        serviceRegistration.Collection.AddSingleton<OpcUaEntityServerFactory>();
         return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
     }
 

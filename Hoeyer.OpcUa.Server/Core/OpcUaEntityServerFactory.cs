@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Entity.Management;
 using Hoeyer.OpcUa.Server.ServiceConfiguration;
@@ -10,7 +11,7 @@ namespace Hoeyer.OpcUa.Server.Core;
 
 public sealed class OpcUaEntityServerFactory(
     OpcUaEntityServerSetup serverSetup,
-    IEnumerable<IEntityNodeFactory> entityObjectCreators,
+    IEnumerable<IEntityInitializer> entityObjectCreators,
     ILoggerFactory loggerFactory)
 {
     public IStartableEntityServer CreateServer()

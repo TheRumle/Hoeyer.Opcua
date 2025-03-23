@@ -2,22 +2,22 @@
 
 namespace MyOpcUaWebApplication;
 
-public class GantryStartupLoader : IEntityStartupLoader<Gantry>
+public class GantryLoader : IEntityLoader<Gantry>
 {
     /// <inheritdoc />
-    public Gantry LoadStartUpState()
+    public ValueTask<Gantry> LoadCurrentState()
     {
-        return new Gantry
+        return ValueTask.FromResult(new Gantry
         {
             Speeds = new List<int>
             {
                 21, 32, 12, 3
             },
-            messages = new HashSet<int>
+            messages = new HashSet<string>
             {
-                2131, 11, 22
+                "What a load", "What a load", " of nonsense"
             },
             message = "OPCUA SAYS HELLO"
-        };
+        });
     }
 }

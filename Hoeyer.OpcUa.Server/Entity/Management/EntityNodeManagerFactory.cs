@@ -1,4 +1,5 @@
 ﻿using System;
+using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Entity.Api;
@@ -9,11 +10,10 @@ namespace Hoeyer.OpcUa.Server.Entity.Management;
 
 public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
 {
-    internal IEntityNodeManager Create(IServerInternal server, Uri host, IEntityNodeFactory factory)
+    internal IEntityNodeManager Create(ManagedEntityNode managedNode, IServerInternal server)
     {
-        var nodeNamespace = host.Host + $"/{factory.EntityName}";
-        var logger = loggerFactory.CreateLogger(factory.EntityName + "Manager");
-        var managedNode = CreatedManagedNode(server, nodeNamespace, factory.Create);
+        var entityName = managedNode.BaseObject.DisplayName.Text;
+        var logger = loggerFactory.CreateLogger(entityName + "Manager");
 
         logger.LogInformation("Creating {@Manager} for {@ManagedNode}", nameof(EntityNodeManager), managedNode);
 
@@ -28,14 +28,5 @@ public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
             logger);
     }
 
-    private static ManagedEntityNode CreatedManagedNode(IServerInternal server, string nodeNamespace,
-        Func<ushort, IEntityNode> nodeCreator)
-    {
-        var namespaceIndex = server.NamespaceUris.GetIndexOrAppend(nodeNamespace);
-        var context = server.DefaultSystemContext;
-        var node = nodeCreator.Invoke(namespaceIndex);
-        node.BaseObject.Create(context, node.BaseObject.NodeId, node.BaseObject.BrowseName, node.BaseObject.DisplayName,
-            false);
-        return new ManagedEntityNode(node, nodeNamespace, namespaceIndex);
-    }
+
 }

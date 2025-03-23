@@ -1,3 +1,5 @@
-﻿namespace Hoeyer.OpcUa.Server.SourceGeneration.OpcUaTypes;
+﻿using Opc.Ua;
 
-public record struct OpcUaProperty(string Name, string CSharpType, string OpcNativeTypeId, string ValueRank);
+namespace Hoeyer.OpcUa.Server.SourceGeneration.OpcUaTypes;
+
+public record struct OpcUaProperty(string Name, string CSharpType, string OpcNativeTypeId, string ValueRank, int ValueRankInt);

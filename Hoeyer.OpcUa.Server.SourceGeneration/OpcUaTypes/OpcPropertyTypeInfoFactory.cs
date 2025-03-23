@@ -81,7 +81,7 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
         ImmutableHashSet.CreateRange(SPECIAL_TYPE_OPC_NATIVE_TYPES.Keys);
 
 
-    private (string SimpleType, string OpcType, string ValueRank)? FindSupportedTypes()
+    private (string SimpleType, string OpcType, string ValueRank, int ValueRankInt)? FindSupportedTypes()
     {
         var typeSyntax = property.Type;
         var syntaxKind = typeSyntax.Kind();
@@ -89,7 +89,8 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
             return (
                 typeSyntax.ToFullString(),
                 OPC_NATIVE_TYPES[syntaxKind],
-                VALUE_RANK_SINGLE_VALUE);
+                VALUE_RANK_SINGLE_VALUE,
+                ValueRanks.Scalar);
 
         var typeInfo = semanticModel.GetTypeInfo(property.Type).Type;
         if (typeInfo == null) return null;
@@ -97,7 +98,8 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
         if (SUPPORTED_SIMPLE_SPECIALTYPES.Contains(typeInfo.SpecialType))
             return (typeInfo.ToString(),
                 SPECIAL_TYPE_OPC_NATIVE_TYPES[typeInfo.SpecialType],
-                VALUE_RANK_SINGLE_VALUE);
+                VALUE_RANK_SINGLE_VALUE,
+                ValueRanks.Scalar);
 
 
         if (typeInfo is INamedTypeSymbol { IsGenericType: true, TypeArguments.Length: 1 } namedTypeSymbol)
@@ -116,7 +118,8 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
             if (TryGetSupportedParam(collectionTypeGenericName.ToString(), namedTypeSymbol, out var typeArgument))
                 return (typeArgument.ToDisplayString(),
                     SPECIAL_TYPE_OPC_NATIVE_TYPES[typeArgument.SpecialType],
-                    VALUE_RANK_ONE_DIM);
+                    VALUE_RANK_ONE_DIM,
+                    ValueRanks.OneDimension);
         }
 
         return null;
@@ -143,7 +146,8 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
                 property.Identifier.ToFullString(),
                 typeDetails.Value.SimpleType,
                 typeDetails.Value.OpcType,
-                typeDetails.Value.ValueRank
+                typeDetails.Value.ValueRank,
+                typeDetails.Value.ValueRankInt
             ),
             TypeIsSupported: true,
             PropertyDecleration: property);
