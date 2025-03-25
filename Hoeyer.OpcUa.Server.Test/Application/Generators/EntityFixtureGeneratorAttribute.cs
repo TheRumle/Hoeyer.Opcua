@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Hoeyer.Opc.Ua.Test.TUnit.Extensions;
 using Hoeyer.OpcUa.Server.Test.Application.Fixtures;
 using Opc.Ua;
-using TUnitSettings.Extensions;
 
 namespace Hoeyer.OpcUa.Server.Test.Application.Generators;
 
@@ -13,7 +13,8 @@ public sealed class EntityFixtureGeneratorAttribute : DataSourceGeneratorAttribu
         DataGeneratorMetadata dataGeneratorMetadata)
     {
         return CreateServiceCollection(dataGeneratorMetadata)
-            .SelectFunc(e => new EntityReaderFixture(e.EntityNode, Enumerable.ToHashSet<PropertyState>(e.PropertyStates.Values)));
+            .SelectFunc(e =>
+                new EntityReaderFixture(e.EntityNode, Enumerable.ToHashSet<PropertyState>(e.PropertyStates.Values)));
     }
 
     private static IEnumerable<EntityBrowserFixture> CreateServiceCollection(

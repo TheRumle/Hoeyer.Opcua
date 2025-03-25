@@ -14,7 +14,9 @@ internal record OpcUaEntityServerInfo : IOpcUaEntityServerInfo
     {
         var validation = ValidateSupportedProtocol([Host, ..Endpoints]);
         if (validation.IsFailed)
+        {
             throw validation.Errors.ToArgumentException();
+        }
 
         this.ServerId = ServerId;
         ApplicationName = ServerName;

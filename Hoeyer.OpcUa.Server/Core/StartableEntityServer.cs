@@ -18,7 +18,11 @@ internal sealed class StartableEntityServer(ApplicationInstance applicationInsta
 
     public async Task<IStartedEntityServer> StartAsync()
     {
-        if (_disposed) throw new ObjectDisposedException(nameof(StartableEntityServer));
+        if (_disposed)
+        {
+            throw new ObjectDisposedException(nameof(StartableEntityServer));
+        }
+
         await _applicationInstance.Start(_entityServer);
         return this;
     }
@@ -34,7 +38,11 @@ internal sealed class StartableEntityServer(ApplicationInstance applicationInsta
 
     private void Dispose(bool disposing)
     {
-        if (_disposed) return;
+        if (_disposed)
+        {
+            return;
+        }
+
         if (disposing)
         {
             _entityServer.Stop();

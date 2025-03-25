@@ -30,12 +30,20 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel)
         if (HasScope)
         {
             var a = ExecuteAndLogWithScope(action);
-            if (EqualityComparer<T>.Default.Equals(a, default!)) logger.Log(logResultAs, "Got {Values}", a);
+            if (EqualityComparer<T>.Default.Equals(a, default!))
+            {
+                logger.Log(logResultAs, "Got {Values}", a);
+            }
+
             return a;
         }
 
         var res = ExecuteAndLog(action);
-        if (EqualityComparer<T>.Default.Equals(res, default!)) logger.Log(logResultAs, "Got {Values}", res);
+        if (EqualityComparer<T>.Default.Equals(res, default!))
+        {
+            logger.Log(logResultAs, "Got {Values}", res);
+        }
+
         return res;
     }
 

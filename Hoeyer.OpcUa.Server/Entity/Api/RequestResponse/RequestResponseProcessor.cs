@@ -34,8 +34,15 @@ internal class RequestResponseProcessor<T>(
             .Then(processSuccess.Invoke)
             .WithSuccessCriteria(successFilter);
 
-        if (_successLevel != LogLevel.None) LogSuccess(fits, formatSuccess);
-        if (_errorLevel != LogLevel.None && fails.Any()) LogErrors(fails, formatError);
+        if (_successLevel != LogLevel.None)
+        {
+            LogSuccess(fits, formatSuccess);
+        }
+
+        if (_errorLevel != LogLevel.None && fails.Any())
+        {
+            LogErrors(fails, formatError);
+        }
 
         fails.Then(processError);
     }

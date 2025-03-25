@@ -39,7 +39,11 @@ public sealed record EntityBrowseResponse
     /// <inheritdoc />
     public override string ToString()
     {
-        if (RelatedEntities == null) return "<null>";
+        if (RelatedEntities == null)
+        {
+            return "<null>";
+        }
+
         return RelatedEntities.Select(e => $"{e.BrowseName?.ToString()} ({e?.NodeId})").SeparateBy(", ");
     }
 

@@ -1,4 +1,4 @@
-﻿namespace TUnitSettings.Extensions;
+﻿namespace Hoeyer.Opc.Ua.Test.TUnit.Extensions;
 
 public static class IEnumerableExtensions
 {

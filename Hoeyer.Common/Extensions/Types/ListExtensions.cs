@@ -30,7 +30,7 @@ public static class ListExtensions
             Fit: v.Where(e => e.IsSuccess && success(e.Value)).Select(e => e.Value).ToList(),
             Fail: v.Where(e => e.IsFailed || !success(e.Value)).Select(e => e.Value).ToList());
     }
-    
+
     public static (IEnumerable<T> Matching, IEnumerable<T> NonMatching) PartitionBy<T>(
         this IEnumerable<T> source, Func<T, bool> predicate)
     {
@@ -38,12 +38,14 @@ public static class ListExtensions
         var nonMatching = new List<T>();
 
         foreach (var item in source)
-        {
             if (predicate(item))
+            {
                 matching.Add(item);
+            }
             else
+            {
                 nonMatching.Add(item);
-        }
+            }
 
         return (matching, nonMatching);
     }

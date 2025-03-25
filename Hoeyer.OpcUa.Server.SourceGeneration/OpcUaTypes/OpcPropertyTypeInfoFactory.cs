@@ -86,20 +86,27 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
         var typeSyntax = property.Type;
         var syntaxKind = typeSyntax.Kind();
         if (SUPPORTED_SIMPLE_TYPES_SYNTAX_KIND.Contains(syntaxKind))
+        {
             return (
                 typeSyntax.ToFullString(),
                 OPC_NATIVE_TYPES[syntaxKind],
                 VALUE_RANK_SINGLE_VALUE,
                 ValueRanks.Scalar);
+        }
 
         var typeInfo = semanticModel.GetTypeInfo(property.Type).Type;
-        if (typeInfo == null) return null;
+        if (typeInfo == null)
+        {
+            return null;
+        }
 
         if (SUPPORTED_SIMPLE_SPECIALTYPES.Contains(typeInfo.SpecialType))
+        {
             return (typeInfo.ToString(),
                 SPECIAL_TYPE_OPC_NATIVE_TYPES[typeInfo.SpecialType],
                 VALUE_RANK_SINGLE_VALUE,
                 ValueRanks.Scalar);
+        }
 
 
         if (typeInfo is INamedTypeSymbol { IsGenericType: true, TypeArguments.Length: 1 } namedTypeSymbol)
@@ -116,10 +123,12 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
 
 
             if (TryGetSupportedParam(collectionTypeGenericName.ToString(), namedTypeSymbol, out var typeArgument))
+            {
                 return (typeArgument.ToDisplayString(),
                     SPECIAL_TYPE_OPC_NATIVE_TYPES[typeArgument.SpecialType],
                     VALUE_RANK_ONE_DIM,
                     ValueRanks.OneDimension);
+            }
         }
 
         return null;
@@ -138,7 +147,10 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
         GetTypeInfo()
     {
         var typeDetails = FindSupportedTypes();
-        if (typeDetails == null) return (new OpcUaProperty(), false, property);
+        if (typeDetails == null)
+        {
+            return (new OpcUaProperty(), false, property);
+        }
 
         return
         (

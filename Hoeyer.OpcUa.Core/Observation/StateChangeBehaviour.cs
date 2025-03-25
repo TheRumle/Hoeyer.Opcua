@@ -26,7 +26,10 @@ public class StateChangeBehaviour<TState>(TState currentState) : ISubscribable<T
 
     public void ChangeState(TState newState)
     {
-        if (Equals(newState, default(TState))) throw new ArgumentNullException(nameof(newState));
+        if (Equals(newState, default(TState)))
+        {
+            throw new ArgumentNullException(nameof(newState));
+        }
 
         Subscriptions = Subscriptions.Where(e => e.IsActive).ToList();
         _tail = new StateChange<TState>(_tail.ReachedState, newState, DateTime.Now);

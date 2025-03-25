@@ -99,7 +99,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         var toArrayExpr = model.GetTypeInfo(property.Type)!.Type is INamedTypeSymbol { Arity: 1, IsGenericType: true }
             ? $".{nameof(Enumerable.ToArray)}()"
             : "";
-        
+
         return $$"""
                  if (node.{{nameof(IEntityNode.PropertyByBrowseName)}}.ContainsKey("{{propName}}"))
                  {
@@ -112,9 +112,9 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
                  """;
     }
 
-    private static string TranslateCollection(PropertyDeclarationSyntax property,  SemanticModel model)
+    private static string TranslateCollection(PropertyDeclarationSyntax property, SemanticModel model)
     {
-        var namedTypeSymbol= (model.GetTypeInfo(property.Type)!.Type as INamedTypeSymbol)!; 
+        var namedTypeSymbol = (model.GetTypeInfo(property.Type)!.Type as INamedTypeSymbol)!;
         var propName = property.Identifier.Text;
         var typeSyntax = property.Type;
         var collectionType = namedTypeSymbol.TypeArguments.First();
@@ -141,14 +141,12 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         List<PropertyDeclarationSyntax> properties,
         SemanticModel model)
     {
-        
-
         var collectionProperties = properties.Where(property =>
             model.GetTypeInfo(property.Type).Type is INamedTypeSymbol
             {
                 Arity: 1, IsGenericType: true
             }).ToList();
-        
+
         var singletonAssignments = properties.Except(collectionProperties).Select(TranslateSingletonValue);
         var collectionAssignments = collectionProperties.Select(property => TranslateCollection(property, model));
         return [..singletonAssignments, ..collectionAssignments];

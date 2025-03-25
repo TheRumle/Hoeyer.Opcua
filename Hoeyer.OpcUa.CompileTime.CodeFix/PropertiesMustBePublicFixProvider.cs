@@ -34,7 +34,9 @@ public sealed class PropertiesMustBePublicFixProvider : CodeFixProvider
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         var diagnosticNode = root?.FindNode(diagnosticSpan);
         if (diagnosticNode is not PropertyDeclarationSyntax declaration)
+        {
             return;
+        }
 
         context.RegisterCodeFix(
             CodeAction.Create(

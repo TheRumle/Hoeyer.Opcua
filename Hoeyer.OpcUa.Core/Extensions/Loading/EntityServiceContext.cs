@@ -21,8 +21,10 @@ internal readonly record struct EntityServiceContext
     {
         Entity = entity;
         if (Entity.GetCustomAttribute<OpcUaEntityAttribute>() == null)
+        {
             throw new ArgumentException(
                 $"The specified type is not annotated as an OpcUaEntity using the {nameof(OpcUaEntityAttribute)}");
+        }
 
         ImplementationType = implementationType;
         ServiceType = serviceType;
@@ -34,13 +36,17 @@ internal readonly record struct EntityServiceContext
                                               null;
 
         if (!implementationImplementsService)
+        {
             throw new ArgumentException($"{ImplementationType.FullName} does not implement {serviceType}");
+        }
 
 
         ConcreteServiceType = ServiceType.MakeGenericType(Entity);
         if (!ConcreteServiceType.GetGenericArguments().Contains(entity))
+        {
             throw new ArgumentException(
                 $"The type {ImplementationType} is not parameterized with {entity} but was instead concrete type of {ConcreteServiceType}");
+        }
     }
 
     public static bool TryCreateFromTypeImplementing(Type type, Type service, out EntityServiceContext context)
@@ -54,11 +60,14 @@ internal readonly record struct EntityServiceContext
             context = default;
             return false;
         }
+
         var entityType = implementedServiceInterface.GenericTypeArguments.FirstOrDefault()!;
 
         if (entityType.GetCustomAttribute<OpcUaEntityAttribute>() == null)
+        {
             throw new OpcUaServiceConfigurationException(
                 $"The type '{entityType.FullName}' is not annotated as an OpcUaEntity using the {nameof(OpcUaEntityAttribute)}");
+        }
 
         context = new EntityServiceContext(type, service, entityType);
         return true;

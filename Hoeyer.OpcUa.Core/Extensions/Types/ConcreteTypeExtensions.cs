@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 
-namespace Hoeyer.OpcUa.Client.Reflection.Types;
+namespace Hoeyer.OpcUa.Core.Extensions.Types;
 
 internal static class ConcreteTypeExtensions
 {
@@ -21,7 +21,9 @@ internal static class ConcreteTypeExtensions
     public static bool ImplementsGenericInterfaceOf(this Type type, Type @interface)
     {
         if (!@interface.IsGenericTypeDefinition)
+        {
             throw new ArgumentException("The parameter 'interface' must be a generic type definition.");
+        }
 
         return GetGenericInterfaceDefinition(type, @interface) != null;
     }
@@ -30,7 +32,9 @@ internal static class ConcreteTypeExtensions
     public static Type? GetGenericInterfaceDefinition(this Type type, Type @interface)
     {
         if (!@interface.IsGenericTypeDefinition)
+        {
             throw new ArgumentException("The parameter 'interface' must be a generic type definition.");
+        }
 
         return type is { IsClass: true, IsAbstract: false, IsPublic: true }
             ? Array.Find(type.GetInterfaces(), inteface => inteface.IsGenericType

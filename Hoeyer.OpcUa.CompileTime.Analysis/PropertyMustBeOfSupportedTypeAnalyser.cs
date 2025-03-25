@@ -20,7 +20,9 @@ public class PropertyMustBeOfSupportedTypeAnalyser() : ConcurrentAnalyzer([Rules
     {
         if (context.Node is not TypeDeclarationSyntax typeSyntax ||
             !typeSyntax.IsAnnotatedAsOpcUaEntity(context.SemanticModel))
+        {
             return;
+        }
 
         var properties = typeSyntax.Members
             .OfType<PropertyDeclarationSyntax>()

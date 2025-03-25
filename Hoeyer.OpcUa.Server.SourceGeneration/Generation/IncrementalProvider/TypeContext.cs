@@ -27,7 +27,11 @@ public sealed record TypeContext<T>(SemanticModel SemanticModel, T Node)
     /// <returns></returns>
     private async Task<IEnumerable<UsingDirectiveSyntax>> GetImports(CancellationToken cancellationToken)
     {
-        if (_usingDirectives != null) return _usingDirectives;
+        if (_usingDirectives != null)
+        {
+            return _usingDirectives;
+        }
+
         var root = await SemanticModel.SyntaxTree.GetRootAsync(cancellationToken);
         var usings = root.DescendantNodes().OfType<UsingDirectiveSyntax>();
         _usingDirectives = usings.Distinct(UsingDirectiveComparer);

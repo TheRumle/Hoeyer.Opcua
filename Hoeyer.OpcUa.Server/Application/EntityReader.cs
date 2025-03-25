@@ -18,8 +18,14 @@ internal class EntityReader(IEntityNode entityNode, IPropertyReader propertyRead
     private EntityValueReadResponse Read(ReadValueId toRead)
     {
         if (entityNode.PropertyStates.TryGetValue(toRead.NodeId, out var propertyHandle))
+        {
             return propertyReader.ReadProperty(toRead, propertyHandle);
-        if (entityNode.BaseObject.NodeId.Equals(toRead.NodeId)) return ReadEntity(toRead);
+        }
+
+        if (entityNode.BaseObject.NodeId.Equals(toRead.NodeId))
+        {
+            return ReadEntity(toRead);
+        }
 
         return new EntityValueReadResponse(toRead, StatusCodes.BadNoEntryExists,
             $"The entity {entityNode.BaseObject.DisplayName} does not have any property with id {toRead.NodeId}");

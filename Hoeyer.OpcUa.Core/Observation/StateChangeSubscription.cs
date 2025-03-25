@@ -1,7 +1,6 @@
 ﻿using System;
-using Hoeyer.OpcUa.Core.Observation;
 
-namespace Hoeyer.OpcUa.Core.Entity.State;
+namespace Hoeyer.OpcUa.Core.Observation;
 
 public sealed class StateChangeSubscription<TState>(IStateChangeSubscriber<TState> subscriber) : IDisposable
 {
@@ -11,12 +10,19 @@ public sealed class StateChangeSubscription<TState>(IStateChangeSubscriber<TStat
 
     public void Dispose()
     {
-        if (!IsCancelled) IsCancelled = true;
+        if (!IsCancelled)
+        {
+            IsCancelled = true;
+        }
     }
 
     internal void ReportStateChange(TState stateChange)
     {
-        if (IsCancelled) return;
+        if (IsCancelled)
+        {
+            return;
+        }
+
         Subscriber.OnStateChange(stateChange);
     }
 }

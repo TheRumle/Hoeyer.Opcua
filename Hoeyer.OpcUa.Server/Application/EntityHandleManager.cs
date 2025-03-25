@@ -20,15 +20,26 @@ internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManage
     /// <inheritdoc />
     public bool IsHandleToAnyRelatedNode(object? handle)
     {
-        if (handle == null) return false;
+        if (handle == null)
+        {
+            return false;
+        }
+
         return IsManagedEntityHandle(handle) || IsManagedPropertyHandle(handle, out _);
     }
 
     /// <inheritdoc />
     public Result<BaseInstanceState> GetState(NodeId nodeId)
     {
-        if (IsManagedEntityHandle(nodeId)) return entityNode.BaseObject;
-        if (IsManagedPropertyHandle(nodeId, out var property)) return property.Value;
+        if (IsManagedEntityHandle(nodeId))
+        {
+            return entityNode.BaseObject;
+        }
+
+        if (IsManagedPropertyHandle(nodeId, out var property))
+        {
+            return property.Value;
+        }
 
         return Result.Fail($"Entity {entityNode.BaseObject.BrowseName} does not have any data for state {nodeId}");
     }
@@ -36,8 +47,16 @@ internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManage
     /// <inheritdoc />
     public bool IsManaged(NodeId nodeId)
     {
-        if (entityNode.BaseObject.NodeId.Equals(nodeId)) return true;
-        if (entityNode.PropertyStates.ContainsKey(nodeId)) return true;
+        if (entityNode.BaseObject.NodeId.Equals(nodeId))
+        {
+            return true;
+        }
+
+        if (entityNode.PropertyStates.ContainsKey(nodeId))
+        {
+            return true;
+        }
+
         return false;
     }
 
@@ -71,8 +90,15 @@ internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManage
     /// <inheritdoc />
     public Result<IEntityNodeHandle> GetHandle(NodeId nodeId)
     {
-        if (IsManagedPropertyHandle(nodeId, out var propertyHandle)) return Result.Ok(propertyHandle);
-        if (IsManagedEntityHandle(nodeId, out var entityHandle)) return Result.Ok(entityHandle);
+        if (IsManagedPropertyHandle(nodeId, out var propertyHandle))
+        {
+            return Result.Ok(propertyHandle);
+        }
+
+        if (IsManagedEntityHandle(nodeId, out var entityHandle))
+        {
+            return Result.Ok(entityHandle);
+        }
 
         return Result.Fail(
             $"Entity {entityNode.BaseObject.BrowseName} does not have any data for state handle {nodeId}");

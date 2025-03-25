@@ -36,14 +36,13 @@ public sealed class OpcEntityServer(
         ExtensionObject userIdentityToken, SignatureData userTokenSignature, out byte[] serverNonce,
         out StatusCodeCollection results, out DiagnosticInfoCollection diagnosticInfos)
     {
-        
         try
         {
             using (logger.BeginScope("Activating session for {@SessionDetails}", new
                    {
                        ClientSignature = clientSignature.Signature,
                        UserTokenSignature = userTokenSignature.Signature,
-                       UserIdentityToken = userIdentityToken.Body,
+                       UserIdentityToken = userIdentityToken.Body
                    }))
             {
                 return base.ActivateSession(requestHeader, clientSignature, clientSoftwareCertificates, localeIds,
@@ -92,8 +91,16 @@ public sealed class OpcEntityServer(
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
-        if (_disposed) return;
-        if (!disposing) return;
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (!disposing)
+        {
+            return;
+        }
+
         DomainManager.Dispose();
         base.Dispose(disposing);
         _disposed = true;

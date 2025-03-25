@@ -37,7 +37,11 @@ public static class ResultExtensions
     /// <exception cref="Exception"></exception>
     public static T GetOrThrow<T>(this Result<T> result, Func<Error, Exception> exceptionFactory)
     {
-        if (result.IsSuccess) return result.Value;
+        if (result.IsSuccess)
+        {
+            return result.Value;
+        }
+
         throw exceptionFactory.Invoke(new Error(result.Errors.SeparateBy("\n")));
     }
 
@@ -71,7 +75,11 @@ public static class ResultExtensions
     /// <returns>The original result</returns>
     public static Result<T> Then<T>(this Result<T> result, Action<T> action)
     {
-        if (result.IsSuccess) action(result.Value);
+        if (result.IsSuccess)
+        {
+            action(result.Value);
+        }
+
         return result;
     }
 

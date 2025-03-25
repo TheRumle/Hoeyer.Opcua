@@ -78,7 +78,7 @@ public class EntityNodeFactoryGenerator : IIncrementalGenerator
                  public sealed class {{entityName}}EntityNodeFactory : {{nameof(IEntityNodeStructureFactory)}}<{{entityName}}>
                  {
                      public string EntityName { get; } = "{{entityName}}";
-    
+
                      public {{nameof(IEntityNode)}} Create(ushort applicationNamespaceIndex)
                      {
                          var entity = CreateEntityBaseObjectState(applicationNamespaceIndex);

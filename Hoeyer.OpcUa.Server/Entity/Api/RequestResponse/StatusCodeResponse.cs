@@ -11,7 +11,11 @@ public abstract class StatusCodeResponse<TRequest, TResponse>
     {
         Request = request;
         ResponseCode = code;
-        if (error != null) Error = error;
+        if (error != null)
+        {
+            Error = error;
+        }
+
         Response = new ValueTuple<TResponse, StatusCode>(default!, code.Code);
     }
 
@@ -51,7 +55,11 @@ public abstract class StatusCodeResponse<TRequest, TResponse>
 
     public override string ToString()
     {
-        if (IsSuccess) return SuccessDetails();
+        if (IsSuccess)
+        {
+            return SuccessDetails();
+        }
+
         return ErrorDetails();
     }
 

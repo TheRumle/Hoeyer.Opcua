@@ -17,12 +17,18 @@ internal class EntityWriter(IEntityNode entityNode) : IEntityWriter
         foreach (var toWrite in nodesToWrite)
         {
             if (toWrite.AttributeId != Attributes.Value)
+            {
                 yield return EntityWriteResponse.AttributeNotSupported(toWrite);
+            }
 
             if (entityNode.PropertyStates.TryGetValue(toWrite.NodeId, out var property))
+            {
                 yield return Write(toWrite, property);
+            }
             else
+            {
                 yield return EntityWriteResponse.NoMatch(toWrite);
+            }
         }
     }
 

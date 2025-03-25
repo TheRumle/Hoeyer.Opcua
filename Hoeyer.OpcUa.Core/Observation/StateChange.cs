@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Hoeyer.OpcUa.Core.Entity.State;
+namespace Hoeyer.OpcUa.Core.Observation;
 
 public record StateChange<TState>(TState PreviousState, TState ReachedState, DateTime EnteredStateOn)
 {

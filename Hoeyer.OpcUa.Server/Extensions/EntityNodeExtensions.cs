@@ -39,10 +39,24 @@ public static class EntityNodeExtensions
         };
 
         if (values[0] != null && values[1] != null)
+        {
             metadata.WriteMask = (AttributeWriteMask)((uint)values[0] & (uint)values[1]);
-        if (values[3] != null) metadata.ValueRank = (int)values[3];
-        if (values[7] != null) metadata.EventNotifier = (byte)values[7];
-        if (values[8] != null && values[9] != null) metadata.Executable = (bool)values[8] && (bool)values[9];
+        }
+
+        if (values[3] != null)
+        {
+            metadata.ValueRank = (int)values[3];
+        }
+
+        if (values[7] != null)
+        {
+            metadata.EventNotifier = (byte)values[7];
+        }
+
+        if (values[8] != null && values[9] != null)
+        {
+            metadata.Executable = (bool)values[8] && (bool)values[9];
+        }
 
         return metadata;
     }

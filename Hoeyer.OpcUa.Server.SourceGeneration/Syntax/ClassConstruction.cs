@@ -86,9 +86,11 @@ public static class ClassConstruction
                 })));
 
         if (literalValue != null)
+        {
             return value.WithInitializer(SyntaxFactory.EqualsValueClause(
                 SyntaxFactory.LiteralExpression(
                     SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(literalValue))));
+        }
 
         return value;
     }

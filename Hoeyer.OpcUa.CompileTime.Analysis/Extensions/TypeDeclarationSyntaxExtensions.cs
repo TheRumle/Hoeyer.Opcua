@@ -40,7 +40,9 @@ public static class TypeDeclarationSyntaxExtensions
     {
         if (context.Node is not TypeDeclarationSyntax typeSyntax ||
             !typeSyntax.IsAnnotatedAsOpcUaEntity(context.SemanticModel))
+        {
             return [];
+        }
 
         return typeSyntax.Members.OfType<PropertyDeclarationSyntax>();
     }

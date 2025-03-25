@@ -29,11 +29,16 @@ public static class DataTypeToTranslator
         IEntityNode node, string name)
     {
         var p = node.PropertyByBrowseName.TryGetValue(name, out var value) ? value : null;
-        if (p == null) return default;
+        if (p == null)
+        {
+            return default;
+        }
 
         var dataTypeId = p.DataType;
         if (!TypeIds.Contains(dataTypeId))
+        {
             return default;
+        }
 
         var parser = new PropertyValueParser<T>();
         return parser.Parse(p);
@@ -43,15 +48,23 @@ public static class DataTypeToTranslator
         where TCollection : ICollection<T>, new()
     {
         var p = node.PropertyByBrowseName.TryGetValue(name, out var value) ? value : null;
-        if (p == null) return default;
+        if (p == null)
+        {
+            return default;
+        }
 
         var dataTypeId = p.DataType;
         if (!TypeIds.Contains(dataTypeId))
+        {
             return default;
+        }
 
         var res = new PropertyValueCollectionParser<T>().Parse(p);
 
-        if (res == null) return default;
+        if (res == null)
+        {
+            return default;
+        }
 
         return res.Aggregate(new TCollection(), (current, element) =>
         {

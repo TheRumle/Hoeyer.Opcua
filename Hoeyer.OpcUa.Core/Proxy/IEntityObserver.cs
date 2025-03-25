@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using FluentResults;
-using Hoeyer.OpcUa.Core.Entity.State;
 using Hoeyer.OpcUa.Core.Observation;
 
 namespace Hoeyer.OpcUa.Core.Proxy;

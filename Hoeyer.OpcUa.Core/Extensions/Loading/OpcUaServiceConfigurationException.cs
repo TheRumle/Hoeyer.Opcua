@@ -5,8 +5,9 @@ namespace Hoeyer.OpcUa.Core.Extensions.Loading;
 
 public class OpcUaServiceConfigurationException(string message) : Exception(message)
 {
-    public OpcUaServiceConfigurationException(IEnumerable<OpcUaServiceConfigurationException> configurationExceptions) : this(
-        string.Join("\n", configurationExceptions))
+    public OpcUaServiceConfigurationException(IEnumerable<OpcUaServiceConfigurationException> configurationExceptions) :
+        this(
+            string.Join("\n", configurationExceptions))
     {
     }
 

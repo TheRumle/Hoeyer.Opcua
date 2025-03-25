@@ -17,8 +17,15 @@ public class MustBePublicAnalyser() : ConcurrentAnalyzer([Rules.MustHavePublicSe
     private static void AnalyseSymbol(SymbolAnalysisContext context)
     {
         // Ensure the symbol is a class or record
-        if (context.Symbol is not INamedTypeSymbol { TypeKind: TypeKind.Class } typeDefinition) return;
-        if (!typeDefinition.IsAnnotatedAsOpcUaEntity()) return;
+        if (context.Symbol is not INamedTypeSymbol { TypeKind: TypeKind.Class } typeDefinition)
+        {
+            return;
+        }
+
+        if (!typeDefinition.IsAnnotatedAsOpcUaEntity())
+        {
+            return;
+        }
 
         var properties = typeDefinition
             .GetMembers()

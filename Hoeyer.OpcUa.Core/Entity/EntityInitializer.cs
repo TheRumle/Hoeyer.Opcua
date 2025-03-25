@@ -9,12 +9,16 @@ public interface IEntityInitializer
     public Task<IEntityNode> CreateNode(ushort namespaceIndex);
 }
 
-public sealed class EntityInitializer<T>(IEntityLoader<T> value, IEntityTranslator<T> translator, IEntityNodeStructureFactory<T> structureFactory) : IEntityInitializer
+public sealed class EntityInitializer<T>(
+    IEntityLoader<T> value,
+    IEntityTranslator<T> translator,
+    IEntityNodeStructureFactory<T> structureFactory) : IEntityInitializer
 {
     public string EntityName { get; } = typeof(T).Name;
+
     public async Task<IEntityNode> CreateNode(ushort namespaceIndex)
     {
-        T entity = await value.LoadCurrentState();
+        var entity = await value.LoadCurrentState();
         var nodeRepresentation = structureFactory.Create(namespaceIndex);
         translator.AssignToNode(entity, nodeRepresentation);
         return nodeRepresentation;

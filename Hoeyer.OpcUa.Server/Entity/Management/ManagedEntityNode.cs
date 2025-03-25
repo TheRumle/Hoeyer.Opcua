@@ -27,8 +27,16 @@ internal sealed record ManagedEntityNode(
 
     public string GetNameOfManaged(NodeId nodeId)
     {
-        if (BaseObject.NodeId.Equals(nodeId)) return BaseObject.DisplayName.ToString();
-        if (PropertyStates.TryGetValue(nodeId, out var propertyState)) return propertyState.DisplayName.ToString();
+        if (BaseObject.NodeId.Equals(nodeId))
+        {
+            return BaseObject.DisplayName.ToString();
+        }
+
+        if (PropertyStates.TryGetValue(nodeId, out var propertyState))
+        {
+            return propertyState.DisplayName.ToString();
+        }
+
         return "???";
     }
 

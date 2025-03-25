@@ -30,7 +30,10 @@ public static class PropertyDeclarationSyntaxExtensions
         // we know that the property is public
         // if no modifier exists, then there is no public setter
         var accessor = property.Setter();
-        if (accessor is null) return false;
+        if (accessor is null)
+        {
+            return false;
+        }
 
         //a public property cannot have the form 'public T t {get; public set;} and any other modifier will indicate that no public setter exists'
         //Therefore, only public T t {get; set;} is validm so ther eshould be no modifier
