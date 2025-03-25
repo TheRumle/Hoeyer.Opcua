@@ -1,6 +1,7 @@
-﻿using Hoeyer.OpcUa.Core.Configuration;
+﻿using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Server;
-using Hoeyer.OpcUa.Server.ServiceConfiguration;
+using Hoeyer.OpcUa.Server.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,9 @@ var host = Host.CreateDefaultBuilder(args)
     {
         var portArg = context.Configuration["Port"] ?? throw new ArgumentException("Port is not defined!");
         if (!int.TryParse(portArg, out var port))
+        {
             throw new ArgumentException($"Invalid port number provided: {portArg}");
+        }
 
         services
             .AddTestAddOpcUaServerConfiguration(port)

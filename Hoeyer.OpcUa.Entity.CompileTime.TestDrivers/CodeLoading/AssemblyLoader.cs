@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Assembly = System.Reflection.Assembly;
 
@@ -15,6 +17,7 @@ public static class AssemblyLoader
 
     public static readonly IReadOnlySet<MetadataReference> CoreMetadataReferences = CoreAssemblies
         .Select(MetadataReference (e) => MetadataReference.CreateFromFile(e.Location))
+        .Union([MetadataReference.CreateFromFile(typeof(object).Assembly.Location)])
         .ToHashSet();
 
     private static ParallelQuery<Type> MemberAssemblies(Type type)
@@ -29,33 +32,17 @@ public static class AssemblyLoader
             );
     }
 
-    public static IEnumerable<PortableExecutableReference> GetMetaReferencesContainedIn(Type type)
-    {
-        return GetAssembliesContainedIn(type)
-            .Select(assembly => MetadataReference.CreateFromFile(assembly.Location)).Union([
-                MetadataReference.CreateFromFile(type.GetTypeInfo().Assembly.Location)
-            ]);
-    }
-
     public static HashSet<Assembly> GetAssembliesContainedIn(Type type)
     {
         List<Type> otherTypes = [..type.GenericTypeArguments, ..type.CustomAttributes.Select(e => e.AttributeType)];
-        if (type.BaseType != null) otherTypes.Add(type.BaseType);
+        if (type.BaseType != null)
+        {
+            otherTypes.Add(type.BaseType);
+        }
 
         return MemberAssemblies(type)
             .Union(otherTypes.AsParallel())
             .Select(e => e.Assembly)
             .ToHashSet();
-    }
-
-
-    public static HashSet<Assembly> AssembliesAndCoreAssembliesFor(Type type)
-    {
-        return GetAssembliesContainedIn(type).Union(CoreAssemblies).ToHashSet();
-    }
-
-    public static HashSet<MetadataReference> MetaDataReferencesForCoreAnd(Type type)
-    {
-        return GetMetaReferencesContainedIn(type).Union(CoreMetadataReferences).ToHashSet();
     }
 }

@@ -1,5 +1,7 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.CodeLoading;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 using Microsoft.CodeAnalysis;

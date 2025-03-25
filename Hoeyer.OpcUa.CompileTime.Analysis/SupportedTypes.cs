@@ -17,7 +17,11 @@ public static class SupportedTypes
     public static bool IsSupported(TypeSyntax syntax, SemanticModel model)
     {
         var symbol = model.GetTypeInfo(syntax).Type;
-        if (symbol == null) return false;
+        if (symbol == null)
+        {
+            return false;
+        }
+
         return Simple.Supports(symbol) || Collection.Supports(symbol);
     }
 
@@ -72,7 +76,11 @@ public static class SupportedTypes
 
         public static bool Supports(ITypeSymbol type)
         {
-            if (SpecialTypes.Contains(type.SpecialType)) return true;
+            if (SpecialTypes.Contains(type.SpecialType))
+            {
+                return true;
+            }
+
             return SupportedSyntaxKinds.Values.Contains(
                 type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
         }
@@ -84,14 +92,17 @@ public static class SupportedTypes
         {
             var implementsICollection = typeSymbol
                 .AllInterfaces
-                .Any(i => i.OriginalDefinition.SpecialType == SpecialType.System_Collections_Generic_ICollection_T);
+                .Any(i => i.OriginalDefinition.SpecialType == SpecialType.System_Collections_Generic_IList_T);
 
             if (typeSymbol is INamedTypeSymbol { Arity: 1, IsGenericType: true } namedTypeSymbol)
+            {
                 return Simple.Supports(namedTypeSymbol.TypeArguments.First())
                        && implementsICollection
                        && namedTypeSymbol.Constructors.Any(c =>
                            c.Parameters.Length == 0 && // Check for no parameters
                            c.DeclaredAccessibility == Accessibility.Public);
+            }
+
             return false;
         }
     }

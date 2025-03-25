@@ -2,7 +2,7 @@
 using Hoeyer.OpcUa.Core.Configuration;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.ServiceConfiguration.Extensions;
+namespace Hoeyer.OpcUa.Server.Configuration.Extensions;
 
 public static class OpcUaEntityServerConfigurationExtensions
 {

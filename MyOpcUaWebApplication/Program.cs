@@ -1,6 +1,8 @@
+using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Server;
+using Hoeyer.OpcUa.Server.Configuration;
 using Hoeyer.OpcUa.Server.Core;
-using Hoeyer.OpcUa.Server.ServiceConfiguration;
 
 var builder = WebApplication.CreateBuilder(args);
 

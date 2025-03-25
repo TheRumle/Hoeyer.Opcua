@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.Core;
+﻿using System.Collections;
+using Hoeyer.OpcUa.Core;
 
 namespace MyOpcUaWebApplication;
 
@@ -7,5 +8,5 @@ public sealed class Gantry
 {
     public List<int> Speeds { get; set; }
     public string message { get; set; }
-    public HashSet<string> messages { get; set; }
+    public List<string> messages { get; set; }
 }

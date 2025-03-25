@@ -1,7 +1,7 @@
 ﻿using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Images;
-using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Core;
 using Microsoft.Extensions.DependencyInjection;
 using TestConfiguration;
 

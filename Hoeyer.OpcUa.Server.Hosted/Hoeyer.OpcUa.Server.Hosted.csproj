@@ -19,7 +19,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa.Test.Entities\Hoeyer.OpcUa.Test.Entities.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Test.IntegrationTest.Configuration\Hoeyer.OpcUa.Test.IntegrationTest.Configuration.csproj"/>
     </ItemGroup>
 </Project>

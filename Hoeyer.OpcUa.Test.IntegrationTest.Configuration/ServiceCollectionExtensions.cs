@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.Core.Configuration;
+﻿using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Core.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace TestConfiguration;

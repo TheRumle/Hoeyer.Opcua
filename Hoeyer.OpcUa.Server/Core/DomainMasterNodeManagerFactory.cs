@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentResults;
@@ -10,42 +11,30 @@ using Hoeyer.OpcUa.Server.Entity.Management;
 using Hoeyer.OpcUa.Server.Exceptions;
 using Opc.Ua;
 using Opc.Ua.Server;
+using NamespaceDoc = Opc.Ua.NamespaceDoc;
 
 namespace Hoeyer.OpcUa.Server.Core;
 
 internal sealed class DomainMasterNodeManagerFactory(
-    EntityNodeManagerFactory entityManagerFactory,
-    IEnumerable<IEntityInitializer> initializers,
+    IEntityNodeManagerFactory entityManagerFactory,
     IOpcUaEntityServerInfo info
 ) : IDomainMasterManagerFactory
 {
+    private readonly Uri _host = info.Host;
+
     /// <inheritdoc />
     public DomainMasterNodeManager ConstructMasterManager(IServerInternal server,
         ApplicationConfiguration applicationConfiguration)
     {
-        var additionalManagers = initializers.Select(async e =>
+        Func<string, (string @namespace, ushort index)> namespaceCreation = entityName =>
         {
-            var node = await CreatedManagedNode(server, info.Host, e);
-            return Result.Ok(entityManagerFactory.Create(node, server));
-        }).Traverse().Result;
+            var nodeNamespace = _host.Host + $"/{entityName}";
+            var namespaceIndex = server.NamespaceUris.GetIndexOrAppend(nodeNamespace);
+            return (nodeNamespace, namespaceIndex);
+        };
 
-        if (additionalManagers.IsFailed)
-        {
-            throw new ServerSetupException ("Something went wrong while constructing node managers for an entity: \n" + string.Join("\n", additionalManagers.Errors));
-        }
 
-        
-        return new DomainMasterNodeManager(server, applicationConfiguration, additionalManagers.Value.ToArray());
-    }
-    
-    private static async Task<ManagedEntityNode> CreatedManagedNode(
-        IServerInternal server,
-        Uri host,
-        IEntityInitializer initializer)
-    {
-        var nodeNamespace = host.Host + $"/{initializer.EntityName}";
-        var namespaceIndex = server.NamespaceUris.GetIndexOrAppend(nodeNamespace);
-        var node = await initializer.CreateNode(namespaceIndex);
-        return new ManagedEntityNode(node, nodeNamespace, namespaceIndex);
+        var additionalManagers = entityManagerFactory.CreateEntityManagers(namespaceCreation, server).Result;
+        return new DomainMasterNodeManager(server, applicationConfiguration, additionalManagers.ToArray());
     }
 }

@@ -36,14 +36,21 @@ internal sealed class EntityNodeManager(
     public override void CreateAddressSpace(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
         logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithScope("Creating address space and initializing {EntityBrowseName} nodes", _entity.BrowseName)
+            .WithScope("Creating address space and initializing {EntityBrowseName} property nodes", _entity.BrowseName)
             .WhenExecuting(() =>
             {
-                var res = referenceLinker.InitializeToExternals(externalReferences);
-                if (res.IsFailed) logger.LogError(res.Errors.ToNewlineSeparatedString());
+                var tryGetId = (PropertyState s) => s.DataType.Identifier is uint i
+                    ? DataTypes.GetBrowseName((int)i)
+                    : "custom datatype";
 
-                logger.LogInformation("Adding {PropertiesName}",
-                    managedEntity.PropertyStates.Values.Select(e => e.BrowseName));
+                var res = referenceLinker.InitializeToExternals(externalReferences);
+                if (res.IsFailed)
+                {
+                    logger.LogError(res.Errors.ToNewlineSeparatedString());
+                }
+
+                logger.LogInformation("Adding nodes {@PropertiesName}",
+                    managedEntity.PropertyStates.Values.Select(e => $"[{e.BrowseName} ({tryGetId.Invoke(e)})]"));
             });
     }
 
@@ -74,14 +81,18 @@ internal sealed class EntityNodeManager(
                 {
                     var result = referenceLinker.AddReferencesToEntity(kvp.Key, kvp.Value);
                     if (!result.IsSuccess)
+                    {
                         logger.LogWarning(
                             "Failed to references from '{Node}' --> '{Targets}: {Error}'",
                             kvp.Key,
                             kvp.Value.Select(e => e.TargetId),
                             result.Errors.ToNewlineSeparatedString());
+                    }
                     else
+                    {
                         logger.LogInformation("Node {NodeId} now references targets: {References}", _entity.BrowseName,
                             kvp.Value.Select(e => e.TargetId));
+                    }
                 }
             });
     }
@@ -106,7 +117,10 @@ internal sealed class EntityNodeManager(
                 }
 
                 var deletion = referenceLinker.RemoveReference(referenceTypeId, isInverse, targetId);
-                if (deletion.IsSuccess) return ServiceResult.Good;
+                if (deletion.IsSuccess)
+                {
+                    return ServiceResult.Good;
+                }
 
                 logger.LogError("Failed deleting reference {Reference}: {Errors}",
                     referenceTypeId,
@@ -143,7 +157,11 @@ internal sealed class EntityNodeManager(
     public override void Browse(OperationContext context, ref ContinuationPoint continuationPoint,
         IList<ReferenceDescription> references)
     {
-        if (continuationPoint.NodeToBrowse is not IEntityNodeHandle nodeToBrowse) return;
+        if (continuationPoint.NodeToBrowse is not IEntityNodeHandle nodeToBrowse)
+        {
+            return;
+        }
+
         var cPoint = continuationPoint;
 
         continuationPoint = logger.LogCaughtExceptionAs(LogLevel.Error)
@@ -178,7 +196,10 @@ internal sealed class EntityNodeManager(
         IList<ServiceResult> errors)
     {
         var filtered = nodesToRead.Where(e => !e.Processed && entityHandleManager.IsManaged(e.NodeId)).ToList();
-        if (!filtered.Any()) return;
+        if (!filtered.Any())
+        {
+            return;
+        }
 
         logger.LogCaughtExceptionAs(LogLevel.Error)
             .WithSessionContextScope(context, "Reading values {@ValuesToRead}",
@@ -206,7 +227,10 @@ internal sealed class EntityNodeManager(
     public override void Write(OperationContext context, IList<WriteValue> nodesToWrite, IList<ServiceResult> errors)
     {
         var filtered = nodesToWrite.Where(e => !e.Processed && entityHandleManager.IsManaged(e.NodeId)).ToList();
-        if (!filtered.Any()) return;
+        if (!filtered.Any())
+        {
+            return;
+        }
 
         logger.LogCaughtExceptionAs(LogLevel.Error)
             .WithSessionContextScope(context, "Writing nodes {@Nodes}", nodesToWrite.Select(e => e.NodeId),
@@ -351,7 +375,10 @@ internal sealed class EntityNodeManager(
     public override void SessionClosing(OperationContext context, NodeId sessionId, bool deleteSubscriptions)
     {
         logger.LogInformation("Session {@Session} closing", sessionId);
-        if (!deleteSubscriptions) return;
+        if (!deleteSubscriptions)
+        {
+            return;
+        }
 
         using var beginScope = logger.BeginScope("Deleting subscriptions held by session {@Session}", sessionId);
         logger.LogWarning("Deleting subscriptions held by a session is not supported yet!");
@@ -380,6 +407,9 @@ internal sealed class EntityNodeManager(
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
-        if (disposing) base.Dispose();
+        if (disposing)
+        {
+            base.Dispose();
+        }
     }
 }

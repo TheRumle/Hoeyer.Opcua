@@ -13,7 +13,7 @@ public class GantryLoader : IEntityLoader<Gantry>
             {
                 21, 32, 12, 3
             },
-            messages = new HashSet<string>
+            messages = new List<string>
             {
                 "What a load", "What a load", " of nonsense"
             },

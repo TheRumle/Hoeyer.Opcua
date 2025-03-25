@@ -13,7 +13,7 @@ public static class Rules
 
     public static readonly DiagnosticDescriptor MustBeSupportedOpcUaType = CreateErrorDescriptor("HOEYERUA0002",
         DesignCategory,
-        "The type '{0}' is not supported for OpcUa entities. It must be either a native OpcUa type or an ICollection with default constructor.");
+        "The type '{0}' is not supported for OpcUa entities. It must be either a native OpcUa type or an IList of such type with a default constructor.");
 
 
     public static readonly DiagnosticDescriptor MustNotBeNullablePropertyDescriptor = new(

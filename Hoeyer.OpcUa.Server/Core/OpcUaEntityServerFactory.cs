@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using Hoeyer.OpcUa.Core.Entity;
-using Hoeyer.OpcUa.Core.Entity.Node;
+﻿using Hoeyer.OpcUa.Server.Configuration;
 using Hoeyer.OpcUa.Server.Entity.Management;
-using Hoeyer.OpcUa.Server.ServiceConfiguration;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Configuration;
@@ -11,7 +8,7 @@ namespace Hoeyer.OpcUa.Server.Core;
 
 public sealed class OpcUaEntityServerFactory(
     OpcUaEntityServerSetup serverSetup,
-    IEnumerable<IEntityInitializer> entityObjectCreators,
+    IDomainMasterManagerFactory masterNodeManagerFactory,
     ILoggerFactory loggerFactory)
 {
     public IStartableEntityServer CreateServer()
@@ -27,11 +24,8 @@ public sealed class OpcUaEntityServerFactory(
 
         application.LoadApplicationConfiguration(false);
 
-        var masterfactory = new DomainMasterNodeManagerFactory(
-            new EntityNodeManagerFactory(loggerFactory),
-            entityObjectCreators,
-            serverSetup);
-        var server = new OpcEntityServer(serverSetup, masterfactory, loggerFactory.CreateLogger<OpcEntityServer>());
+        var server = new OpcEntityServer(serverSetup, masterNodeManagerFactory,
+            loggerFactory.CreateLogger<OpcEntityServer>());
         return new StartableEntityServer(application, server);
     }
 }
