@@ -47,6 +47,20 @@ public static class TestEntities
         {
             public string MyString { get; set; } = "";
         }
+        """,
+        """
+        public enum Position
+        {
+            OverThere,
+            OverHere,
+            OnTheMoon
+        }
+        
+        [OpcUaEntity]
+        public sealed class EnumSupport
+        {
+            public Position Position { get; set; }
+        }
         """
     ];
 

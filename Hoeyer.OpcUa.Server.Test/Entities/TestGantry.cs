@@ -3,7 +3,7 @@
 namespace Hoeyer.OpcUa.Server.Test.Entities;
 
 [OpcUaEntity]
-public class Gantry
+public class TestGantry
 {
     public int Speed { get; set; }
     public bool IsMoving { get; set; }

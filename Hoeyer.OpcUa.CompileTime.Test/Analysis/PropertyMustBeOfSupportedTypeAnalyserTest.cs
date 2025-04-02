@@ -5,4 +5,7 @@ namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
 
 [TestSubject(typeof(PropertyMustBeOfSupportedTypeAnalyser))]
 [InheritsTests]
-public class PropertyMustBeOfSupportedTypeAnalyserTest : AnalyzerTest<PropertyMustBeOfSupportedTypeAnalyser>;
+public class PropertyMustBeOfSupportedTypeAnalyserTest : AnalyzerTest<PropertyMustBeOfSupportedTypeAnalyser>
+{
+
+}

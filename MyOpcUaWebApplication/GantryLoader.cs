@@ -11,13 +11,20 @@ public class GantryLoader : IEntityLoader<Gantry>
         {
             Speeds = new List<int>
             {
-                21, 32, 12, 3
+                21,
+                32,
+                12,
+                3
             },
             messages = new List<string>
             {
-                "What a load", "What a load", " of nonsense"
+                "What a load",
+                "What a load",
+                " of nonsense"
             },
-            message = "OPCUA SAYS HELLO"
+            message = "OPCUA SAYS HELLO",
+            Moving = false,
+            Position = Position.OverThere,
         });
     }
 }

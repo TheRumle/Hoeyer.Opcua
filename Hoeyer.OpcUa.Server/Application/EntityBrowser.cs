@@ -29,17 +29,25 @@ internal class EntityBrowser(IEntityNode node) : IEntityBrowser
             _ => Result.Fail(
                 $"{nodeToBrowse.Value.BrowseName} is not related to the entity {node.BaseObject.BrowseName}")
         };
+        
 
         return browseResult
             .Map(values => values
                 .Skip(continuationPoint.Index)
-                .Take((int)Math.Min(continuationPoint.MaxResultsToReturn, int.MaxValue)))
-            .Map(foundValues => CreateBrowseResponse(foundValues.ToList()));
+                .Take((int)Math.
+                    Min(Math.Max(continuationPoint.MaxResultsToReturn, 1),
+                        int.MaxValue)))
+            .Map(foundValues => CreateBrowseResponse(foundValues.ToList(), continuationPoint));
     }
 
-    private static EntityBrowseResponse CreateBrowseResponse(IList<ReferenceDescription> foundValues)
+    private static EntityBrowseResponse CreateBrowseResponse(IList<ReferenceDescription> foundValues,
+        ContinuationPoint continuationPoint)
     {
-        return new EntityBrowseResponse(null, foundValues);
+        if (foundValues.Count < continuationPoint.MaxResultsToReturn)
+        {
+            return new EntityBrowseResponse(null, foundValues);
+        }
+        return new EntityBrowseResponse(continuationPoint, foundValues);
     }
 
 

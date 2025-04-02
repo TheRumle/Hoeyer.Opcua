@@ -103,9 +103,9 @@ public sealed class OpcEntityReader<TEntity>(ILogger logger)
 }
 
 public sealed class OpcEntityClient<TEntity>(ILogger<OpcEntityClient<TEntity>> logger) :
-    IEntityClient where TEntity : new()
+    IEntityClient
 {
-    private OpcEntityReader<TEntity> _reader = new(logger);
+    private readonly OpcEntityReader<TEntity> _reader = new(logger);
     /// <inheritdoc />
     public async Task<Result<IEntityNode>> ReadOpcUaEntityAsync(
         Session session)

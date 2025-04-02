@@ -1,6 +1,4 @@
-﻿using Opc.Ua;
-
-namespace Hoeyer.OpcUa.Server.SourceGeneration.OpcUaTypes;
+﻿namespace Hoeyer.OpcUa.Server.SourceGeneration.OpcUaTypes;
 
 public record struct OpcUaProperty(
     string Name,

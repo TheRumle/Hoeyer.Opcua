@@ -29,6 +29,7 @@ public static class SupportedTypes
     {
         public static readonly ImmutableHashSet<SpecialType> SpecialTypes =
         [
+            SpecialType.System_Enum,
             SpecialType.System_Boolean,
             SpecialType.System_Byte,
             SpecialType.System_Int16,
@@ -43,21 +44,7 @@ public static class SupportedTypes
             SpecialType.System_DateTime
         ];
 
-        public static readonly ImmutableDictionary<SyntaxKind, string> SupportedSyntaxKinds =
-            new Dictionary<SyntaxKind, string>
-            {
-                { SyntaxKind.BoolKeyword, "bool" },
-                { SyntaxKind.ByteKeyword, "byte" },
-                { SyntaxKind.ShortKeyword, "short" },
-                { SyntaxKind.UShortKeyword, "ushort" },
-                { SyntaxKind.IntKeyword, "int" },
-                { SyntaxKind.UIntKeyword, "uint" },
-                { SyntaxKind.LongKeyword, "long" },
-                { SyntaxKind.ULongKeyword, "ulong" },
-                { SyntaxKind.FloatKeyword, "float" },
-                { SyntaxKind.DoubleKeyword, "double" },
-                { SyntaxKind.StringKeyword, "string" }
-            }.ToImmutableDictionary();
+     
 
         public static bool Supports(SpecialType specialType)
         {
@@ -81,8 +68,9 @@ public static class SupportedTypes
                 return true;
             }
 
-            return SupportedSyntaxKinds.Values.Contains(
-                type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+            if (type.TypeKind == TypeKind.Enum) return true;
+
+            return false;
         }
     }
 

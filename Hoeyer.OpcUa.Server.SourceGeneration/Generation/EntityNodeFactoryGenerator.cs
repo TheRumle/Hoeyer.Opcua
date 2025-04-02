@@ -55,7 +55,10 @@ public class EntityNodeFactoryGenerator : IIncrementalGenerator
     private static IEnumerable<string> GetPropertyNodeDefinitions(string entityName,
         IEnumerable<OpcUaProperty> properties)
     {
-        return properties.Select(prop =>
+        var props = properties.ToList();
+        if (!props.Any()) return ["return new List<PropertyState>();"];
+        
+        return props.Select(prop =>
         {
             var propertyName = prop.Name.TrimEnd();
             var dataType = prop.OpcNativeTypeId.TrimEnd();

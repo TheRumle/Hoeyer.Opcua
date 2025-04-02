@@ -56,7 +56,7 @@ public sealed class OpcEntityServer(
         catch (Exception e)
         {
             logger.LogCritical(e, "An exception occurred when trying to activate session with RequestHeader {@Header}",
-                requestHeader);
+                requestHeader.ToLoggingObject());
             diagnosticInfos = new DiagnosticInfoCollection();
             results = new StatusCodeCollection();
             serverNonce = null!;

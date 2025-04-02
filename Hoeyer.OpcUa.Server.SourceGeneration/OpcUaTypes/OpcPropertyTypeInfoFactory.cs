@@ -27,6 +27,7 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
     private const string OPC_UA_STRING_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.String);
     private const string OPC_UA_DATE_TIME_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.DateTime);
     private const string OPC_UA_DECIMAL_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.Decimal);
+    private const string OPC_UA_ENUM_TYPE = DATA_TYPE_ENUM_NAME + "." + nameof(DataTypeIds.Enumeration);
 
 
     private static readonly ImmutableHashSet<string> SUPPORTED_ENUMERABLE_NAMES = ImmutableHashSet.CreateRange
@@ -44,6 +45,7 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
     private static readonly Dictionary<SpecialType, string> SPECIAL_TYPE_OPC_NATIVE_TYPES = new()
     {
         { SpecialType.System_Boolean, OPC_UA_BOOLEAN_TYPE },
+        { SpecialType.System_Enum, OPC_UA_ENUM_TYPE },
         { SpecialType.System_Byte, OPC_UA_BYTE_TYPE },
         { SpecialType.System_Int16, OPC_UA_INT16_TYPE },
         { SpecialType.System_UInt16, OPC_UA_U_INT16_TYPE },
@@ -60,6 +62,7 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
 
     private static readonly Dictionary<SyntaxKind, string> OPC_NATIVE_TYPES = new()
     {
+        { SyntaxKind.EnumKeyword, OPC_UA_ENUM_TYPE },
         { SyntaxKind.BoolKeyword, OPC_UA_BOOLEAN_TYPE },
         { SyntaxKind.ByteKeyword, OPC_UA_BYTE_TYPE },
         { SyntaxKind.ShortKeyword, OPC_UA_INT16_TYPE },
@@ -81,7 +84,7 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
         ImmutableHashSet.CreateRange(SPECIAL_TYPE_OPC_NATIVE_TYPES.Keys);
 
 
-    private (string SimpleType, string OpcType, string ValueRank, int ValueRankInt)? FindSupportedTypes()
+    private (string CSharpType, string OpcType, string ValueRank, int ValueRankInt)? FindSupportedTypes()
     {
         var typeSyntax = property.Type;
         var syntaxKind = typeSyntax.Kind();
@@ -94,22 +97,30 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
                 ValueRanks.Scalar);
         }
 
-        var typeInfo = semanticModel.GetTypeInfo(property.Type).Type;
-        if (typeInfo == null)
+        var typeSymbol = semanticModel.GetTypeInfo(property.Type).Type;
+        if (typeSymbol == null)
         {
             return null;
         }
 
-        if (SUPPORTED_SIMPLE_SPECIALTYPES.Contains(typeInfo.SpecialType))
+        if (typeSymbol.TypeKind == TypeKind.Enum)
         {
-            return (typeInfo.ToString(),
-                SPECIAL_TYPE_OPC_NATIVE_TYPES[typeInfo.SpecialType],
+            return (typeSymbol.ToString(),
+                SPECIAL_TYPE_OPC_NATIVE_TYPES[SpecialType.System_Enum],
+                VALUE_RANK_SINGLE_VALUE,
+                ValueRanks.Scalar);
+        } 
+
+        if (SUPPORTED_SIMPLE_SPECIALTYPES.Contains(typeSymbol.SpecialType))
+        {
+            return (typeSymbol.ToString(),
+                SPECIAL_TYPE_OPC_NATIVE_TYPES[typeSymbol.SpecialType],
                 VALUE_RANK_SINGLE_VALUE,
                 ValueRanks.Scalar);
         }
-
-
-        if (typeInfo is INamedTypeSymbol { IsGenericType: true, TypeArguments.Length: 1 } namedTypeSymbol)
+        
+        
+        if (typeSymbol is INamedTypeSymbol { IsGenericType: true, TypeArguments.Length: 1 } namedTypeSymbol)
         {
             var span = namedTypeSymbol.ConstructUnboundGenericType().ToString().AsSpan();
             var lastDot = span.LastIndexOf('.') + 1; //even if no . then it returns index 0! : )
@@ -156,7 +167,7 @@ public class OpcPropertyTypeInfoFactory(PropertyDeclarationSyntax property, Sema
         (
             PropertyInfo: new OpcUaProperty(
                 property.Identifier.ToFullString(),
-                typeDetails.Value.SimpleType,
+                typeDetails.Value.CSharpType,
                 typeDetails.Value.OpcType,
                 typeDetails.Value.ValueRank,
                 typeDetails.Value.ValueRankInt

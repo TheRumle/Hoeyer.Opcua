@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
@@ -26,7 +27,7 @@ internal class PropertyReader(PermissionType permissionType) : IPropertyReader
             Attributes.ValueRank => CreateResponse(readId, node.ValueRank),
             Attributes.MinimumSamplingInterval => CreateResponse(readId, node.MinimumSamplingInterval),
             Attributes.DataType => CreateResponse(readId, node.DataType),
-            Attributes.ArrayDimensions => CreateResponse(readId, node.Value is IEnumerable e 
+            Attributes.ArrayDimensions => CreateResponse(readId, node.Value is ICollection or Array
                     ? new ReadOnlyList<uint>(new List<uint> {1})
                     : null),
             Attributes.AccessLevel => CreateResponse(readId, AccessLevels.CurrentReadOrWrite),
@@ -50,7 +51,7 @@ internal class PropertyReader(PermissionType permissionType) : IPropertyReader
 
     private static string GetPropertyDescription(PropertyState node)
     {
-        var rank = node.ValueRank == ValueRanks.Scalar ? "(List)" : "";
+        var rank = node.ValueRank == ValueRanks.Scalar ? "" : "(List)";
         var type = node.WrappedValue.TypeInfo.BuiltInType;
         var typeDescr = $"{DataTypes.GetBrowseName((int)type)}{rank}";
         return $"The property {node.DisplayName.ToString()} of type '{typeDescr}'";
