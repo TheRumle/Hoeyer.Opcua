@@ -14,10 +14,10 @@ public static class Rules
     public static readonly DiagnosticDescriptor MustBeSupportedOpcUaType = CreateErrorDescriptor("HOEYERUA0002",
         DesignCategory,
         "The type '{0}' is not supported for OpcUa entities. It must be either a native OpcUa type or an IList of such type with a default constructor.");
-
+    
 
     public static readonly DiagnosticDescriptor MustNotBeNullablePropertyDescriptor = new(
-        "HOEYERUA0002",
+        "HOEYERUA0003",
         "Properties must not be nullable",
         "OpcUa entities' properties can never be null",
         DesignCategory,
@@ -29,6 +29,19 @@ public static class Rules
     {
         return Diagnostic.Create(MustNotBeNullablePropertyDescriptor, property.GetLocation(), property.Identifier);
     }
+    
+    public static readonly DiagnosticDescriptor MemberMustBeOpcSupportedDescriptor = new(
+        "HOEYERUA0004",
+        "Members must be translatable to OpcUa construct",
+        "Members must be translatable to OpcUa construct",
+        DesignCategory,
+        DiagnosticSeverity.Error,
+        true,
+        "OpcUa Entity classes cannot have members that cannot be translated to OpcUa.");
+    
+    public static readonly DiagnosticDescriptor MemberMustBeOpcSupported = CreateErrorDescriptor("HOEYERUA0004",
+        DesignCategory,
+        "The member '{0}' is not supported for OpcUa entities. It must be an empty constructor, property or delegate type.");
 
     private static DiagnosticDescriptor CreateDescriptor(
         string diagnosticId,

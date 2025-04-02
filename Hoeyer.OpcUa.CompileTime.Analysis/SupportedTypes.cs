@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -22,12 +21,33 @@ public static class SupportedTypes
             return false;
         }
 
+        if (symbol.NullableAnnotation == NullableAnnotation.Annotated)
+        {
+            var s = UnwrapNullable(symbol);
+            return Simple.Supports(s) || Collection.Supports(s);
+        }
+        
         return Simple.Supports(symbol) || Collection.Supports(symbol);
     }
 
-    public static class Simple
+    private static ITypeSymbol UnwrapNullable(ITypeSymbol typeSymbol)
     {
-        public static readonly ImmutableHashSet<SpecialType> SpecialTypes =
+        if (typeSymbol is INamedTypeSymbol { IsReferenceType: true} namedTypeSymbol)
+        {
+            return namedTypeSymbol.TypeArguments[0];
+        }
+
+        if (typeSymbol is INamedTypeSymbol valueTypeSymbol && valueTypeSymbol.Name == "Nullable")
+        {
+            return valueTypeSymbol.TypeArguments[0];
+        }
+
+        return typeSymbol;
+    }
+
+    private static class Simple
+    {
+        private static readonly ImmutableHashSet<SpecialType> SpecialTypes =
         [
             SpecialType.System_Enum,
             SpecialType.System_Boolean,
@@ -74,7 +94,7 @@ public static class SupportedTypes
         }
     }
 
-    public static class Collection
+    private static class Collection
     {
         public static bool Supports(ITypeSymbol typeSymbol)
         {

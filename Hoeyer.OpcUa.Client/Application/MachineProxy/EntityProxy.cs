@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
 
 public sealed class EntityProxy<TMachineState>(
-    IEntityClient entityClient,
+    IEntityClient<TMachineState> entityClient,
     ISessionManager sessionManager,
     StateContainer<TMachineState> stateContainer,
     ILogger<EntityProxy<TMachineState>> logger)

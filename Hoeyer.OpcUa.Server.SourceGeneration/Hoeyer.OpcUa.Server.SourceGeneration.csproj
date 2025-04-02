@@ -27,4 +27,8 @@
         <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Semantics\" />
+    </ItemGroup>
+
 </Project>

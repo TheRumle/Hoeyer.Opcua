@@ -9,17 +9,11 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Hoeyer.OpcUa.CompileTime.Analysis;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class PropertiesMustNotBeNullableAnalyser : DiagnosticAnalyzer
+public sealed class PropertiesMustNotBeNullableAnalyser() : ConcurrentAnalyzer([Rules.MustNotBeNullablePropertyDescriptor])
 {
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
-        ImmutableArray.Create(Rules.MustNotBeNullablePropertyDescriptor);
-
-    /// <inheritdoc />
-    public override void Initialize(AnalysisContext context)
+    protected override void InitializeAnalyzer(AnalysisContext context)
     {
-        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-        context.EnableConcurrentExecution();
         context.RegisterSyntaxNodeAction(AnalyzeSyntax, SyntaxKind.ClassDeclaration);
         context.RegisterSyntaxNodeAction(AnalyzeSyntax, SyntaxKind.RecordDeclaration);
     }

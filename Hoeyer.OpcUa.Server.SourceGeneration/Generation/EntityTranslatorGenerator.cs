@@ -142,10 +142,13 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         SemanticModel model)
     {
         var collectionProperties = properties.Where(property =>
-            model.GetTypeInfo(property.Type).Type is INamedTypeSymbol
+        {
+            var typeInfo = model.GetTypeInfo(property.Type).Type;
+            return  typeInfo is INamedTypeSymbol
             {
                 Arity: 1, IsGenericType: true
-            }).ToList();
+            };
+        }).ToList();
 
         var singletonAssignments = properties.Except(collectionProperties).Select(TranslateSingletonValue);
         var collectionAssignments = collectionProperties.Select(property => TranslateCollection(property, model));

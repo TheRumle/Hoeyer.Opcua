@@ -43,6 +43,7 @@ internal class EntityReader(IEntityNode entityNode, IPropertyReader propertyRead
             Attributes.DisplayName => CreateResponse(readId, node.DisplayName),
             Attributes.Description => CreateResponse(readId, new LocalizedText($"The managed entity '{node.DisplayName.ToString()}'")),
             Attributes.NodeId => CreateResponse(readId, node.NodeId),
+            Attributes.EventNotifier => CreateResponse(readId, EventNotifiers.SubscribeToEvents),
             _ => Unavailable(readId)
         };
     }

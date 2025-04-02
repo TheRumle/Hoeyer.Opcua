@@ -103,11 +103,11 @@ public sealed class OpcEntityReader<TEntity>(ILogger logger)
 }
 
 public sealed class OpcEntityClient<TEntity>(ILogger<OpcEntityClient<TEntity>> logger) :
-    IEntityClient
+    IEntityClient<TEntity>
 {
     private readonly OpcEntityReader<TEntity> _reader = new(logger);
     /// <inheritdoc />
-    public async Task<Result<IEntityNode>> ReadOpcUaEntityAsync(
+    public async Task<Result<TEntity>> ReadOpcUaEntityAsync(
         Session session)
     {
         await _reader.ReadNode(session);

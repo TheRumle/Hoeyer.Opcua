@@ -22,6 +22,7 @@ public static class DataTypeToTranslator
         DataTypeIds.Double,
         DataTypeIds.String,
         DataTypeIds.DateTime,
+        DataTypeIds.Enumeration,
         DataTypeIds.Decimal
     ];
 
