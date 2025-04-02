@@ -95,7 +95,7 @@ internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManage
             return Result.Ok(propertyHandle);
         }
 
-        if (IsManagedEntityHandle(nodeId, out var entityHandle))
+        if (TryGetEntityHandle(nodeId, out var entityHandle))
         {
             return Result.Ok(entityHandle);
         }
@@ -105,7 +105,7 @@ internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManage
     }
 
 
-    public bool IsManagedEntityHandle(NodeId id, out IEntityNodeHandle entityHandle)
+    public bool TryGetEntityHandle(NodeId id, out IEntityNodeHandle entityHandle)
     {
         if (IsManagedEntityHandle(id) || id.Equals(entityNode.BaseObject.NodeId))
         {

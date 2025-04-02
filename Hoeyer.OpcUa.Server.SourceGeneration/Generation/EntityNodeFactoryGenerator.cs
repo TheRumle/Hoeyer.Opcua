@@ -66,6 +66,7 @@ public class EntityNodeFactoryGenerator : IIncrementalGenerator
                     {propertyName}.{nameof(BaseObjectState.NodeId)} = new {nameof(NodeId)}("{entityName}.{propertyName}", applicationNamespaceIndex);
                     {propertyName}.{nameof(PropertyState.AccessLevel)} = {nameof(AccessLevels)}.{nameof(AccessLevels.CurrentReadOrWrite)};
                     entity.{nameof(BaseInstanceState.AddReference)}({nameof(ReferenceTypes)}.{nameof(ReferenceTypes.HasProperty)}, false, {propertyName}.{nameof(PropertyState.NodeId)});
+                    
                     yield return {propertyName};
                     """;
         });

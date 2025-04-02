@@ -20,4 +20,49 @@ public static class LoggingExtensions
         var prefixedMessage = $"[{identity}] {scope}";
         return logger.WithScope(prefixedMessage, messageArguments);
     }
+
+    public static object ToLoggingObject(this RequestHeader requestHeader)
+    {
+        return new
+        {
+            requestHeader.Timestamp,
+            AdditionalHeader = requestHeader.AdditionalHeader.ToString(),
+            requestHeader.RequestHandle,
+        };
+    }
+    
+    public static object ToLoggingObject(this ResponseHeader response)
+    {
+        return new
+        {
+            response.Timestamp,
+            AdditionalHeader = response.AdditionalHeader.ToString(),
+            response.RequestHandle,
+            response.ServiceDiagnostics,
+        };
+    }
+
+    public static object ToLoggingObject(this EndpointDescription description)
+    {
+        return new
+        {
+            Url = description.EndpointUrl,
+            description.Server.ApplicationUri,
+            description.Server.ApplicationName,
+        };
+    }
+
+    public static object ToLoggingObject(this IEndpointIncomingRequest request)
+    {
+        return new
+        {
+            Header = request.Request.RequestHeader.ToLoggingObject(),
+            RequestHeader = new
+            {
+                request.SecureChannelContext.SecureChannelId,
+                Endpoint = request.SecureChannelContext.EndpointDescription.ToLoggingObject(),
+                CallDataPayload = request.Calldata
+            },
+        };
+    }
 }

@@ -10,7 +10,7 @@ namespace Hoeyer.OpcUa.Server.Test.Application;
 [EntityFixtureGenerator]
 public class PropertyReaderTest(EntityReaderFixture propertyReaderFixture)
 {
-    private readonly IPropertyReader _propertyReader = new PropertyReader();
+    private readonly IPropertyReader _propertyReader = new PropertyReader((PermissionType.Browse | PermissionType.Read | PermissionType.Write | PermissionType.ReadRolePermissions | PermissionType.Call | PermissionType.ReceiveEvents));
 
     public override string ToString()
     {

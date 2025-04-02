@@ -14,4 +14,6 @@ public interface IOpcUaEntityServerInfo
     ///     For instance, http://samples.org/UA/MyApplication or something else uniqely identifying the overall resource,
     /// </summary>
     Uri ApplicationNamespace { get; }
+
+    Uri OpcUri { get; }
 }

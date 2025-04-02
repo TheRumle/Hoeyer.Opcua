@@ -14,6 +14,7 @@ public sealed record EntityNode(BaseObjectState BaseObject, Dictionary<NodeId, P
     {
     }
 
+    /// <inheritdoc />
     public BaseObjectState BaseObject { get; } = BaseObject;
 
     public Dictionary<NodeId, PropertyState> PropertyStates { get; } = PropertyStates;

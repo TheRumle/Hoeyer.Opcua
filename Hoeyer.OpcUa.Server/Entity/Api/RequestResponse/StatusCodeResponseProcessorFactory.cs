@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Hoeyer.OpcUa.Server.Entity.Api;
-using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
-namespace Hoeyer.OpcUa.Server.Entity.Management;
+namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 
-internal class RequestResponseProcessorFactory(LogLevel errorLevel, LogLevel successLevel)
+public class StatusCodeResponseProcessorFactory(LogLevel errorLevel, LogLevel successLevel)
 {
     [SuppressMessage("Maintainability", "S2325",
         Justification =
@@ -33,6 +31,19 @@ internal class RequestResponseProcessorFactory(LogLevel errorLevel, LogLevel suc
     {
         return GetProcessorImpl(valuesToProcess, processSuccess, processError, operationName)
             .WithLogging(logger, operationName, errorLevel, successLevel);
+    }
+    
+    [Pure]
+    public IRequestResponseProcessor<T> GetProcessorWithLoggingForFailedOnly<T>(
+        string operationName,
+        IEnumerable<T> valuesToProcess,
+        Action<T> processSuccess,
+        Action<T> processError,
+        ILogger logger
+    ) where T : IStatusCodeResponse
+    {
+        return GetProcessorImpl(valuesToProcess, processSuccess, processError, operationName)
+            .WithLogging(logger, operationName, errorLevel, LogLevel.None);
     }
 
     [Pure]

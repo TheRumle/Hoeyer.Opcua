@@ -30,4 +30,11 @@ public sealed record OpcUaEntityServerSetup(
     public Uri Host { get; } = Host;
     public ISet<Uri> Endpoints { get; } = Endpoints;
     public Uri ApplicationNamespace { get; } = ApplicationNamespace;
+
+    /// <inheritdoc />
+    public Uri OpcUri { get; } = new UriBuilder(Host)
+    {
+        Scheme = "opc.tcp",
+        Port = Host.Port // Ensure the port remains unchanged
+    }.Uri;
 }

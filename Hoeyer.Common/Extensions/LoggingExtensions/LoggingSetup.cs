@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
+using FluentResults;
 using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.Common.Extensions.LoggingExtensions;
@@ -32,7 +35,7 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel)
             var a = ExecuteAndLogWithScope(action);
             if (EqualityComparer<T>.Default.Equals(a, default!))
             {
-                logger.Log(logResultAs, "Got {Values}", a);
+                Log(logResultAs, a);
             }
 
             return a;
@@ -41,12 +44,38 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel)
         var res = ExecuteAndLog(action);
         if (EqualityComparer<T>.Default.Equals(res, default!))
         {
-            logger.Log(logResultAs, "Got {Values}", res);
+            Log(logResultAs, res);
         }
 
         return res;
     }
 
+    private void Log<T>(LogLevel logResultAs, T a)
+    {
+        logger.Log(logResultAs, "Got {Values}", a);
+    }
+
+    public async Task<T> WhenExecutingAsync<T>(Func<Task<T>> action, LogLevel logResultAs = LogLevel.None)
+    {
+        if (HasScope)
+        {
+            var a = await ExecuteAndLogWithScope(action);
+            if (EqualityComparer<T>.Default.Equals(a, default!))
+            {
+                Log(logResultAs, a);
+            }
+
+            return a;
+        }
+
+        var res = await ExecuteAndLog(action);
+        if (EqualityComparer<T>.Default.Equals(res, default!))
+        {
+            Log(logResultAs, res);
+        }
+        return res;
+    }
+    
     /// <inheritdoc />
     public IScopeSelected WithScope(string scopeTitle, params object[] scopeArguments)
     {
@@ -92,11 +121,26 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel)
         return ExecuteAndLog(action);
     }
 
-    private T ExecuteAndLog<T>(Func<T> action)
+    private T ExecuteAndLog<T>(Func<T> func)
     {
         try
         {
-            return action.Invoke();
+            return func.Invoke();
+        }
+        catch (Exception ex)
+        {
+            LogException(ex);
+            throw;
+        }
+    }
+    
+    
+    [SuppressMessage("SonarQube", "S5034", Justification = "If the operation fails, the error is caught and logged")]
+    private T ExecuteAndLog<T>(Task<T> func)
+    {
+        try
+        {
+            return func.Result;
         }
         catch (Exception ex)
         {

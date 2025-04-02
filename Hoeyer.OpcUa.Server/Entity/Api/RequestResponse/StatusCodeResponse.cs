@@ -51,6 +51,9 @@ public abstract class StatusCodeResponse<TRequest, TResponse>
     public (TResponse DataValue, StatusCode StatusCode) Response { get; }
 
     /// <inheritdoc />
+    public string StatusMessage => StatusCode.LookupSymbolicId(ResponseCode.Code);
+
+    /// <inheritdoc />
     public StatusCode ResponseCode { get; }
 
     public override string ToString()
@@ -89,7 +92,7 @@ public abstract class StatusCodeResponse<TRequest, TResponse>
         {
             Request = RequestString(),
             Response = ResponseCode.ToString()
-        }, new JsonSerializerOptions { WriteIndented = false });
+        }, new JsonSerializerOptions { WriteIndented = true });
     }
 
     protected abstract string RequestString();

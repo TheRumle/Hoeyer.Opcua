@@ -7,7 +7,7 @@ namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
 
 public class SessionFactory(IOpcUaEntityServerInfo applicationOptions)
 {
-    private readonly string _opcServerUrl = applicationOptions.ApplicationNamespace.ToString();
+    private readonly string _opcServerUrl = applicationOptions.OpcUri.ToString();
     public readonly ApplicationConfiguration Configuration = CreateApplicationConfig();
 
     public async Task<Session> CreateSessionAsync()

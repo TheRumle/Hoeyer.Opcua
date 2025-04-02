@@ -1,13 +1,14 @@
+using Hoeyer.OpcUa.Client.Application;
+using Hoeyer.OpcUa.Client.Application.MachineProxy;
 using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Server;
-using Hoeyer.OpcUa.Server.Configuration;
-using Hoeyer.OpcUa.Server.Core;
+using MyOpcUaWebApplication;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Logging.AddConsole();
+builder.Services.AddHostedService<ReaderHost>();
 
 builder.Services.AddOpcUaServerConfiguration(conf => conf
         .WithServerId("MyServer")
@@ -16,14 +17,15 @@ builder.Services.AddOpcUaServerConfiguration(conf => conf
         .WithEndpoints(["opc.tcp://localhost:4840"])
         .Build())
     .WithEntityServices()
-    .WithOpcUaServer();
+    .WithOpcUaServerAsBackgroundService()
+    .Collection.AddTransient<SessionFactory>()
+    .AddTransient<OpcEntityClient<Gantry>>();
+
+
 
 var app = builder.Build();
+var factory = app.Services.GetService<OpcEntityClient<Gantry>>()!;
 
-var factory = app.Services.GetService<OpcUaEntityServerFactory>()!;
-var server = factory.CreateServer();
-
-await server.StartAsync();
 
 app.UseHttpsRedirection();
 await app.RunAsync();

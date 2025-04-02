@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.Common.Extensions;
-using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Entity.Api;
+using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 using Hoeyer.OpcUa.Server.Extensions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
@@ -26,7 +26,7 @@ internal sealed class EntityNodeManager(
 ) : CustomNodeManager(server, managedEntity.Namespace), IEntityNodeManager
 {
     private readonly BaseObjectState _entity = managedEntity.BaseObject;
-    private readonly RequestResponseProcessorFactory _processorFactory = new(LogLevel.Error, LogLevel.Information);
+    private readonly StatusCodeResponseProcessorFactory _processorFactory = new(LogLevel.Error, LogLevel.Information);
     private readonly ServerSystemContext _systemContext = server.DefaultSystemContext;
 
 
@@ -163,7 +163,6 @@ internal sealed class EntityNodeManager(
         }
 
         var cPoint = continuationPoint;
-
         continuationPoint = logger.LogCaughtExceptionAs(LogLevel.Error)
             .WithSessionContextScope(context, "Browsing node")
             .WithErrorMessage("Failed to browse node")
@@ -191,7 +190,9 @@ internal sealed class EntityNodeManager(
     }
 
     /// <inheritdoc />
-    public override void Read(OperationContext context, double maxAge, IList<ReadValueId> nodesToRead,
+    public override void Read(OperationContext context,
+        double maxAge,
+        IList<ReadValueId> nodesToRead,
         IList<DataValue> values,
         IList<ServiceResult> errors)
     {
@@ -207,19 +208,20 @@ internal sealed class EntityNodeManager(
             .WithErrorMessage("An unexpected error occurred when trying to read nodes. ")
             .WhenExecuting(() =>
             {
-                var requestResponses = entityReader.ReadAttributes(filtered);
-                _processorFactory.GetProcessorWithLoggingFor("Read", requestResponses,
-                    e =>
+                _processorFactory.GetProcessorWithLoggingForFailedOnly("Read",
+                    entityReader.ReadAttributes(filtered),
+                    successful =>
                     {
-                        e.Request.Processed = true;
-                        values[nodesToRead.IndexOf(e.Request)] = e.Response.DataValue;
+                        successful.Request.Processed = true;
+                        values[nodesToRead.IndexOf(successful.Request)] = successful.Response.DataValue;
                     },
                     errorResponse =>
-                        errors[nodesToRead.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode,
+                    {
+                        errors[nodesToRead.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode;
+                    },
                     logger
                 ).Process(e =>
-                    (e.IsSuccess && StatusCode.IsGood(e.ResponseCode)) ||
-                    e.ResponseCode.Equals(StatusCodes.BadNotSupported));
+                    (StatusCode.IsGood(e.ResponseCode)) || e.ResponseCode.Equals(StatusCodes.BadAttributeIdInvalid));
             });
     }
 

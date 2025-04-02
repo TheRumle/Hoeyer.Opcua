@@ -1,11 +1,18 @@
-﻿using Hoeyer.OpcUa.Server.Entity.Api;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 using Opc.Ua;
+using LocalizedText = Opc.Ua.LocalizedText;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-internal class PropertyReader : IPropertyReader
+internal class PropertyReader(PermissionType permissionType) : IPropertyReader
 {
+    public PropertyReader():this(PermissionType.Browse | PermissionType.Read | PermissionType.Write | PermissionType.ReadRolePermissions | PermissionType.Call | PermissionType.ReceiveEvents)
+    {}
+    
+    
     public EntityValueReadResponse ReadProperty(ReadValueId readId, PropertyState node)
     {
         return readId.AttributeId switch
@@ -19,6 +26,23 @@ internal class PropertyReader : IPropertyReader
             Attributes.ValueRank => CreateResponse(readId, node.ValueRank),
             Attributes.MinimumSamplingInterval => CreateResponse(readId, node.MinimumSamplingInterval),
             Attributes.DataType => CreateResponse(readId, node.DataType),
+            Attributes.ArrayDimensions => CreateResponse(readId, node.Value is IEnumerable e 
+                    ? new ReadOnlyList<uint>(new List<uint> {1})
+                    : null),
+            Attributes.AccessLevel => CreateResponse(readId, AccessLevels.CurrentReadOrWrite),
+            Attributes.UserAccessLevel => CreateResponse(readId, AccessLevels.CurrentReadOrWrite),
+            Attributes.Historizing => CreateResponse(readId, false),
+            Attributes.RolePermissions => CreateResponse(readId, new []{new RolePermissionType()
+            {
+                RoleId = ObjectIds.WellKnownRole_Anonymous,
+                Permissions = (uint) permissionType
+            }}),
+            Attributes.UserRolePermissions => CreateResponse(readId, new []{new RolePermissionType()
+            {
+                RoleId = ObjectIds.WellKnownRole_Anonymous,
+                Permissions = (uint) permissionType
+            }}),
+            Attributes.AccessRestrictions => CreateResponse(readId, (ushort)0x80),
             _ => CreateResponse(readId, StatusCodes.BadNotSupported)
         };
     }

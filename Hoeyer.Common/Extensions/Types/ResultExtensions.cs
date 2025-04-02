@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentResults;
 
-namespace Hoeyer.Common.Extensions.Functional;
+namespace Hoeyer.Common.Extensions.Types;
 
 public static class ResultExtensions
 {
@@ -17,6 +17,29 @@ public static class ResultExtensions
     {
         return Result.Try(() => task, e => new Error(onError.Invoke(e)));
     }
+    
+    public static Result<T> Traverse<T>(this Result<Task<T>> result, Func<Exception, string> onError)
+    {
+        if (result.IsFailed) return Result.Fail(result.Errors);
+        return Result.Try(() => result.Value.Result, e => new Error(onError.Invoke(e)));
+    }
+    
+    public static Result<T> TraverseToResult<T>(this Result<Task<T>> result)
+    {
+        if (result.IsFailed) return Result.Fail(result.Errors);
+        return Result.Try(() => result.Value.Result, e => new Error(e.Message));
+    }
+    
+    public static Result<T> TraverseToResult<T>(this Task<T> result)
+    {
+        return result.ContinueWith(value => {
+            if (value.IsCanceled) return Result.Fail("Task was canceled.");
+            if (value.IsFaulted) return Result.Fail("The task failed with exception: " + value.Exception);
+            if (value.IsCompleted) return Result.Ok(value.Result);
+            return Result.Fail("The task was neither completed, cancelled nor faulted. This should not happen.");
+        }).Result;
+    }
+    
 
     public static Task<IEnumerable<Result<T>>> TraverseEach<T>(this IEnumerable<Task<Result<T>>> tasks)
     {
@@ -90,4 +113,17 @@ public static class ResultExtensions
 
         return enumerable;
     }
+
+    public static Result<(TLeft Left, TRight Right)> MergeWith<TLeft, TRight>(this Result<TLeft> left, Result<TRight> right)
+    {
+        if (left.IsFailed || right.IsFailed) return Result.Fail(left.Errors.Union(right.Errors));
+        return (left.Value, right.Value);
+    }
+
+    public static Result<T> Splash<T>(this Result<Result<T>> result)
+    {
+        if (result.IsFailed) return Result.Fail(result.Errors);
+        if (result.Value.IsFailed) return Result.Fail(result.Value.Errors);
+        return result.Value.Value;
+    } 
 }

@@ -13,4 +13,6 @@ public static class IdentifierToName
     {
         return StatusCodes.GetBrowseName(s.Code);
     }
+
+    public static NodeId ToNodeId(this ExpandedNodeId nodeId, NamespaceTable namespaceTable) => ExpandedNodeId.ToNodeId(nodeId, namespaceTable);
 }

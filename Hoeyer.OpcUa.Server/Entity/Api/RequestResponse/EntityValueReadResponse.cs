@@ -21,6 +21,6 @@ public sealed class EntityValueReadResponse : StatusCodeResponse<ReadValueId, Da
     /// <inheritdoc />
     protected override string RequestString()
     {
-        return $"Read '{Request.AttributeId.AttributeName()}'";
+        return $"Read {Request.AttributeId.AttributeName()}";
     }
 }

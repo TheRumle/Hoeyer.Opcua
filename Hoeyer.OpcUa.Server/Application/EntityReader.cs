@@ -41,10 +41,9 @@ internal class EntityReader(IEntityNode entityNode, IPropertyReader propertyRead
             Attributes.BrowseName => CreateResponse(readId, node.BrowseName),
             Attributes.NodeClass => CreateResponse(readId, (int)NodeClass.Object),
             Attributes.DisplayName => CreateResponse(readId, node.DisplayName),
-            Attributes.Description => CreateResponse(readId,
-                new LocalizedText($"The managed entity '{node.DisplayName.ToString()}'")),
+            Attributes.Description => CreateResponse(readId, new LocalizedText($"The managed entity '{node.DisplayName.ToString()}'")),
             Attributes.NodeId => CreateResponse(readId, node.NodeId),
-            _ => new EntityValueReadResponse(readId, StatusCodes.BadNotSupported, "Not supported")
+            _ => Unavailable(readId)
         };
     }
 
@@ -55,6 +54,14 @@ internal class EntityReader(IEntityNode entityNode, IPropertyReader propertyRead
         dataValue.StatusCode = StatusCodes.Good;
         dataValue.Value = value;
         return (dataValue, StatusCodes.Good);
+    }
+    
+    private static EntityValueReadResponse Unavailable(ReadValueId readId)
+    {
+        return new EntityValueReadResponse(readId, () => (new DataValue()
+        {
+            StatusCode = StatusCodes.BadAttributeIdInvalid
+        }, StatusCodes.BadAttributeIdInvalid));
     }
 
     private static EntityValueReadResponse CreateResponse<T>(ReadValueId readId, T valueGet)

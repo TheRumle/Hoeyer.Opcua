@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.Common.Extensions;
-using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.Common.Extensions.Types;
 using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 
-internal class RequestResponseProcessor<T>(
+public class RequestResponseProcessor<T>(
     IEnumerable<T> valuesToProcess,
     Action<T> processSuccess,
     Action<T> processError,

@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
-using FluentResults;
-using Hoeyer.Common.Extensions.Functional;
 using Hoeyer.OpcUa.Core.Configuration;
-using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server.Entity.Management;
-using Hoeyer.OpcUa.Server.Exceptions;
 using Opc.Ua;
 using Opc.Ua.Server;
-using NamespaceDoc = Opc.Ua.NamespaceDoc;
 
 namespace Hoeyer.OpcUa.Server.Core;
 
@@ -32,8 +24,7 @@ internal sealed class DomainMasterNodeManagerFactory(
             var namespaceIndex = server.NamespaceUris.GetIndexOrAppend(nodeNamespace);
             return (nodeNamespace, namespaceIndex);
         };
-
-
+        
         var additionalManagers = entityManagerFactory.CreateEntityManagers(namespaceCreation, server).Result;
         return new DomainMasterNodeManager(server, applicationConfiguration, additionalManagers.ToArray());
     }

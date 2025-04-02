@@ -15,7 +15,7 @@ public interface IEntityHandleManager
     public bool IsManagedPropertyHandle(object? handle, out IEntityNodeHandle managedPropertyHandle);
     public bool IsManagedPropertyHandle(NodeId id, out IEntityNodeHandle managedPropertyHandle);
     public bool IsManagedEntityHandle(object? handle);
-    public bool IsManagedEntityHandle(NodeId id, out IEntityNodeHandle entityHandle);
+    public bool TryGetEntityHandle(NodeId id, out IEntityNodeHandle entityHandle);
 
     /// <summary>
     ///     Gets the handle object of property, entity, or folder if it exists

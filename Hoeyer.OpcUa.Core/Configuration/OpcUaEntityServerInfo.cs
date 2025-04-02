@@ -23,6 +23,11 @@ internal record OpcUaEntityServerInfo : IOpcUaEntityServerInfo
         this.Host = Host;
         this.Endpoints = Endpoints;
         this.ApplicationNamespace = ApplicationNamespace;
+        this.OpcUri = new UriBuilder(Host)
+        {
+            Scheme = "opc.tcp",
+            Port = Host.Port // Ensure the port remains unchanged
+        }.Uri;
     }
 
     public string ServerId { get; }
@@ -34,6 +39,9 @@ internal record OpcUaEntityServerInfo : IOpcUaEntityServerInfo
     ///     For instance, http://samples.org/UA/MyApplication or something else uniqely identifying the overall resource,
     /// </summary>
     public Uri ApplicationNamespace { get; }
+
+    /// <inheritdoc />
+    public Uri OpcUri { get; }
 
     private static Result ValidateSupportedProtocol(IEnumerable<Uri> addresses)
     {
