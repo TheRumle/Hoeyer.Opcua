@@ -30,17 +30,17 @@ public sealed class OpcEntityReader<TEntity>(ILogger logger)
         var entityNode = await FindEntityRelatedNodes(session, ct);
         if (entityNode.IsFailed) return Result.Fail(entityNode.Errors);
 
-        var q = entityNode.Map(async node =>
+        var q = await entityNode.Map(async node =>
         {
-            
             return (await ReadEntityValues(session, ct, node))
                 .Map(e =>
                 {
                     DataValue? q = e.Left;
                     List<(DataValue first, ServiceResult second)>? f = e.Right;
-                    return 2;
+                    return (q,f);
                 });
-        });
+        })
+            .Bind(e=>e);
 
         return null;
     }
@@ -48,8 +48,11 @@ public sealed class OpcEntityReader<TEntity>(ILogger logger)
     
     
 
-    private static async Task<Result<(DataValue Left, List<(DataValue first, ServiceResult second)> Right)>> ReadEntityValues(Session session, CancellationToken ct,
-        (Node Node, IEnumerable<(Node Node, ServiceResult OperationDescription)> Children) node)
+    private static async Task<Result<(DataValue Left, List<(DataValue first, ServiceResult second)> Right)>> 
+        ReadEntityValues(
+            Session session,
+            CancellationToken ct,
+            (Node Node, IEnumerable<(Node Node, ServiceResult OperationDescription)> Children) node)
     {
         var validReferences = node.Children
             .Where(readResult => StatusCode.IsGood(readResult.OperationDescription.StatusCode))
