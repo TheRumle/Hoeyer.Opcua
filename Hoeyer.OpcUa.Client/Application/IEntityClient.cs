@@ -6,5 +6,5 @@ namespace Hoeyer.OpcUa.Client.Application;
 
 public interface IEntityClient<TValue>
 {
-    public Task<Result<TValue>> ReadOpcUaEntityAsync(Session session);
+    public Task<Result<TValue>> ReadOpcUaEntityAsync(ISession session);
 }

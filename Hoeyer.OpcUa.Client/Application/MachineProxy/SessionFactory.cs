@@ -1,16 +1,23 @@
 ﻿using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Configuration;
 using Opc.Ua;
+using Opc.Ua.Bindings;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
 
-public class SessionFactory(IOpcUaEntityServerInfo applicationOptions)
+public interface IEntitySessionFactory
+{
+    Task<ISession> CreateSessionAsync(string sessionId);
+    public ApplicationConfiguration Configuration { get; } 
+}
+
+internal class SessionFactory(IOpcUaEntityServerInfo applicationOptions) : IEntitySessionFactory
 {
     private readonly string _opcServerUrl = applicationOptions.OpcUri.ToString();
-    public readonly ApplicationConfiguration Configuration = CreateApplicationConfig();
+    public ApplicationConfiguration Configuration { get; } = CreateApplicationConfig();
 
-    public async Task<Session> CreateSessionAsync()
+    public async Task<ISession> CreateSessionAsync(string sessionId)
     {
         var selectedEndpoint = CoreClientUtils.SelectEndpoint(_opcServerUrl, false);
         var endpointConfiguration = EndpointConfiguration.Create(Configuration);
@@ -19,17 +26,12 @@ public class SessionFactory(IOpcUaEntityServerInfo applicationOptions)
             Configuration,
             endpoint,
             false,
-            "OpcUaRemoteMachineProxy",
+            sessionId,
             60000,
             new UserIdentity(new AnonymousIdentityToken()),
             null);
 
         return session;
-    }
-
-    public Session CreateSession()
-    {
-        return CreateSessionAsync().Result;
     }
 
     private static ApplicationConfiguration CreateApplicationConfig()

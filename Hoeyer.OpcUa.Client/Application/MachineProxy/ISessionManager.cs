@@ -9,5 +9,5 @@ public interface ISessionManager : IDisposable
 {
     bool IsConnected { get; }
     Task Setup();
-    Task<T> ConnectAndThen<T>(Func<Session, Task<T>> todo, CancellationToken token);
+    Task<T> ConnectAndThen<T>(Func<ISession, Task<T>> todo, CancellationToken token);
 }

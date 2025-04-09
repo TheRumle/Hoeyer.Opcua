@@ -10,12 +10,12 @@ namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
 
 internal sealed class SessionManager : ISessionManager
 {
-    private readonly SessionFactory _factory;
-    public readonly StateChangeBehaviour<ConnectionState> StateChanger = new(ConnectionState.PreInitialized);
-    private Session _session;
+    private readonly IEntitySessionFactory _factory;
+    public readonly StateChangeSubscriptionManager<ConnectionState> StateChanger = new(ConnectionState.PreInitialized);
+    private ISession _session;
     private bool isSetupUp;
 
-    public SessionManager(SessionFactory factory)
+    public SessionManager(IEntitySessionFactory factory)
     {
         _factory = factory;
     }
@@ -29,7 +29,7 @@ internal sealed class SessionManager : ISessionManager
         {
             StateChanger.ChangeState(ConnectionState.Initializing);
             await _factory.Configuration.Validate(ApplicationType.Client);
-            _session = await _factory.CreateSessionAsync();
+            _session = await _factory.CreateSessionAsync("sure thing sugar");
             StateChanger.ChangeState(ConnectionState.Running);
             isSetupUp = true;
         }
@@ -40,7 +40,7 @@ internal sealed class SessionManager : ISessionManager
         }
     }
 
-    public async Task<T> ConnectAndThen<T>(Func<Session, Task<T>> todo, CancellationToken token)
+    public async Task<T> ConnectAndThen<T>(Func<ISession, Task<T>> todo, CancellationToken token)
     {
         try
         {

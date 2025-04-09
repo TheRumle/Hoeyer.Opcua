@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
 using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
-using Hoeyer.OpcUa.Core.Extensions.Loading;
+using Hoeyer.OpcUa.Core.Reflections;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Core;
@@ -25,13 +26,12 @@ public static class Services
     {
         var services = registration.Collection;
 
-        var types = AppDomain
-            .CurrentDomain
-            .GetAssemblies()
+        List<Type> types = typeof(IEntityLoader<>)
+            .GetConsumingAssemblies()
             .SelectMany(assembly => assembly.GetTypes())
             .ToList();
 
-        var startupLoaders = types.GetEntityServicesOfType(typeof(IEntityLoader<>)).ToArray();
+        EntityServiceTypeContext[] startupLoaders = types.GetEntityServicesOfType(typeof(IEntityLoader<>)).ToArray();
         var nodeFactories = types.GetEntityServicesOfType(typeof(IEntityNodeStructureFactory<>)).ToArray();
         var translators = types.GetEntityServicesOfType(typeof(IEntityTranslator<>)).ToArray();
 
@@ -43,7 +43,7 @@ public static class Services
         ).ToArray();
 
         var entityTypes = serviceTriple.Select(t => t.factory.Entity).ToArray();
-        List<OpcUaServiceConfigurationException> exceptions =
+        List<OpcUaEntityServiceConfigurationException> exceptions =
         [
             ..GetErrorsIfServiceMissingFrom(entityTypes, startupLoaders),
             ..GetErrorsIfServiceMissingFrom(entityTypes, nodeFactories),
@@ -51,7 +51,7 @@ public static class Services
         ];
         if (exceptions.Any())
         {
-            throw new OpcUaServiceConfigurationException(exceptions);
+            throw new OpcUaEntityServiceConfigurationException(exceptions);
         }
 
         AddCoreServices(serviceTriple, services);
@@ -73,13 +73,13 @@ public static class Services
 
         services.AddTransient<IEnumerable<IEntityInitializer>>(p => initializerServices.Select(initializerService =>
             p.GetService(initializerService) as IEntityInitializer
-            ?? throw new OpcUaServiceConfigurationException(
+            ?? throw new OpcUaEntityServiceConfigurationException(
                 $"Trying to register {initializerService.Name} as an  {nameof(IEntityInitializer)}, but this is not possible."))
         );
     }
 
     private static void AddCoreServices(
-        (EntityServiceContext startup, EntityServiceContext factory, EntityServiceContext translator)[] serviceTriple,
+        (EntityServiceTypeContext startup, EntityServiceTypeContext factory, EntityServiceTypeContext translator)[] serviceTriple,
         IServiceCollection services)
     {
         foreach (var (startupLoader, nodeFactory, translator) in serviceTriple)
@@ -91,12 +91,12 @@ public static class Services
     }
 
 
-    private static IEnumerable<OpcUaServiceConfigurationException> GetErrorsIfServiceMissingFrom(
+    private static IEnumerable<OpcUaEntityServiceConfigurationException> GetErrorsIfServiceMissingFrom(
         IEnumerable<Type> matchedServices,
-        EntityServiceContext[] services)
+        EntityServiceTypeContext[] services)
     {
         return services
             .Where(s => !matchedServices.Contains(s.Entity))
-            .Select(e => OpcUaServiceConfigurationException.ServiceNotConfigured(e.Entity, e.ServiceType));
+            .Select(e => OpcUaEntityServiceConfigurationException.ServiceNotConfigured(e.Entity, e.ServiceType));
     }
 }

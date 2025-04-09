@@ -1,11 +1,32 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Hoeyer.Common.Extensions.Reflection;
+namespace Hoeyer.Common.Reflection;
 
 public static class TypeExtensions
 {
+    public static ICollection<Assembly> GetConsumingAssemblies(this Type marker)
+    {
+        return AppDomain.CurrentDomain
+            .GetAssemblies()
+            .Where(a =>
+            {
+                try
+                {
+                    return a.GetReferencedAssemblies()
+                        .Any(r => r.FullName == marker.Assembly.FullName);
+                }
+                catch
+                {
+                    // Some dynamic assemblies might throw
+                    return false;
+                }
+            })
+            .ToList();
+    }
+    
     public static bool IsAnnotatedWith<T>(this Type type) where T : Attribute
     {
         if (type == null)

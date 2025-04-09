@@ -6,7 +6,7 @@ namespace Hoeyer.OpcUa.Core.Entity.State.Parsers;
 
 public sealed class PropertyValueCollectionParser<T> : IValueParser<PropertyState, T[]?>
 {
-    private readonly DataValueParser<T[]?> dataValueParser = new DefaultDataValueParser<T[]>(default);
+    private readonly DataValueParser<T[]?> dataValueParser = new DefaultDataValueParser<T[]?>(null);
 
     public T[]? Parse(PropertyState dataValue)
     {

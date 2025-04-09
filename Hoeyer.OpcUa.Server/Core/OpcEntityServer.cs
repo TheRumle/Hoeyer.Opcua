@@ -12,6 +12,7 @@ using Opc.Ua.Server;
 namespace Hoeyer.OpcUa.Server.Core;
 
 public sealed class OpcEntityServer(
+    EntityServerStartedMarker marker,
     IOpcUaEntityServerInfo applicationProductDetails,
     IDomainMasterManagerFactory managerFactory,
     ILogger<OpcEntityServer> logger)
@@ -22,6 +23,13 @@ public sealed class OpcEntityServer(
 
     private bool _disposed;
     public DomainMasterNodeManager DomainManager { get; } = null!;
+    
+    /// <inheritdoc />
+    protected override void OnServerStarted(IServerInternal server)
+    {
+        base.OnServerStarted(server);
+        marker.MarkCompleted();
+    }
 
 
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server,

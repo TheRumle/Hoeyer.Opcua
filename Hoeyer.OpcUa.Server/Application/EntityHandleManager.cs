@@ -7,7 +7,7 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManager
+internal sealed class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManager
 {
     private readonly HandleCollection _handles = new(entityNode);
 
@@ -119,7 +119,16 @@ internal class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManage
 
     public bool IsManagedEntityHandle(object? handle)
     {
-        return handle is IEntityNodeHandle entityHandle &&
+        return entityNode.BaseObject.NodeId.Equals(handle) 
+            || handle is IEntityNodeHandle entityHandle &&
                entityNode.BaseObject.NodeId.Equals(entityHandle.Value.NodeId);
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        entityNode.BaseObject.Dispose();
+        foreach (var propertyStatesValue in entityNode.PropertyStates.Values) propertyStatesValue.Dispose();
+        entityNode.PropertyStates.Clear();
     }
 }

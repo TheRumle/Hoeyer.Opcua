@@ -9,7 +9,11 @@ public class GantryLoader : IEntityLoader<Gantry>
     {
         return ValueTask.FromResult(new Gantry
         {
-         
+            message = "tsnerio",
+            messages = ["stnrei", "snterio"],
+            Moving = true,
+            Position = Position.OnTheMoon,
+            Speeds = [2,1]
         });
     }
 }

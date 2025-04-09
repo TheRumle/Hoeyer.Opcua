@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Generation;
 
-[TestSubject(typeof(EntityNodeFactoryGenerator))]
+[TestSubject(typeof(EntityNodeStructureFactoryGenerator))]
 [ParallelLimiter<ParallelLimit>]
 [InheritsTests]
-public sealed class EntityNodeFactoryGeneratorTest : GeneratorTest<EntityNodeFactoryGenerator>;
+public sealed class EntityNodeStructureFactoryGeneratorTest : GeneratorTest<EntityNodeStructureFactoryGenerator>;

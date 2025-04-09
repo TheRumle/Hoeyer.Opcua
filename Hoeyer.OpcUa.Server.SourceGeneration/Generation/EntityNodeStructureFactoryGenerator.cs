@@ -14,7 +14,7 @@ using Opc.Ua;
 namespace Hoeyer.OpcUa.Server.SourceGeneration.Generation;
 
 [Generator]
-public class EntityNodeFactoryGenerator : IIncrementalGenerator
+public class EntityNodeStructureFactoryGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {

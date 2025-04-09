@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Hoeyer.OpcUa.Core.Utility;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 using Opc.Ua;
@@ -27,9 +28,10 @@ internal class PropertyReader(PermissionType permissionType) : IPropertyReader
             Attributes.ValueRank => CreateResponse(readId, node.ValueRank),
             Attributes.MinimumSamplingInterval => CreateResponse(readId, node.MinimumSamplingInterval),
             Attributes.DataType => CreateResponse(readId, node.DataType),
-            Attributes.ArrayDimensions => CreateResponse(readId, node.Value is ICollection or Array
-                    ? new ReadOnlyList<uint>(new List<uint> {1})
-                    : null),
+            Attributes.ArrayDimensions => CreateResponse(readId,
+                node.Value is ICollection c 
+                    ? new ReadOnlyList<uint>(new List<uint> {(uint)c.Count})
+                    : new ReadOnlyList<uint>(new List<uint> {})),
             Attributes.AccessLevel => CreateResponse(readId, AccessLevels.CurrentReadOrWrite),
             Attributes.UserAccessLevel => CreateResponse(readId, AccessLevels.CurrentReadOrWrite),
             Attributes.Historizing => CreateResponse(readId, false),

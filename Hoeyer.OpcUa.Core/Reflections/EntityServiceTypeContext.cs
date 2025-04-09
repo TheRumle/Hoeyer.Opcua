@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace Hoeyer.OpcUa.Core.Extensions.Loading;
+namespace Hoeyer.OpcUa.Core.Reflections;
 
 /// <summary>
 ///     Represents any service MyService : IMyService&lt;T&gt; where T is a type annotated with
 ///     <see cref="OpcUaEntityAttribute" />
 /// </summary>
-internal readonly record struct EntityServiceContext
+public readonly record struct EntityServiceTypeContext
 {
     public readonly Type ConcreteServiceType;
     public readonly Type Entity;
@@ -17,7 +16,7 @@ internal readonly record struct EntityServiceContext
     public readonly Type ServiceType;
 
 
-    public EntityServiceContext(Type implementationType, Type serviceType, Type entity)
+    public EntityServiceTypeContext(Type implementationType, Type serviceType, Type entity)
     {
         Entity = entity;
         if (Entity.GetCustomAttribute<OpcUaEntityAttribute>() == null)
@@ -40,7 +39,6 @@ internal readonly record struct EntityServiceContext
             throw new ArgumentException($"{ImplementationType.FullName} does not implement {serviceType}");
         }
 
-
         ConcreteServiceType = ServiceType.MakeGenericType(Entity);
         if (!ConcreteServiceType.GetGenericArguments().Contains(entity))
         {
@@ -49,7 +47,7 @@ internal readonly record struct EntityServiceContext
         }
     }
 
-    public static bool TryCreateFromTypeImplementing(Type type, Type service, out EntityServiceContext context)
+    public static bool TryCreateFromTypeImplementing(Type type, Type service, out EntityServiceTypeContext typeContext)
     {
         var implementedServiceInterface = type
             .GetInterfaces()
@@ -57,7 +55,7 @@ internal readonly record struct EntityServiceContext
 
         if (implementedServiceInterface == null)
         {
-            context = default;
+            typeContext = default;
             return false;
         }
 
@@ -65,19 +63,16 @@ internal readonly record struct EntityServiceContext
 
         if (entityType.GetCustomAttribute<OpcUaEntityAttribute>() == null)
         {
-            throw new OpcUaServiceConfigurationException(
+            throw new OpcUaEntityServiceConfigurationException(
                 $"The type '{entityType.FullName}' is not annotated as an OpcUaEntity using the {nameof(OpcUaEntityAttribute)}");
         }
 
-        context = new EntityServiceContext(type, service, entityType);
+        typeContext = new EntityServiceTypeContext(type, service, entityType);
         return true;
     }
 
 
-    public ServiceDescriptor ToServiceDescriptor(ServiceLifetime lifetime)
-    {
-        return new ServiceDescriptor(ConcreteServiceType, ImplementationType, lifetime);
-    }
+
 
     /// <inheritdoc />
     public override string ToString()

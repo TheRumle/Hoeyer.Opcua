@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
-using FluentResults;
 using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.Common.Extensions.LoggingExtensions;
@@ -15,5 +14,4 @@ public interface IFinishedLoggingSetup
 
     [Pure]
     public Task<T> WhenExecutingAsync<T>(Func<Task<T>> action, LogLevel logResultAs = LogLevel.None);
-
 }

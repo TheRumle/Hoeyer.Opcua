@@ -7,13 +7,14 @@ using Opc.Ua.Configuration;
 namespace Hoeyer.OpcUa.Server.Core;
 
 public sealed class OpcUaEntityServerFactory(
+    EntityServerStartedMarker marker,
     OpcUaEntityServerSetup serverSetup,
     IDomainMasterManagerFactory masterNodeManagerFactory,
     ILoggerFactory loggerFactory)
 {
     public IStartableEntityServer CreateServer()
     {
-        var configuration = ServerApplicationConfigurationFactory.CreateServerConfiguration(serverSetup);
+        ApplicationConfiguration configuration = ServerApplicationConfigurationFactory.CreateServerConfiguration(serverSetup);
 
         var application = new ApplicationInstance
         {
@@ -24,7 +25,7 @@ public sealed class OpcUaEntityServerFactory(
 
         application.LoadApplicationConfiguration(false);
 
-        var server = new OpcEntityServer(serverSetup, masterNodeManagerFactory,
+        var server = new OpcEntityServer(marker, serverSetup, masterNodeManagerFactory,
             loggerFactory.CreateLogger<OpcEntityServer>());
         return new StartableEntityServer(application, server);
     }

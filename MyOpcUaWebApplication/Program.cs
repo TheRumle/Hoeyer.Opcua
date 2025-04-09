@@ -1,30 +1,40 @@
-using Hoeyer.OpcUa.Client.Application;
+using System.Configuration;
+using Hoeyer.OpcUa.Client;
+using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Client.Application.MachineProxy;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Server;
 using MyOpcUaWebApplication;
+using MyOpcUaWebApplication.Configuration;
+using INodeBrowser = Hoeyer.OpcUa.Client.Application.Browsing.INodeBrowser;
+using NodeBrowser = Hoeyer.OpcUa.Client.Application.Browsing.NodeBrowser;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Logging.AddConsole();
 builder.Services.AddHostedService<ReaderHost>();
+builder.Services.Configure<HostOptions>(options =>
+{
+    options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+});
+
+
+
+var opcUaConfig = builder.Configuration.GetSection("OpcUa").Get<OpcUaOptions>();
+if (opcUaConfig is null || opcUaConfig.Port == 0) throw new ConfigurationException("OpcUa configuration is missing");
 
 builder.Services.AddOpcUaServerConfiguration(conf => conf
         .WithServerId("MyServer")
         .WithServerName("My Server")
-        .WithHttpsHost("localhost", 4840)
-        .WithEndpoints(["opc.tcp://localhost:4840"])
+        .WithHttpsHost("localhost", opcUaConfig.Port)
+        .WithEndpoints([$"opc.tcp://localhost:{opcUaConfig.Port}"])
         .Build())
     .WithEntityServices()
     .WithOpcUaServerAsBackgroundService()
-    .Collection.AddTransient<SessionFactory>()
-    .AddTransient<OpcEntityClient<Gantry>>();
-
-
+    .WithOpcUaClientServices();
 
 var app = builder.Build();
-var factory = app.Services.GetService<OpcEntityClient<Gantry>>()!;
 
 
 app.UseHttpsRedirection();

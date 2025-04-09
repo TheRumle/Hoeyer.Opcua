@@ -1,4 +1,4 @@
-﻿using Hoeyer.Common.Extensions.Reflection;
+﻿using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.CompileTime.Test.Fixtures;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;

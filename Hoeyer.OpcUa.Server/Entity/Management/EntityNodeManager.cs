@@ -5,6 +5,7 @@ using Hoeyer.Common.Extensions;
 using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Core.Entity.Node;
+using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 using Hoeyer.OpcUa.Server.Extensions;
@@ -13,6 +14,7 @@ using Opc.Ua;
 using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Entity.Management;
+
 
 internal sealed class EntityNodeManager(
     ManagedEntityNode managedEntity,
@@ -39,18 +41,7 @@ internal sealed class EntityNodeManager(
             .WithScope("Creating address space and initializing {EntityBrowseName} property nodes", _entity.BrowseName)
             .WhenExecuting(() =>
             {
-                var tryGetId = (PropertyState s) => s.DataType.Identifier is uint i
-                    ? DataTypes.GetBrowseName((int)i)
-                    : "custom datatype";
-
-                var res = referenceLinker.InitializeToExternals(externalReferences);
-                if (res.IsFailed)
-                {
-                    logger.LogError(res.Errors.ToNewlineSeparatedString());
-                }
-
-                logger.LogInformation("Adding nodes {@PropertiesName}",
-                    managedEntity.PropertyStates.Values.Select(e => $"[{e.BrowseName} ({tryGetId.Invoke(e)})]"));
+                referenceLinker.InitializeToExternals(externalReferences);
             });
     }
 
@@ -59,9 +50,7 @@ internal sealed class EntityNodeManager(
     public override void DeleteAddressSpace()
     {
         using var scope = logger.BeginScope("Disposing of entity {@Entity}", ManagedEntity);
-        ManagedEntity.BaseObject.Dispose();
-        foreach (var propertyStatesValue in ManagedEntity.PropertyStates.Values) propertyStatesValue.Dispose();
-        ManagedEntity.PropertyStates.Clear();
+        entityHandleManager.Dispose();
     }
 
     /// <inheritdoc />
@@ -201,7 +190,6 @@ internal sealed class EntityNodeManager(
         {
             return;
         }
-
         logger.LogCaughtExceptionAs(LogLevel.Error)
             .WithSessionContextScope(context, "Reading values {@ValuesToRead}",
                 filtered.Select(e => e.NodeId).Distinct())
@@ -285,8 +273,17 @@ internal sealed class EntityNodeManager(
     public override ServiceResult SubscribeToEvents(OperationContext context, object sourceId, uint subscriptionId,
         IEventMonitoredItem monitoredItem, bool unsubscribe)
     {
-        using var scope =
-            logger.BeginScope("Subscribing to events for monitored items {@MonitoredItem}", monitoredItem);
+        using var scope = logger.BeginScope("Subscribing to events for monitored items {@MonitoredItem}", monitoredItem);
+        if (!entityHandleManager.IsManagedEntityHandle(sourceId))
+        {
+            logger.LogWarning("Only subscriptions to entities (objects) are supported!");
+            return ServiceResult.Create(StatusCodes.BadNotSupported,
+                "Only subscriptions to entities (objects/views) are supported!");
+        }
+        
+        
+        //sourceId is handle
+        // id is unique subscription
         logger.LogWarning("Subscribtion events are not yet supported");
         return StatusCodes.BadNotSupported;
     }

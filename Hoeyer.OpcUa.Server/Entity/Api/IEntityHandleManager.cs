@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentResults;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Entity.Api;
 
-public interface IEntityHandleManager
+public interface IEntityHandleManager : IDisposable
 {
     public IEntityNodeHandle EntityHandle { get; }
     public IEnumerable<IEntityNodeHandle> PropertyHandles { get; }

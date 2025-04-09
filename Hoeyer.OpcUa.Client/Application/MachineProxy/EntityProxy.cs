@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentResults;
 using Hoeyer.OpcUa.Core.Observation;
@@ -14,14 +15,14 @@ public sealed class EntityProxy<TMachineState>(
     ILogger<EntityProxy<TMachineState>> logger)
     : IEntityObserver<TMachineState>
 {
-    private readonly StateChangeBehaviour<ConnectionState> _stateChanger = new(ConnectionState.PreInitialized);
+    private readonly StateChangeSubscriptionManager<ConnectionState> _stateChanger = new(ConnectionState.PreInitialized);
 
     /// <inheritdoc />
-    public async Task<Result<TMachineState>> ReadEntityAsync(CancellationToken token)
+    public async Task<TMachineState> ReadEntityAsync(CancellationToken token)
     {
         var a = await sessionManager.ConnectAndThen(entityClient.ReadOpcUaEntityAsync, token);
         
-        return null!;
+        throw new NotImplementedException();
     }
 
     /// <inheritdoc />

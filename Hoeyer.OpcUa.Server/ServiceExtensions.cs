@@ -31,10 +31,18 @@ public static class ServiceExtensions
         {
             var nodeManagers = p.GetService<IEntityNodeManagerFactory>();
             var setup = p.GetService<IOpcUaEntityServerInfo>();
-            return new DomainMasterNodeManagerFactory(nodeManagers, setup);
+            return new DomainMasterNodeManagerFactory(nodeManagers!, setup!);
         });
 
+        serviceRegistration.Collection.AddSingleton<EntityServerStartedMarker>();
         serviceRegistration.Collection.AddSingleton<OpcUaEntityServerFactory>();
+
+        serviceRegistration.Collection.AddSingleton<IStartableEntityServer>(p =>
+        {
+            var factory = p.GetRequiredService<OpcUaEntityServerFactory>();
+            return factory.CreateServer();
+        });
+        
         return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
     }
 

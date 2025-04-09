@@ -38,7 +38,7 @@ internal sealed class EntityNodeManagerFactory(
                 new EntityWriter(managedNode),
                 new EntityBrowser(managedNode),
                 new EntityReader(managedNode, new PropertyReader()),
-                new EntityReferenceLinker(managedNode),
+                new EntityReferenceLinker(managedNode, logger),
                 logger);
         }));
     }

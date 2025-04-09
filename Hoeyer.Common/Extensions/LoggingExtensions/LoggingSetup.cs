@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using FluentResults;
 using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.Common.Extensions.LoggingExtensions;
 
-internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel)
+internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Exception, Exception> customExceptionMapper)
     : ILogLevelSelected, IMessageSelected, IScopeAndMessageSelected, IScopeSelected
 {
     private string? _message;
@@ -111,13 +110,25 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel)
 
     private void ExecuteAndLogWithScope(Action action)
     {
-        using var a = logger.BeginScope(_scope);
-        ExecuteAndLog(action);
+        if (_scope != null)
+        {
+            using var a = logger.BeginScope(_scope);
+            ExecuteAndLog(action);
+        }
+        else
+        {
+            ExecuteAndLog(action);
+        }
     }
 
     private T ExecuteAndLogWithScope<T>(Func<T> action)
     {
-        using var a = logger.BeginScope(_scope, _scopeArgs);
+        if (_scope != null)
+        {
+            using var a = logger.BeginScope(_scope, _scopeArgs ?? []);
+            return ExecuteAndLog(action);
+        }
+
         return ExecuteAndLog(action);
     }
 
@@ -130,7 +141,7 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel)
         catch (Exception ex)
         {
             LogException(ex);
-            throw;
+            throw customExceptionMapper.Invoke(ex);
         }
     }
     
@@ -145,7 +156,7 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel)
         catch (Exception ex)
         {
             LogException(ex);
-            throw;
+            throw customExceptionMapper.Invoke(ex);
         }
     }
 
@@ -158,12 +169,12 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel)
         catch (Exception ex)
         {
             LogException(ex);
-            throw;
+            throw customExceptionMapper.Invoke(ex);
         }
     }
 
     private void LogException(Exception e)
     {
-        logger.Log(logLevel, e, _message, _messageArgs);
+        logger.Log(logLevel, e, _message, _messageArgs ?? []);
     }
 }

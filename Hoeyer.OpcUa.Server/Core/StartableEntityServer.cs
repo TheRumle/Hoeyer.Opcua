@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Configuration;
+using Opc.Ua;
 using Opc.Ua.Configuration;
 
 namespace Hoeyer.OpcUa.Server.Core;
@@ -23,7 +24,15 @@ internal sealed class StartableEntityServer(ApplicationInstance applicationInsta
             throw new ObjectDisposedException(nameof(StartableEntityServer));
         }
 
-        await _applicationInstance.Start(_entityServer);
+        try
+        {
+            await _applicationInstance.Start(_entityServer);
+        }
+        catch (ServiceResultException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
         return this;
     }
 
