@@ -3,17 +3,12 @@ using System.Net.Sockets;
 
 namespace Hoeyer.OpcUa.TestApplication;
 
-internal struct ReservedPort : IDisposable
+internal sealed record ReservedPort : IDisposable
 {
     public static implicit operator int(ReservedPort port) => port.Port;
-    private readonly TcpListener _listener;
+    private readonly TcpListener _listener = new(IPAddress.Loopback, 0);
 
     private int? _port = null;
-
-    public ReservedPort(int port = 0)
-    {
-        _listener = new TcpListener(IPAddress.Loopback, port);
-    }
 
     private int GetPort()
     {

@@ -6,13 +6,21 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.ClientTest.Generators;
 
-public sealed record OpcUaEntityBackendFixture<TService> : IDisposable where TService : notnull
+public sealed record OpcClientServiceFixture<TService> : IDisposable where TService : notnull
 {
+    private Type EntityType => ImplementationType.GenericTypeArguments[0];
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private readonly OpcUaEntityTestApplication _hostedApplication;
     private IServiceScope _scope;
-    private readonly Type _implementationType;
+    public readonly Type ImplementationType;
     private bool _initialized = false;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        var name = nameof(OpcClientServiceFixture<int>);
+        return $"{name}<{typeof(TService).Name}> ({EntityType.Name})";
+    }
 
     private async Task ServerStarted()
     {
@@ -25,11 +33,10 @@ public sealed record OpcUaEntityBackendFixture<TService> : IDisposable where TSe
         _initialized = true;
     }
 
-
-    public OpcUaEntityBackendFixture(OpcUaEntityTestApplication hostedApplication, Type implementationType)
+    public OpcClientServiceFixture(OpcUaEntityTestApplication hostedApplication, Type implementationType)
     {
         _hostedApplication = hostedApplication;
-        _implementationType = implementationType;
+        ImplementationType = implementationType;
     }
 
     public async Task<ISession> GetSession(string sessionid)
@@ -38,10 +45,10 @@ public sealed record OpcUaEntityBackendFixture<TService> : IDisposable where TSe
         return await _scope.ServiceProvider.GetService<IEntitySessionFactory>()!.CreateSessionAsync(sessionid)!;
     }
 
-    public async Task<TService> GetFixture()
-    {
-        await ServerStarted();
-        return (TService)_scope.ServiceProvider.GetRequiredService(_implementationType);
+        public async Task<TService> GetFixture()
+        {
+            await ServerStarted();
+            return (TService)_scope.ServiceProvider.GetRequiredService(ImplementationType);
     }
 
     /// <inheritdoc />

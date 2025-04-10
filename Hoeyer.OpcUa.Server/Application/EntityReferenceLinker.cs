@@ -61,10 +61,8 @@ internal class EntityReferenceLinker(IEntityNode entityNode, ILogger logger) : I
 
     private void LinkEntity(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
-        externalReferences.GetOrAdd(ObjectIds.ObjectsFolder,
-        [
-            new NodeStateReference(ReferenceTypeIds.Organizes, false, entityNode.BaseObject)
-        ]);
+        var refs = externalReferences.GetOrAdd(ObjectIds.ObjectsFolder, []); //fallback value
+        refs.Add(new NodeStateReference(ReferenceTypeIds.Organizes, false, entityNode.BaseObject));
         entityNode.BaseObject.EventNotifier = EventNotifiers.SubscribeToEvents;
     }
 

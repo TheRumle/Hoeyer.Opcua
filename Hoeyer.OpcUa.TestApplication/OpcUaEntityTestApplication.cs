@@ -17,12 +17,14 @@ public sealed class OpcUaEntityTestApplication : IHost
     public AsyncServiceScope GetAsyncScope => _hostedServer.Services.CreateAsyncScope();
     public IServiceScope GetScope => _hostedServer.Services.CreateScope();
 
-    private readonly ReservedPort _reservedPort = new();
+    private readonly ReservedPort _reservedPort = new ReservedPort();
         
     public OpcUaEntityTestApplication()
     {
         _hostedServer = Host.CreateDefaultBuilder()
-            .ConfigureLogging(logging => { logging.AddJsonConsole(); })
+            .ConfigureLogging(logging => { logging.AddJsonConsole();
+                logging.SetMinimumLevel(LogLevel.Error);
+            })
             .ConfigureServices((context, services) =>
             {
 

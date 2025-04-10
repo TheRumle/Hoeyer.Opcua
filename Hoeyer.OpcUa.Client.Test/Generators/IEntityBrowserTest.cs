@@ -3,17 +3,19 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.ClientTest.Generators;
 
-[EntityBrowserGenerator]
-public sealed class IEntityBrowserTest(OpcUaEntityBackendFixture<IEntityBrowser> browser)
+public sealed class IEntityBrowserTest()
 {
     [Test]
-    public async Task CanDoStuff()
+    [EntityBrowserGenerator<IEntityBrowser>]
+    [DisplayName("Can read node and children $services")]
+    public async Task EntityBrowser_CanReadNodeAndChildren(OpcClientServiceFixture<IEntityBrowser> services)
     {
-        var a  = await browser.GetFixture();
-        var sessieon = await browser.GetSession(Guid.NewGuid().ToString());
-        var data = await a.BrowseEntityNode(sessieon, ObjectIds.RootFolder, CancellationToken.None);
-        await Assert.That(data.Node).IsNotNull();
-        await Assert.That(data.Children).IsNotEmpty();
+        
+        var fixture  = await services.GetFixture();
+        var session = await services.GetSession(Guid.NewGuid().ToString());
+        var browseResult = await fixture.BrowseEntityNode(session, ObjectIds.RootFolder, CancellationToken.None);
+        await Assert.That(browseResult.Node).IsNotNull();
+        await Assert.That(browseResult.Children).IsNotEmpty();
     }
     
 }
