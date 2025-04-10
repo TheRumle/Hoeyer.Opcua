@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Hoeyer.OpcUa.Core.Application.Observation;
 using Hoeyer.OpcUa.Core.Observation;
 
 namespace Hoeyer.OpcUa.Core.Proxy;

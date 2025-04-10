@@ -1,6 +1,7 @@
 ﻿using System;
+using Hoeyer.OpcUa.Core.Observation;
 
-namespace Hoeyer.OpcUa.Core.Observation;
+namespace Hoeyer.OpcUa.Core.Application.Observation;
 
 public sealed class StateChangeSubscription<TState>(IStateChangeSubscriber<TState> subscriber) : IDisposable
 {

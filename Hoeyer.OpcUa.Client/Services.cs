@@ -6,6 +6,7 @@ using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Client.Application.MachineProxy;
 using Hoeyer.OpcUa.Client.Application.Reading;
+using Hoeyer.OpcUa.Client.MachineProxy;
 using Hoeyer.OpcUa.Client.Reflection;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Configuration;

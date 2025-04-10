@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using FluentResults;
+using Hoeyer.OpcUa.Core.Application.Observation;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Core.Observation;
 using Hoeyer.OpcUa.Server.Entity.Api;

@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Opc.Ua.Client;
 
-namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
+namespace Hoeyer.OpcUa.Client.MachineProxy;
 
 public interface ISessionManager : IDisposable
 {

@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FluentResults;
+using Hoeyer.OpcUa.Client.MachineProxy;
+using Hoeyer.OpcUa.Core.Application.Observation;
 using Hoeyer.OpcUa.Core.Observation;
 using Hoeyer.OpcUa.Core.Proxy;
 using Microsoft.Extensions.Logging;

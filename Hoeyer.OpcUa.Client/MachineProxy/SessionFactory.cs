@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Configuration;
 using Opc.Ua;
-using Opc.Ua.Bindings;
 using Opc.Ua.Client;
 
-namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
+namespace Hoeyer.OpcUa.Client.MachineProxy;
 
 public interface IEntitySessionFactory
 {
