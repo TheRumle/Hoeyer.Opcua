@@ -39,7 +39,7 @@ public sealed record EntityBrowseResponse
     /// <inheritdoc />
     public override string ToString()
     {
-        if (RelatedEntities == null)
+        if (RelatedEntities == null!)
         {
             return "<null>";
         }

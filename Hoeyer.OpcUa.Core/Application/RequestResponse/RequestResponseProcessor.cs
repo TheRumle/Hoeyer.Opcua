@@ -5,7 +5,7 @@ using Hoeyer.Common.Extensions;
 using Hoeyer.Common.Extensions.Types;
 using Microsoft.Extensions.Logging;
 
-namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
+namespace Hoeyer.OpcUa.Core.Application.RequestResponse;
 
 public class RequestResponseProcessor<T>(
     IEnumerable<T> valuesToProcess,

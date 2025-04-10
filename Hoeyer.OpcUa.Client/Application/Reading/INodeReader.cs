@@ -8,9 +8,14 @@ namespace Hoeyer.OpcUa.Client.Application.Reading;
 
 public interface INodeReader
 {
-    public Task<IEnumerable<ReadResult>> ReadNodesAsync(
+    public Task<ReadResult> ReadNodesAsync(
         ISession session,
         IEnumerable<NodeId> ids,
         NodeClass filter = NodeClassFilters.Any,
+        CancellationToken ct = default);
+    
+    public Task<Node> ReadNodeAsync(
+        ISession session,
+        NodeId nodeId,
         CancellationToken ct = default);
 }

@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
+namespace Hoeyer.OpcUa.Core.Application.RequestResponse;
 
 public abstract class StatusCodeResponse<TRequest, TResponse>
     : IRequestResponse<TRequest, (TResponse DataValue, StatusCode StatusCode)>, IStatusCodeResponse
@@ -95,5 +95,5 @@ public abstract class StatusCodeResponse<TRequest, TResponse>
         }, new JsonSerializerOptions { WriteIndented = true });
     }
 
-    protected abstract string RequestString();
+    public abstract string RequestString();
 }

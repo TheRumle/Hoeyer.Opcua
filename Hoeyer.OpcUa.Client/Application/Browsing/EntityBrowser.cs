@@ -5,9 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Extensions.Types;
+using Hoeyer.OpcUa.Client.Application.Reading;
 using Hoeyer.OpcUa.Client.Extensions;
 using Hoeyer.OpcUa.Client.Reflection;
 using Hoeyer.OpcUa.Core.Extensions;
+using Hoeyer.OpcUa.Core.Extensions.Logging;
+using Hoeyer.OpcUa.Core.Extensions.Opc;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Client;
@@ -26,8 +29,10 @@ public delegate bool EntityDescriptionMatcher<TEntity>(ReferenceDescription refe
 /// <param name="identityMatcher">True if the provided <see cref="ReferenceDescription"/> is a description for the entity - if null, equality between the name of the <typeparamref name="TEntity"/> and the browse name of nodes is used.</param>
 /// <typeparam name="TEntity">The entity the EntityBrowser is assigned to</typeparam>
 [ClientService]
-public sealed class EntityBrowser<TEntity>(ILogger<EntityBrowser<TEntity>> logger,
+public sealed class EntityBrowser<TEntity>(
+    ILogger<EntityBrowser<TEntity>> logger,
     INodeTreeTraverser traversalStrategy,
+    INodeReader reader,
     EntityDescriptionMatcher<TEntity>? identityMatcher = null) : IEntityBrowser<TEntity>
 {
     private Node? _entityNode;
@@ -54,6 +59,7 @@ public sealed class EntityBrowser<TEntity>(ILogger<EntityBrowser<TEntity>> logge
                 });
                 
                 Node node = _entityNode ?? await FindEntityNode(session, treeRoot, (p) => _identityMatcher.Invoke(p), cancellationToken);
+                
                 _entityNode = node;
                 IEnumerable<ReferenceDescription> children = await Browse(session, cancellationToken: cancellationToken)
                     .ThenAsync(e => e.SelectMany(child => child.References));
@@ -63,7 +69,7 @@ public sealed class EntityBrowser<TEntity>(ILogger<EntityBrowser<TEntity>> logge
 
     private async Task<Node> FindEntityNode(ISession session,
         NodeId root,
-        Predicate<ReferenceDescription> matcher,
+        Predicate<ReferenceDescription> entityReferenceMatcher,
         CancellationToken cancellationToken)
     {
         return await logger.LogCaughtExceptionAs(LogLevel.Error, exception => new EntityBrowseException(exception.Message))
@@ -74,10 +80,10 @@ public sealed class EntityBrowser<TEntity>(ILogger<EntityBrowser<TEntity>> logge
                 return await traversalStrategy
                     .TraverseUntil(session,
                         root,
-                        predicate: matcher,
+                        predicate: entityReferenceMatcher,
                         token: cancellationToken)
                     .ThenAsync(referenceDescription => referenceDescription.NodeId.AsNodeId(session.NamespaceUris))
-                    .ThenAsync(nodeId => session.ReadNodeAsync(nodeId, cancellationToken));
+                    .ThenAsync(nodeId => reader.ReadNodeAsync(session, nodeId, cancellationToken));
             });
     }
 

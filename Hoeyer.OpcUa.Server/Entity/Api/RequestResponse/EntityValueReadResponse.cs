@@ -1,4 +1,5 @@
 ﻿using System;
+using Hoeyer.OpcUa.Core.Application.RequestResponse;
 using Hoeyer.OpcUa.Core.Extensions;
 using Opc.Ua;
 
@@ -19,7 +20,7 @@ public sealed class EntityValueReadResponse : StatusCodeResponse<ReadValueId, Da
     public string AttributeName => Attributes.GetBrowseName(Request.AttributeId);
 
     /// <inheritdoc />
-    protected override string RequestString()
+    public override string RequestString()
     {
         return $"Read {Request.AttributeId.AttributeName()}";
     }

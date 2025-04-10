@@ -1,6 +1,6 @@
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
+namespace Hoeyer.OpcUa.Core.Application.RequestResponse;
 
 public interface IStatusCodeResponse : IRequestResponse
 {

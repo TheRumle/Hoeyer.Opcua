@@ -6,7 +6,7 @@ using Hoeyer.OpcUa.Core.Proxy;
 using Opc.Ua;
 using Opc.Ua.Client;
 
-namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
+namespace Hoeyer.OpcUa.Client.MachineProxy;
 
 internal sealed class SessionManager : ISessionManager
 {

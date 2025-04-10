@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
-namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
+namespace Hoeyer.OpcUa.Core.Application.RequestResponse;
 
 public class StatusCodeResponseProcessorFactory(LogLevel errorLevel, LogLevel successLevel)
 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using Hoeyer.OpcUa.Core.Application.RequestResponse;
 using Hoeyer.OpcUa.Core.Extensions;
 using Opc.Ua;
 
@@ -36,7 +37,7 @@ public sealed class EntityWriteResponse : StatusCodeResponse<WriteValue, Service
     }
 
     /// <inheritdoc />
-    protected override string RequestString()
+    public override string RequestString()
     {
         return $"Assign '{Request.AttributeId.AttributeName()}' to '{Request.Value.Value}'";
     }
