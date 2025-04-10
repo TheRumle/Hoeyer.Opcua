@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using FluentResults;
+using Hoeyer.Common.Extensions;
 using Opc.Ua;
 using Opc.Ua.Client;
 
@@ -40,7 +41,7 @@ public static class LoggingExtensions
                     e.ReferenceTypeId,
                 },
                 e.TargetId
-            }),
+            }).ToCommaSeparatedString(),
             Description = node.Description.Text,
         };
     }

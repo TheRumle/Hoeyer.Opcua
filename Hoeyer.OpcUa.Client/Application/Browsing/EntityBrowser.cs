@@ -102,6 +102,7 @@ public sealed class EntityBrowser<TEntity>(ILogger<EntityBrowser<TEntity>> logge
                 cancellationToken)
             .ThenAsync(response =>
             {
+                if (!response.DiagnosticInfos.Any()) return;
                 logger.LogInformation("Browsing diagnostics for {@Node}: {@Diagnostics}",
                     _entityNode.ToLoggingObject(),
                     response.DiagnosticInfos.ToLoggingObject());
