@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <LangVersion>latestmajor</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Hoeyer.OpcUa.ClientTest</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Client\Hoeyer.OpcUa.Client.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Test.TUnit\Hoeyer.OpcUa.Test.TUnit.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.TestApplication\Hoeyer.OpcUa.TestApplication.csproj" />
+    </ItemGroup>
+
+</Project>

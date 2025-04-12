@@ -9,7 +9,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj"/>
-        <ProjectReference Include="..\Hoeyer.TUnit.Configuration\Hoeyer.TUnit.Configuration.csproj" />
+        <ProjectReference Include="..\Hoeyer.OpcUa.Test.TUnit\Hoeyer.OpcUa.Test.TUnit.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -18,8 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Fixtures\Application\" />
-      <Folder Include="Fixtures\Generators\" />
+      <Folder Include="Core\" />
     </ItemGroup>
 
 

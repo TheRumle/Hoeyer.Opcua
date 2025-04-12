@@ -25,4 +25,9 @@ public static class StringExtensions
     {
         return string.Join("\n", values);
     }
+    
+    public static string ToCommaSeparatedString<T>(this IEnumerable<T> values)
+    {
+        return string.Join(", ", values);
+    }
 }

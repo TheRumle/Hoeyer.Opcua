@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Hoeyer.Common.Extensions.Types;
 
@@ -101,5 +103,19 @@ public static class TupleExtensions
         yield return tuple.Item8;
         yield return tuple.Item9;
         yield return tuple.Item10;
+    }
+    
+    public static IEnumerable<(TFirst first, TSecond second)> Zip<TFirst, TSecond>(
+        this (IEnumerable<TFirst> first, IEnumerable<TSecond> second) elements)
+    {
+        var firstList = elements.first.ToList();
+        var secondList = elements.second.ToList();
+
+        if (firstList.Count != secondList.Count) throw new ArgumentException("The input sequences must have the same length.");
+
+        for (int i = 0; i < firstList.Count; i++)
+        {
+            yield return (firstList[i], secondList[i]);
+        }
     }
 }

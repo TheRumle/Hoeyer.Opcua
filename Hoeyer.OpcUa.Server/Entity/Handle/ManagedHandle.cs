@@ -1,4 +1,5 @@
-﻿using Opc.Ua;
+﻿using Hoeyer.OpcUa.Core.Entity.Node;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Entity.Handle;
 
@@ -14,10 +15,10 @@ internal abstract record ManagedHandle<T> : IEntityNodeHandle
 
     public T Payload { get; }
 
+    /// <inheritdoc />
+    public NodeId DataTypeDefinitionId { get; }
+
 
     /// <inheritdoc />
     public BaseInstanceState Value { get; }
-
-    /// <inheritdoc />
-    public NodeId DataTypeDefinitionId { get; }
 }

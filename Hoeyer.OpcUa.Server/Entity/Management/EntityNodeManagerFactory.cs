@@ -1,5 +1,8 @@
 ﻿using System;
-using Hoeyer.OpcUa.Core.Entity.Node;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Microsoft.Extensions.Logging;
@@ -7,34 +10,36 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Entity.Management;
 
-public sealed class EntityNodeManagerFactory(ILoggerFactory loggerFactory)
+internal interface IEntityNodeManagerFactory
 {
-    internal IEntityNodeManager Create(IServerInternal server, Uri host, IEntityNodeCreator nodeCreator)
+    Task<IEnumerable<IEntityNodeManager>> CreateEntityManagers(
+        Func<string, (string @namespace, ushort index)> namespaceIndexFactory, IServerInternal server);
+}
+
+internal sealed class EntityNodeManagerFactory(
+    ILoggerFactory loggerFactory,
+    IEnumerable<IEntityInitializer> initializers) : IEntityNodeManagerFactory
+{
+    public async Task<IEnumerable<IEntityNodeManager>> CreateEntityManagers(
+        Func<string, (string @namespace, ushort index)> namespaceIndexFactory, IServerInternal server)
     {
-        var nodeNamespace = host.Host + $"/{nodeCreator.EntityName}";
-        var logger = loggerFactory.CreateLogger(nodeCreator.EntityName + "Manager");
-        var managedNode = CreatedManagedNode(server, nodeNamespace, nodeCreator);
+        return await Task.WhenAll(initializers.Select(async initializer =>
+        {
+            var (@namespace, index) = namespaceIndexFactory.Invoke(initializer.EntityName);
+            var node = await initializer.CreateNode(index);
+            var managedNode = new ManagedEntityNode(node, @namespace, index);
 
-        logger.LogInformation("Creating {@Manager} for {@ManagedNode}", nameof(EntityNodeManager), managedNode);
-
-        return new EntityNodeManager(
-            managedNode,
-            server,
-            new EntityHandleManager(managedNode),
-            new EntityWriter(managedNode, () => server.DefaultSystemContext.Copy()),
-            new EntityBrowser(managedNode),
-            new EntityReader(managedNode, new PropertyReader()),
-            new EntityReferenceLinker(managedNode),
-            logger);
-    }
-
-    private static ManagedEntityNode CreatedManagedNode(IServerInternal server, string nodeNamespace,
-        IEntityNodeCreator nodeCreator)
-    {
-        var namespaceIndex = server.NamespaceUris.GetIndexOrAppend(nodeNamespace);
-        var context = server.DefaultSystemContext;
-        var node = nodeCreator.CreateEntityOpcUaNode(namespaceIndex);
-        node.BaseObject.Create(context, node.BaseObject.NodeId, node.BaseObject.BrowseName, node.BaseObject.DisplayName, false);
-        return new ManagedEntityNode(node, nodeNamespace, namespaceIndex);
+            var entityName = managedNode.BaseObject.DisplayName.Text;
+            var logger = loggerFactory.CreateLogger(entityName + "Manager");
+            return new EntityNodeManager(
+                managedNode,
+                server,
+                new EntityHandleManager(managedNode),
+                new EntityWriter(managedNode),
+                new EntityBrowser(managedNode),
+                new EntityReader(managedNode, new PropertyReader()),
+                new EntityReferenceLinker(managedNode, logger),
+                logger);
+        }));
     }
 }

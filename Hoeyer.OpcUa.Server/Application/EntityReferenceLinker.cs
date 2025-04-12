@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FluentResults;
+using Hoeyer.Common.Extensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Entity.Api;
+using Hoeyer.OpcUa.Server.Exceptions;
+using Microsoft.Extensions.Logging;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-internal class EntityReferenceLinker(IEntityNode entityNode) : IReferenceLinker
+internal class EntityReferenceLinker(IEntityNode entityNode, ILogger logger) : IReferenceLinker
 {
     /// <summary>
     ///     Initializes the nodes of the Entity and links nodes to existing references - for instance, making the folder lie
@@ -21,9 +24,21 @@ internal class EntityReferenceLinker(IEntityNode entityNode) : IReferenceLinker
     /// </returns>
     public Result InitializeToExternals(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
-        return Result.Try(
+        
+        var tryGetId = (PropertyState s) => s.DataType.Identifier is uint i
+            ? DataTypes.GetBrowseName((int)i)
+            : "custom datatype";
+        
+        logger.LogInformation("Adding child nodes {@PropertiesName}",
+            entityNode.PropertyStates.Values.Select(e => $"[{e.BrowseName} ({tryGetId.Invoke(e)})]"));
+        
+        var res = Result.Try(
             () => LinkEntity(externalReferences),
             e => new Error(e.Message));
+
+        if (res.IsFailed) throw new UnableToInitializeException("Unable to initialize " + entityNode.BaseObject.BrowseName.Name);
+        return res;
+        
     }
 
     public Result AddReferencesToEntity(NodeId nodeId, IEnumerable<IReference> references)
@@ -46,10 +61,8 @@ internal class EntityReferenceLinker(IEntityNode entityNode) : IReferenceLinker
 
     private void LinkEntity(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
-        externalReferences.GetOrAdd(ObjectIds.ObjectsFolder,
-        [
-            new NodeStateReference(ReferenceTypeIds.Organizes, false, entityNode.BaseObject)
-        ]);
+        var refs = externalReferences.GetOrAdd(ObjectIds.ObjectsFolder, []); //fallback value
+        refs.Add(new NodeStateReference(ReferenceTypeIds.Organizes, false, entityNode.BaseObject));
         entityNode.BaseObject.EventNotifier = EventNotifiers.SubscribeToEvents;
     }
 

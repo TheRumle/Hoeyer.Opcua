@@ -1,5 +1,7 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.CodeLoading;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 using Microsoft.CodeAnalysis;
@@ -22,6 +24,8 @@ public sealed class GeneratorTestDriver<T>(T generator, Action<string>? logger =
         var compilation = _compilationFactory.CreateCompilation(entitySourceCode);
         var compilationResult = _driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out var diagnostics);
         var result = CreateResult(compilationResult, diagnostics, _driver.GetTimingInfo());
+
+        logger?.Invoke("Generated code: \n" + result.SourceCode);
         return result;
     }
 

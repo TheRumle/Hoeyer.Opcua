@@ -9,7 +9,10 @@ public class StartupOptionsValidation<T> : IStartupFilter
         return builder =>
         {
             var options = builder.ApplicationServices.GetRequiredService(typeof(IOptions<>).MakeGenericType(typeof(T)));
-            if (options != null!) _ = ((IOptions<object>)options).Value;
+            if (options != null!)
+            {
+                _ = ((IOptions<object>)options).Value;
+            }
 
             next(builder);
         };

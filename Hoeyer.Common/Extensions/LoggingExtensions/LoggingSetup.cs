@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.Common.Extensions.LoggingExtensions;
 
-internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel)
+internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Exception, Exception> customExceptionMapper)
     : ILogLevelSelected, IMessageSelected, IScopeAndMessageSelected, IScopeSelected
 {
-
     private string? _message;
     private object[]? _messageArgs;
     private string? _scope;
@@ -25,20 +27,54 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel)
     }
 
     /// <inheritdoc />
-    public T WhenExecuting<T>(Func<T> action, LogLevel logLevel = LogLevel.None)
+    public T WhenExecuting<T>(Func<T> action, LogLevel logResultAs = LogLevel.None)
     {
         if (HasScope)
         {
             var a = ExecuteAndLogWithScope(action);
-            if (a != null) logger.Log(logLevel, "Got {Values}", a);
+            if (EqualityComparer<T>.Default.Equals(a, default!))
+            {
+                Log(logResultAs, a);
+            }
+
             return a;
         }
 
         var res = ExecuteAndLog(action);
-        if (res != null) logger.Log(logLevel, "Got {Values}", res);
+        if (EqualityComparer<T>.Default.Equals(res, default!))
+        {
+            Log(logResultAs, res);
+        }
+
         return res;
     }
 
+    private void Log<T>(LogLevel logResultAs, T a)
+    {
+        logger.Log(logResultAs, "Got {Values}", a);
+    }
+
+    public async Task<T> WhenExecutingAsync<T>(Func<Task<T>> action, LogLevel logResultAs = LogLevel.None)
+    {
+        if (HasScope)
+        {
+            var a = await ExecuteAndLogWithScope(action);
+            if (EqualityComparer<T>.Default.Equals(a, default!))
+            {
+                Log(logResultAs, a);
+            }
+
+            return a;
+        }
+
+        var res = await ExecuteAndLog(action);
+        if (EqualityComparer<T>.Default.Equals(res, default!))
+        {
+            Log(logResultAs, res);
+        }
+        return res;
+    }
+    
     /// <inheritdoc />
     public IScopeSelected WithScope(string scopeTitle, params object[] scopeArguments)
     {
@@ -74,26 +110,53 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel)
 
     private void ExecuteAndLogWithScope(Action action)
     {
-        using var a = logger.BeginScope(_scope);
-        ExecuteAndLog(action);
+        if (_scope != null)
+        {
+            using var a = logger.BeginScope(_scope);
+            ExecuteAndLog(action);
+        }
+        else
+        {
+            ExecuteAndLog(action);
+        }
     }
 
     private T ExecuteAndLogWithScope<T>(Func<T> action)
     {
-        using var a = logger.BeginScope(_scope, _scopeArgs);
+        if (_scope != null)
+        {
+            using var a = logger.BeginScope(_scope, _scopeArgs ?? []);
+            return ExecuteAndLog(action);
+        }
+
         return ExecuteAndLog(action);
     }
 
-    private T ExecuteAndLog<T>(Func<T> action)
+    private T ExecuteAndLog<T>(Func<T> func)
     {
         try
         {
-            return action.Invoke();
+            return func.Invoke();
         }
         catch (Exception ex)
         {
             LogException(ex);
-            throw;
+            throw customExceptionMapper.Invoke(ex);
+        }
+    }
+    
+    
+    [SuppressMessage("SonarQube", "S5034", Justification = "If the operation fails, the error is caught and logged")]
+    private T ExecuteAndLog<T>(Task<T> func)
+    {
+        try
+        {
+            return func.Result;
+        }
+        catch (Exception ex)
+        {
+            LogException(ex);
+            throw customExceptionMapper.Invoke(ex);
         }
     }
 
@@ -106,12 +169,12 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel)
         catch (Exception ex)
         {
             LogException(ex);
-            throw;
+            throw customExceptionMapper.Invoke(ex);
         }
     }
 
     private void LogException(Exception e)
     {
-        logger.Log(logLevel, e, _message, _messageArgs);
+        logger.Log(logLevel, e, _message, _messageArgs ?? []);
     }
 }
