@@ -5,14 +5,25 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.Common.Messaging;
 
-public sealed class MessagePublisher<T>(ILogger logger) : ISubscribable<T>
+public interface IMessageSubscribable<T>
 {
-    private static string MessageName = typeof(T).Name;
+    public Subscription<T> Subscribe(IMessageSubscriber<T> stateChangeSubscriber);
+}
+
+public interface IMessagePublisher<T> : IMessageSubscribable<T>
+{
+    public void Publish(T message);
+}
+
+public sealed class MessagePublisher<T>(ILogger logger) : IMessagePublisher<T>
+{
+    private static readonly string MessageName = typeof(T).Name;
     public int NumberOfSubscriptions => Subscriptions.Count;
-    private ConcurrentDictionary<Guid, Subscription<T>> Subscriptions { get; set; } = new();
+    private ConcurrentDictionary<Guid, Subscription<T>> Subscriptions { get; } = new();
 
     public void Publish(T message)
     {
+        var letter = new Message<T>(message);
         foreach (var kvp in Subscriptions)
         {
             var id = kvp.Key;
@@ -20,7 +31,7 @@ public sealed class MessagePublisher<T>(ILogger logger) : ISubscribable<T>
 
             if (sub.IsCancelled)
             {
-                logger.LogInformation("Removing subscription {Id}", sub.SubscriptionId);
+                logger.LogInformation("Removing subscription {Id}", sub.SubscriptionId.ToString());
                 if (!Subscriptions.TryRemove(id, out _))
                 {
                     logger.LogWarning("Failed to remove subscription {Id}", id);
@@ -30,7 +41,7 @@ public sealed class MessagePublisher<T>(ILogger logger) : ISubscribable<T>
 
             if (sub.IsActive)
             {
-                sub.ForwardMessage(message);
+                sub.ForwardMessage(letter);
             }
         }
     }

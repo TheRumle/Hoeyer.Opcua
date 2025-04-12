@@ -16,12 +16,13 @@ public class MessagePublisherTest
     private readonly MessagePublisher<int> publisher = new(NullLoggerFactory.Instance.CreateLogger("Loggger"));
     private readonly TestSubscriber _subscriber = new();
     private readonly Random _rand = new(46378919);
-    private class TestSubscriber : IMessageSubscriber<int>
+    private sealed class TestSubscriber : IMessageSubscriber<int>
     {
         public int Count = 0; 
-        public void OnMessagePublished(int stateChange) => Count += 1;
-
         public Subscription<int> Subscription { get; set; }
+
+        /// <inheritdoc />
+        public void OnMessagePublished(IMessage<int> message) => Count += 1;
     }
     
     public static IEnumerable<Func<(int consumers, int messages)>> IncreasingLoad()

@@ -1,6 +1,6 @@
 ﻿namespace Hoeyer.Common.Messaging;
 
-public interface IMessageSubscriber<in TState>
+public interface IMessageSubscriber<in T>
 {
-    public void OnMessagePublished(TState stateChange);
+    public void OnMessagePublished(IMessage<T> message);
 }

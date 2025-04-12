@@ -2,10 +2,17 @@
 
 namespace Hoeyer.Common.Messaging;
 
-public sealed class Subscription<TContent>(IMessageSubscriber<TContent> subscriber) : IDisposable
+public interface ISubscription : IDisposable
+{
+    bool IsCancelled { get; }
+    bool IsActive { get; }
+    void Unpause();
+    void Pause();
+}
+
+public sealed class Subscription<TContent>(IMessageSubscriber<TContent> subscriber) : ISubscription
 {
     public readonly Guid SubscriptionId = Guid.NewGuid();
-    private IMessageSubscriber<TContent> _subscriber = subscriber;
     public bool IsCancelled { get; private set; }
     public bool IsActive { get; private set;  } = true;
 
@@ -20,13 +27,13 @@ public sealed class Subscription<TContent>(IMessageSubscriber<TContent> subscrib
         }
     }
 
-    internal void ForwardMessage(TContent stateChange)
+    internal void ForwardMessage(IMessage<TContent> stateChange)
     {
         if (IsCancelled || !IsActive)
         {
             return;
         }
 
-        _subscriber.OnMessagePublished(stateChange);
+        subscriber.OnMessagePublished(stateChange);
     }
 }
