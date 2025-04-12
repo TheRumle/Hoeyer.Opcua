@@ -12,7 +12,8 @@ public static class AssemblyLoader
     [
         Assembly.Load("mscorlib"),
         Assembly.Load("netstandard"),
-        Assembly.Load("System")
+        Assembly.Load("System"),
+        typeof(Hoeyer.OpcUa.Core.OpcUaEntityAttribute).Assembly,
     ];
 
     public static readonly IReadOnlySet<MetadataReference> CoreMetadataReferences = CoreAssemblies

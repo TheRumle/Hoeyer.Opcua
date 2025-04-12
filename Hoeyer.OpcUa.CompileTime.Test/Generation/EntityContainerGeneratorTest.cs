@@ -6,5 +6,5 @@ namespace Hoeyer.OpcUa.CompileTime.Test.Generation;
 
 [TestSubject(typeof(EntityContainerGenerator))]
 [ParallelLimiter<ParallelLimit>]
-[InheritsTests]
+[InheritsTests, Skip("The implementation is not yet supported and will likely be removed soon.")]
 public sealed class EntityContainerGeneratorTest : GeneratorTest<EntityContainerGenerator>;

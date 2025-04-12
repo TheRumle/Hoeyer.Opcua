@@ -11,7 +11,7 @@ public sealed class ObservationTest
     
     private sealed class TestSubscriber : IMessageSubscriber<Gantry>
     {
-        public Gantry? Value { get; set; } 
+        public Gantry Value { get; set; } = null!; 
         public void OnMessagePublished(IMessage<Gantry> message) => Value = (message.Payload);
     }
 
@@ -24,15 +24,19 @@ public sealed class ObservationTest
         var observer = new TestSubscriber();
         _ = publisher!.Subscribe(observer);
 
-        var writer = await _fixture.GetService<IEntityWriter<Gantry>>();
-        await writer!.AssignEntityValues(session, new Gantry
+        var message = new Gantry
         {
             AList = ["helo"],
             IntValue = 678392,
             StringValue = "good strings my dear sir"
-        });
+        };
+        var writer = await _fixture.GetService<IEntityWriter<Gantry>>();
+        await writer!.AssignEntityValues(session, message);
 
         await Assert.That(observer.Value).IsNotNull();
+        await Assert.That(observer.Value.IntValue).IsEqualTo(message.IntValue);
+        await Assert.That(observer.Value.AList).IsEquivalentTo(message.AList);
+        await Assert.That(observer.Value.StringValue).IsEquivalentTo(message.StringValue);
     }
     
 }

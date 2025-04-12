@@ -1,8 +1,5 @@
 ﻿using Hoeyer.OpcUa.Client.Application.Browsing;
-using Hoeyer.OpcUa.Core.Proxy;
 using Hoeyer.OpcUa.Test.Client.EndToEnd.Generators;
-using Opc.Ua;
-using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Test.Client.EndToEnd;
 
