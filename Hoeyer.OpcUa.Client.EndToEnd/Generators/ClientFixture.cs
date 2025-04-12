@@ -7,13 +7,18 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.ClientTest.Generators;
 
-public abstract class ServerCommunicationFixture(OpcUaEntityTestApplication hostedApplication) : IDisposable
+public sealed class ClientFixture<TService>(
+    OpcUaEntityTestApplication hostedApplication,
+    Type implementationType)
+    : IDisposable
+    where TService : notnull
 {
     private readonly CancellationTokenSource _cancellationTokenSource = new();
-    protected IServiceScope Scope { get; private set; } = null!;
+    private IServiceScope Scope { get; set; } = null!;
     private bool _initialized = false;
+    private Type EntityType => implementationType.GenericTypeArguments[0];
 
-    protected async Task ServerStarted()
+    private async Task ServerStarted()
     {
         if (_initialized) return;
         await hostedApplication.StartAsync(_cancellationTokenSource.Token);
@@ -29,20 +34,7 @@ public abstract class ServerCommunicationFixture(OpcUaEntityTestApplication host
         await ServerStarted();
         return await Scope.ServiceProvider.GetService<IEntitySessionFactory>()!.CreateSessionAsync(sessionid)!;
     }
-    
-    void IDisposable.Dispose()
-    {
-        hostedApplication.Dispose();
-        Scope.Dispose();
-        _cancellationTokenSource.Cancel();
-        _cancellationTokenSource.Dispose();
-    }
-} 
 
-public sealed class ClientFixture<TService> : ServerCommunicationFixture where TService : notnull
-{
-    private Type EntityType => ImplementationType.GenericTypeArguments[0];
-    public readonly Type ImplementationType;
 
     /// <inheritdoc />
     public override string ToString()
@@ -52,18 +44,10 @@ public sealed class ClientFixture<TService> : ServerCommunicationFixture where T
     }
 
 
-    public ClientFixture(OpcUaEntityTestApplication hostedApplication,
-        Type implementationType) : base(hostedApplication)
-    {
-        ImplementationType = implementationType;
-    }
-
-
-
     public async Task<TService> GetFixture()
     {
         await ServerStarted();
-        return (TService)Scope.ServiceProvider.GetRequiredService(ImplementationType);
+        return (TService)Scope.ServiceProvider.GetRequiredService(implementationType);
     }
     
     public async Task<IClientServicesContainer> GetClientServices()
@@ -78,5 +62,14 @@ public sealed class ClientFixture<TService> : ServerCommunicationFixture where T
         await ServerStarted();
         return Scope.ServiceProvider.GetRequiredService<T>();
     }
+    
+    void IDisposable.Dispose()
+    {
+        hostedApplication.Dispose();
+        Scope.Dispose();
+        _cancellationTokenSource.Cancel();
+        _cancellationTokenSource.Dispose();
+    }
+
 
 }
