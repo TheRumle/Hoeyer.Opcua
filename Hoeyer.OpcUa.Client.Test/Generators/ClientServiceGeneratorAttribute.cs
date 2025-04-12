@@ -1,22 +1,21 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Hoeyer.Common.Reflection;
 using Hoeyer.Opc.Ua.Test.TUnit.Extensions;
-using Hoeyer.OpcUa.Client;
 using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.TestApplication;
 
 namespace Hoeyer.OpcUa.ClientTest.Generators;
 [SuppressMessage("Design", "S3993", Justification = "TUnits' attributeusage must not and cannot be overwritten.")]
-public sealed class ClientServiceGeneratorAttribute<TWantedClientService> : DataSourceGeneratorAttribute<OpcClientServiceFixture<TWantedClientService>> 
+public sealed class ClientServiceGeneratorAttribute<TWantedClientService> : DataSourceGeneratorAttribute<ClientFixture<TWantedClientService>> 
     where TWantedClientService : notnull
 {
     /// <inheritdoc />
-    public override IEnumerable<Func<OpcClientServiceFixture<TWantedClientService>>> GenerateDataSources(DataGeneratorMetadata dataGeneratorMetadata)
+    public override IEnumerable<Func<ClientFixture<TWantedClientService>>> GenerateDataSources(DataGeneratorMetadata dataGeneratorMetadata)
     {
-        var browserTypes = typeof(IEntityBrowser).Assembly
+        var clientServices = typeof(IEntityBrowser).Assembly
             .GetTypes()
-            .First(t => typeof(TWantedClientService).IsAssignableFrom(t) && t.IsAnnotatedWith<ClientServiceAttribute>());
+            .First(t => typeof(TWantedClientService).IsAssignableFrom(t) && t is { IsClass: true, IsInterface: false });
         
         var entities = typeof(Gantry).Assembly
             .GetTypes()
@@ -24,7 +23,7 @@ public sealed class ClientServiceGeneratorAttribute<TWantedClientService> : Data
             .ToHashSet();
         
         return entities
-            .Select(e => browserTypes.MakeGenericType(e))
-            .SelectFunc(browserType => new OpcClientServiceFixture<TWantedClientService>(new OpcUaEntityTestApplication(), browserType));
+            .Select(e => clientServices.MakeGenericType(e))
+            .SelectFunc(browserType => new ClientFixture<TWantedClientService>(new OpcUaEntityTestApplication(), browserType));
     }
 }

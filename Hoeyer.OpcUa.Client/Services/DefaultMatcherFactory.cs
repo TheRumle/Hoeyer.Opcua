@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using Hoeyer.OpcUa.Client.Application.Browsing;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Client;
+namespace Hoeyer.OpcUa.Client.Services;
 
 public static class DefaultMatcherFactory
 {

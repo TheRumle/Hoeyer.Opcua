@@ -31,7 +31,7 @@ public static class Services
             .SelectMany(assembly => assembly.GetTypes())
             .ToList();
 
-        EntityServiceTypeContext[] startupLoaders = types.GetEntityServicesOfType(typeof(IEntityLoader<>)).ToArray();
+        var startupLoaders = types.GetEntityServicesOfType(typeof(IEntityLoader<>)).ToArray();
         var nodeFactories = types.GetEntityServicesOfType(typeof(IEntityNodeStructureFactory<>)).ToArray();
         var translators = types.GetEntityServicesOfType(typeof(IEntityTranslator<>)).ToArray();
 
