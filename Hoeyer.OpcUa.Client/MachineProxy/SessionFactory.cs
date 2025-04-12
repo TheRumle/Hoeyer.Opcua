@@ -5,12 +5,6 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.MachineProxy;
 
-public interface IEntitySessionFactory
-{
-    Task<ISession> CreateSessionAsync(string sessionId);
-    public ApplicationConfiguration Configuration { get; } 
-}
-
 internal class SessionFactory(IOpcUaEntityServerInfo applicationOptions) : IEntitySessionFactory
 {
     private readonly string _opcServerUrl = applicationOptions.OpcUri.ToString();
@@ -19,6 +13,7 @@ internal class SessionFactory(IOpcUaEntityServerInfo applicationOptions) : IEnti
     public async Task<ISession> CreateSessionAsync(string sessionId)
     {
         var selectedEndpoint = CoreClientUtils.SelectEndpoint(_opcServerUrl, false);
+        
         var endpointConfiguration = EndpointConfiguration.Create(Configuration);
         var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
         var session = await Session.Create(

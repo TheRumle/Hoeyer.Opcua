@@ -7,17 +7,13 @@ using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Application.Reading;
 using Hoeyer.OpcUa.Client.Extensions;
-using Hoeyer.OpcUa.Client.Reflection;
 using Hoeyer.OpcUa.Core.Extensions;
 using Hoeyer.OpcUa.Core.Extensions.Logging;
-using Hoeyer.OpcUa.Core.Extensions.Opc;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Browsing;
-
-public delegate bool EntityDescriptionMatcher<TEntity>(ReferenceDescription reference);
 
 /// <summary>
 /// A client for browsing an entity - traverses the node tree from root using the <paramref name="traversalStrategy"/> and until a match is found using <paramref name="identityMatcher"/> - the match is deemed to be the entity node.
@@ -41,7 +37,7 @@ public sealed class EntityBrowser<TEntity>(
         = identityMatcher ?? (n => EntityName.Equals(n.BrowseName.Name));
 
 
-    public async Task<EntityBrowseResult> BrowseEntityNode(
+    public async Task<EntityReadResult> BrowseEntityNode(
         ISession session,
         NodeId treeRoot,
         CancellationToken cancellationToken = default)
@@ -63,7 +59,7 @@ public sealed class EntityBrowser<TEntity>(
                 _entityNode = node;
                 IEnumerable<ReferenceDescription> children = await Browse(session, cancellationToken: cancellationToken)
                     .ThenAsync(e => e.SelectMany(child => child.References));
-                return new EntityBrowseResult(node, children);
+                return new EntityReadResult(node, children);
             });
     }
 

@@ -17,7 +17,7 @@ public interface IEntityBrowser
     /// <param name="cancellationToken">Token to cancel the browse</param>
     /// <param name="treeRoot">The id of the node to start browsing from - for instance a value from <see cref="ObjectIds"/></param>
     /// <returns></returns>
-    Task<EntityBrowseResult> BrowseEntityNode(
+    Task<EntityReadResult> BrowseEntityNode(
         ISession session,
         NodeId treeRoot,
         CancellationToken cancellationToken = default);

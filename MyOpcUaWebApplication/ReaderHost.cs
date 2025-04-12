@@ -1,7 +1,6 @@
 ﻿using FluentResults.Extensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Application.Browsing;
-using Hoeyer.OpcUa.Client.Application.MachineProxy;
 using Hoeyer.OpcUa.Client.Extensions;
 using Hoeyer.OpcUa.Client.MachineProxy;
 using Hoeyer.OpcUa.Core.Extensions;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Hoeyer.OpcUa.Client.Reflection;
+namespace Hoeyer.OpcUa.Client;
 
 [AttributeUsage(AttributeTargets.Class)]
 internal class ClientServiceAttribute : Attribute;

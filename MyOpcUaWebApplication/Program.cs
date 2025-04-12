@@ -1,13 +1,9 @@
 using System.Configuration;
 using Hoeyer.OpcUa.Client;
-using Hoeyer.OpcUa.Client.Application.Browsing;
-using Hoeyer.OpcUa.Client.Application.MachineProxy;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Server;
 using MyOpcUaWebApplication;
 using MyOpcUaWebApplication.Configuration;
-using INodeBrowser = Hoeyer.OpcUa.Client.Application.Browsing.INodeBrowser;
-using NodeBrowser = Hoeyer.OpcUa.Client.Application.Browsing.NodeBrowser;
 
 var builder = WebApplication.CreateBuilder(args);
 

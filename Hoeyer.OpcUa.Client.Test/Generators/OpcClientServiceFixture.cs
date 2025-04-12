@@ -1,5 +1,4 @@
-﻿using Hoeyer.OpcUa.Client.Application.MachineProxy;
-using Hoeyer.OpcUa.Client.MachineProxy;
+﻿using Hoeyer.OpcUa.Client.MachineProxy;
 using Hoeyer.OpcUa.Server.Core;
 using Hoeyer.OpcUa.TestApplication;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentResults;
-using Hoeyer.OpcUa.Client.MachineProxy;
+using Hoeyer.OpcUa.Client.Application;
 using Hoeyer.OpcUa.Core.Application.Observation;
 using Hoeyer.OpcUa.Core.Observation;
 using Hoeyer.OpcUa.Core.Proxy;
 using Microsoft.Extensions.Logging;
 
-namespace Hoeyer.OpcUa.Client.Application.MachineProxy;
+namespace Hoeyer.OpcUa.Client.MachineProxy;
 
 public sealed class EntityProxy<TMachineState>(
     IEntityClient<TMachineState> entityClient,

@@ -1,14 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Hoeyer.Common.Reflection;
 using Hoeyer.Opc.Ua.Test.TUnit.Extensions;
+using Hoeyer.OpcUa.Client;
 using Hoeyer.OpcUa.Client.Application.Browsing;
-using Hoeyer.OpcUa.Client.Reflection;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.TestApplication;
 
 namespace Hoeyer.OpcUa.ClientTest.Generators;
 [SuppressMessage("Design", "S3993", Justification = "TUnits' attributeusage must not and cannot be overwritten.")]
-public sealed class EntityBrowserGeneratorAttribute<TWantedClientService> : DataSourceGeneratorAttribute<OpcClientServiceFixture<TWantedClientService>> 
+public sealed class ClientServiceGeneratorAttribute<TWantedClientService> : DataSourceGeneratorAttribute<OpcClientServiceFixture<TWantedClientService>> 
     where TWantedClientService : notnull
 {
     /// <inheritdoc />
