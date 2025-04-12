@@ -34,7 +34,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Test.TUnit", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "integrationtest", "integrationtest", "{9ECAEF5B-D1C2-4EEE-85E2-E99AE6E0D60E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Client.Test", "Hoeyer.OpcUa.Client.Test\Hoeyer.OpcUa.Client.Test.csproj", "{65351C5D-1F5C-4961-A839-8BE668BA089B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Client.EndToEnd", "Hoeyer.OpcUa.Client.EndToEnd\Hoeyer.OpcUa.Client.EndToEnd.csproj", "{65351C5D-1F5C-4961-A839-8BE668BA089B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.CompileTime.CodeFix", "Hoeyer.OpcUa.CompileTime.CodeFix\Hoeyer.OpcUa.CompileTime.CodeFix.csproj", "{F8CE8AF7-9636-42FA-909A-7604DEC0FBA1}"
 EndProject
