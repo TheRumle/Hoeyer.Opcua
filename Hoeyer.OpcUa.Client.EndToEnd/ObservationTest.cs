@@ -17,7 +17,7 @@ public sealed class ObservationTest
 
     
     [Test]
-    public async Task WhenEntityChangesState_ObserverPipelineIsNotified()
+    public async Task WhenClientWritesToEntity_ObserverShouldBeNotified()
     {
         var session = await _fixture.CreateSession(Guid.NewGuid().ToString());
         var publisher = await _fixture.GetService<IMessageSubscribable<Gantry>>();
