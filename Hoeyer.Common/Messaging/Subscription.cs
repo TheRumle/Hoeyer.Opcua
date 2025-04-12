@@ -16,7 +16,6 @@ public sealed class Subscription<TContent>(IMessageSubscriber<TContent> subscrib
     {
         if (!IsCancelled)
         {
-            _subscriber = null!;
             IsCancelled = true;
         }
     }
