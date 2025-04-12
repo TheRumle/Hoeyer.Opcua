@@ -17,7 +17,7 @@ public class ReaderHost(IEntityBrowser<Gantry> client, IEntitySessionFactory fac
         await marker.ServerRunning();
         var session = await factory.CreateSessionAsync("Gantry browser");
         var node = await client
-            .BrowseEntityNode(session, ObjectIds.RootFolder, stoppingToken)
+            .BrowseEntityNode(session, stoppingToken)
             .AsResultTask(e => e.Children.Select(child => child.NodeId.AsNodeId(session.NamespaceUris)).ToList())
             .Bind(ids => session.ReadValuesAsync(ids, ct: stoppingToken).AsResultTask());
             

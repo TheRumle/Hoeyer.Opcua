@@ -5,13 +5,14 @@ using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.TestApplication;
 
-namespace Hoeyer.OpcUa.ClientTest.Generators;
+namespace Hoeyer.OpcUa.Test.Client.EndToEnd.Generators;
+
 [SuppressMessage("Design", "S3993", Justification = "TUnits' attributeusage must not and cannot be overwritten.")]
-public sealed class ClientServiceGeneratorAttribute<TWantedClientService> : DataSourceGeneratorAttribute<ClientFixture<TWantedClientService>> 
+public sealed class ApplicationFixtureGeneratorAttribute<TWantedClientService> : DataSourceGeneratorAttribute<ApplicationFixture<TWantedClientService>> 
     where TWantedClientService : notnull
 {
     /// <inheritdoc />
-    public override IEnumerable<Func<ClientFixture<TWantedClientService>>> GenerateDataSources(DataGeneratorMetadata dataGeneratorMetadata)
+    public override IEnumerable<Func<ApplicationFixture<TWantedClientService>>> GenerateDataSources(DataGeneratorMetadata dataGeneratorMetadata)
     {
         var clientServices = typeof(IEntityBrowser).Assembly
             .GetTypes()
@@ -24,6 +25,6 @@ public sealed class ClientServiceGeneratorAttribute<TWantedClientService> : Data
         
         return entities
             .Select(e => clientServices.MakeGenericType(e))
-            .SelectFunc(browserType => new ClientFixture<TWantedClientService>(new OpcUaEntityTestApplication(), browserType));
+            .SelectFunc(browserType => new ApplicationFixture<TWantedClientService>(browserType));
     }
 }

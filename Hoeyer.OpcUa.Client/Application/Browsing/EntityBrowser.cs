@@ -40,7 +40,6 @@ public sealed class EntityBrowser<TEntity>(
 
     public async Task<EntityReadResult> BrowseEntityNode(
         ISession session,
-        NodeId treeRoot,
         CancellationToken cancellationToken = default)
     {
         return await logger.LogCaughtExceptionAs(LogLevel.Error, exception => new EntityBrowseException(exception.Message))
@@ -52,10 +51,9 @@ public sealed class EntityBrowser<TEntity>(
                 {
                     Session = session.ToLoggingObject(),
                     Entity = EntityName,
-                    TreeRoot = treeRoot,
                 });
                 
-                Node node = _entityNode ?? await FindEntityNode(session, treeRoot, (p) => _identityMatcher.Invoke(p), cancellationToken);
+                Node node = _entityNode ?? await FindEntityNode(session, ObjectIds.RootFolder, (p) => _identityMatcher.Invoke(p), cancellationToken);
                 
                 _entityNode = node;
                 IEnumerable<ReferenceDescription> children = await Browse(session, cancellationToken: cancellationToken)
