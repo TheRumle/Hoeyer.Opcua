@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using Hoeyer.Common.Reflection;
+using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Server.Configuration;
 using Hoeyer.OpcUa.Server.Core;
@@ -21,7 +24,7 @@ public static class ServiceExtensions
             if (standardConfig == null)
             {
                 throw new InvalidOperationException(
-                    $"No {nameof(IOpcUaEntityServerInfo)} has been registered! This should be prevented using builder pattern! SHOULD NOT HAPPEN!");
+                    $"No {nameof(IOpcUaEntityServerInfo)} has been registered! This should be prevented using builder pattern. Are you using the library as intended and using the {nameof(Hoeyer.OpcUa.Core.Services.AddOpcUaServerConfiguration)} {nameof(IServiceCollection)} extension method?");
             }
 
             return new OpcUaEntityServerSetup(standardConfig, additionalConfiguration ?? (value => { }));
@@ -42,6 +45,17 @@ public static class ServiceExtensions
             var factory = p.GetRequiredService<OpcUaEntityServerFactory>();
             return factory.CreateServer();
         });
+        
+        var entities = typeof(OpcUaEntityAttribute)
+            .GetConsumingAssemblies()
+            .SelectMany(e => e.GetTypes())
+            .Where(e => e.IsAnnotatedWith<OpcUaEntityAttribute>())
+            .ToHashSet();
+
+        foreach (var entity in entities)
+        {
+            
+        }
         
         return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
     }

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.Common.Messaging;
 
-public sealed class MessagePublisher<T>(ILogger logger) : IMessagePublisher<T>
+public sealed class MessagePublisher<T>(ILogger? logger = null) : IMessagePublisher<T>
 {
     private static readonly string MessageName = typeof(T).Name;
     public int NumberOfSubscriptions => Subscriptions.Count;
@@ -14,42 +14,34 @@ public sealed class MessagePublisher<T>(ILogger logger) : IMessagePublisher<T>
     public void Publish(T message)
     {
         var letter = new Message<T>(message);
-        foreach (var kvp in Subscriptions)
+        foreach (var sub in Subscriptions.Values)
         {
-            var id = kvp.Key;
-            var sub = kvp.Value;
-
-            if (sub.IsCancelled)
-            {
-                logger.LogInformation("Removing subscription {Id}", sub.SubscriptionId.ToString());
-                if (!Subscriptions.TryRemove(id, out _))
-                {
-                    logger.LogWarning("Failed to remove subscription {Id}", id);
-                }
-                continue;
-            }
-
-            if (sub.IsActive)
-            {
-                sub.ForwardMessage(letter);
-            }
+            if (sub.IsCancelled || !sub.IsActive) continue;
+            sub.ForwardMessage(letter);
         }
     }
-    
 
-    
-    [Pure]
-    public Subscription<T> Subscribe(IMessageSubscriber<T> stateChangeSubscriber)
+    public void Unsubscribe(Subscription<T> subscription)
     {
-        logger.BeginScope("Subscribing to messages of type '" + MessageName + '\'');
-        var subscription = new Subscription<T>(stateChangeSubscriber);
+        logger?.LogInformation("Removing subscription {Id}", subscription.SubscriptionId.ToString());
+        if (!Subscriptions.TryRemove(subscription.SubscriptionId, out _))
+        {
+            logger?.LogWarning("Failed to remove subscription '{Id}'. Is it already removed?", subscription.SubscriptionId);
+        }
+    }
+
+    [Pure]
+    public Subscription<T> Subscribe(IMessageSubscriber<T> subscriber)
+    {
+        logger?.BeginScope("Subscribing to messages of type '" + MessageName + '\'');
+        var subscription = new Subscription<T>(subscriber, this);
         if (!Subscriptions.TryAdd(subscription.SubscriptionId, subscription))
         {
-            logger.LogError("Failed to add subscription with for {@StateChangeSubscriber}. Messages will not be forwarded...", stateChangeSubscriber);
+            logger?.LogError("Failed to add subscription with for {@StateChangeSubscriber}. Messages will not be forwarded...", subscriber);
         }
         else
         {
-            logger.LogError("Added subscription {Id}", subscription.SubscriptionId);
+            logger?.LogError("Added subscription {Id}", subscription.SubscriptionId);
         }
         return subscription;
     }

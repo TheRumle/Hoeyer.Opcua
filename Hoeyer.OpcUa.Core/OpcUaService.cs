@@ -1,11 +1,14 @@
 ﻿using System;
 
-namespace Hoeyer.OpcUa.Client.Services;
+namespace Hoeyer.OpcUa.Core;
 
+/// <summary>
+/// A marker attribute marking generic classes as an Entity Service. An entity service is a service that is instantiated with a type parameter T where T is annotated with the <seealso cref="OpcUaEntityAttribute"/>. The marker is used for reflection scanning. 
+/// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal class ClientServiceAttribute : Attribute
+public class OpcUaEntityServiceAttribute : Attribute
 {
-    public ClientServiceAttribute(Type t)
+    public OpcUaEntityServiceAttribute(Type t)
     {
         if (t is { IsInterface: true, IsGenericTypeDefinition: false } || t.GetGenericArguments().Length != 1)
         {

@@ -59,7 +59,7 @@ public class MessagePublisherTest
         var subscription = publisher.Subscribe(_subscriber);
         var before = publisher.NumberOfSubscriptions;
         subscription.Dispose();
-        await Assert.That(_subscriber.Count).IsLessThan(before);
+        await Assert.That(publisher.NumberOfSubscriptions).IsLessThan(before);
     }
 
     [Test]

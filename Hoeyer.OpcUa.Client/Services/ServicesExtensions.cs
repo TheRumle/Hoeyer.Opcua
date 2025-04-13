@@ -15,7 +15,6 @@ namespace Hoeyer.OpcUa.Client.Services;
 
 public static class ServicesExtensions
 {
-
     public static OnGoingOpcEntityServiceRegistration WithOpcUaClientServices(
         this OnGoingOpcEntityServiceRegistration registration)
     {
@@ -76,43 +75,13 @@ public static class ServicesExtensions
     }
 
 
-    private static (List<EntityServiceTypeContext> contexts,
-        List<OpcUaEntityServiceConfigurationException> errors) 
-        ConstructTypeContexts(IEnumerable<Type> clientTypes, IEnumerable<Type> entities,  IServiceCollection serviceCollection)
-    {
-        List<OpcUaEntityServiceConfigurationException> errors = new ();
-        List<EntityServiceTypeContext> contexts = new ();
-        foreach (var clientType in clientTypes)
-        {
-            var enumerable = entities as Type[] ?? entities.ToArray();
-            var interfaces = clientType.GetInterfaces()
-                .Where(e => e.IsGenericType && e.GenericTypeArguments.Length == 1).ToList();
-            if (interfaces.Count != 1)
-            {
-                errors.Add(new OpcUaEntityServiceConfigurationException($"Classes annotated with {nameof(ClientServiceAttribute)} must implement an interface with exactly one type parameter to decide which entity it relates to."));
-                continue;
-            }
-            
-            foreach (var entity in enumerable)
-            {
-                var serviceType = interfaces[0]!.GetGenericTypeDefinition();
-                var parameterizedImplementation = clientType.MakeGenericType(entity);
-                serviceCollection.AddTransient(parameterizedImplementation, parameterizedImplementation);
-                
-                contexts.Add(new EntityServiceTypeContext(parameterizedImplementation, serviceType, entity));
-            }
-        }
-
-        return (contexts, errors);
-    }
-    
     private static IEnumerable<EntityServiceTypeContext> ConstructServiceContextFor(IEnumerable<Type> entityTypes)
     {
         var entityTypesList = entityTypes.ToList(); 
         HashSet<Type> serviceTypes = typeof(IEntityBrowser) //marker type
             .Assembly
             .ExportedTypes
-            .Where(e => e.IsAnnotatedWith<ClientServiceAttribute>())
+            .Where(e => e.IsAnnotatedWith<OpcUaEntityServiceAttribute>())
             .ToHashSet();
 
         AssertClientServices(serviceTypes);
@@ -133,7 +102,7 @@ public static class ServicesExtensions
             if (interfaces.Count != 1)
             {
                 errors.Add(new OpcUaEntityServiceConfigurationException(
-                    $"Classes annotated with {nameof(ClientServiceAttribute)} must implement an interface with exactly one type parameter to decide which entity it relates to."));
+                    $"Classes annotated with {nameof(OpcUaEntityServiceAttribute)} must implement an interface with exactly one type parameter to decide which entity it relates to."));
             }
         }
 
@@ -143,19 +112,19 @@ public static class ServicesExtensions
     
     
     public static IEnumerable<EntityServiceTypeContext> ConstructEntityServices(
-        this Type clientService,
+        this Type serviceImplementation,
         Type entity)
     {
-        if (!clientService.IsGenericTypeDefinition 
-            || clientService.GetGenericArguments().Length != 1 
+        if (!serviceImplementation.IsGenericTypeDefinition 
+            || serviceImplementation.GetGenericArguments().Length != 1 
             || !entity.IsClass)
         {
             throw new OpcUaEntityServiceConfigurationException(
                 "The specified type does not represent a uninstantiated generic type definition. The service type must take 1 generic argument, must be a non-abstract class, and must not be a type representing an instantiation of the generic type definition.");
         }
 
-        var interfaceType = clientService.GetCustomAttribute<ClientServiceAttribute>().ServiceType;
-        var instantiatedServiceImpl = clientService.MakeGenericType(entity);
+        var interfaceType = serviceImplementation.GetCustomAttribute<OpcUaEntityServiceAttribute>().ServiceType;
+        var instantiatedServiceImpl = serviceImplementation.MakeGenericType(entity);
         yield return new EntityServiceTypeContext(instantiatedServiceImpl, interfaceType, entity);
     }
     

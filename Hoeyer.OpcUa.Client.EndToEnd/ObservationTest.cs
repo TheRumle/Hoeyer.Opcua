@@ -1,6 +1,7 @@
 ﻿using Hoeyer.Common.Messaging;
 using Hoeyer.OpcUa.Client.Application;
 using Hoeyer.OpcUa.Client.EndToEnd.Generators;
+using Hoeyer.OpcUa.Server.Entity.Observability;
 using Hoeyer.OpcUa.TestApplication;
 
 namespace Hoeyer.OpcUa.Client.EndToEnd;
@@ -20,7 +21,7 @@ public sealed class ObservationTest
     public async Task WhenClientWritesToEntity_ObserverShouldBeNotified()
     {
         var session = await _fixture.CreateSession(Guid.NewGuid().ToString());
-        var publisher = await _fixture.GetService<IMessageSubscribable<Gantry>>();
+        var publisher = await _fixture.GetService<IEntityChangedMessenger<Gantry>>();
         var observer = new TestSubscriber();
         _ = publisher!.Subscribe(observer);
 

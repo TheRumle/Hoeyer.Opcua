@@ -2,5 +2,5 @@
 
 public interface IMessageSubscribable<T>
 {
-    public Subscription<T> Subscribe(IMessageSubscriber<T> stateChangeSubscriber);
+    public Subscription<T> Subscribe(IMessageSubscriber<T> subscriber);
 }
