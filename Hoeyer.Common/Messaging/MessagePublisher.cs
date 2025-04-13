@@ -5,16 +5,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.Common.Messaging;
 
-public interface IMessageSubscribable<T>
-{
-    public Subscription<T> Subscribe(IMessageSubscriber<T> stateChangeSubscriber);
-}
-
-public interface IMessagePublisher<T> : IMessageSubscribable<T>
-{
-    public void Publish(T message);
-}
-
 public sealed class MessagePublisher<T>(ILogger logger) : IMessagePublisher<T>
 {
     private static readonly string MessageName = typeof(T).Name;

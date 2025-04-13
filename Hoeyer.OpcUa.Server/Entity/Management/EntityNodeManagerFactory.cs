@@ -3,18 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Entity;
-using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Entity.Api;
+using Hoeyer.OpcUa.Server.Entity.Application;
 using Microsoft.Extensions.Logging;
 using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Entity.Management;
-
-internal interface IEntityNodeManagerFactory
-{
-    Task<IEnumerable<IEntityNodeManager>> CreateEntityManagers(
-        Func<string, (string @namespace, ushort index)> namespaceIndexFactory, IServerInternal server);
-}
 
 internal sealed class EntityNodeManagerFactory(
     ILoggerFactory loggerFactory,

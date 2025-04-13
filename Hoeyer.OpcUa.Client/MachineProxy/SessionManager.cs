@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Core.Observation;
+using Hoeyer.OpcUa.Core.Application.Observation;
 using Hoeyer.OpcUa.Core.Proxy;
 using Opc.Ua;
 using Opc.Ua.Client;

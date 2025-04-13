@@ -5,7 +5,7 @@ using Hoeyer.OpcUa.Server.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Hoeyer.OpcUa.Server;
+namespace Hoeyer.OpcUa.Server.Services;
 
 public sealed class OpcUaServerBackgroundService : BackgroundService
 {

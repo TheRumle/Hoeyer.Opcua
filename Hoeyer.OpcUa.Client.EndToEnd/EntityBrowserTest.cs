@@ -1,7 +1,7 @@
 ﻿using Hoeyer.OpcUa.Client.Application.Browsing;
-using Hoeyer.OpcUa.Test.Client.EndToEnd.Generators;
+using Hoeyer.OpcUa.Client.EndToEnd.Generators;
 
-namespace Hoeyer.OpcUa.Test.Client.EndToEnd;
+namespace Hoeyer.OpcUa.Client.EndToEnd;
 
 public sealed class EntityBrowserTest
 {

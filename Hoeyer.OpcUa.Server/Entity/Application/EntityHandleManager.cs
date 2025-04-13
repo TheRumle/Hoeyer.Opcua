@@ -5,7 +5,7 @@ using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Handle;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application;
+namespace Hoeyer.OpcUa.Server.Entity.Application;
 
 internal sealed class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManager
 {

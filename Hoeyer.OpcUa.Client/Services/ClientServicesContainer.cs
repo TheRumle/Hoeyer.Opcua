@@ -3,12 +3,6 @@ using Hoeyer.OpcUa.Client.Application.Browsing;
 
 namespace Hoeyer.OpcUa.Client.Services;
 
-public interface IClientServicesContainer
-{
-    public IEntityBrowser Browser { get; }
-    public IEntityWriter Writer { get; }
-}
-
 internal sealed record ClientServicesContainer<T>(IEntityBrowser<T> EntityBrowser, IEntityWriter<T> EntityWriter) : IClientServicesContainer
 {
     public IEntityBrowser<T> EntityBrowser { get; } = EntityBrowser;

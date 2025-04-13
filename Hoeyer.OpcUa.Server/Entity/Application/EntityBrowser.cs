@@ -9,7 +9,7 @@ using Hoeyer.OpcUa.Server.Entity.Handle;
 using Opc.Ua;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Application;
+namespace Hoeyer.OpcUa.Server.Entity.Application;
 
 internal class EntityBrowser(IEntityNode node) : IEntityBrowser
 {

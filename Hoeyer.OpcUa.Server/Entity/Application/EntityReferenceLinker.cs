@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FluentResults;
-using Hoeyer.Common.Extensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Entity.Api;
@@ -9,7 +8,7 @@ using Hoeyer.OpcUa.Server.Exceptions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application;
+namespace Hoeyer.OpcUa.Server.Entity.Application;
 
 internal class EntityReferenceLinker(IEntityNode entityNode, ILogger logger) : IReferenceLinker
 {

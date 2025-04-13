@@ -2,13 +2,6 @@
 
 namespace MyOpcUaWebApplication;
 
-public enum Position
-{
-    OverThere,
-    OverHere,
-    OnTheMoon
-}
-
 [OpcUaEntity]
 public sealed class Gantry
 {

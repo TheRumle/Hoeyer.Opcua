@@ -1,5 +1,4 @@
 ﻿using System;
-using Hoeyer.OpcUa.Core.Observation;
 
 namespace Hoeyer.OpcUa.Core.Application.Observation;
 

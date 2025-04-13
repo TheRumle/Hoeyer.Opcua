@@ -2,14 +2,6 @@
 
 namespace Hoeyer.Common.Messaging;
 
-public interface ISubscription : IDisposable
-{
-    bool IsCancelled { get; }
-    bool IsActive { get; }
-    void Unpause();
-    void Pause();
-}
-
 public sealed class Subscription<TContent>(IMessageSubscriber<TContent> subscriber) : ISubscription
 {
     public readonly Guid SubscriptionId = Guid.NewGuid();

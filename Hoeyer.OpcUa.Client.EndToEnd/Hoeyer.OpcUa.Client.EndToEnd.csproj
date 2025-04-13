@@ -5,7 +5,7 @@
         <LangVersion>latestmajor</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>Hoeyer.OpcUa.Test.Client.EndToEnd</RootNamespace>
+        <RootNamespace>Hoeyer.OpcUa.Client.EndToEnd</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

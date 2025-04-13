@@ -6,7 +6,7 @@ using Hoeyer.OpcUa.TestApplication;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua.Client;
 
-namespace Hoeyer.OpcUa.Test.Client.EndToEnd.Generators;
+namespace Hoeyer.OpcUa.Client.EndToEnd.Generators;
 
 public sealed class ApplicationFixture : IDisposable
 {

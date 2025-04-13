@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.OpcUa.Core.Observation;
+﻿namespace Hoeyer.OpcUa.Core.Application.Observation;
 
 public interface IStateChangeSubscriber<in TState>
 {

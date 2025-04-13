@@ -1,9 +1,9 @@
 ﻿using Hoeyer.Common.Messaging;
 using Hoeyer.OpcUa.Client.Application;
-using Hoeyer.OpcUa.Test.Client.EndToEnd.Generators;
+using Hoeyer.OpcUa.Client.EndToEnd.Generators;
 using Hoeyer.OpcUa.TestApplication;
 
-namespace Hoeyer.OpcUa.Test.Client.EndToEnd;
+namespace Hoeyer.OpcUa.Client.EndToEnd;
 
 public sealed class ObservationTest
 {

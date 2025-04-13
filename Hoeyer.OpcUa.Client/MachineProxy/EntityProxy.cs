@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Client.Application;
 using Hoeyer.OpcUa.Core.Application.Observation;
-using Hoeyer.OpcUa.Core.Observation;
 using Hoeyer.OpcUa.Core.Proxy;
 using Microsoft.Extensions.Logging;
 

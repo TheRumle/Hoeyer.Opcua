@@ -5,7 +5,7 @@ using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.TestApplication;
 
-namespace Hoeyer.OpcUa.Test.Client.EndToEnd.Generators;
+namespace Hoeyer.OpcUa.Client.EndToEnd.Generators;
 
 [SuppressMessage("Design", "S3993", Justification = "TUnits' attributeusage must not and cannot be overwritten.")]
 public sealed class ApplicationFixtureGeneratorAttribute<TWantedClientService> : DataSourceGeneratorAttribute<ApplicationFixture<TWantedClientService>> 

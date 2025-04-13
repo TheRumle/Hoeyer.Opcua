@@ -4,7 +4,7 @@ using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Entity.Handle;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application;
+namespace Hoeyer.OpcUa.Server.Entity.Application;
 
 internal class HandleCollection(IEntityNode entityNode)
 {

@@ -6,7 +6,7 @@ using Hoeyer.OpcUa.Server.Entity.Management;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server;
+namespace Hoeyer.OpcUa.Server.Services;
 
 public static class ServiceExtensions
 {

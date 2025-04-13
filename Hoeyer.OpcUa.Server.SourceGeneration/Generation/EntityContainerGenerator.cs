@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Core.Observation;
+using Hoeyer.OpcUa.Core.Application.Observation;
 using Hoeyer.OpcUa.Server.SourceGeneration.Constants;
 using Hoeyer.OpcUa.Server.SourceGeneration.Generation.IncrementalProvider;
 using Microsoft.CodeAnalysis;

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using Hoeyer.OpcUa.Core.Utility;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
 using Opc.Ua;
 using LocalizedText = Opc.Ua.LocalizedText;
 
-namespace Hoeyer.OpcUa.Server.Application;
+namespace Hoeyer.OpcUa.Server.Entity.Application;
 
 internal class PropertyReader(PermissionType permissionType) : IPropertyReader
 {

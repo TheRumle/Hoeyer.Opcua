@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using Hoeyer.OpcUa.Core.Application.Observation;
 
-namespace Hoeyer.OpcUa.Core.Observation;
+namespace Hoeyer.OpcUa.Core.Application.Observation;
 
 public class StateChangeSubscriptionManager<TState>(TState currentState) : ISubscribable<TState>
 {
