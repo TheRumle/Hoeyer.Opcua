@@ -1,10 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Hoeyer.OpcUa.Client.MachineProxy;
-using Hoeyer.OpcUa.Client.Services;
+﻿using Hoeyer.OpcUa.Client.MachineProxy;
 using Hoeyer.OpcUa.Server.Core;
 using Hoeyer.OpcUa.TestApplication;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua.Client;
+using TUnit.Core.Interfaces;
 
 namespace Hoeyer.OpcUa.Client.EndToEnd.Generators;
 
@@ -14,9 +13,48 @@ public sealed class ApplicationFixture : IDisposable
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     public IServiceScope Scope { get; private set; } = null!;
     private bool _initialized;
+    public async Task<T?> GetService<T>() where T : notnull
+    {
+        await InitializeAsync();
+        return Scope.ServiceProvider.GetRequiredService<T>();
+    }
 
+    public async Task<ISession> CreateSession(string sessionId)
+    {
+        await InitializeAsync();
+        return await Scope.ServiceProvider.GetService<IEntitySessionFactory>()!.CreateSessionAsync(sessionId);
+    }
 
-    internal async Task ServerStarted()
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        _hostedApplication.Dispose();
+        _cancellationTokenSource.Dispose();
+        Scope.Dispose();
+    }
+
+    /// <inheritdoc />
+    public async ValueTask DisposeAsync()
+    {
+        await CastAndDispose(_hostedApplication);
+        await CastAndDispose(_cancellationTokenSource);
+        await CastAndDispose(Scope);
+        
+        static async ValueTask CastAndDispose(IDisposable resource)
+        {
+            if (resource is IAsyncDisposable resourceAsyncDisposable)
+            {
+                await resourceAsyncDisposable.DisposeAsync();
+            }
+            else
+            {
+                resource.Dispose();
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task InitializeAsync()
     {
         if (_initialized) return;
         await _hostedApplication.StartAsync(_cancellationTokenSource.Token);
@@ -25,27 +63,6 @@ public sealed class ApplicationFixture : IDisposable
         var serverStarted = Scope.ServiceProvider.GetService<EntityServerStartedMarker>()!;
         await serverStarted;
         _initialized = true;
-    }
-    
-    public async Task<T?> GetService<T>() where T : notnull
-    {
-        await ServerStarted();
-        return Scope.ServiceProvider.GetRequiredService<T>();
-    }
-    
-    public async Task<ISession> CreateSession(string sessionid)
-    {
-        await ServerStarted();
-        return await Scope.ServiceProvider.GetService<IEntitySessionFactory>()!.CreateSessionAsync(sessionid)!;
-    }
-
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        _hostedApplication.Dispose();
-        _cancellationTokenSource.Dispose();
-        Scope.Dispose();
     }
 }
 
@@ -58,29 +75,21 @@ public sealed class ApplicationFixture<TService>(Type implementationType)
     where TService : notnull
 {
     private readonly ApplicationFixture _application = new();
-    private Type EntityType => implementationType.GenericTypeArguments[0];
 
 
     /// <inheritdoc />
     public override string ToString()
     {
         var name = nameof(ApplicationFixture<int>);
-        return $"{name}<{typeof(TService).Name}> ({EntityType.Name})";
+        return $"{name}<{typeof(TService).Name}>";
     }
 
     public async Task<TService> GetFixture()
     {
-        await _application.ServerStarted();
+        await _application.InitializeAsync();
         return (TService)_application.Scope.ServiceProvider.GetRequiredService(implementationType);
     }
-    
-    [SuppressMessage("Maintainability", "S1944", Justification = "The container services are wired up by the test application project")]
-    public async Task<IClientServicesContainer> GetClientServices()
-    {
-        await _application.ServerStarted();
-        var containerType = typeof(ClientServicesContainer<>).MakeGenericType(EntityType);
-        return (IClientServicesContainer)_application.Scope.ServiceProvider.GetRequiredService(containerType);
-    }
-    
+
     public Task<ISession> CreateSession(string sessionid) => _application.CreateSession(sessionid);
+    public async Task<T?> GetService<T>() where T : notnull => await _application.GetService<T>();
 }

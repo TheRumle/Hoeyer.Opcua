@@ -1,7 +1,6 @@
 using System.Configuration;
 using Hoeyer.OpcUa.Client.Services;
-using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.Server;
+using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Server.Services;
 using MyOpcUaWebApplication;
 using MyOpcUaWebApplication.Configuration;
@@ -19,7 +18,7 @@ builder.Services.Configure<HostOptions>(options =>
 
 
 var opcUaConfig = builder.Configuration.GetSection("OpcUa").Get<OpcUaOptions>();
-if (opcUaConfig is null || opcUaConfig.Port == 0) throw new ConfigurationException("OpcUa configuration is missing");
+if (opcUaConfig is null || opcUaConfig.Port == 0) throw new ConfigurationErrorsException("OpcUa configuration is missing");
 
 builder.Services.AddOpcUaServerConfiguration(conf => conf
         .WithServerId("MyServer")

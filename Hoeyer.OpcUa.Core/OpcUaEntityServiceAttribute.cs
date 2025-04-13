@@ -10,13 +10,19 @@ public class OpcUaEntityServiceAttribute : Attribute
 {
     public OpcUaEntityServiceAttribute(Type t)
     {
-        if (t is { IsInterface: true, IsGenericTypeDefinition: false } || t.GetGenericArguments().Length != 1)
+        if (t.IsGenericTypeDefinition && t.GetGenericArguments().Length != 1)
         {
-            throw new ArgumentException($"{t.Name} is not a singleparam generic interface! The type should represent the entity service the client service is offering.");
+            throw new ArgumentException($"{t.Name} must be a generic type taking a single parameter.");
         }
 
+        IsInterfaceService = t.IsInterface;
+        IsGenericService = t.IsGenericTypeDefinition;
         ServiceType = t;
     }
+
+    public readonly bool IsInterfaceService;
+
+    public readonly bool IsGenericService;
 
     public readonly Type ServiceType;
 }

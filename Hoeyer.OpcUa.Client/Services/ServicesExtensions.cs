@@ -36,7 +36,6 @@ public static class ServicesExtensions
         {
             var instantiatedMatcher = genericMatcher.MakeGenericType(m);
             services.AddTransient(instantiatedMatcher, (_) => DefaultMatcherFactory.CreateMatcher(m));
-            services.AddTransient(typeof(ClientServicesContainer<>).MakeGenericType(m));
         }
 
         var serviceContextGroups = (from serviceContext in ConstructServiceContextFor(entities)

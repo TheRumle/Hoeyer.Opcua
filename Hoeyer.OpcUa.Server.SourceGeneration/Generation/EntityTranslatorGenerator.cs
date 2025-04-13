@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.Common.Extensions.Types;
+using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Core.Entity.State;
@@ -64,6 +65,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
 
         var entityNode = nameof(IEntityNode);
         return $$"""
+                 [{{nameof(OpcUaEntityServiceAttribute)}}(typeof({{nameof(IEntityTranslator)}}<>))]
                  public sealed class {{entityName}}Translator : {{nameof(IEntityTranslator)}}<{{entityName}}>
                  {
                      public bool {{nameof(IEntityTranslator<int>.AssignToNode)}}({{entityName}} state, {{entityNode}} node)

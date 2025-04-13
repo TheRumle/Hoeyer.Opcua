@@ -1,6 +1,5 @@
 ﻿using Hoeyer.OpcUa.Client.Services;
-using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.Server;
+using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Server.Core;
 using Hoeyer.OpcUa.Server.Services;
 using Microsoft.Extensions.DependencyInjection;

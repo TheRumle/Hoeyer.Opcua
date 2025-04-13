@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.SourceGeneration.Constants;
 using Hoeyer.OpcUa.Server.SourceGeneration.Generation.IncrementalProvider;
@@ -79,6 +80,7 @@ public class EntityNodeStructureFactoryGenerator : IIncrementalGenerator
     {
         var propertyYieldReturns = string.Join("\n\n", GetPropertyNodeDefinitions(entityName, properties));
         return $$"""
+                 [{{nameof(OpcUaEntityServiceAttribute)}}(typeof({{nameof(IEntityNodeStructureFactory)}}<>))]
                  public sealed class {{entityName}}EntityNodeFactory : {{nameof(IEntityNodeStructureFactory)}}<{{entityName}}>
                  {
                      public string EntityName { get; } = "{{entityName}}";

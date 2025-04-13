@@ -2,7 +2,7 @@
 using System.Xml;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Utility;
+namespace Hoeyer.OpcUa.Core.Entity.State;
 
 public static class OpcUaTypes
 {

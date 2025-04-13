@@ -1,5 +1,4 @@
 ﻿using System;
-using Hoeyer.OpcUa.Core.Utility;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Entity.State.Parsers;

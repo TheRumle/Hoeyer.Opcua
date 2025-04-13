@@ -6,7 +6,7 @@ namespace Hoeyer.OpcUa.Client.EndToEnd;
 public sealed class EntityBrowserTest
 {
     [Test]
-    [ApplicationFixtureGenerator<IEntityBrowser>]
+    [ServiceImplementationFixture<IEntityBrowser>]
     [DisplayName("Can read node and children $services")]
     public async Task EntityBrowser_CanReadNodeAndChildren(ApplicationFixture<IEntityBrowser> services)
     {

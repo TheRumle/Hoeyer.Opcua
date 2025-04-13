@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Hoeyer.Common.Reflection;
 
-public static class TypeExtensions
+public static class AssemblyExtensions
 {
     public static ICollection<Assembly> GetConsumingAssemblies(this Type marker)
     {
@@ -20,10 +20,34 @@ public static class TypeExtensions
                 }
                 catch
                 {
-                    // Some dynamic assemblies might throw
                     return false;
                 }
             })
+            .ToList();
+    }
+    
+    public static IEnumerable<Type> GetTypesFromConsumingAssemblies(this Type marker)
+    {
+        return AppDomain.CurrentDomain
+            .GetAssemblies()
+            .SelectMany(a =>
+            {
+                try
+                {
+                    if (a.GetReferencedAssemblies()
+                        .Any(r => r.FullName == marker.Assembly.FullName))
+                    {
+                        return a.GetTypes();
+                    }
+
+                    return [];
+                }
+                catch
+                {
+                    return [];
+                }
+            })
+            .Union(marker.Assembly.GetTypes())
             .ToList();
     }
     
