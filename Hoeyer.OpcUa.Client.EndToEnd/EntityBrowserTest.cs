@@ -7,7 +7,6 @@ public sealed class EntityBrowserTest
 {
     [Test]
     [ServiceImplementationFixture<IEntityBrowser>]
-    [DisplayName("Can read node and children $services")]
     public async Task EntityBrowser_CanReadNodeAndChildren(ApplicationFixture<IEntityBrowser> services)
     {
         var fixture  = await services.GetFixture();

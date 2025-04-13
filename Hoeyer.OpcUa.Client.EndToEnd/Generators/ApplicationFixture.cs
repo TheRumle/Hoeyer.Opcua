@@ -1,4 +1,5 @@
 ﻿using Hoeyer.OpcUa.Client.MachineProxy;
+using Hoeyer.OpcUa.Core.Reflections;
 using Hoeyer.OpcUa.Server.Core;
 using Hoeyer.OpcUa.TestApplication;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,17 +46,17 @@ public sealed class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
 /// <summary>
 /// A fixture with a hosted application with OpcUa server and clients. Has a method get the <typeparamref name="TService"></typeparamref>
 /// </summary>
-/// <param name="implementationType">The type of the concrete implementation used for <typeparamref name="TService"/></param>
+/// <param name="typeContext">The type of the concrete implementation used for <typeparamref name="TService"/></param>
 /// <typeparam name="TService">The service that is guaranteed to be there</typeparam>
-public sealed class ApplicationFixture<TService>(Type implementationType) : IAsyncDisposable, IAsyncInitializer
+public sealed class ApplicationFixture<TService>(EntityServiceTypeContext typeContext) : IAsyncDisposable, IAsyncInitializer
     where TService : notnull
 {
     private readonly ApplicationFixture _application = new();
-    
+
+    /// <inheritdoc />
     public override string ToString()
     {
-        var name = nameof(ApplicationFixture<int>);
-        return $"{name}<{typeof(TService).Name}>";
+        return typeContext.Entity.Name;
     }
 
     public async Task InitializeAsync()
@@ -66,7 +67,10 @@ public sealed class ApplicationFixture<TService>(Type implementationType) : IAsy
     public async Task<TService> GetFixture()
     {
         await _application.InitializeAsync();
-        return (TService)_application.Scope.ServiceProvider.GetRequiredService(implementationType);
+        return (TService)_application
+            .Scope
+            .ServiceProvider
+            .GetRequiredService(typeContext.ConcreteServiceType);
     }
 
     public Task<ISession> CreateSession(string sessionid) => _application.CreateSession(sessionid);

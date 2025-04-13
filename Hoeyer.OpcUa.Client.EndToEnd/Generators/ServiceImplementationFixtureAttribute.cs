@@ -24,6 +24,6 @@ public sealed class
         return OpcUaEntityServicesLoader
             .EntityServiceTypeContexts
             .Where(serviceContext => serviceContext.ConcreteServiceType.IsAssignableTo(wanted))
-            .SelectFunc(e => new ApplicationFixture<TWantedService>(e.ConcreteServiceType));
+            .SelectFunc(context => new ApplicationFixture<TWantedService>(context));
     }
 }
