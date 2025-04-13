@@ -6,10 +6,9 @@ using Hoeyer.OpcUa.TestApplication;
 
 namespace Hoeyer.OpcUa.Client.EndToEnd;
 
-public sealed class ObservationTest
+[ClassDataSource<ApplicationFixture>]
+public sealed class ObservationTest(ApplicationFixture fixture)
 {
-    private readonly ApplicationFixture _fixture = new();
-    
     private sealed class TestSubscriber : IMessageSubscriber<Gantry>
     {
         public Gantry Value { get; set; } = null!; 
@@ -20,8 +19,8 @@ public sealed class ObservationTest
     [Test]
     public async Task WhenClientWritesToEntity_ObserverShouldBeNotified()
     {
-        var session = await _fixture.CreateSession(Guid.NewGuid().ToString());
-        var publisher = await _fixture.GetService<IEntityChangedMessenger<Gantry>>();
+        var session = await fixture.CreateSession(Guid.NewGuid().ToString());
+        var publisher = fixture.GetService<IEntityChangedMessenger<Gantry>>();
         var observer = new TestSubscriber();
         _ = publisher!.Subscribe(observer);
 
@@ -31,7 +30,7 @@ public sealed class ObservationTest
             IntValue = 678392,
             StringValue = "good strings my dear sir"
         };
-        var writer = await _fixture.GetService<IEntityWriter<Gantry>>();
+        var writer = fixture.GetService<IEntityWriter<Gantry>>();
         await writer!.AssignEntityValues(session, message);
 
         await Assert.That(observer.Value).IsNotNull();

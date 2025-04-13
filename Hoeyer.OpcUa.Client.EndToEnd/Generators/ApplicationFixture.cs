@@ -7,53 +7,22 @@ using TUnit.Core.Interfaces;
 
 namespace Hoeyer.OpcUa.Client.EndToEnd.Generators;
 
-public sealed class ApplicationFixture : IDisposable
+public sealed class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
 {
     private readonly OpcUaEntityTestApplication _hostedApplication = new();
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     public IServiceScope Scope { get; private set; } = null!;
     private bool _initialized;
-    public async Task<T?> GetService<T>() where T : notnull
+    public T? GetService<T>() where T : notnull
     {
-        await InitializeAsync();
-        return Scope.ServiceProvider.GetRequiredService<T>();
+        return Scope.ServiceProvider.GetService<T>();
     }
 
     public async Task<ISession> CreateSession(string sessionId)
     {
-        await InitializeAsync();
         return await Scope.ServiceProvider.GetService<IEntitySessionFactory>()!.CreateSessionAsync(sessionId);
     }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        _hostedApplication.Dispose();
-        _cancellationTokenSource.Dispose();
-        Scope.Dispose();
-    }
-
-    /// <inheritdoc />
-    public async ValueTask DisposeAsync()
-    {
-        await CastAndDispose(_hostedApplication);
-        await CastAndDispose(_cancellationTokenSource);
-        await CastAndDispose(Scope);
-        
-        static async ValueTask CastAndDispose(IDisposable resource)
-        {
-            if (resource is IAsyncDisposable resourceAsyncDisposable)
-            {
-                await resourceAsyncDisposable.DisposeAsync();
-            }
-            else
-            {
-                resource.Dispose();
-            }
-        }
-    }
-
-    /// <inheritdoc />
+    
     public async Task InitializeAsync()
     {
         if (_initialized) return;
@@ -64,6 +33,13 @@ public sealed class ApplicationFixture : IDisposable
         await serverStarted;
         _initialized = true;
     }
+
+    /// <inheritdoc />
+    public ValueTask DisposeAsync()
+    {
+        _cancellationTokenSource.Dispose();
+        return ValueTask.CompletedTask;
+    }
 }
 
 /// <summary>
@@ -71,17 +47,20 @@ public sealed class ApplicationFixture : IDisposable
 /// </summary>
 /// <param name="implementationType">The type of the concrete implementation used for <typeparamref name="TService"/></param>
 /// <typeparam name="TService">The service that is guaranteed to be there</typeparam>
-public sealed class ApplicationFixture<TService>(Type implementationType)
+public sealed class ApplicationFixture<TService>(Type implementationType) : IAsyncDisposable, IAsyncInitializer
     where TService : notnull
 {
     private readonly ApplicationFixture _application = new();
-
-
-    /// <inheritdoc />
+    
     public override string ToString()
     {
         var name = nameof(ApplicationFixture<int>);
         return $"{name}<{typeof(TService).Name}>";
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _application.InitializeAsync();
     }
 
     public async Task<TService> GetFixture()
@@ -91,5 +70,11 @@ public sealed class ApplicationFixture<TService>(Type implementationType)
     }
 
     public Task<ISession> CreateSession(string sessionid) => _application.CreateSession(sessionid);
-    public async Task<T?> GetService<T>() where T : notnull => await _application.GetService<T>();
+    
+    public T? GetService<T>() where T : notnull => _application.GetService<T>();
+    
+    public async ValueTask DisposeAsync()
+    {
+        await _application.DisposeAsync();
+    }
 }
