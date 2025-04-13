@@ -1,5 +1,5 @@
 ﻿using System;
 
-namespace Hoeyer.OpcUa.Server.Core;
+namespace Hoeyer.OpcUa.Server;
 
 public interface IStartedEntityServer : IDisposable;

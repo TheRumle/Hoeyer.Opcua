@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.Common.Messaging;
 
-public sealed class MessagePublisher<T>(ILogger? logger = null) : IMessagePublisher<T>
+public class MessagePublisher<T>(ILogger? logger = null) : IMessagePublisher<T>
 {
     private static readonly string MessageName = typeof(T).Name;
     public int NumberOfSubscriptions => Subscriptions.Count;

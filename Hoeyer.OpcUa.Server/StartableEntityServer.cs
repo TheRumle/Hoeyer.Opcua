@@ -4,7 +4,7 @@ using Hoeyer.OpcUa.Core.Configuration;
 using Opc.Ua;
 using Opc.Ua.Configuration;
 
-namespace Hoeyer.OpcUa.Server.Core;
+namespace Hoeyer.OpcUa.Server;
 
 internal sealed class StartableEntityServer(ApplicationInstance applicationInstance, OpcEntityServer entityServer)
     : IStartableEntityServer, IStartedEntityServer

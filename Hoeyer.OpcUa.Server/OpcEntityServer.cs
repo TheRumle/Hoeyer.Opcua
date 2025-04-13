@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Core.Extensions.Logging;
 using Hoeyer.OpcUa.Server.Entity.Management;
 using Hoeyer.OpcUa.Server.Extensions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Core;
+namespace Hoeyer.OpcUa.Server;
 
 public sealed class OpcEntityServer(
     EntityServerStartedMarker marker,
@@ -102,28 +103,22 @@ public sealed class OpcEntityServer(
     /// <inheritdoc />
     protected override void StartApplication(ApplicationConfiguration configuration)
     {
-        logger.LogInformation("Starting application at {@ApplicationUri} with configuration {@Configuration}", configuration.ApplicationUri,   JsonSerializer.Serialize(new
-        {
-           ProductUri = configuration.ProductUri,
-           Properties = configuration.Properties,
-           Extensions = configuration.ExtensionObjects,
-           Other = new
-           {
-               DomainNames = configuration.GetServerDomainNames()
-           }
-        }, new JsonSerializerOptions { WriteIndented = true,  }));
+        logger.LogInformation("Starting application at {@ApplicationUri} with configuration {@Configuration}",
+                configuration.ApplicationUri,
+                configuration.ToLoggingObject()
+            );
         base.StartApplication(configuration);
     }
 
+    static readonly DateTime buildDate = DateTime.UtcNow;
     /// <inheritdoc />
     protected override ServerProperties LoadServerProperties()
     {
-        logger.BeginScope("Loading server properties...");
         var properties = base.LoadServerProperties();
-        properties.BuildDate = DateTime.UtcNow;
         properties.ProductName = ServerInfo.ApplicationName;
         properties.ProductUri = ServerInfo.ApplicationNamespace.ToString();
-        properties.SoftwareVersion = "1.0";
+        properties.SoftwareVersion = "0.0.01";
+        properties.BuildDate = buildDate;
         return properties;
     }
 

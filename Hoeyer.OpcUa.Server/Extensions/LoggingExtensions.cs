@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using Hoeyer.Common.Extensions.LoggingExtensions;
-using JetBrains.Annotations;
+﻿using Hoeyer.Common.Extensions.LoggingExtensions;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Extensions;
@@ -8,17 +6,9 @@ namespace Hoeyer.OpcUa.Server.Extensions;
 public static class LoggingExtensions
 {
     public static IScopeSelected WithSessionContextScope(this ILogLevelSelected logger, IOperationContext context,
-        [StructuredMessageTemplate] string scope, params object[] messageArguments)
+        string scopeName)
     {
-        var identity = JsonSerializer.Serialize(new
-        {
-            Session = context.SessionId.ToString(),
-            UserIdentity = context.UserIdentity.DisplayName
-        }, new JsonSerializerOptions { WriteIndented = true });
-
-        // Prepend a prefix to the message without breaking structured formatting
-        var prefixedMessage = $"[{identity}] {scope}";
-        return logger.WithScope(prefixedMessage, messageArguments);
+        return logger.WithScope(scopeName + ": {@Context}", context.ToLoggingObject());
     }
 
     public static object ToLoggingObject(this RequestHeader requestHeader)
@@ -28,6 +18,16 @@ public static class LoggingExtensions
             requestHeader.Timestamp,
             AdditionalHeader = requestHeader.AdditionalHeader.ToString(),
             requestHeader.RequestHandle,
+        };
+    }
+    
+    public static object ToLoggingObject(this IOperationContext context)
+    {
+        return new
+        {
+            context.SessionId,
+            User = context.UserIdentity.DisplayName,
+            context.AuditEntryId
         };
     }
     

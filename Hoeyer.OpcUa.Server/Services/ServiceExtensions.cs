@@ -4,7 +4,6 @@ using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Server.Configuration;
-using Hoeyer.OpcUa.Server.Core;
 using Hoeyer.OpcUa.Server.Entity.Management;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua;

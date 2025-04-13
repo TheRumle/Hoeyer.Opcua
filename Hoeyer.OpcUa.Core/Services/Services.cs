@@ -28,7 +28,7 @@ public static class Services
             .Union(AddLoaders(services)).ToList();
         if (errs.Any()) throw new OpcUaEntityServiceConfigurationException(errs);
         
-        AddInitializerServices(services);
+
         return registration;
     }
 
@@ -48,23 +48,6 @@ public static class Services
             collection.AddTransient(loader.ConcreteServiceType, loader.ImplementationType);
         }
         return [];
-    }
-
-    private static void AddInitializerServices(IServiceCollection services)
-    {
-        var initializerServices = OpcUaEntityTypes.Entities
-            .Select(entity => typeof(EntityInitializer<>).MakeGenericType(entity))
-            .ToList();
-
-        foreach (var initializerService in initializerServices)
-            services.AddSingleton(initializerService, initializerService);
-
-
-        services.AddTransient(ConstructEnumerable);
-        IEnumerable<IEntityInitializer> ConstructEnumerable(IServiceProvider p)
-        {
-            return initializerServices.Select(initializerService => p.GetService(initializerService) as IEntityInitializer ?? throw new OpcUaEntityServiceConfigurationException($"Trying to register {initializerService.Name} as an  {nameof(IEntityInitializer)}, but this is not possible."));
-        }
     }
 
     private static IEnumerable<OpcUaEntityServiceConfigurationException> NoLoadersImplementedErrors(IEnumerable<EntityServiceTypeContext> loaders)

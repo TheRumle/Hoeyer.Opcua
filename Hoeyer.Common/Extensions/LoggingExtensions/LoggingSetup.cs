@@ -14,6 +14,7 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
     private string? _scope;
     private object[]? _scopeArgs;
     private bool HasScope => _scope != null;
+    public ILogger Logger { get; } = logger;
 
     public void WhenExecuting(Action action)
     {
@@ -51,7 +52,7 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
 
     private void Log<T>(LogLevel logResultAs, T a)
     {
-        logger.Log(logResultAs, "Got {Values}", a);
+        Logger.Log(logResultAs, "Got {Values}", a);
     }
 
     public async Task<T> WhenExecutingAsync<T>(Func<Task<T>> action, LogLevel logResultAs = LogLevel.None)
@@ -82,7 +83,6 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
         _scopeArgs = scopeArguments;
         return this;
     }
-
     /// <inheritdoc />
     IMessageSelected ILogLevelSelected.WithErrorMessage(string message, params object[] messageArguments)
     {
@@ -112,7 +112,7 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
     {
         if (_scope != null)
         {
-            using var a = logger.BeginScope(_scope);
+            using var a = Logger.BeginScope(_scope);
             ExecuteAndLog(action);
         }
         else
@@ -125,7 +125,7 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
     {
         if (_scope != null)
         {
-            using var a = logger.BeginScope(_scope, _scopeArgs ?? []);
+            using var a = Logger.BeginScope(_scope, _scopeArgs ?? []);
             return ExecuteAndLog(action);
         }
 
@@ -175,6 +175,6 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
 
     private void LogException(Exception e)
     {
-        logger.Log(logLevel, e, _message, _messageArgs ?? []);
+        Logger.Log(logLevel, e, _message, _messageArgs ?? []);
     }
 }

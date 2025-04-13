@@ -123,8 +123,7 @@ internal sealed class EntityNodeManager(
         BrowseResultMask resultMask)
     {
         return logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithSessionContextScope(context, "{SessionId}, Getting metadata for {@TargetHandle}",
-                context.SessionId.ToString(), targetHandle)
+            .WithSessionContextScope(context, "Getting metadata")
             .WithErrorMessage("Failed to get metadata for {@TargetHandle}", targetHandle)
             .WhenExecuting(() =>
             {
@@ -172,9 +171,8 @@ internal sealed class EntityNodeManager(
         IList<ExpandedNodeId> targetIds, IList<NodeId> unresolvedTargetIds)
     {
         logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithSessionContextScope(context, "Translating browse path {Path}", relativePath.ToString())
-            .WhenExecuting(() =>
-                base.TranslateBrowsePath(context, sourceHandle, relativePath, targetIds, unresolvedTargetIds));
+            .WithSessionContextScope(context, "Translating browse path " + relativePath)
+            .WhenExecuting(() => base.TranslateBrowsePath(context, sourceHandle, relativePath, targetIds, unresolvedTargetIds));
     }
 
     /// <inheritdoc />
@@ -190,9 +188,8 @@ internal sealed class EntityNodeManager(
             return;
         }
         logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithSessionContextScope(context, "Reading values {@ValuesToRead}",
-                filtered.Select(e => e.NodeId).Distinct())
-            .WithErrorMessage("An unexpected error occurred when trying to read nodes. ")
+            .WithSessionContextScope(context, "Reading values " + ManagedEntity.BaseObject.BrowseName.Name)
+            .WithErrorMessage("An unexpected error occurred when trying to read nodes")
             .WhenExecuting(() =>
             {
                 _processorFactory.GetProcessorWithLoggingForFailedOnly("Read",
@@ -220,17 +217,15 @@ internal sealed class EntityNodeManager(
         {
             return;
         }
-
         logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithSessionContextScope(context, "Writing nodes {@Nodes}", nodesToWrite.Select(e => e.NodeId),
-                context.SessionId)
+            .WithSessionContextScope(context, "Writing values to entity")
             .WhenExecuting(() =>
             {
                 var requestResponses = entityWriter.Write(filtered);
-                _processorFactory.GetProcessorWithLoggingFor("Write", requestResponses,
+                _processorFactory.GetProcessorWithLoggingFor("Write",
+                        requestResponses,
                         e => e.Request.Processed = true,
-                        errorResponse =>
-                            errors[nodesToWrite.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode,
+                        errorResponse => errors[nodesToWrite.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode,
                         logger)
                     .Process(e => e.IsSuccess && StatusCode.IsGood(e.ResponseCode));
             });
@@ -316,7 +311,7 @@ internal sealed class EntityNodeManager(
         logger.LogWarning("Monitoring items are not yet supported. This is a meaningless operation.");
 
         using var beginScope = logger.BeginScope("Creating monitored items  {@MonitoredItems}",
-            monitoredItems.Select(e => e.Id));
+            monitoredItems.Select(e => e.Id).ToArray());
 
         foreach (var item in monitoredItems)
         {
@@ -395,7 +390,7 @@ internal sealed class EntityNodeManager(
         Dictionary<NodeId, List<object>> uniqueNodesServiceAttributesCache, bool permissionsOnly)
     {
         return logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithSessionContextScope(context, "Getting permission metadata for {@TargetHandle}", targetHandle)
+            .WithSessionContextScope(context, "Getting permission metadata...")
             .WhenExecuting(() => base.GetPermissionMetadata(context, targetHandle, resultMask,
                 uniqueNodesServiceAttributesCache,
                 permissionsOnly));

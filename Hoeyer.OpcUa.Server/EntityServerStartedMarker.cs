@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Hoeyer.OpcUa.Server.Core;
+namespace Hoeyer.OpcUa.Server;
 
 public sealed class EntityServerStartedMarker
 {

@@ -39,12 +39,7 @@ public readonly record struct EntityServiceTypeContext
             throw new ArgumentException($"{ImplementationType.FullName} does not implement {serviceType}");
         }
 
-        ConcreteServiceType = ServiceType.MakeGenericType(Entity);
-        if (!ConcreteServiceType.GetGenericArguments().Contains(entity))
-        {
-            throw new ArgumentException(
-                $"The type {ImplementationType} is not parameterized with {entity} but was instead concrete type of {ConcreteServiceType}");
-        }
+        ConcreteServiceType = ServiceType.IsGenericTypeDefinition ? ServiceType.MakeGenericType(Entity) : ServiceType;
     }
 
     public static bool TryCreateFromTypeImplementing(Type type, Type service, out EntityServiceTypeContext typeContext)

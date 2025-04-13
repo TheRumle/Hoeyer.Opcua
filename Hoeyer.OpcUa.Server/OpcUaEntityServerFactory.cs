@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Configuration;
 
-namespace Hoeyer.OpcUa.Server.Core;
+namespace Hoeyer.OpcUa.Server;
 
 public sealed class OpcUaEntityServerFactory(
     EntityServerStartedMarker marker,

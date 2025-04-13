@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.Client.MachineProxy;
 using Hoeyer.OpcUa.Core.Reflections;
-using Hoeyer.OpcUa.Server.Core;
+using Hoeyer.OpcUa.Server;
 using Hoeyer.OpcUa.TestApplication;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua.Client;

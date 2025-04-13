@@ -3,6 +3,7 @@ using Hoeyer.OpcUa.Core.Entity.Node;
 
 namespace Hoeyer.OpcUa.Core.Entity;
 
+[OpcUaEntityService(typeof(IEntityInitializer))]
 public sealed class EntityInitializer<T>(
     IEntityLoader<T> value,
     IEntityTranslator<T> translator,

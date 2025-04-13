@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Entity;
+using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Application;
+using Hoeyer.OpcUa.Server.Entity.Observability;
 using Microsoft.Extensions.Logging;
 using Opc.Ua.Server;
 
@@ -12,7 +14,8 @@ namespace Hoeyer.OpcUa.Server.Entity.Management;
 
 internal sealed class EntityNodeManagerFactory(
     ILoggerFactory loggerFactory,
-    IEnumerable<IEntityInitializer> initializers) : IEntityNodeManagerFactory
+    IEnumerable<IEntityInitializer> initializers,
+    IEntityChangeMessengerFactory messengerFactory) : IEntityNodeManagerFactory
 {
     public async Task<IEnumerable<IEntityNodeManager>> CreateEntityManagers(
         Func<string, (string @namespace, ushort index)> namespaceIndexFactory, IServerInternal server)
@@ -25,6 +28,8 @@ internal sealed class EntityNodeManagerFactory(
 
             var entityName = managedNode.BaseObject.DisplayName.Text;
             var logger = loggerFactory.CreateLogger(entityName + "Manager");
+            _ = messengerFactory.Create(logger);
+            
             return new EntityNodeManager(
                 managedNode,
                 server,

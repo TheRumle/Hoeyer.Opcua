@@ -2,6 +2,8 @@
 using Hoeyer.OpcUa.Client.EndToEnd.Generators;
 using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
+using Hoeyer.OpcUa.Core.Services;
+using Hoeyer.OpcUa.Server.Entity;
 
 namespace Hoeyer.OpcUa.Client.EndToEnd;
 

@@ -5,7 +5,7 @@ using Hoeyer.OpcUa.Server.Entity.Management;
 using Opc.Ua;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Core;
+namespace Hoeyer.OpcUa.Server;
 
 internal sealed class DomainMasterNodeManagerFactory(
     IEntityNodeManagerFactory entityManagerFactory,

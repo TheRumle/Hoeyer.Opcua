@@ -4,7 +4,7 @@ using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Client.Extensions;
 using Hoeyer.OpcUa.Client.MachineProxy;
 using Hoeyer.OpcUa.Core.Extensions;
-using Hoeyer.OpcUa.Server.Core;
+using Hoeyer.OpcUa.Server;
 using Opc.Ua;
 
 namespace MyOpcUaWebApplication;
