@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Extensions.Logging;
 using Hoeyer.OpcUa.Server.Entity.Management;
@@ -17,7 +16,7 @@ public sealed class OpcEntityServer(
     IOpcUaEntityServerInfo applicationProductDetails,
     IDomainMasterManagerFactory managerFactory,
     ILogger<OpcEntityServer> logger)
-    : StandardServer //ServerBase? instead? 
+    : StandardServer 
 {
     public readonly IEnumerable<Uri> EndPoints = [..applicationProductDetails.Endpoints];
     public readonly IOpcUaEntityServerInfo ServerInfo = applicationProductDetails;

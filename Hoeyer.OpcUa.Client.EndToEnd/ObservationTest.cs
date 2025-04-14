@@ -1,7 +1,7 @@
 ﻿using Hoeyer.Common.Messaging;
 using Hoeyer.OpcUa.Client.Application;
 using Hoeyer.OpcUa.Client.EndToEnd.Generators;
-using Hoeyer.OpcUa.Server.Entity.Observability;
+using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.TestApplication;
 
 namespace Hoeyer.OpcUa.Client.EndToEnd;

@@ -22,4 +22,8 @@
         <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Entity\Observability\" />
+    </ItemGroup>
+
 </Project>
