@@ -27,13 +27,13 @@ public static class OpcUaEntityServicesLoader
         Type entity)
     {
         var instantiatedServiceImpl = genericEntityServiceTypeInfo.ImplementationType.MakeGenericType(entity);
-        return new EntityServiceTypeContext(instantiatedServiceImpl, genericEntityServiceTypeInfo.ServiceType, entity);
+        return new EntityServiceTypeContext(instantiatedServiceImpl, genericEntityServiceTypeInfo.ServiceType, entity, genericEntityServiceTypeInfo.ServiceLifetime);
     }
 
     private static EntityServiceTypeContext ConstructEntityServiceContext(
         this InstantiatedEntityServiceTypeInfo typeInfo)
     {
-        return new EntityServiceTypeContext(typeInfo.ImplementationType, typeInfo.ServiceType, typeInfo.Entity);
+        return new EntityServiceTypeContext(typeInfo.ImplementationType, typeInfo.ServiceType, typeInfo.Entity, typeInfo.ServiceLifetime);
     }
 
     
@@ -45,8 +45,7 @@ public static class OpcUaEntityServicesLoader
         
         foreach (var context in EntityServiceTypeContexts)
         {
-            services.AddTransient(context.ConcreteServiceType, context.ImplementationType);
-            services.AddTransient(context.ImplementationType, context.ImplementationType);
+            context.AddToCollection(services);
         }
 
         return [];

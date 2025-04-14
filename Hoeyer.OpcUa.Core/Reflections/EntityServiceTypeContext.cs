@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Core.Reflections;
 
@@ -10,15 +11,17 @@ namespace Hoeyer.OpcUa.Core.Reflections;
 /// </summary>
 public readonly record struct EntityServiceTypeContext
 {
+    private readonly ServiceLifetime Lifetime;
     public readonly Type ConcreteServiceType;
     public readonly Type Entity;
     public readonly Type ImplementationType;
     public readonly Type ServiceType;
 
 
-    public EntityServiceTypeContext(Type implementationType, Type serviceType, Type entity)
+    public EntityServiceTypeContext(Type implementationType, Type serviceType, Type entity, ServiceLifetime lifetime)
     {
         Entity = entity;
+        Lifetime = lifetime;
         if (Entity.GetCustomAttribute<OpcUaEntityAttribute>() == null)
         {
             throw new ArgumentException(
@@ -42,32 +45,13 @@ public readonly record struct EntityServiceTypeContext
         ConcreteServiceType = ServiceType.IsGenericTypeDefinition ? ServiceType.MakeGenericType(Entity) : ServiceType;
     }
 
-    public static bool TryCreateFromTypeImplementing(Type type, Type service, out EntityServiceTypeContext typeContext)
+    public IServiceCollection AddToCollection(IServiceCollection serviceCollection)
     {
-        var implementedServiceInterface = type
-            .GetInterfaces()
-            .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == service);
-
-        if (implementedServiceInterface == null)
-        {
-            typeContext = default;
-            return false;
-        }
-
-        var entityType = implementedServiceInterface.GenericTypeArguments.FirstOrDefault()!;
-
-        if (entityType.GetCustomAttribute<OpcUaEntityAttribute>() == null)
-        {
-            throw new OpcUaEntityServiceConfigurationException(
-                $"The type '{entityType.FullName}' is not annotated as an OpcUaEntity using the {nameof(OpcUaEntityAttribute)}");
-        }
-
-        typeContext = new EntityServiceTypeContext(type, service, entityType);
-        return true;
+        serviceCollection.Add(new ServiceDescriptor(ConcreteServiceType, ImplementationType, Lifetime));
+        serviceCollection.Add(new ServiceDescriptor(ImplementationType, ImplementationType, Lifetime));
+        return serviceCollection;
     }
-
-
-
+    
 
     /// <inheritdoc />
     public override string ToString()

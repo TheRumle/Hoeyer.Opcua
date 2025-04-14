@@ -34,10 +34,22 @@ public static class Services
 
     private static IEnumerable<OpcUaEntityServiceConfigurationException> AddLoaders(IServiceCollection collection)
     {
-        List<EntityServiceTypeContext> loaders = typeof(IEntityLoader<>)
+        var loaderType = typeof(IEntityLoader<>);
+        
+        var loaders = loaderType
             .GetConsumingAssemblies()
             .SelectMany(assembly => assembly.GetTypes())
-            .GetEntityServicesOfType(typeof(IEntityLoader<>))
+            .Where(TypeFilter)
+            .Select(type =>
+            {
+                Type? serviceType = GetServiceType(type);
+                Type? entity = serviceType?.GetGenericArguments()[0];
+                if (entity == null) return default;
+                if (!entity.IsAnnotatedWith<OpcUaEntityAttribute>()) return default;
+                
+                return new EntityServiceTypeContext(type, serviceType!, entity, ServiceLifetime.Transient);
+            })
+            .Where(interfaceImpl => interfaceImpl != default)
             .ToList();
 
         var errs = NoLoadersImplementedErrors(loaders).ToList();
@@ -45,9 +57,12 @@ public static class Services
 
         foreach (var loader in loaders)
         {
-            collection.AddTransient(loader.ConcreteServiceType, loader.ImplementationType);
+            loader.AddToCollection(collection);
         }
         return [];
+        
+        bool TypeFilter(Type type) => type is { IsClass: true, IsAbstract: false, IsNested: false, IsPublic: true } && type.GetInterfaces().Any();
+        Type? GetServiceType(Type type) => type.GetInterfaces().FirstOrDefault(e => e.IsGenericType && loaderType == e.GetGenericTypeDefinition());
     }
 
     private static IEnumerable<OpcUaEntityServiceConfigurationException> NoLoadersImplementedErrors(IEnumerable<EntityServiceTypeContext> loaders)

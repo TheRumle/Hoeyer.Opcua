@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Core;
 
@@ -8,17 +9,21 @@ namespace Hoeyer.OpcUa.Core;
 [AttributeUsage(AttributeTargets.Class)]
 public class OpcUaEntityServiceAttribute : Attribute
 {
-    public OpcUaEntityServiceAttribute(Type t)
+    public OpcUaEntityServiceAttribute(Type t, ServiceLifetime lifetime = ServiceLifetime.Transient)
     {
         if (t.IsGenericTypeDefinition && t.GetGenericArguments().Length != 1)
         {
             throw new ArgumentException($"{t.Name} must be a generic type taking a single parameter.");
         }
 
+        Lifetime = lifetime;
+
         IsInterfaceService = t.IsInterface;
         IsGenericService = t.IsGenericTypeDefinition;
         ServiceType = t;
     }
+    
+    public ServiceLifetime Lifetime { get; }
 
     public readonly bool IsInterfaceService;
 
