@@ -43,11 +43,7 @@ public static class ServicesExtensions
 
         AssertAllEntitiesHaveAllServices(serviceContextGroups, entities);
         
-        foreach (var context in serviceContextGroups.SelectMany(e=>e))
-        {
-            services.AddTransient(context.ConcreteServiceType, context.ImplementationType);
-            services.AddTransient(context.ImplementationType, context.ImplementationType);
-        }
+        foreach (var context in serviceContextGroups.SelectMany(e=>e)) context.AddToCollection(services);
         
         return registration;
     }
@@ -108,9 +104,9 @@ public static class ServicesExtensions
         if (errors.Any()) throw new OpcUaEntityServiceConfigurationException(errors);
 
     }
-    
-    
-    public static IEnumerable<EntityServiceTypeContext> ConstructEntityServices(
+
+
+    private static IEnumerable<EntityServiceTypeContext> ConstructEntityServices(
         this Type serviceImplementation,
         Type entity)
     {
@@ -122,9 +118,9 @@ public static class ServicesExtensions
                 "The specified type does not represent a uninstantiated generic type definition. The service type must take 1 generic argument, must be a non-abstract class, and must not be a type representing an instantiation of the generic type definition.");
         }
 
-        var interfaceType = serviceImplementation.GetCustomAttribute<OpcUaEntityServiceAttribute>().ServiceType;
+        var attribute = serviceImplementation.GetCustomAttribute<OpcUaEntityServiceAttribute>();
         var instantiatedServiceImpl = serviceImplementation.MakeGenericType(entity);
-        yield return new EntityServiceTypeContext(instantiatedServiceImpl, interfaceType, entity);
+        yield return new EntityServiceTypeContext(instantiatedServiceImpl, attribute.ServiceType, entity, attribute.Lifetime);
     }
     
 }
