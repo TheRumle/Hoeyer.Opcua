@@ -1,6 +1,6 @@
 ﻿namespace Hoeyer.Common.Messaging;
 
-public interface IMessageSubscribable<T>
+public interface IMessageSubscribable<out T> 
 {
-    public Subscription<T> Subscribe(IMessageSubscriber<T> subscriber);
+    public Subscription Subscribe(IMessageSubscriber<T> subscriber);
 }

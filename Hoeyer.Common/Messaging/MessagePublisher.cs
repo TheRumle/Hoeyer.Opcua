@@ -1,48 +1,21 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Diagnostics.Contracts;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.Common.Messaging;
 
 public class MessagePublisher<T>(ILogger? logger = null) : IMessagePublisher<T>
 {
-    private static readonly string MessageName = typeof(T).Name;
-    public int NumberOfSubscriptions => Subscriptions.Count;
-    private ConcurrentDictionary<Guid, Subscription<T>> Subscriptions { get; } = new();
+    public readonly SubscriptionManager<T> subscriptionManager = new(logger);
+    public int NumberOfSubscriptions => subscriptionManager.NumberOfSubscriptions;
 
     public void Publish(T message)
     {
         var letter = new Message<T>(message);
-        foreach (var sub in Subscriptions.Values)
+        foreach (var (subscription, subscriber) in subscriptionManager.Subscribers)
         {
-            if (sub.IsCancelled || !sub.IsActive) continue;
-            sub.ForwardMessage(letter);
+            if (subscription.IsCancelled || subscription.IsPaused) continue;
+            subscriber.OnMessagePublished(letter);
         }
     }
 
-    public void Unsubscribe(Subscription<T> subscription)
-    {
-        logger?.LogInformation("Removing subscription {Id}", subscription.SubscriptionId.ToString());
-        if (!Subscriptions.TryRemove(subscription.SubscriptionId, out _))
-        {
-            logger?.LogWarning("Failed to remove subscription '{Id}'. Is it already removed?", subscription.SubscriptionId);
-        }
-    }
-
-    [Pure]
-    public Subscription<T> Subscribe(IMessageSubscriber<T> subscriber)
-    {
-        logger?.BeginScope("Subscribing to messages of type '" + MessageName + '\'');
-        var subscription = new Subscription<T>(subscriber, this);
-        if (!Subscriptions.TryAdd(subscription.SubscriptionId, subscription))
-        {
-            logger?.LogError("Failed to add subscription with for {@StateChangeSubscriber}. Messages will not be forwarded...", subscriber);
-        }
-        else
-        {
-            logger?.LogError("Added subscription {Id}", subscription.SubscriptionId);
-        }
-        return subscription;
-    }
+    public Subscription Subscribe(IMessageSubscriber<T> subscriber) => subscriptionManager.Subscribe(subscriber);
 }
