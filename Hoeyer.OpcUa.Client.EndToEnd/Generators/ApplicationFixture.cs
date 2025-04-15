@@ -12,6 +12,7 @@ public sealed class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
 {
     private readonly OpcUaEntityTestApplication _hostedApplication = new();
     private readonly CancellationTokenSource _cancellationTokenSource = new();
+    public CancellationToken Token => _cancellationTokenSource.Token;
     public IServiceScope Scope { get; private set; } = null!;
     private bool _initialized;
     public T? GetService<T>() where T : notnull
@@ -52,6 +53,7 @@ public sealed class ApplicationFixture<TService>(EntityServiceTypeContext typeCo
     where TService : notnull
 {
     private readonly ApplicationFixture _application = new();
+    public CancellationToken Token => _application.Token;
 
     /// <inheritdoc />
     public override string ToString()

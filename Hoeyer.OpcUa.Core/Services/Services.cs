@@ -24,8 +24,10 @@ public static class Services
         this OnGoingOpcEntityServiceRegistration registration)
     {
         var services = registration.Collection;
-        var errs = OpcUaEntityServicesLoader.AddEntityServices(services)
-            .Union(AddLoaders(services)).ToList();
+        var errs = OpcUaEntityServicesLoader
+            .AddEntityServices(services)
+            .Union(AddLoaders(services))
+            .ToList();
         if (errs.Any()) throw new OpcUaEntityServiceConfigurationException(errs);
         
 

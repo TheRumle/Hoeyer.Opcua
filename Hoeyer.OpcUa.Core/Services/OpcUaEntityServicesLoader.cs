@@ -33,13 +33,12 @@ public static class OpcUaEntityServicesLoader
     private static EntityServiceTypeContext ConstructEntityServiceContext(
         this InstantiatedEntityServiceTypeInfo typeInfo)
     {
-        return new EntityServiceTypeContext(typeInfo.ImplementationType, typeInfo.ServiceType, typeInfo.Entity, typeInfo.ServiceLifetime);
+        return new EntityServiceTypeContext(typeInfo.ImplementationType, typeInfo.InstantiatedServiceType, typeInfo.Entity, typeInfo.ServiceLifetime);
     }
 
     
     internal static IEnumerable<OpcUaEntityServiceConfigurationException> AddEntityServices(IServiceCollection services)
     {
-        
         var missingServicesErrors = AssertAllEntitiesHaveAllServices(EntityServiceTypeContexts).ToList();
         if (missingServicesErrors.Count > 0) return missingServicesErrors;
         

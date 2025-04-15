@@ -1,6 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Hoeyer.Opc.Ua.Test.TUnit.Extensions;
+using Hoeyer.OpcUa.Client.Application.Browsing;
+using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Services;
+using Hoeyer.OpcUa.Server.Entity;
 using Hoeyer.OpcUa.TestApplication;
 
 namespace Hoeyer.OpcUa.Client.EndToEnd.Generators;
@@ -15,7 +18,10 @@ public sealed class
     public override IEnumerable<Func<ApplicationFixture<TWantedService>>> GenerateDataSources(
         DataGeneratorMetadata dataGeneratorMetadata)
     {
+        
+        //Generate a generic test class, instantiate it with entity, then get a service collection for that entity.`
         _ = typeof(Gantry).Assembly; //to include the necessary assembly
+        _ = typeof(EntityInitializer<>).Assembly; //to include the necessary assembly
         var wanted = typeof(TWantedService);
 
         return OpcUaEntityServicesLoader

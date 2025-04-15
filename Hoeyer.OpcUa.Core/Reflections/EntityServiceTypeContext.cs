@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,44 +10,47 @@ namespace Hoeyer.OpcUa.Core.Reflections;
 /// </summary>
 public readonly record struct EntityServiceTypeContext
 {
-    private readonly ServiceLifetime Lifetime;
+    /// <summary>
+    /// Must be private to ensure that <see cref="EntityServiceTypeContext.AddToCollection"/> is used to add to services.
+    /// </summary>
+    private readonly Type _implementationType; 
+    private readonly ServiceLifetime _lifetime;
     public readonly Type ConcreteServiceType;
     public readonly Type Entity;
-    public readonly Type ImplementationType;
     public readonly Type ServiceType;
 
 
     public EntityServiceTypeContext(Type implementationType, Type serviceType, Type entity, ServiceLifetime lifetime)
     {
+        _implementationType = implementationType;
+        _lifetime = lifetime;
+        ServiceType = serviceType;
         Entity = entity;
-        Lifetime = lifetime;
+        ConcreteServiceType = ServiceType.IsGenericTypeDefinition ? ServiceType.MakeGenericType(Entity) : ServiceType;
+        
         if (Entity.GetCustomAttribute<OpcUaEntityAttribute>() == null)
         {
             throw new ArgumentException(
                 $"The specified type is not annotated as an OpcUaEntity using the {nameof(OpcUaEntityAttribute)}");
         }
 
-        ImplementationType = implementationType;
-        ServiceType = serviceType;
-
         var implementationImplementsService = Array.Find(
-                                                  ImplementationType.GetInterfaces(),
+                                                  _implementationType.GetInterfaces(),
                                                   type => type == serviceType || (type.IsGenericType &&
                                                       type.GetGenericTypeDefinition() == serviceType)) !=
                                               null;
 
         if (!implementationImplementsService)
         {
-            throw new ArgumentException($"{ImplementationType.FullName} does not implement {serviceType}");
+            throw new ArgumentException($"{_implementationType.FullName} does not implement {serviceType}");
         }
 
-        ConcreteServiceType = ServiceType.IsGenericTypeDefinition ? ServiceType.MakeGenericType(Entity) : ServiceType;
     }
 
     public IServiceCollection AddToCollection(IServiceCollection serviceCollection)
     {
-        serviceCollection.Add(new ServiceDescriptor(ConcreteServiceType, ImplementationType, Lifetime));
-        serviceCollection.Add(new ServiceDescriptor(ImplementationType, ImplementationType, Lifetime));
+        serviceCollection.Add(new ServiceDescriptor(ConcreteServiceType, _implementationType, _lifetime));
+        serviceCollection.Add(new ServiceDescriptor(_implementationType, _implementationType, _lifetime));
         return serviceCollection;
     }
     
@@ -56,6 +58,6 @@ public readonly record struct EntityServiceTypeContext
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{ServiceType.Name}<{Entity.Name}> being implemented by {ImplementationType.Name}";
+        return $"{ServiceType.Name}<{Entity.Name}> being implemented by {_implementationType.Name}";
     }
 }

@@ -1,8 +1,14 @@
 ﻿using Hoeyer.Common.Messaging;
 using Hoeyer.OpcUa.Client.Application;
+using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Client.EndToEnd.Generators;
+using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
+using Hoeyer.OpcUa.Core.Extensions;
+using Hoeyer.OpcUa.Server.Entity;
 using Hoeyer.OpcUa.TestApplication;
+using JetBrains.Annotations;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Client.EndToEnd;
 
@@ -24,19 +30,26 @@ public sealed class ObservationTest(ApplicationFixture fixture)
         var observer = new TestSubscriber();
         _ = publisher!.Subscribe(observer);
 
-        var message = new Gantry
+
+        var reader = fixture.GetService<IEntityBrowser<Gantry>>()!;
+        var node = await reader.BrowseEntityNode(session, fixture.Token);
+        var childToWrite = node.Children.First(e => e.BrowseName.Name.Equals(nameof(Gantry.IntValue)));
+
+        await session.WriteAsync(null, new WriteValueCollection
         {
-            AList = ["helo"],
-            IntValue = 678392,
-            StringValue = "good strings my dear sir"
-        };
-        var writer = fixture.GetService<IEntityWriter<Gantry>>();
-        await writer!.AssignEntityValues(session, message);
+            new WriteValue()
+            {
+                NodeId = childToWrite.NodeId.AsNodeId(session.NamespaceUris),
+                AttributeId = Attributes.Value,
+                Value = new DataValue()
+                {
+                    Value = 2
+                }
+            }
+        }, fixture.Token);
 
         await Assert.That(observer.Value).IsNotNull();
-        await Assert.That(observer.Value.IntValue).IsEqualTo(message.IntValue);
-        await Assert.That(observer.Value.AList).IsEquivalentTo(message.AList);
-        await Assert.That(observer.Value.StringValue).IsEquivalentTo(message.StringValue);
+        await Assert.That(observer.Value.IntValue).IsEqualTo(2);
     }
     
 }

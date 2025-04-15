@@ -7,7 +7,6 @@ using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Application.Reading;
 using Hoeyer.OpcUa.Client.Extensions;
-using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Extensions;
 using Hoeyer.OpcUa.Core.Extensions.Logging;
