@@ -2,7 +2,7 @@
 using Hoeyer.Common.Messaging;
 using Hoeyer.OpcUa.Core.Entity.Node;
 
-namespace Hoeyer.OpcUa.Core.Entity;
+namespace Hoeyer.OpcUa.Server.Entity;
 
 public interface IEntityInitializer
 {

@@ -1,8 +1,11 @@
 ﻿using Hoeyer.Common.Messaging;
+using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Core.Entity;
+using Hoeyer.OpcUa.Core.Entity.Node;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Hoeyer.OpcUa.Core.Entity.Node;
+namespace Hoeyer.OpcUa.Server.Entity;
 
 [OpcUaEntityService(typeof(IEntityChangedMessenger<>), ServiceLifetime.Singleton)]
 public sealed class EntityChangedMessenger<T>(IEntityTranslator<T> translator, ILogger? logger = null) 

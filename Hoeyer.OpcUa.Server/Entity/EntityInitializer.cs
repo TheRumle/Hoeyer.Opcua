@@ -1,9 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Hoeyer.Common.Messaging;
+using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hoeyer.OpcUa.Core.Entity;
+namespace Hoeyer.OpcUa.Server.Entity;
 
 [OpcUaEntityService(typeof(IEntityInitializer), ServiceLifetime.Singleton)]
 public sealed class EntityInitializer<T>(
