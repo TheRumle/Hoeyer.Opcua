@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Linq;
-using Hoeyer.Common.Reflection;
-using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Server.Configuration;
 using Hoeyer.OpcUa.Server.Entity.Management;
@@ -23,7 +20,7 @@ public static class ServiceExtensions
             if (standardConfig == null)
             {
                 throw new InvalidOperationException(
-                    $"No {nameof(IOpcUaEntityServerInfo)} has been registered! This should be prevented using builder pattern. Are you using the library as intended and using the {nameof(OpcUa.Core.Services.Services.AddOpcUaServerConfiguration)} {nameof(IServiceCollection)} extension method?");
+                    $"No {nameof(IOpcUaEntityServerInfo)} has been registered! This should be prevented using builder pattern. Are you using the library as intended and using the {nameof(Core.Services.Services.AddOpcUaServerConfiguration)} {nameof(IServiceCollection)} extension method?");
             }
 
             return new OpcUaEntityServerSetup(standardConfig, additionalConfiguration ?? (value => { }));
