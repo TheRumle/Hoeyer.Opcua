@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Hoeyer.OpcUa.TestApplication;
+namespace Hoeyer.OpcUa.EndToEndTest.TestApplication;
 
 public sealed class OpcUaEntityTestApplication : IHost
 {
@@ -17,7 +17,8 @@ public sealed class OpcUaEntityTestApplication : IHost
     public AsyncServiceScope GetAsyncScope => _hostedServer.Services.CreateAsyncScope();
     public IServiceScope GetScope => _hostedServer.Services.CreateScope();
 
-    private readonly ReservedPort _reservedPort = new ReservedPort();
+    private readonly ReservedPort _reservedPort = new();
+    public IEnumerable<ServiceDescriptor> ServiceDescriptors { get; private set;  }
         
     public OpcUaEntityTestApplication()
     {
@@ -27,7 +28,7 @@ public sealed class OpcUaEntityTestApplication : IHost
             })
             .ConfigureServices((context, services) =>
             {
-
+    
                 services.AddOpcUaServerConfiguration(conf => conf
                         .WithServerId("MyServer")
                         .WithServerName("My Server")
@@ -37,6 +38,8 @@ public sealed class OpcUaEntityTestApplication : IHost
                     .WithEntityServices()
                     .WithOpcUaServer()
                     .WithOpcUaClientServices();
+
+                ServiceDescriptors = services.Select(e=>e);
             }).Build();
     }
     

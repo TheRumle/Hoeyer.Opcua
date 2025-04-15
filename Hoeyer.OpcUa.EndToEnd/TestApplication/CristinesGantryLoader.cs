@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core.Entity;
 
-namespace Hoeyer.OpcUa.TestApplication;
+namespace Hoeyer.OpcUa.EndToEndTest.TestApplication;
 
 public class CristinesGantryLoader : IEntityLoader<CristinesGantry>
 {

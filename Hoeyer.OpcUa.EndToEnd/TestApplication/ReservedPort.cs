@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 
-namespace Hoeyer.OpcUa.TestApplication;
+namespace Hoeyer.OpcUa.EndToEndTest.TestApplication;
 
 internal sealed record ReservedPort : IDisposable
 {

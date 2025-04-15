@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core;
 
-namespace Hoeyer.OpcUa.TestApplication;
+namespace Hoeyer.OpcUa.EndToEndTest.TestApplication;
 
 [OpcUaEntity]
 public sealed class CristinesGantry

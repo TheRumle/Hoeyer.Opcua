@@ -65,8 +65,8 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
 
         var entityNode = nameof(IEntityNode);
         return $$"""
-                 [{{nameof(OpcUaEntityServiceAttribute)}}(typeof({{nameof(IEntityTranslator)}}<>))]
-                 public sealed class {{entityName}}Translator : {{nameof(IEntityTranslator)}}<{{entityName}}>
+                 [{{nameof(OpcUaEntityServiceAttribute)}}(typeof({{nameof(IEntityTranslator<object>)}}<>))]
+                 public sealed class {{entityName}}Translator : {{nameof(IEntityTranslator<object>)}}<{{entityName}}>
                  {
                      public bool {{nameof(IEntityTranslator<int>.AssignToNode)}}({{entityName}} state, {{entityNode}} node)
                      {
