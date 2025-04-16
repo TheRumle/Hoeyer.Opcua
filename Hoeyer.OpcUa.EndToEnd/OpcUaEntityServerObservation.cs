@@ -9,7 +9,7 @@ using Opc.Ua;
 namespace Hoeyer.OpcUa.EndToEndTest;
 
 [ClassDataSource<ApplicationFixture>]
-public sealed class ObservationTest(ApplicationFixture fixture)
+public sealed class OpcUaEntityServerObservation(ApplicationFixture fixture)
 {
     private sealed class TestSubscriber : IMessageSubscriber<Gantry>
     {

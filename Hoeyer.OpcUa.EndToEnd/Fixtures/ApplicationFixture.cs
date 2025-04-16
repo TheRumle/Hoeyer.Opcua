@@ -9,11 +9,11 @@ using TUnit.Core.Interfaces;
 namespace Hoeyer.OpcUa.EndToEndTest.Fixtures;
 
 /// <summary>
-/// A fixture with a hosted application with OpcUa server and clients. Has a method get any service from the service collection contained within. See <see cref="OpcUaEntityTestApplication"/> for the concrete hosted application
+/// A fixture with a hosted application with OpcUa server and clients. Has a method get any service from the service collection contained within. See <see cref="OpcUaClientAndServerFixture"/> for the concrete hosted application
 /// </summary>
 public sealed class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
 {
-    private readonly OpcUaEntityTestApplication _hostedApplication = new();
+    private readonly OpcUaClientAndServerFixture _hostedApplication = new();
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     public CancellationToken Token => _cancellationTokenSource.Token;
     public IServiceScope Scope { get; private set; } = null!;

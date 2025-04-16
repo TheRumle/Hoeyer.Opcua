@@ -13,28 +13,28 @@ namespace Hoeyer.OpcUa.EndToEndTest;
 public sealed class ServiceConfigurationTest
 {
     [Test]
-    [ClassDataSource<OpcUaServiceDescriptorFixture>]
-    public async Task EntityBrowser_IsRegistered( OpcUaServiceDescriptorFixture fixture) 
+    [ClassDataSource<AllOpcUaServicesFixture>]
+    public async Task EntityBrowser_IsRegistered( AllOpcUaServicesFixture fixture) 
         => await AssertNumberEntitiesMatchesNumberServices(fixture.Services, typeof(IEntityBrowser<>));
 
     [Test]
-    [ClassDataSource<OpcUaServiceDescriptorFixture>]
-    public async Task EntityTranslator_IsRegistered( OpcUaServiceDescriptorFixture fixture) 
+    [ClassDataSource<AllOpcUaServicesFixture>]
+    public async Task EntityTranslator_IsRegistered( AllOpcUaServicesFixture fixture) 
         => await AssertNumberEntitiesMatchesNumberServices(fixture.Services, typeof(IEntityTranslator<>));
     
     [Test]
-    [ClassDataSource<OpcUaServiceDescriptorFixture>]
-    public async Task NodeStructureFactory_IsRegistered( OpcUaServiceDescriptorFixture fixture) 
+    [ClassDataSource<AllOpcUaServicesFixture>]
+    public async Task NodeStructureFactory_IsRegistered( AllOpcUaServicesFixture fixture) 
         => await AssertNumberEntitiesMatchesNumberServices(fixture.Services, typeof(IEntityNodeStructureFactory<>));
 
     [Test]
-    [ClassDataSource<OpcUaServiceDescriptorFixture>]
-    public async Task EntityInitializer_IsRegistered(OpcUaServiceDescriptorFixture fixture) 
+    [ClassDataSource<AllOpcUaServicesFixture>]
+    public async Task EntityInitializer_IsRegistered(AllOpcUaServicesFixture fixture) 
         => await AssertNumberEntitiesMatchesNumberServices(fixture.Services, typeof(IEntityInitializer));
     
     [Test]
-    [ClassDataSource<OpcUaServiceDescriptorFixture>]
-    public async Task EntityChanged_IsRegistered(OpcUaServiceDescriptorFixture fixture) 
+    [ClassDataSource<AllOpcUaServicesFixture>]
+    public async Task EntityChanged_IsRegistered(AllOpcUaServicesFixture fixture) 
         => await AssertNumberEntitiesMatchesNumberServices(fixture.Services, typeof(IEntityChangedMessenger<>));
     
         
@@ -57,9 +57,4 @@ public sealed class ServiceConfigurationTest
         await Assert.That(services).IsNotEmpty();
         await Assert.That(services.Count).IsEqualTo(OpcUaEntityTypes.Entities.Count);
     }
-
-    private static async Task AssertNumberEntitiesMatchesNumberServices(
-        IEnumerable<ServiceDescriptor> collection, params Type[] wantedTypes)
-        =>  await Task.WhenAll(wantedTypes.Select(async t =>
-            await AssertNumberEntitiesMatchesNumberServices(collection.ToList(), t)));
 }

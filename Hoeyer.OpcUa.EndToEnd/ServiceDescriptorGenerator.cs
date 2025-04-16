@@ -22,7 +22,7 @@ public sealed class ServiceDescriptorGenerator(Type type, params Type[] types )
     
     public IEnumerable<ServiceDescriptor> CreateServiceDescriptors()
     {
-        return new OpcUaServiceDescriptorFixture()
+        return new AllOpcUaServicesFixture()
             .Services
             .Where(MatchesFilterType);
     }

@@ -1,5 +1,6 @@
 ﻿using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Core.Services;
+using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.Server;
 using Hoeyer.OpcUa.Server.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.OpcUa.EndToEndTest.TestApplication;
 
-public sealed class OpcUaEntityTestApplication : IHost
+public sealed class OpcUaClientAndServerFixture : IHost
 {
     private readonly IHost _hostedServer;
     public EntityServerStartedMarker Marker => _hostedServer.Services.GetService<EntityServerStartedMarker>()!;
@@ -17,10 +18,8 @@ public sealed class OpcUaEntityTestApplication : IHost
     public AsyncServiceScope GetAsyncScope => _hostedServer.Services.CreateAsyncScope();
     public IServiceScope GetScope => _hostedServer.Services.CreateScope();
 
-    private readonly ReservedPort _reservedPort = new();
-    public IEnumerable<ServiceDescriptor> ServiceDescriptors { get; private set;  }
         
-    public OpcUaEntityTestApplication()
+    public OpcUaClientAndServerFixture()
     {
         _hostedServer = Host.CreateDefaultBuilder()
             .ConfigureLogging(logging => { logging.AddJsonConsole();
@@ -28,18 +27,7 @@ public sealed class OpcUaEntityTestApplication : IHost
             })
             .ConfigureServices((context, services) =>
             {
-    
-                services.AddOpcUaServerConfiguration(conf => conf
-                        .WithServerId("MyServer")
-                        .WithServerName("My Server")
-                        .WithHttpsHost("localhost", _reservedPort.Port)
-                        .WithEndpoints([$"opc.tcp://localhost:{_reservedPort.Port}"])
-                        .Build())
-                    .WithEntityServices()
-                    .WithOpcUaServer()
-                    .WithOpcUaClientServices();
-
-                ServiceDescriptors = services.Select(e=>e);
+                foreach (var s in new AllOpcUaServicesFixture().ServiceCollection) services.Add(s);
             }).Build();
     }
     
