@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hoeyer.Common.Messaging;
 using Hoeyer.OpcUa.Core.Entity;
+using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Entity.Api;
 using Hoeyer.OpcUa.Server.Entity.Application;
 using Microsoft.Extensions.Logging;
@@ -20,7 +22,7 @@ internal sealed class EntityNodeManagerFactory(
         return await Task.WhenAll(initializers.Select(async initializer =>
         {
             var (@namespace, index) = namespaceIndexFactory.Invoke(initializer.EntityName);
-            var (node, publisher) = await initializer.CreateNode(index);
+            (IEntityNode node, IMessagePublisher<IEntityNode> publisher) = await initializer.CreateNode(index);
             var managedNode = new ManagedEntityNode(node, @namespace, index);
 
             publisher.Publish(managedNode);
@@ -31,7 +33,7 @@ internal sealed class EntityNodeManagerFactory(
                 managedNode,
                 server,
                 new EntityHandleManager(managedNode),
-                new EntityWriter(managedNode),
+                new EntityStateChanger(managedNode, publisher),
                 new EntityBrowser(managedNode),
                 new EntityReader(managedNode, new PropertyReader()),
                 new EntityReferenceLinker(managedNode, logger),

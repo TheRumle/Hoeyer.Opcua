@@ -4,6 +4,7 @@ using System.Linq;
 using Hoeyer.Common.Extensions;
 using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Extensions.Types;
+using Hoeyer.Common.Messaging;
 using Hoeyer.OpcUa.Core.Application.RequestResponse;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Entity.Api;
@@ -222,7 +223,7 @@ internal sealed class EntityNodeManager(
             .WhenExecuting(() =>
             {
                 var requestResponses = entityWriter.Write(filtered);
-                _processorFactory.GetProcessorWithLoggingFor("Write",
+               _processorFactory.GetProcessorWithLoggingFor("Write",
                         requestResponses,
                         e => e.Request.Processed = true,
                         errorResponse => errors[nodesToWrite.IndexOf(errorResponse.Request)] = errorResponse.ResponseCode,

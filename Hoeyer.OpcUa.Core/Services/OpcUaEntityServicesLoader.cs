@@ -8,9 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Core.Services;
 
-internal static class OpcUaEntityServicesLoader
+public static class OpcUaEntityServicesLoader
 {
-    internal readonly static FrozenSet<EntityServiceTypeContext> EntityServiceTypeContexts = GetEntityServiceContexts().ToFrozenSet();
+    private readonly static FrozenSet<EntityServiceTypeContext> EntityServiceTypeContexts = GetEntityServiceContexts().ToFrozenSet();
     
     public static EntityServiceTypeContext ConstructEntityServiceContext(this IEntityServiceTypeInfo info)
     {
