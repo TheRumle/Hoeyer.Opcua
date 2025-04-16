@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Hoeyer.Common.Messaging;
 using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
-using Hoeyer.OpcUa.Server.Entity.Api;
+using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Entity.Application;
 using Microsoft.Extensions.Logging;
 using Opc.Ua.Server;

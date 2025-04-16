@@ -1,9 +1,9 @@
 ﻿using FluentResults;
 using Hoeyer.OpcUa.Core.Entity.Node;
-using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
+using Hoeyer.OpcUa.Server.Api.RequestResponse;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Entity.Api;
+namespace Hoeyer.OpcUa.Server.Api;
 
 public interface IEntityBrowser
 {

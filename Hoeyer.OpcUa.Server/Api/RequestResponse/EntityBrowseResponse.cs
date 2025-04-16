@@ -4,7 +4,7 @@ using Hoeyer.Common.Extensions;
 using Opc.Ua;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
+namespace Hoeyer.OpcUa.Server.Api.RequestResponse;
 
 /// <summary>
 ///     The result of the browsing of an Entity or one of its properties.

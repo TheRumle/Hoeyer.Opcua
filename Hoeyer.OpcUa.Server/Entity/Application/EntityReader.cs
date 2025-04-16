@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.OpcUa.Core.Entity.Node;
-using Hoeyer.OpcUa.Server.Entity.Api;
-using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
+using Hoeyer.OpcUa.Server.Api;
+using Hoeyer.OpcUa.Server.Api.RequestResponse;
 using Opc.Ua;
 using NodeClass = Opc.Ua.NodeClass;
 

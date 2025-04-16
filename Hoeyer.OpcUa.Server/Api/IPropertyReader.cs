@@ -1,7 +1,7 @@
-﻿using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
+﻿using Hoeyer.OpcUa.Server.Api.RequestResponse;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Entity.Api;
+namespace Hoeyer.OpcUa.Server.Api;
 
 public interface IPropertyReader
 {

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Hoeyer.OpcUa.Server.Entity.Api;
-using Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
+using Hoeyer.OpcUa.Server.Api;
+using Hoeyer.OpcUa.Server.Api.RequestResponse;
 using Opc.Ua;
 using LocalizedText = Opc.Ua.LocalizedText;
 

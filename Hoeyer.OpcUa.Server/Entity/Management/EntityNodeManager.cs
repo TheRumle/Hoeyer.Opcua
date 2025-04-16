@@ -7,7 +7,7 @@ using Hoeyer.Common.Extensions.Types;
 using Hoeyer.Common.Messaging;
 using Hoeyer.OpcUa.Core.Application.RequestResponse;
 using Hoeyer.OpcUa.Core.Entity.Node;
-using Hoeyer.OpcUa.Server.Entity.Api;
+using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Extensions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
@@ -309,6 +309,7 @@ internal sealed class EntityNodeManager(
         IList<MonitoringFilterResult> filterErrors, IList<IMonitoredItem> monitoredItems,
         ref long globalIdCounter)
     {
+        //https://chatgpt.com/share/67ff9f52-7a40-8001-8772-5400067a7ef5
         logger.LogWarning("Monitoring items are not yet supported. This is a meaningless operation.");
 
         using var beginScope = logger.BeginScope("Creating monitored items  {@MonitoredItems}",

@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.Server.Entity.Api;
+﻿using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Entity.Application;
 using Hoeyer.OpcUa.Server.Test.Application.Fixtures;
 using Hoeyer.OpcUa.Server.Test.Application.Generators;

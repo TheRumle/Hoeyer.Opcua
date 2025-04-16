@@ -2,7 +2,7 @@
 using FluentResults;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Entity.Api;
+namespace Hoeyer.OpcUa.Server.Api;
 
 public interface IReferenceLinker
 {

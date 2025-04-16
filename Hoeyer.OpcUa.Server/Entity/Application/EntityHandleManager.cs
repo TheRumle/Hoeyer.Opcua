@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using FluentResults;
 using Hoeyer.OpcUa.Core.Entity.Node;
-using Hoeyer.OpcUa.Server.Entity.Api;
+using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Entity.Application.Handle;
 using Opc.Ua;
 

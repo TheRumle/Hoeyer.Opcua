@@ -3,7 +3,7 @@ using Hoeyer.OpcUa.Core.Application.RequestResponse;
 using Hoeyer.OpcUa.Core.Extensions;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Entity.Api.RequestResponse;
+namespace Hoeyer.OpcUa.Server.Api.RequestResponse;
 
 public sealed class EntityValueReadResponse : StatusCodeResponse<ReadValueId, DataValue>
 {

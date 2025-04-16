@@ -4,7 +4,7 @@ using FluentResults;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Entity.Api;
+namespace Hoeyer.OpcUa.Server.Api;
 
 public interface IEntityHandleManager : IDisposable
 {

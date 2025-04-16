@@ -1,5 +1,5 @@
 ﻿using Hoeyer.OpcUa.Core.Entity.Node;
-using Hoeyer.OpcUa.Server.Entity.Api;
+using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Entity.Application;
 using Opc.Ua;
 
