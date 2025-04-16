@@ -2,5 +2,5 @@
 
 public interface IUnsubscribable
 {
-    public void Unsubscribe(ISubscription subscription);
+    public void Unsubscribe(IMessageSubscription messageSubscription);
 }

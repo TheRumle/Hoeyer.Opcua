@@ -2,5 +2,5 @@
 
 public interface IMessageSubscribable<out T> 
 {
-    public ISubscription Subscribe(IMessageSubscriber<T> subscriber);
+    public IMessageSubscription Subscribe(IMessageSubscriber<T> subscriber);
 }

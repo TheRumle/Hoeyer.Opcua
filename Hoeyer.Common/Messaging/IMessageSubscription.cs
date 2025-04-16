@@ -2,7 +2,7 @@
 
 namespace Hoeyer.Common.Messaging;
 
-public interface ISubscription : IDisposable
+public interface IMessageSubscription : IDisposable
 {
     Guid SubscriptionId { get; }
     bool IsCancelled { get; }
