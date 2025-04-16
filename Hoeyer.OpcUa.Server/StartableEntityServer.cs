@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Server.Api;
 using Opc.Ua;
 using Opc.Ua.Configuration;
 

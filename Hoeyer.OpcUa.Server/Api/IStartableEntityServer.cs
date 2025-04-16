@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Configuration;
 
-namespace Hoeyer.OpcUa.Server;
+namespace Hoeyer.OpcUa.Server.Api;
 
 public interface IStartableEntityServer
 {

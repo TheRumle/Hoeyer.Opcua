@@ -1,7 +1,6 @@
 ﻿using Hoeyer.OpcUa.Client.MachineProxy;
-using Hoeyer.OpcUa.Core.Reflections;
 using Hoeyer.OpcUa.EndToEndTest.TestApplication;
-using Hoeyer.OpcUa.Server;
+using Hoeyer.OpcUa.Server.Api;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua.Client;
 using TUnit.Core.Interfaces;

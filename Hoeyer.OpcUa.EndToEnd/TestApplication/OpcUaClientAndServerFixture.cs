@@ -2,6 +2,7 @@
 using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.Server;
+using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

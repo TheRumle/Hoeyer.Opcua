@@ -1,5 +1,6 @@
 ﻿using System;
 using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Configuration;
 using Hoeyer.OpcUa.Server.Entity.Management;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,5 +52,11 @@ public static class ServiceExtensions
         var serverConfig = serviceRegistration.WithOpcUaServer(additionalConfiguration);
         serverConfig.Collection.AddHostedService<OpcUaServerBackgroundService>();
         return serverConfig;
+    }
+    
+    public static OpcUaEntityServerSetup WithAdditionalServerConfiguration(IOpcUaEntityServerInfo setup,
+        Action<ServerConfiguration> additionalConfiguration)
+    {
+        return new OpcUaEntityServerSetup(setup, additionalConfiguration);
     }
 }

@@ -5,6 +5,7 @@ using Hoeyer.OpcUa.Client.Extensions;
 using Hoeyer.OpcUa.Client.MachineProxy;
 using Hoeyer.OpcUa.Core.Extensions;
 using Hoeyer.OpcUa.Server;
+using Hoeyer.OpcUa.Server.Api;
 using Opc.Ua;
 
 namespace MyOpcUaWebApplication;

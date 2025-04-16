@@ -1,21 +1,21 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Hoeyer.OpcUa.Server;
+namespace Hoeyer.OpcUa.Server.Api;
 
 public sealed class EntityServerStartedMarker
 {
-    private readonly Task task = new(() => { });
+    private readonly Task _task = new(() => { });
 
-    internal void MarkCompleted() => task.Start();
+    internal void MarkCompleted() => _task.Start();
 
     public TaskAwaiter GetAwaiter()
     {
-        return task.GetAwaiter();
+        return _task.GetAwaiter();
     }
     
     public Task ServerRunning()
     {
-        return task;
+        return _task;
     }
 }
