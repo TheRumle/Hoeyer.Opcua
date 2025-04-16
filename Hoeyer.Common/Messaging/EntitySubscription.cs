@@ -2,21 +2,12 @@
 
 namespace Hoeyer.Common.Messaging;
 
-public interface ISubscription : IDisposable
-{
-    Guid SubscriptionId { get; }
-    bool IsCancelled { get; }
-    bool IsPaused { get; }
-    void Unpause();
-    void Pause();
-}
-
-public sealed record Subscription : ISubscription
+public sealed record EntitySubscription : ISubscription
 {
     public Guid SubscriptionId { get; } = Guid.NewGuid();
     private readonly IUnsubscribable _creator;
 
-    internal Subscription(IUnsubscribable creator)
+    internal EntitySubscription(IUnsubscribable creator)
     {
         _creator = creator;
     }

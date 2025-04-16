@@ -29,7 +29,7 @@ public sealed class SubscriptionManager<T>(ILogger? logger) : IUnsubscribable
     public ISubscription Subscribe(IMessageSubscriber<T> subscriber)
     {
         logger?.BeginScope("Subscribing to messages of type '" + MessageName + '\'');
-        var subscription = new Subscription(this);
+        var subscription = new EntitySubscription(this);
         if (!_subscriptions.TryAdd(subscription.SubscriptionId, (subscription, subscriber)))
         {
             logger?.LogError("Failed to add subscription with for {@StateChangeSubscriber}. Messages will not be forwarded...", subscriber);
