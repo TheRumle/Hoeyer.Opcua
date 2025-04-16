@@ -19,7 +19,7 @@ public class MessagePublisherTest
     private sealed class TestSubscriber : IMessageSubscriber<int>
     {
         public int Count = 0; 
-        public ISubscription Subscription { get; set; }
+        public IMessageSubscription MessageSubscription { get; set; }
         public void OnMessagePublished(IMessage<int> message) => Count += 1;
     }
     
@@ -37,8 +37,8 @@ public class MessagePublisherTest
     [Test]
     public async Task WhenSubscriptionPaused_DoesNotCallSubscriber()
     {
-        ISubscription subscription = publisher.Subscribe(_subscriber);
-        subscription.Pause();
+        IMessageSubscription messageSubscription = publisher.Subscribe(_subscriber);
+        messageSubscription.Pause();
         publisher.Publish(_rand.Next());
         await Assert.That(_subscriber.Count).IsEqualTo(0);
     }
@@ -79,19 +79,19 @@ public class MessagePublisherTest
             var s = new TestSubscriber();
             subscribers.Add(s);
             var sub = publisher.Subscribe(s);
-            s.Subscription = sub;
+            s.MessageSubscription = sub;
         }
 
         for (int i = 0; i < requests; i++)
         {
             var value = _rand.Next(0, consumers);
-            if (subscribers[value].Subscription.IsPaused)
+            if (subscribers[value].MessageSubscription.IsPaused)
             {
-                subscribers[value].Subscription.Pause();
+                subscribers[value].MessageSubscription.Pause();
             }
             else
             { 
-                subscribers[value].Subscription.Unpause();
+                subscribers[value].MessageSubscription.Unpause();
             }
             publisher.Publish(value);
         }
@@ -114,9 +114,9 @@ public class MessagePublisherTest
 
     private (Thread add,Thread publish) CreateSimulationThreads(CancellationTokenSource cts)
     {
-        var subscriptions = new ConcurrentBag<ISubscription>();
+        var subscriptions = new ConcurrentBag<IMessageSubscription>();
 
-        Action<ISubscription> pauseUnpause = (sub) =>
+        Action<IMessageSubscription> pauseUnpause = (sub) =>
         {
             if (subscriptions.Count % 2 == 0)
             {

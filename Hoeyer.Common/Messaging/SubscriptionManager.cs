@@ -8,28 +8,28 @@ namespace Hoeyer.Common.Messaging;
 
 public sealed class SubscriptionManager<T>(ILogger? logger) : IUnsubscribable
 {
-    private readonly ConcurrentDictionary<Guid, (ISubscription subscription, IMessageSubscriber<T> subscriber)> _subscriptions = new();
+    private readonly ConcurrentDictionary<Guid, (IMessageSubscription subscription, IMessageSubscriber<T> subscriber)> _subscriptions = new();
 
-    public IEnumerable<(ISubscription subscription, IMessageSubscriber<T> subscriber)> Subscribers =>
+    public IEnumerable<(IMessageSubscription subscription, IMessageSubscriber<T> subscriber)> Subscribers =>
         _subscriptions.Values;
     
     private static readonly string MessageName = typeof(T).Name;
     public int NumberOfSubscriptions => _subscriptions.Count;
     
-    public void Unsubscribe(ISubscription subscription)
+    public void Unsubscribe(IMessageSubscription messageSubscription)
     {
-        logger?.LogInformation("Removing subscription {Id}", subscription.SubscriptionId.ToString());
-        if (!_subscriptions.TryRemove(subscription.SubscriptionId, out _))
+        logger?.LogInformation("Removing subscription {Id}", messageSubscription.SubscriptionId.ToString());
+        if (!_subscriptions.TryRemove(messageSubscription.SubscriptionId, out _))
         {
-            logger?.LogWarning("Failed to remove subscription '{Id}'. Is it already removed?", subscription.SubscriptionId);
+            logger?.LogWarning("Failed to remove subscription '{Id}'. Is it already removed?", messageSubscription.SubscriptionId);
         }
     }
 
     [Pure]
-    public ISubscription Subscribe(IMessageSubscriber<T> subscriber)
+    public IMessageSubscription Subscribe(IMessageSubscriber<T> subscriber)
     {
         logger?.BeginScope("Subscribing to messages of type '" + MessageName + '\'');
-        var subscription = new EntitySubscription(this);
+        var subscription = new MessageMessageSubscription(this);
         if (!_subscriptions.TryAdd(subscription.SubscriptionId, (subscription, subscriber)))
         {
             logger?.LogError("Failed to add subscription with for {@StateChangeSubscriber}. Messages will not be forwarded...", subscriber);
