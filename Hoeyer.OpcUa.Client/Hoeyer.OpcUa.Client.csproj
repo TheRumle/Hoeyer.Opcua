@@ -21,8 +21,4 @@
         <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Application\Exceptions\" />
-    </ItemGroup>
-
 </Project>
