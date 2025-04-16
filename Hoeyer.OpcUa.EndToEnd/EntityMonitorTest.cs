@@ -1,34 +1,34 @@
-﻿using Hoeyer.OpcUa.Client.Application.Browsing;
+﻿using Hoeyer.Common.Messaging;
+using Hoeyer.OpcUa.Client.Application;
+using Hoeyer.OpcUa.Client.Application.Browsing;
+using Hoeyer.OpcUa.Client.Application.Events;
 using Hoeyer.OpcUa.Core.Extensions;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.EndToEndTest.TestApplication;
-using Hoeyer.OpcUa.Server.Entity;
+using JetBrains.Annotations;
 using Opc.Ua;
-using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.EndToEndTest;
 
+[TestSubject(typeof(EntityMonitor<>))]
 [ClassDataSource<ApplicationFixture>]
-public sealed class OpcUaEntityServerObservation(ApplicationFixture fixture)
+public sealed class EntityMonitorTest(ApplicationFixture fixture)
 {
-
-
-    
     [Test]
-    public async Task WhenClientWritesToEntity_ObserverShouldBeNotified()
+    public async Task WhenWritingNode_ObserverIsNotified()
     {
-        var session = await fixture.CreateSession(Guid.NewGuid().ToString());
-        var publisher = await fixture.GetService<IEntityChangedMessenger<Gantry>>();
         var observer = new TestSubscriber<Gantry>();
-        _ = publisher!.Subscribe(observer);
+        var monitor = await fixture.GetService<IEntityMonitor<Gantry>>();
+        _ = await monitor.SubscribeToChange(observer);
         
-        await WriteNode(session);
+        await WriteNode();
         await Assert.That(observer.Value).IsNotNull();
         await Assert.That(observer.Value.IntValue).IsEqualTo(2);
     }
 
-    private async Task WriteNode(ISession session)
+    private async Task WriteNode()
     {
+        var session = await fixture.CreateSession(Guid.NewGuid().ToString());
         var reader = await fixture.GetService<IEntityBrowser<Gantry>>()!;
         var node = await reader.BrowseEntityNode(session, fixture.Token);
         var childToWrite = node.Children.First(e => e.BrowseName.Name.Equals(nameof(Gantry.IntValue)));

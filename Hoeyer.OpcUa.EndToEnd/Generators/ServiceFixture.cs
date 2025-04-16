@@ -3,9 +3,9 @@ using TUnit.Core.Interfaces;
 
 namespace Hoeyer.OpcUa.EndToEndTest.Generators;
 
-public sealed class SingleServiceTestFixture<TWanted>(Func<ApplicationFixture, Task<TWanted>> providerFunc) : IAsyncDisposable, IAsyncInitializer
+public sealed class ServiceFixture<TWanted>(Func<ApplicationFixture, Task<TWanted>> providerFunc) : IAsyncDisposable, IAsyncInitializer
 {
-    ApplicationFixture _applicationFixture = new();
+    private readonly ApplicationFixture _applicationFixture = new();
     
     public async Task<T> GetService<T>() where T : notnull =>  await _applicationFixture.GetService<T>()!;
 

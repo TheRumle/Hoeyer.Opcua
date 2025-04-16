@@ -2,16 +2,16 @@
 
 namespace Hoeyer.OpcUa.EndToEndTest.Generators;
 
-public sealed class SingleServiceApplicationTestGeneratorAttribute<TInterfaceOfWanted>(Type wantedService) : DataSourceGeneratorAttribute<SingleServiceTestFixture<TInterfaceOfWanted>> where TInterfaceOfWanted : notnull
+public sealed class SingleServiceApplicationTestGeneratorAttribute<TInterfaceOfWanted>(Type wantedService) : DataSourceGeneratorAttribute<ServiceFixture<TInterfaceOfWanted>> where TInterfaceOfWanted : notnull
 {
     private readonly EntityServiceDescriptorsOfTypeAttribute _serviceDescriptorGenerator = new(wantedService);
 
     /// <inheritdoc />
-    public override IEnumerable<Func<SingleServiceTestFixture<TInterfaceOfWanted>>> GenerateDataSources(DataGeneratorMetadata dataGeneratorMetadata)
+    public override IEnumerable<Func<ServiceFixture<TInterfaceOfWanted>>> GenerateDataSources(DataGeneratorMetadata dataGeneratorMetadata)
     {
         return _serviceDescriptorGenerator.GenerateDataSources(dataGeneratorMetadata)
             .Map(descriptor => 
-                new SingleServiceTestFixture<TInterfaceOfWanted>(
+                new ServiceFixture<TInterfaceOfWanted>(
                     applicationFixture => applicationFixture.GetService<TInterfaceOfWanted>(descriptor.ServiceType)));
     }
 }

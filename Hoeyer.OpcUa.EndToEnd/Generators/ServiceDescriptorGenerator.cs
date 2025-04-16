@@ -1,7 +1,7 @@
 ﻿using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hoeyer.OpcUa.EndToEndTest;
+namespace Hoeyer.OpcUa.EndToEndTest.Generators;
 
 public sealed class ServiceDescriptorGenerator(Type type, params Type[] types )
 {

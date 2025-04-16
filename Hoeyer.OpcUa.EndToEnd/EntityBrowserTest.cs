@@ -8,7 +8,7 @@ public sealed class EntityBrowserTest
 {
     [Test]
     [SingleServiceApplicationTestGenerator<IEntityBrowser>(typeof(IEntityBrowser<>))]
-    public async Task EntityBrowser_CanReadNodeAndChildren(SingleServiceTestFixture<IEntityBrowser> services)
+    public async Task EntityBrowser_CanReadNodeAndChildren(ServiceFixture<IEntityBrowser> services)
     {
         var fixture  = await services.GetClassUnderTest();
         var session =  await (await services.GetService<IEntitySessionFactory>()).CreateSessionAsync("Test");
