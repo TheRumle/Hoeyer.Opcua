@@ -17,5 +17,5 @@ public class MessagePublisher<T>(ILogger? logger = null) : IMessagePublisher<T>
         }
     }
 
-    public Subscription Subscribe(IMessageSubscriber<T> subscriber) => subscriptionManager.Subscribe(subscriber);
+    public ISubscription Subscribe(IMessageSubscriber<T> subscriber) => subscriptionManager.Subscribe(subscriber);
 }

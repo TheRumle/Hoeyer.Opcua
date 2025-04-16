@@ -8,15 +8,15 @@ namespace Hoeyer.Common.Messaging;
 
 public sealed class SubscriptionManager<T>(ILogger? logger) : IUnsubscribable
 {
-    private readonly ConcurrentDictionary<Guid, (Subscription subscription, IMessageSubscriber<T> subscriber)> _subscriptions = new();
+    private readonly ConcurrentDictionary<Guid, (ISubscription subscription, IMessageSubscriber<T> subscriber)> _subscriptions = new();
 
-    public IEnumerable<(Subscription subscription, IMessageSubscriber<T> subscriber)> Subscribers =>
+    public IEnumerable<(ISubscription subscription, IMessageSubscriber<T> subscriber)> Subscribers =>
         _subscriptions.Values;
     
     private static readonly string MessageName = typeof(T).Name;
     public int NumberOfSubscriptions => _subscriptions.Count;
     
-    public void Unsubscribe(Subscription subscription)
+    public void Unsubscribe(ISubscription subscription)
     {
         logger?.LogInformation("Removing subscription {Id}", subscription.SubscriptionId.ToString());
         if (!_subscriptions.TryRemove(subscription.SubscriptionId, out _))
@@ -26,7 +26,7 @@ public sealed class SubscriptionManager<T>(ILogger? logger) : IUnsubscribable
     }
 
     [Pure]
-    public Subscription Subscribe(IMessageSubscriber<T> subscriber)
+    public ISubscription Subscribe(IMessageSubscriber<T> subscriber)
     {
         logger?.BeginScope("Subscribing to messages of type '" + MessageName + '\'');
         var subscription = new Subscription(this);

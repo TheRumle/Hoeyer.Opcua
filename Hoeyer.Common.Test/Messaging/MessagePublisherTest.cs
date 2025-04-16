@@ -19,7 +19,7 @@ public class MessagePublisherTest
     private sealed class TestSubscriber : IMessageSubscriber<int>
     {
         public int Count = 0; 
-        public Subscription Subscription { get; set; }
+        public ISubscription Subscription { get; set; }
         public void OnMessagePublished(IMessage<int> message) => Count += 1;
     }
     
@@ -37,7 +37,7 @@ public class MessagePublisherTest
     [Test]
     public async Task WhenSubscriptionPaused_DoesNotCallSubscriber()
     {
-        Subscription subscription = publisher.Subscribe(_subscriber);
+        ISubscription subscription = publisher.Subscribe(_subscriber);
         subscription.Pause();
         publisher.Publish(_rand.Next());
         await Assert.That(_subscriber.Count).IsEqualTo(0);
@@ -114,9 +114,9 @@ public class MessagePublisherTest
 
     private (Thread add,Thread publish) CreateSimulationThreads(CancellationTokenSource cts)
     {
-        var subscriptions = new ConcurrentBag<Subscription>();
+        var subscriptions = new ConcurrentBag<ISubscription>();
 
-        Action<Subscription> pauseUnpause = (sub) =>
+        Action<ISubscription> pauseUnpause = (sub) =>
         {
             if (subscriptions.Count % 2 == 0)
             {
