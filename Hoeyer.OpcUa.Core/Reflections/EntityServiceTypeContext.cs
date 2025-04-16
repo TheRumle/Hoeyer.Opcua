@@ -8,7 +8,7 @@ namespace Hoeyer.OpcUa.Core.Reflections;
 ///     Represents any service MyService : IMyService&lt;T&gt; where T is a type annotated with
 ///     <see cref="OpcUaEntityAttribute" />
 /// </summary>
-public readonly record struct EntityServiceTypeContext
+internal readonly record struct EntityServiceTypeContext
 {
     /// <summary>
     /// Must be private to ensure that <see cref="EntityServiceTypeContext.AddToCollection"/> is used to add to services.
