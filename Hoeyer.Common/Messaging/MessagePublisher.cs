@@ -2,20 +2,12 @@
 
 namespace Hoeyer.Common.Messaging;
 
-public class MessagePublisher<T>(ILogger? logger = null) : IMessagePublisher<T>
+public class MessagePublisher<T>(ILogger? logger = null) : IMessagePublisher<T>, ISubscribable<T>
 {
-    public readonly SubscriptionManager<T> subscriptionManager = new(logger);
-    public int NumberOfSubscriptions => subscriptionManager.NumberOfSubscriptions;
+    public readonly SubscriptionManager<T> SubscriptionManager = new(logger);
+    public int NumberOfSubscriptions => SubscriptionManager.NumberOfSubscriptions;
 
-    public void Publish(T message)
-    {
-        var letter = new Message<T>(message);
-        foreach (var (subscription, subscriber) in subscriptionManager.Subscribers)
-        {
-            if (subscription.IsCancelled || subscription.IsPaused) continue;
-            subscriber.OnMessagePublished(letter);
-        }
-    }
+    public void Publish(T message) => SubscriptionManager.Publish(message);
 
-    public IMessageSubscription Subscribe(IMessageSubscriber<T> subscriber) => subscriptionManager.Subscribe(subscriber);
+    public IMessageSubscription Subscribe(IMessageSubscriber<T> subscriber) => SubscriptionManager.Subscribe(subscriber);
 }

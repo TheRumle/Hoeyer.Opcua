@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.Common.Messaging;
 
-public sealed class SubscriptionManager<T>(ILogger? logger) : IUnsubscribable
+public sealed class SubscriptionManager<T>(ILogger? logger) : IUnsubscribable, IMessageSubscribable<T>
 {
     private readonly ConcurrentDictionary<Guid, (IMessageSubscription subscription, IMessageSubscriber<T> subscriber)> _subscriptions = new();
 
@@ -29,7 +29,7 @@ public sealed class SubscriptionManager<T>(ILogger? logger) : IUnsubscribable
     public IMessageSubscription Subscribe(IMessageSubscriber<T> subscriber)
     {
         logger?.BeginScope("Subscribing to messages of type '" + MessageName + '\'');
-        var subscription = new MessageMessageSubscription(this);
+        var subscription = new MessageSubscription(this);
         if (!_subscriptions.TryAdd(subscription.SubscriptionId, (subscription, subscriber)))
         {
             logger?.LogError("Failed to add subscription with for {@StateChangeSubscriber}. Messages will not be forwarded...", subscriber);
@@ -39,5 +39,15 @@ public sealed class SubscriptionManager<T>(ILogger? logger) : IUnsubscribable
             logger?.LogError("Added subscription {Id}", subscription.SubscriptionId);
         }
         return subscription;
+    }
+
+    public void Publish(T message)
+    {
+        var letter = new Message<T>(message);
+        foreach (var (subscription, subscriber) in Subscribers)
+        {
+            if (subscription.IsCancelled || subscription.IsPaused) continue;
+            subscriber.OnMessagePublished(letter);
+        }
     }
 }

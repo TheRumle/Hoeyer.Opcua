@@ -2,12 +2,12 @@
 
 namespace Hoeyer.Common.Messaging;
 
-public sealed record MessageMessageSubscription : IMessageSubscription
+public sealed record MessageSubscription : IMessageSubscription
 {
     public Guid SubscriptionId { get; } = Guid.NewGuid();
     private readonly IUnsubscribable _creator;
 
-    internal MessageMessageSubscription(IUnsubscribable creator)
+    internal MessageSubscription(IUnsubscribable creator)
     {
         _creator = creator;
     }
