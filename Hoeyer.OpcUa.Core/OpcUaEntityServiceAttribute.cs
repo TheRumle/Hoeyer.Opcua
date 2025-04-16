@@ -13,7 +13,7 @@ public class OpcUaEntityServiceAttribute : Attribute
     {
         if (t.IsGenericTypeDefinition && t.GetGenericArguments().Length != 1)
         {
-            throw new ArgumentException($"{t.Name} must be a generic type taking a single parameter.");
+            throw new ArgumentException($"When {t.Name} is a generic type definition it must take a single generic argument.");
         }
 
         Lifetime = lifetime;
