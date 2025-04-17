@@ -6,16 +6,16 @@ namespace Hoeyer.OpcUa.Server.Api;
 
 public interface IReferenceLinker
 {
-    Result InitializeToExternals(IDictionary<NodeId, IList<IReference>> externalReferences);
+    void InitializeToExternals(IDictionary<NodeId, IList<IReference>> externalReferences);
 
     /// <summary>
     ///     Adds a reference entity --> element
     /// </summary>
     /// <returns></returns>
-    Result AddReferencesToEntity(NodeId nodeId, IEnumerable<IReference> references);
+    void AddReferencesToEntity(NodeId nodeId, IEnumerable<IReference> references);
 
 
-    Result RemoveReference(
+    void RemoveReference(
         NodeId referenceTypeId,
         bool isInverse,
         ExpandedNodeId targetId);

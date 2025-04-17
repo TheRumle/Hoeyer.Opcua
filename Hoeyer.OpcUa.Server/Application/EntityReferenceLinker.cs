@@ -4,7 +4,6 @@ using FluentResults;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Api;
-using Hoeyer.OpcUa.Server.Exceptions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 
@@ -21,7 +20,7 @@ internal class EntityReferenceLinker(IEntityNode entityNode, ILogger logger) : I
     ///     An OK result if the operation is successful and a failed on if any operation throws or it is not possible to
     ///     link the references
     /// </returns>
-    public Result InitializeToExternals(IDictionary<NodeId, IList<IReference>> externalReferences)
+    public void InitializeToExternals(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
         
         var tryGetId = (PropertyState s) => s.DataType.Identifier is uint i
@@ -30,32 +29,23 @@ internal class EntityReferenceLinker(IEntityNode entityNode, ILogger logger) : I
         
         logger.LogInformation("Adding child nodes {@PropertiesName}",
             entityNode.PropertyStates.Values.Select(e => $"[{e.BrowseName} ({tryGetId.Invoke(e)})]"));
-        
-        var res = Result.Try(
-            () => LinkEntity(externalReferences),
-            e => new Error(e.Message));
 
-        if (res.IsFailed) throw new UnableToInitializeException("Unable to initialize " + entityNode.BaseObject.BrowseName.Name);
-        return res;
-        
+        LinkEntity(externalReferences);
     }
 
-    public Result AddReferencesToEntity(NodeId nodeId, IEnumerable<IReference> references)
+    public void AddReferencesToEntity(NodeId nodeId, IEnumerable<IReference> references)
     {
         var result = references.Where(e =>
             !entityNode.BaseObject.ReferenceExists(e.ReferenceTypeId, e.IsInverse, e.TargetId));
-        return AddReferenceToNode(result, entityNode.BaseObject);
+        AddReferenceToNode(result, entityNode.BaseObject);
     }
 
-    public Result RemoveReference(
+    public void RemoveReference(
         NodeId referenceTypeId,
         bool isInverse,
         ExpandedNodeId targetId)
     {
-        return entityNode.BaseObject.RemoveReference(referenceTypeId, isInverse, targetId)
-            ? Result.Ok()
-            : Result.Fail(
-                $"The managed Entity {entityNode.BaseObject.BrowseName} does not hold a reference with id {targetId}.");
+        entityNode.BaseObject.RemoveReference(referenceTypeId, isInverse, targetId);
     }
 
     private void LinkEntity(IDictionary<NodeId, IList<IReference>> externalReferences)
@@ -65,12 +55,12 @@ internal class EntityReferenceLinker(IEntityNode entityNode, ILogger logger) : I
         entityNode.BaseObject.EventNotifier = EventNotifiers.SubscribeToEvents;
     }
 
-    private static Result AddReferenceToNode(IEnumerable<IReference> references, NodeState nodeState)
+    private static void AddReferenceToNode(IEnumerable<IReference> references, NodeState nodeState)
     {
-        return references.Select(r =>
+        foreach (var r in references)
         {
             nodeState.AddReference(r.ReferenceTypeId, r.IsInverse, r.TargetId);
-            return Result.Ok();
-        }).Merge();
+
+        }
     }
 }
