@@ -3,13 +3,15 @@ using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Test.Application.Fixtures;
 using Hoeyer.OpcUa.Server.Test.Application.Generators;
+using JetBrains.Annotations;
 using Opc.Ua;
 using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Test.Application;
 
 [EntityFixtureGenerator]
-public class EntityBrowserTest(EntityReaderFixture fixture)
+[TestSubject(typeof(EntityBrowser))]
+public class EntityBrowserTest(EntityFixture fixture)
 {
     private readonly IEntityNode _entity = fixture.Node;
     private readonly IEntityBrowser _entityBrowser = new EntityBrowser(fixture.Node);

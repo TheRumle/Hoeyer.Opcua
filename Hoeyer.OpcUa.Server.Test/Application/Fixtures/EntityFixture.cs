@@ -4,8 +4,9 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Test.Application.Fixtures;
 
-public sealed record EntityReaderFixture(IEntityNode Node, ISet<PropertyState> Properties)
+public sealed record EntityFixture(IEntityNode Node)
 {
+    public ISet<PropertyState> Properties => Node.PropertyStates.Values.ToHashSet();
     public IEntityNodeHandle EntityHandle => new EntityHandle(Node.BaseObject);
 
     /// <inheritdoc />
