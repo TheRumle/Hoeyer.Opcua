@@ -4,16 +4,16 @@ using System.Linq;
 using Hoeyer.Common.Extensions;
 using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Extensions.Types;
-using Hoeyer.Common.Messaging;
 using Hoeyer.OpcUa.Core.Application.RequestResponse;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Api;
+using Hoeyer.OpcUa.Server.Entity.Management;
 using Hoeyer.OpcUa.Server.Extensions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Entity.Management;
+namespace Hoeyer.OpcUa.Server.Application.Management;
 
 
 internal sealed class EntityNodeManager(
@@ -62,28 +62,16 @@ internal sealed class EntityNodeManager(
     /// <inheritdoc />
     public override void AddReferences(IDictionary<NodeId, IList<IReference>> references)
     {
-        logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithScope("Adding references {References}", references)
-            .WhenExecuting(() =>
-            {
-                foreach (var kvp in references)
-                {
-                    var result = referenceLinker.AddReferencesToEntity(kvp.Key, kvp.Value);
-                    if (!result.IsSuccess)
-                    {
-                        logger.LogWarning(
-                            "Failed to references from '{Node}' --> '{Targets}: {Error}'",
-                            kvp.Key,
-                            kvp.Value.Select(e => e.TargetId),
-                            result.Errors.ToNewlineSeparatedString());
-                    }
-                    else
-                    {
-                        logger.LogInformation("Node {NodeId} now references targets: {References}", _entity.BrowseName,
-                            kvp.Value.Select(e => e.TargetId));
-                    }
-                }
-            });
+        using var scope = logger.BeginScope("Adding references {References}", references);
+        logger.TryForEach(references,
+            kvp => referenceLinker.AddReferencesToEntity(kvp.Key, kvp.Value),
+            
+            onError: (kvp, exception) => logger.LogWarning("Failed to references from '{Node}' --> '{Targets}: {Error}'",
+                kvp.Key, kvp.Value.Select(e => e.TargetId), exception.Message),
+            
+            onEachSuccess: kvp => logger.LogInformation("Node {NodeId} now references targets: {References}", _entity.BrowseName,
+                kvp.Value.Select(e => e.TargetId))
+            );
     }
 
     /// <inheritdoc />
@@ -94,29 +82,16 @@ internal sealed class EntityNodeManager(
         ExpandedNodeId targetId,
         bool deleteBidirectional)
     {
-        return logger.LogCaughtExceptionAs(LogLevel.Error)
-            .WithScope("Deleting references {Reference}", referenceTypeId)
-            .WhenExecuting(() =>
-            {
-                if (!_entity.ReferenceExists(referenceTypeId, isInverse, targetId))
-                {
-                    logger.LogError("The {@Entity} does not reference node with reference type id '{@ReferenceTypeid}'",
-                        _entity.BrowseName, referenceTypeId);
-                    return StatusCodes.BadNodeIdUnknown;
-                }
+        using var scope = logger.BeginScope("Deleting references {Reference}", referenceTypeId);
+        if (!_entity.ReferenceExists(referenceTypeId, isInverse, targetId))
+        {
+            logger.LogError("The {@Entity} does not reference node with reference type id '{@ReferenceTypeid}'",
+                _entity.BrowseName, referenceTypeId);
+            return StatusCodes.BadNodeIdUnknown;
+        }
 
-                var deletion = referenceLinker.RemoveReference(referenceTypeId, isInverse, targetId);
-                if (deletion.IsSuccess)
-                {
-                    return ServiceResult.Good;
-                }
-
-                logger.LogError("Failed deleting reference {Reference}: {Errors}",
-                    referenceTypeId,
-                    deletion.Errors.ToNewlineSeparatedString());
-
-                return StatusCodes.BadInvalidArgument;
-            });
+        var fail = logger.Try(() => referenceLinker.RemoveReference(referenceTypeId, isInverse, targetId));
+        return fail == null ? ServiceResult.Good : StatusCodes.BadInvalidArgument;
     }
 
     /// <inheritdoc />
@@ -306,7 +281,8 @@ internal sealed class EntityNodeManager(
     public override void CreateMonitoredItems(OperationContext context, uint subscriptionId, double publishingInterval,
         TimestampsToReturn timestampsToReturn, IList<MonitoredItemCreateRequest> itemsToCreate,
         IList<ServiceResult> errors,
-        IList<MonitoringFilterResult> filterErrors, IList<IMonitoredItem> monitoredItems,
+        IList<MonitoringFilterResult> filterErrors,
+        IList<IMonitoredItem> monitoredItems,
         ref long globalIdCounter)
     {
         //https://chatgpt.com/share/67ff9f52-7a40-8001-8772-5400067a7ef5
@@ -325,7 +301,8 @@ internal sealed class EntityNodeManager(
     /// <inheritdoc />
     public override void ModifyMonitoredItems(OperationContext context, TimestampsToReturn timestampsToReturn,
         IList<IMonitoredItem> monitoredItems,
-        IList<MonitoredItemModifyRequest> itemsToModify, IList<ServiceResult> errors,
+        IList<MonitoredItemModifyRequest> itemsToModify,
+        IList<ServiceResult> errors,
         IList<MonitoringFilterResult> filterErrors)
     {
         using var scope = logger.BeginScope("Modifying monitored items {@MonitoredItems}",

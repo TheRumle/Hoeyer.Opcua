@@ -1,9 +1,12 @@
-﻿using Hoeyer.OpcUa.Client.Application.Browsing;
+﻿using System.Diagnostics.CodeAnalysis;
+using Hoeyer.OpcUa.Client.Application.Browsing;
+using Hoeyer.OpcUa.Client.Application.Events;
 using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.EndToEndTest.Generators;
+using Hoeyer.OpcUa.Server.Api.RequestResponse;
 using Hoeyer.OpcUa.Server.Entity;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -37,7 +40,21 @@ public sealed class ServiceConfigurationTest
     public async Task EntityChanged_IsRegistered(AllOpcUaServicesFixture fixture) 
         => await AssertNumberEntitiesMatchesNumberServices(fixture.Services, typeof(IEntityChangedMessenger<>));
     
+    [Test]
+    [ClassDataSource<AllOpcUaServicesFixture>]
+    public async Task EntityMonitor_IsRegistered(AllOpcUaServicesFixture fixture) 
+        => await AssertNumberEntitiesMatchesNumberServices(fixture.Services, typeof(IEntityMonitor<>));
+    
         
+    [Test]
+    [AllEntityServiceDescriptorsOfType(typeof(IEntityMonitor<>))]
+    public async Task EntityMonitor_IsOnlyRegisteredAsSingleton(IReadOnlyCollection<ServiceDescriptor> messengers)
+    {
+        var numberOfSingletons = messengers.Count(e => e.Lifetime == ServiceLifetime.Singleton);
+        await Assert.That(numberOfSingletons).IsEqualTo(OpcUaEntityTypes.Entities.Count);
+        await Assert.That(messengers.Where(e=>e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
+    }  
+    
     [Test]
     [AllEntityServiceDescriptorsOfType(typeof(IEntityChangedMessenger<>))]
     public async Task EntityChangedMessenger_IsOnlyRegisteredAsSingleton(IReadOnlyCollection<ServiceDescriptor> messengers)
@@ -46,6 +63,7 @@ public sealed class ServiceConfigurationTest
         await Assert.That(numberOfSingletons).IsEqualTo(OpcUaEntityTypes.Entities.Count);
         await Assert.That(messengers.Where(e=>e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
     }  
+    
     
     private static async Task AssertNumberEntitiesMatchesNumberServices(IEnumerable<ServiceDescriptor> collection, Type wantedType)
     {

@@ -2,6 +2,7 @@
 using Hoeyer.OpcUa.Core.Extensions;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.EndToEndTest.TestApplication;
+using Hoeyer.OpcUa.Server.Api.RequestResponse;
 using Hoeyer.OpcUa.Server.Entity;
 using Opc.Ua;
 using Opc.Ua.Client;

@@ -1,6 +1,4 @@
-﻿using Hoeyer.Common.Messaging;
-using Hoeyer.OpcUa.Client.Application;
-using Hoeyer.OpcUa.Client.Application.Browsing;
+﻿using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Client.Application.Events;
 using Hoeyer.OpcUa.Core.Extensions;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;

@@ -3,6 +3,7 @@ using Hoeyer.Common.Messaging;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
+using Hoeyer.OpcUa.Server.Api.RequestResponse;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Server.Entity;

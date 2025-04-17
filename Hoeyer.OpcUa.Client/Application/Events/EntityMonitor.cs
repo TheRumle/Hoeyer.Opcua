@@ -11,34 +11,6 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Events;
 
-public sealed record EntityMonitoringConfiguration
-{
-    public TimeSpan WantedPublishingInterval { get; set; } = TimeSpan.FromSeconds(5);
-}
-
-public interface IReconnectionStrategy
-{
-    public Task<ISession> ReconnectIfNotConnected(ISession session, CancellationToken cancellationToken = default);
-}
-
-public sealed class DefaultReconnectStrategy : IReconnectionStrategy
-{
-    /// <inheritdoc />
-    public async Task<ISession> ReconnectIfNotConnected(ISession session, CancellationToken cancellationToken = default)
-    {
-        if (session.Connected) return session;
-        await session.ReconnectAsync(cancellationToken);
-        return session;
-    }
-}
-
-public interface IEntityMonitor<out T>
-{
-    Task<IMessageSubscription> SubscribeToChange(
-        IMessageSubscriber<T> subscriber,
-        CancellationToken cancellationToken = default);
-}
-
 [OpcUaEntityService(typeof(IEntityMonitor<>), ServiceLifetime.Singleton)]
 public sealed class EntityMonitor<T>(
     IEntitySessionFactory factory,

@@ -106,7 +106,7 @@ public class MessagePublisherTest
 
         addThread.Start();
         publish.Start();
-        Thread.Sleep(5000);
+        Thread.Sleep(2000);
         cts.Cancel();
         addThread.Join();
         publish.Join();
