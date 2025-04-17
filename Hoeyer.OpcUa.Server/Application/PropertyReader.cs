@@ -5,7 +5,7 @@ using Hoeyer.OpcUa.Server.Api.RequestResponse;
 using Opc.Ua;
 using LocalizedText = Opc.Ua.LocalizedText;
 
-namespace Hoeyer.OpcUa.Server.Entity.Application;
+namespace Hoeyer.OpcUa.Server.Application;
 
 internal class PropertyReader(PermissionType permissionType) : IPropertyReader
 {

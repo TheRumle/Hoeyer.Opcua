@@ -1,6 +1,6 @@
 ﻿using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Entity.Application.Handle;
+namespace Hoeyer.OpcUa.Server.Application.Handle;
 
 internal sealed record EntityHandle : ManagedHandle<BaseObjectState>
 {

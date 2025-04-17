@@ -6,8 +6,8 @@ using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.EndToEndTest.Generators;
+using Hoeyer.OpcUa.Server.Api.Management;
 using Hoeyer.OpcUa.Server.Api.RequestResponse;
-using Hoeyer.OpcUa.Server.Entity;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.EndToEndTest;

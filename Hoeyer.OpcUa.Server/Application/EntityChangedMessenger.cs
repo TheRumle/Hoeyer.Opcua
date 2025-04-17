@@ -6,7 +6,7 @@ using Hoeyer.OpcUa.Server.Api.RequestResponse;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Hoeyer.OpcUa.Server.Entity.Application;
+namespace Hoeyer.OpcUa.Server.Application;
 
 [OpcUaEntityService(typeof(IEntityChangedMessenger<>), ServiceLifetime.Singleton)]
 public sealed class EntityChangedMessenger<T>(IEntityTranslator<T> translator, ILogger? logger = null) 

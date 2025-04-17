@@ -1,7 +1,8 @@
-﻿using Opc.Ua;
+﻿using Hoeyer.OpcUa.Server.Application.Management;
+using Opc.Ua;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Entity.Management;
+namespace Hoeyer.OpcUa.Server.Api.Management;
 
 public interface IDomainMasterManagerFactory
 {

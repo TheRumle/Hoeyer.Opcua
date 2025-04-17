@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using Hoeyer.OpcUa.Core.Configuration;
-using Hoeyer.OpcUa.Server.Entity.Management;
+using Hoeyer.OpcUa.Server.Api.Management;
 using Opc.Ua;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server;
+namespace Hoeyer.OpcUa.Server.Application.Management;
 
 internal sealed class DomainMasterNodeManagerFactory(
     IEntityNodeManagerFactory entityManagerFactory,

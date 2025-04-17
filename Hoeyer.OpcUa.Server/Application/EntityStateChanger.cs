@@ -6,7 +6,7 @@ using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.RequestResponse;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Entity.Application;
+namespace Hoeyer.OpcUa.Server.Application;
 
 /// <summary>
 ///     Edits entities. Handles modification of an Entity.

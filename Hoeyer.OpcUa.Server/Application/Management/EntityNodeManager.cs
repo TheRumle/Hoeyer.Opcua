@@ -7,7 +7,7 @@ using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Core.Application.RequestResponse;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Api;
-using Hoeyer.OpcUa.Server.Entity.Management;
+using Hoeyer.OpcUa.Server.Api.Management;
 using Hoeyer.OpcUa.Server.Extensions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;

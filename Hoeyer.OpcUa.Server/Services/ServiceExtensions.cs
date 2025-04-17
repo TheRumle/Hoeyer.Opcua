@@ -1,8 +1,9 @@
 ﻿using System;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Server.Api;
-using Hoeyer.OpcUa.Server.Configuration;
-using Hoeyer.OpcUa.Server.Entity.Management;
+using Hoeyer.OpcUa.Server.Api.Management;
+using Hoeyer.OpcUa.Server.Application.Management;
+using Hoeyer.OpcUa.Server.Services.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua;
 

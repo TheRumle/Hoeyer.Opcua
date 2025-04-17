@@ -4,7 +4,7 @@ using System.Text.Json;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Entity.Management;
+namespace Hoeyer.OpcUa.Server.Application.Management;
 
 internal sealed record ManagedEntityNode(
     BaseObjectState BaseObject,

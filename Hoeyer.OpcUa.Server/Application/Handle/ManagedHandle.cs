@@ -1,7 +1,7 @@
 ﻿using Hoeyer.OpcUa.Core.Entity.Node;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Entity.Application.Handle;
+namespace Hoeyer.OpcUa.Server.Application.Handle;
 
 internal abstract record ManagedHandle<T> : IEntityNodeHandle
     where T : BaseInstanceState

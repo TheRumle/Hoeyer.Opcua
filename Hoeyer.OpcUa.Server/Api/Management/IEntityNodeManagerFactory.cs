@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Server.Api;
 using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Entity.Management;
+namespace Hoeyer.OpcUa.Server.Api.Management;
 
 internal interface IEntityNodeManagerFactory
 {

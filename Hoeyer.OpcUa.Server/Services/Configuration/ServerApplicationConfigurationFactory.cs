@@ -3,7 +3,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Configuration;
+namespace Hoeyer.OpcUa.Server.Services.Configuration;
 
 internal static class ServerApplicationConfigurationFactory
 {

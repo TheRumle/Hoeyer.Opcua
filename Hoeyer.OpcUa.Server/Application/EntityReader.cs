@@ -6,7 +6,7 @@ using Hoeyer.OpcUa.Server.Api.RequestResponse;
 using Opc.Ua;
 using NodeClass = Opc.Ua.NodeClass;
 
-namespace Hoeyer.OpcUa.Server.Entity.Application;
+namespace Hoeyer.OpcUa.Server.Application;
 
 internal class EntityReader(IEntityNode entityNode, IPropertyReader propertyReader) : IEntityReader
 {

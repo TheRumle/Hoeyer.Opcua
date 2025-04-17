@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.Server.Api;
-using Hoeyer.OpcUa.Server.Configuration;
-using Hoeyer.OpcUa.Server.Entity.Management;
+using Hoeyer.OpcUa.Server.Api.Management;
+using Hoeyer.OpcUa.Server.Services.Configuration;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Configuration;

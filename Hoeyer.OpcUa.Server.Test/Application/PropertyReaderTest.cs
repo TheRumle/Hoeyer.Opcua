@@ -1,5 +1,5 @@
 ﻿using Hoeyer.OpcUa.Server.Api;
-using Hoeyer.OpcUa.Server.Entity.Application;
+using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Test.Application.Fixtures;
 using Hoeyer.OpcUa.Server.Test.Application.Generators;
 using Opc.Ua;

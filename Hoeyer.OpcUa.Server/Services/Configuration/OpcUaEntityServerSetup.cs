@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Hoeyer.OpcUa.Core.Configuration;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Configuration;
+namespace Hoeyer.OpcUa.Server.Services.Configuration;
 
 public sealed record OpcUaEntityServerSetup(
     string ServerId,
