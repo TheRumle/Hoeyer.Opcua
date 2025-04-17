@@ -33,7 +33,7 @@ public sealed class ServiceConfigurationTest
     [Test]
     [ClassDataSource<AllOpcUaServicesFixture>]
     public async Task EntityInitializer_IsRegistered(AllOpcUaServicesFixture fixture) 
-        => await AssertNumberEntitiesMatchesNumberServices(fixture.Services, typeof(IEntityInitializer));
+        => await AssertNumberEntitiesMatchesNumberServices(fixture.Services, typeof(IEntityServiceContainer));
     
     [Test]
     [ClassDataSource<AllOpcUaServicesFixture>]
