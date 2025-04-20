@@ -1,6 +1,6 @@
 ﻿namespace Hoeyer.Common.Messaging;
 
-public interface IMessageSubscriber<in T>
+public interface IMessageConsumer<in T>
 {
-    public void OnMessagePublished(IMessage<T> message);
+    public void Consume(IMessage<T> message);
 }

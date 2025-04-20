@@ -2,12 +2,11 @@
 using FluentResults;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Api;
-using Hoeyer.OpcUa.Server.Application.Handle;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Application;
+namespace Hoeyer.OpcUa.Server.Application.Handle;
 
-internal sealed class EntityHandleManager(IEntityNode entityNode) : IEntityHandleManager
+internal sealed class EntityHandler(IEntityNode entityNode) : IEntityHandleManager
 {
     private readonly HandleCollection _handles = new(entityNode);
 

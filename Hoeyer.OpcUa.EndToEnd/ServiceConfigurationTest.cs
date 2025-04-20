@@ -1,6 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Hoeyer.OpcUa.Client.Application.Browsing;
-using Hoeyer.OpcUa.Client.Application.Events;
+﻿using Hoeyer.OpcUa.Client.Api.Browsing;
+using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Core.Services;

@@ -2,12 +2,12 @@
 
 namespace Hoeyer.Common.Messaging;
 
-public sealed record MessageSubscription : IMessageSubscription
+public abstract record MessageSubscription : IMessageSubscription
 {
     public Guid SubscriptionId { get; } = Guid.NewGuid();
     private readonly IUnsubscribable _creator;
 
-    internal MessageSubscription(IUnsubscribable creator)
+    protected MessageSubscription(IUnsubscribable creator)
     {
         _creator = creator;
     }
@@ -18,14 +18,41 @@ public sealed record MessageSubscription : IMessageSubscription
     public void Unpause() => IsPaused = false;
     public void Pause() => IsPaused = true;
 
+    protected virtual void Dispose(bool disposing)
+    {
+        if (IsCancelled) return;
+        if (disposing)
+        {
+            _creator.Unsubscribe(this);
+        }
+        IsCancelled = true;
+
+    }
+
     public void Dispose()
     {
-        if (IsCancelled)
-        {
-            return;
-        }
-
-        _creator.Unsubscribe(this);
-        IsCancelled = true;
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
+    
+    ~MessageSubscription()
+    {
+        Dispose(false);
+    }
+}
+
+public sealed record MessageSubscription<T> : MessageSubscription
+{
+    public MessageSubscription(SubscriptionManager<T> creator, IMessageConsumer<T> consumer) : base(creator)
+    {
+        _consumer = consumer;
+    }
+
+    public void Forward(IMessage<T> message)
+    {
+        if(IsCancelled) return;
+        _consumer.Consume(message);
+    }
+
+    private readonly IMessageConsumer<T> _consumer;
 }

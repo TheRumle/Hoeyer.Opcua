@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Hoeyer.Common.Extensions;
 using Opc.Ua;
 using static Hoeyer.OpcUa.Core.Extensions.Opc.StatusCodeExtensions;
 
-namespace Hoeyer.OpcUa.Client.Application.Reading;
+namespace Hoeyer.OpcUa.Client.Api.Reading;
 
 public sealed class NodeReadException : Exception
 {
@@ -26,6 +27,12 @@ public sealed class NodeReadException : Exception
     {}
 
     private NodeReadException(string message) : base(message)
+    {
+    }
+
+    public NodeReadException(IEnumerable<NodeId> toRead, IList<ServiceResultException> cause)
+        : this($"Failed reading [{toRead.ToCommaSeparatedString()}] due to failures '{cause.Select(e => GetStatusCodeName(e.StatusCode)).SeparateBy(", ")}' with reasons {cause.Select((e, index) => (e.Message, index)).Aggregate("\n", (current, elem) => current + elem.index + ". " + elem.Message + ", ")}. \n " +
+               $"The payloads were: {cause.Select((e, index) => (e, index)).Aggregate("\n", (current, elem) => current + elem.index + ". " + $"{elem.e.Data}. See {elem.e.HelpLink}")}")
     {
     }
 }

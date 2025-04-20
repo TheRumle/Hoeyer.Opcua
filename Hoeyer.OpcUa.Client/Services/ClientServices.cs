@@ -1,4 +1,6 @@
-﻿using Hoeyer.OpcUa.Client.Application.Browsing;
+﻿using Hoeyer.OpcUa.Client.Api.Browsing;
+using Hoeyer.OpcUa.Client.Api.Reading;
+using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Client.Application.Reading;
 using Hoeyer.OpcUa.Client.MachineProxy;
 using Hoeyer.OpcUa.Core.Configuration;
@@ -20,7 +22,7 @@ public static class ClientServices
 
 
         var entities = OpcUaEntityTypes.Entities;
-        var genericMatcher = typeof(EntityDescriptionMatcher<>);
+        var genericMatcher = typeof(Application.Browsing.EntityDescriptionMatcher<>);
         foreach (var m in entities)
         {
             var instantiatedMatcher = genericMatcher.MakeGenericType(m);

@@ -1,6 +1,7 @@
 ﻿using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Application;
+using Hoeyer.OpcUa.Server.Application.Handle;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Test.Application.Fixtures;
@@ -14,7 +15,7 @@ public sealed record EntityBrowserFixture
     {
         var managedNode = nodeCreator.Create(2);
         EntityNode = managedNode;
-        HandleManager = new EntityHandleManager(managedNode);
+        HandleManager = new EntityHandler(managedNode);
     }
 
     public string EntityName => EntityNode.BaseObject.BrowseName.Name;

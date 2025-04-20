@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Hoeyer.OpcUa.Client.Application;
 using Opc.Ua;
 using Opc.Ua.Client;
 
-namespace Hoeyer.OpcUa.Client.Application.Reading;
+namespace Hoeyer.OpcUa.Client.Api.Reading;
 
 public interface INodeReader
 {

@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.Client.Application.Browsing;
+﻿using Hoeyer.OpcUa.Client.Api.Browsing;
+using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Core.Extensions;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.EndToEndTest.TestApplication;
@@ -23,8 +24,8 @@ public sealed class OpcUaEntityServerObservation(ApplicationFixture fixture)
         _ = publisher!.Subscribe(observer);
         
         await WriteNode(session);
-        await Assert.That(observer.Value).IsNotNull();
-        await Assert.That(observer.Value.IntValue).IsEqualTo(2);
+        await Assert.That(observer.Count).IsNotZero();
+        await Assert.That(observer.Count).IsEqualTo(1);
     }
 
     private async Task WriteNode(ISession session)

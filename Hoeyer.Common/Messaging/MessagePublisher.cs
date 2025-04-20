@@ -9,5 +9,5 @@ public class MessagePublisher<T>(ILogger? logger = null) : IMessagePublisher<T>,
 
     public void Publish(T message) => SubscriptionManager.Publish(message);
 
-    public IMessageSubscription Subscribe(IMessageSubscriber<T> subscriber) => SubscriptionManager.Subscribe(subscriber);
+    public MessageSubscription Subscribe(IMessageConsumer<T> subscriber) => SubscriptionManager.Subscribe(subscriber);
 }

@@ -1,15 +1,20 @@
-﻿using System;
+﻿
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.Common.Messaging;
-using Hoeyer.OpcUa.Client.Application.Browsing;
+using Hoeyer.OpcUa.Client.Api.Browsing;
+using Hoeyer.OpcUa.Client.Api.Connection;
+using Hoeyer.OpcUa.Client.Api.Monitoring;
+using Hoeyer.OpcUa.Client.Application.Connection;
 using Hoeyer.OpcUa.Client.MachineProxy;
 using Hoeyer.OpcUa.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua;
 using Opc.Ua.Client;
 
-namespace Hoeyer.OpcUa.Client.Application.Events;
+namespace Hoeyer.OpcUa.Client.Application.Monitoring;
 
 [OpcUaEntityService(typeof(IEntityMonitor<>), ServiceLifetime.Singleton)]
 public sealed class EntityMonitor<T>(
@@ -18,14 +23,14 @@ public sealed class EntityMonitor<T>(
     IReconnectionStrategy? reconnectionStrategy = null,
     EntityMonitoringConfiguration? entityMonitoringConfiguration = null) : IEntityMonitor<T>
 {
-    private readonly SubscriptionManager<T> _subscriptionManager = new(null);
+    private readonly SubscriptionManager<T> _subscriptionManager = new();
     private ISession? Session { get; set; }
     private readonly EntityMonitoringConfiguration _entityMonitoringConfiguration = entityMonitoringConfiguration ?? new();
     private readonly IReconnectionStrategy _reconnectionStrategy = reconnectionStrategy ?? new DefaultReconnectStrategy();
     
     
     public async Task<IMessageSubscription> SubscribeToChange(
-        IMessageSubscriber<T> subscriber,  CancellationToken cancellationToken = default)
+        IMessageConsumer<T> consumer,  CancellationToken cancellationToken = default)
     {
         Session ??= await factory.CreateSessionAsync("EntityMonitor");
         Session = await _reconnectionStrategy.ReconnectIfNotConnected(Session, cancellationToken);
@@ -54,7 +59,7 @@ public sealed class EntityMonitor<T>(
         Session.AddSubscription(subscription);
         await subscription.CreateAsync(cancellationToken);
         
-        var s = _subscriptionManager.Subscribe(subscriber);
+        var s = _subscriptionManager.Subscribe(consumer);
         return new EventChangeSubscription(subscription, s);
     }
 

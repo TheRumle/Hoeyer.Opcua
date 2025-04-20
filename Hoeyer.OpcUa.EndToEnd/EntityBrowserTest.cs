@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.Client.Application.Browsing;
+﻿using Hoeyer.OpcUa.Client.Api.Browsing;
+using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Client.MachineProxy;
 using Hoeyer.OpcUa.EndToEndTest.Generators;
 

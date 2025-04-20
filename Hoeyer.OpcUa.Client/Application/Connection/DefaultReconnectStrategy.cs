@@ -1,8 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Hoeyer.OpcUa.Client.Api.Connection;
 using Opc.Ua.Client;
 
-namespace Hoeyer.OpcUa.Client.Application.Events;
+namespace Hoeyer.OpcUa.Client.Application.Connection;
 
 public sealed class DefaultReconnectStrategy : IReconnectionStrategy
 {

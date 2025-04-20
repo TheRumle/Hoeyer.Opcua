@@ -2,11 +2,11 @@
 using System.Threading.Tasks;
 using Hoeyer.Common.Messaging;
 
-namespace Hoeyer.OpcUa.Client.Application.Events;
+namespace Hoeyer.OpcUa.Client.Api.Monitoring;
 
 public interface IEntityMonitor<out T>
 {
     Task<IMessageSubscription> SubscribeToChange(
-        IMessageSubscriber<T> subscriber,
+        IMessageConsumer<T> consumer,
         CancellationToken cancellationToken = default);
 }

@@ -2,14 +2,13 @@
 using Hoeyer.Common.Messaging;
 using Opc.Ua.Client;
 
-namespace Hoeyer.OpcUa.Client.Application.Events;
+namespace Hoeyer.OpcUa.Client.Application.Monitoring;
 
-public sealed record EventChangeSubscription(Subscription Subscription, IMessageSubscription MessageSubscription) : IMessageSubscription
+public sealed class EventChangeSubscription(Subscription Subscription, IMessageSubscription MessageSubscription) : IMessageSubscription
 {
     public void Dispose()
     {
         Subscription.Dispose();
-        MessageSubscription.Dispose();
     }
 
     public Guid SubscriptionId => MessageSubscription.SubscriptionId;
@@ -32,4 +31,7 @@ public sealed record EventChangeSubscription(Subscription Subscription, IMessage
         Subscription.PublishingEnabled = false;
         MessageSubscription.Pause();
     }
+
+    /// <inheritdoc />
+    public void Cancel() => MessageSubscription.Dispose();
 }

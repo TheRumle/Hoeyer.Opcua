@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Opc.Ua;
 using Opc.Ua.Client;
 
-namespace Hoeyer.OpcUa.Client.Application.Browsing;
+namespace Hoeyer.OpcUa.Client.Api.Browsing;
 
 public interface INodeTreeTraverser
 {

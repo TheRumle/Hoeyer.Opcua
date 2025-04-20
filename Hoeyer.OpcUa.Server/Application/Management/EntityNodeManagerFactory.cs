@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Hoeyer.Common.Messaging;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Api.Management;
+using Hoeyer.OpcUa.Server.Application.Handle;
 using Microsoft.Extensions.Logging;
 using Opc.Ua.Server;
 
@@ -12,7 +13,7 @@ namespace Hoeyer.OpcUa.Server.Application.Management;
 
 internal sealed class EntityNodeManagerFactory(
     ILoggerFactory loggerFactory,
-    IEnumerable<IEntityInitializer> initializers) : IEntityNodeManagerFactory
+    IEnumerable<IEntityServiceContainer> initializers) : IEntityNodeManagerFactory
 {
     public async Task<IEnumerable<IEntityNodeManager>> CreateEntityManagers(
         Func<string, (string @namespace, ushort index)> namespaceIndexFactory, IServerInternal server)
@@ -20,7 +21,9 @@ internal sealed class EntityNodeManagerFactory(
         return await Task.WhenAll(initializers.Select(async initializer =>
         {
             var (@namespace, index) = namespaceIndexFactory.Invoke(initializer.EntityName);
-            (IEntityNode node, IMessagePublisher<IEntityNode> publisher) = await initializer.CreateNode(index);
+            var node = await initializer.CreateNode(index);
+            var publisher = initializer.EntityChangedPublisher;
+            
             var managedNode = new ManagedEntityNode(node, @namespace, index);
 
             publisher.Publish(managedNode);
@@ -30,7 +33,7 @@ internal sealed class EntityNodeManagerFactory(
             return new EntityNodeManager(
                 managedNode,
                 server,
-                new EntityHandleManager(managedNode),
+                new EntityHandler(managedNode),
                 new EntityStateChanger(managedNode, publisher),
                 new EntityBrowser(managedNode),
                 new EntityReader(managedNode, new PropertyReader()),

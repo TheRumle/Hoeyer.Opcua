@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Hoeyer.OpcUa.Client.Application.Events;
+namespace Hoeyer.OpcUa.Client.Application.Monitoring;
 
 public sealed record EntityMonitoringConfiguration
 {

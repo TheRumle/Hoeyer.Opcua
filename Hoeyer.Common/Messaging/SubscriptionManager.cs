@@ -6,15 +6,23 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.Common.Messaging;
 
-public sealed class SubscriptionManager<T>(ILogger? logger) : IUnsubscribable, IMessageSubscribable<T>
+public interface ISubscriptionManager<T> : IDisposable
 {
-    private readonly ConcurrentDictionary<Guid, (IMessageSubscription subscription, IMessageSubscriber<T> subscriber)> _subscriptions = new();
+    IEnumerable<MessageSubscription> Subscribers { get; }
+    MessageSubscription Subscribe(IMessageConsumer<T> subscriber);
+    void Publish(T message);
+    public void Unpause();
+    public void Pause();
+}
 
-    public IEnumerable<(IMessageSubscription subscription, IMessageSubscriber<T> subscriber)> Subscribers =>
-        _subscriptions.Values;
-    
-    private static readonly string MessageName = typeof(T).Name;
+public sealed class SubscriptionManager<T>(ILogger? logger = null) : IUnsubscribable, IMessageSubscribable<T>, ISubscriptionManager<T>
+{
+    private readonly ConcurrentDictionary<Guid, MessageSubscription<T>> _subscriptions = new();
+
+    /// <inheritdoc />
+    public IEnumerable<MessageSubscription> Subscribers { get; }
     public int NumberOfSubscriptions => _subscriptions.Count;
+    private bool _isPaused;
     
     public void Unsubscribe(IMessageSubscription messageSubscription)
     {
@@ -26,11 +34,10 @@ public sealed class SubscriptionManager<T>(ILogger? logger) : IUnsubscribable, I
     }
 
     [Pure]
-    public IMessageSubscription Subscribe(IMessageSubscriber<T> subscriber)
+    public MessageSubscription Subscribe(IMessageConsumer<T> subscriber)
     {
-        logger?.BeginScope("Subscribing to messages of type '" + MessageName + '\'');
-        var subscription = new MessageSubscription(this);
-        if (!_subscriptions.TryAdd(subscription.SubscriptionId, (subscription, subscriber)))
+        var subscription = new MessageSubscription<T>(this, subscriber);
+        if (!_subscriptions.TryAdd(subscription.SubscriptionId, subscription))
         {
             logger?.LogError("Failed to add subscription with for {@StateChangeSubscriber}. Messages will not be forwarded...", subscriber);
         }
@@ -40,14 +47,27 @@ public sealed class SubscriptionManager<T>(ILogger? logger) : IUnsubscribable, I
         }
         return subscription;
     }
-
+    
     public void Publish(T message)
     {
+        if(_isPaused) return;
         var letter = new Message<T>(message);
-        foreach (var (subscription, subscriber) in Subscribers)
+        foreach (var subscription in _subscriptions.Values)
         {
             if (subscription.IsCancelled || subscription.IsPaused) continue;
-            subscriber.OnMessagePublished(letter);
+            subscription.Forward(letter);
+        }
+    }
+
+    public void Unpause() => _isPaused = false;
+
+    public void Pause() => _isPaused = true;
+
+    public void Dispose()
+    {
+        foreach (var su in _subscriptions.Values)
+        {
+            su.Dispose();
         }
     }
 }

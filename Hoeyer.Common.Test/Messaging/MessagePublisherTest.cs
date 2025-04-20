@@ -16,11 +16,11 @@ public class MessagePublisherTest
     private readonly MessagePublisher<int> publisher = new(NullLoggerFactory.Instance.CreateLogger("Loggger"));
     private readonly TestSubscriber _subscriber = new();
     private readonly Random _rand = new(46378919);
-    private sealed class TestSubscriber : IMessageSubscriber<int>
+    private sealed class TestSubscriber : IMessageConsumer<int>
     {
         public int Count = 0; 
         public IMessageSubscription MessageSubscription { get; set; }
-        public void OnMessagePublished(IMessage<int> message) => Count += 1;
+        public void Consume(IMessage<int> message) => Count += 1;
     }
     
     public static IEnumerable<Func<(int consumers, int messages)>> IncreasingLoad()
@@ -118,13 +118,18 @@ public class MessagePublisherTest
 
         Action<IMessageSubscription> pauseUnpause = (sub) =>
         {
-            if (subscriptions.Count % 2 == 0)
+            var action = _rand.Next(3);
+            switch (action)
             {
-                var action = _rand.Next(3);
-                if (action == 1)
+                case 1:
                     sub.Pause();
-                else
+                    break;
+                case 2:
+                    sub.Unpause();
+                    break;
+                default:
                     sub.Dispose();
+                    break;
             }
         };
         

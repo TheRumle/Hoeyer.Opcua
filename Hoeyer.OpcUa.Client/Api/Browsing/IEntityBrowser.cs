@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Hoeyer.OpcUa.Client.MachineProxy;
 using Opc.Ua.Client;
 
-namespace Hoeyer.OpcUa.Client.Application.Browsing;
+namespace Hoeyer.OpcUa.Client.Api.Browsing;
 
 public interface IEntityBrowser<T> : IEntityBrowser;
 

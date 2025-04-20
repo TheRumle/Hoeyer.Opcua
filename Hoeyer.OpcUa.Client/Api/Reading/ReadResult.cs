@@ -3,7 +3,7 @@ using System.Linq;
 using Hoeyer.OpcUa.Core.Extensions.Opc;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Client.Application.Reading;
+namespace Hoeyer.OpcUa.Client.Api.Reading;
 
 public sealed class ReadResult
 {

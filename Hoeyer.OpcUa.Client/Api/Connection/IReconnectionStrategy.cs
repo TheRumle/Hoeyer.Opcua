@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Opc.Ua.Client;
 
-namespace Hoeyer.OpcUa.Client.Application.Events;
+namespace Hoeyer.OpcUa.Client.Api.Connection;
 
 public interface IReconnectionStrategy
 {
