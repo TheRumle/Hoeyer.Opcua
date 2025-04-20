@@ -8,7 +8,7 @@ internal sealed record ReservedPort : IDisposable
     public static implicit operator int(ReservedPort port) => port.Port;
     private readonly TcpListener _listener = new(IPAddress.Loopback, 0);
 
-    private int? _port = null;
+    private int? _port;
 
     private int GetPort()
     {

@@ -59,7 +59,7 @@ internal class EntityReader(IEntityNode entityNode, IPropertyReader propertyRead
     
     private static EntityValueReadResponse Unavailable(ReadValueId readId)
     {
-        return new EntityValueReadResponse(readId, () => (new DataValue()
+        return new EntityValueReadResponse(readId, () => (new DataValue
         {
             StatusCode = StatusCodes.BadAttributeIdInvalid
         }, StatusCodes.BadAttributeIdInvalid));

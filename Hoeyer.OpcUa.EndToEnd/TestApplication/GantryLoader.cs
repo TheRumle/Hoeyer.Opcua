@@ -7,9 +7,9 @@ public class GantryLoader : IEntityLoader<Gantry>
     /// <inheritdoc />
     public ValueTask<Gantry> LoadCurrentState()
     {
-        return new ValueTask<Gantry>(new Gantry()
+        return new ValueTask<Gantry>(new Gantry
         {
-            AList = new List<string>()
+            AList = new List<string>
             {
                 "stnrei"
             },

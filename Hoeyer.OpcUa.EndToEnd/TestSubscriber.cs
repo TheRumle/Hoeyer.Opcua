@@ -1,5 +1,4 @@
 ﻿using Hoeyer.Common.Messaging;
-using Hoeyer.OpcUa.EndToEndTest.TestApplication;
 
 namespace Hoeyer.OpcUa.EndToEndTest;
 

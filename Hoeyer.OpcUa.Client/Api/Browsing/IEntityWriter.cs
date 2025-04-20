@@ -13,4 +13,4 @@ public interface IEntityWriter
 public interface IEntityWriter<in T> : IEntityWriter
 {
     public Task AssignEntityValues(ISession session, T entity, CancellationToken cancellationToken = default);
-};
+}

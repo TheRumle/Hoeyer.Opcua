@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.Common.Extensions.Types;
+using Hoeyer.OpcUa.Client.Api.Reading;
 using Opc.Ua;
 using Opc.Ua.Client;
 
@@ -10,14 +11,21 @@ namespace Hoeyer.OpcUa.Client.Application.Reading;
 
 internal sealed class NodeReader : INodeReader
 {
-    public async Task<ReadResult> ReadNodesAsync(
+    public Task<ReadResult> ReadNodesAsync(
         ISession session,
         IEnumerable<NodeId> ids,
         NodeClass filter = NodeClassFilters.Any,
         CancellationToken ct = default)
     {
         var idList = ids.ToList();
-        return await session
+        var task =  CreateReadNodesTask(session, filter, ct, idList);
+        task.ConfigureAwait(false);
+        return task;
+    }
+
+    private static Task<ReadResult> CreateReadNodesTask(ISession session, NodeClass filter, CancellationToken ct, List<NodeId> idList)
+    {
+        return session
             .ReadNodesAsync(idList, filter, ct: ct)
             .ContinueWith(response =>
             {

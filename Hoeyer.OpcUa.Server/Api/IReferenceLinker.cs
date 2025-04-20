@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using FluentResults;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Api;

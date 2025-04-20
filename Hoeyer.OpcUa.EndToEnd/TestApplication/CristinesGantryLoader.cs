@@ -7,9 +7,9 @@ public class CristinesGantryLoader : IEntityLoader<CristinesGantry>
     /// <inheritdoc />
     public ValueTask<CristinesGantry> LoadCurrentState()
     {
-        return new ValueTask<CristinesGantry>(new CristinesGantry()
+        return new ValueTask<CristinesGantry>(new CristinesGantry
         {
-            AList = new List<string>()
+            AList = new List<string>
             {
                 "stnreisss"
             },

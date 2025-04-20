@@ -18,7 +18,7 @@ public class MessagePublisherTest
     private readonly Random _rand = new(46378919);
     private sealed class TestSubscriber : IMessageConsumer<int>
     {
-        public int Count = 0; 
+        public int Count; 
         public IMessageSubscription MessageSubscription { get; set; }
         public void Consume(IMessage<int> message) => Count += 1;
     }
@@ -116,7 +116,7 @@ public class MessagePublisherTest
     {
         var subscriptions = new ConcurrentBag<IMessageSubscription>();
 
-        Action<IMessageSubscription> pauseUnpause = (sub) =>
+        Action<IMessageSubscription> pauseUnpause = sub =>
         {
             var action = _rand.Next(3);
             switch (action)

@@ -6,7 +6,7 @@ namespace Hoeyer.OpcUa.Server.Test.Application;
 
 [EntityFixtureGenerator]
 [TestSubject(typeof(EntityMonitor))]
-public class EntityMonitorTest()
+public class EntityMonitorTest
 {
 
     

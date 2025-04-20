@@ -2,7 +2,6 @@
 using Hoeyer.Opc.Ua.Test.TUnit.Extensions;
 using Hoeyer.OpcUa.Server.Test.Application.Fixtures;
 using Hoeyer.OpcUa.Server.Test.Entities;
-using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Test.Application.Generators;
 

@@ -26,7 +26,7 @@ public static class ClientServices
         foreach (var m in entities)
         {
             var instantiatedMatcher = genericMatcher.MakeGenericType(m);
-            services.AddTransient(instantiatedMatcher, (_) => DefaultMatcherFactory.CreateMatcher(m));
+            services.AddTransient(instantiatedMatcher, _ => DefaultMatcherFactory.CreateMatcher(m));
         }
         return registration;
     }

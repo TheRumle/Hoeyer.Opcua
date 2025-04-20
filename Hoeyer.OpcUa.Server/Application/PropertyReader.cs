@@ -29,16 +29,16 @@ internal class PropertyReader(PermissionType permissionType) : IPropertyReader
             Attributes.ArrayDimensions => CreateResponse(readId,
                 node.Value is ICollection c 
                     ? new ReadOnlyList<uint>(new List<uint> {(uint)c.Count})
-                    : new ReadOnlyList<uint>(new List<uint> {})),
+                    : new ReadOnlyList<uint>(new List<uint>())),
             Attributes.AccessLevel => CreateResponse(readId, AccessLevels.CurrentReadOrWrite),
             Attributes.UserAccessLevel => CreateResponse(readId, AccessLevels.CurrentReadOrWrite),
             Attributes.Historizing => CreateResponse(readId, false),
-            Attributes.RolePermissions => CreateResponse(readId, new []{new RolePermissionType()
+            Attributes.RolePermissions => CreateResponse(readId, new []{new RolePermissionType
             {
                 RoleId = ObjectIds.WellKnownRole_Anonymous,
                 Permissions = (uint) permissionType
             }}),
-            Attributes.UserRolePermissions => CreateResponse(readId, new []{new RolePermissionType()
+            Attributes.UserRolePermissions => CreateResponse(readId, new []{new RolePermissionType
             {
                 RoleId = ObjectIds.WellKnownRole_Anonymous,
                 Permissions = (uint) permissionType

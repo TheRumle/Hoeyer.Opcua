@@ -13,7 +13,7 @@ public abstract record MessageSubscription : IMessageSubscription
     }
 
     public bool IsCancelled { get; private set; }
-    public bool IsPaused { get; private set;  } = false;
+    public bool IsPaused { get; private set;  }
 
     public void Unpause() => IsPaused = false;
     public void Pause() => IsPaused = true;

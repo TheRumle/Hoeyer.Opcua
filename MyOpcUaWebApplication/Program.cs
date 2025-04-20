@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.AddJsonConsole(options =>
 {
     options.IncludeScopes = true;
-    options.JsonWriterOptions = new JsonWriterOptions()
+    options.JsonWriterOptions = new JsonWriterOptions
     {
         Indented = true,
     };

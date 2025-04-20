@@ -43,7 +43,7 @@ public class StatusCodeResponseProcessorFactory(LogLevel errorLevel, LogLevel su
     ) where T : IStatusCodeResponse
     {
         return GetProcessorImpl(valuesToProcess, processSuccess, processError, operationName)
-            .WithLogging(logger, operationName, errorLevel, LogLevel.None);
+            .WithLogging(logger, operationName, errorLevel);
     }
 
     [Pure]

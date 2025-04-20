@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.Common.Extensions;
 
 namespace Hoeyer.OpcUa.Core.Reflections;
 

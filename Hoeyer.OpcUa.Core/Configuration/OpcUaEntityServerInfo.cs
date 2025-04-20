@@ -17,7 +17,7 @@ internal record OpcUaEntityServerInfo : IOpcUaEntityServerInfo
         this.Host = Host;
         this.Endpoints = Endpoints;
         this.ApplicationNamespace = ApplicationNamespace;
-        this.OpcUri = new UriBuilder(Host)
+        OpcUri = new UriBuilder(Host)
         {
             Scheme = "opc.tcp",
             Port = Host.Port // Ensure the port remains unchanged

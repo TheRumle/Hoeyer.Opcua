@@ -1,5 +1,4 @@
 ﻿using Hoeyer.OpcUa.Client.Api.Browsing;
-using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Core.Extensions;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.EndToEndTest.TestApplication;
@@ -36,11 +35,11 @@ public sealed class OpcUaEntityServerObservation(ApplicationFixture fixture)
 
         await session.WriteAsync(null, new WriteValueCollection
         {
-            new WriteValue()
+            new WriteValue
             {
                 NodeId = childToWrite.NodeId.AsNodeId(session.NamespaceUris),
                 AttributeId = Attributes.Value,
-                Value = new DataValue()
+                Value = new DataValue
                 {
                     Value = 2
                 }

@@ -7,7 +7,6 @@ using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Reading;
-using Hoeyer.OpcUa.Client.Application.Reading;
 using Hoeyer.OpcUa.Client.Extensions;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Extensions;
@@ -55,7 +54,7 @@ public sealed class EntityBrowser<TEntity>(
                     Entity = EntityName,
                 });
                 
-                Node node = _entityNode ?? await FindEntityNode(session, ObjectIds.RootFolder, (p) => _identityMatcher.Invoke(p), cancellationToken);
+                Node node = _entityNode ?? await FindEntityNode(session, ObjectIds.RootFolder, p => _identityMatcher.Invoke(p), cancellationToken);
                 
                 _entityNode = node;
                 IEnumerable<ReferenceDescription> children = await Browse(session, cancellationToken: cancellationToken)

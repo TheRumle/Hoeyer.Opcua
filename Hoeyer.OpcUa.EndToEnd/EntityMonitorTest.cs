@@ -34,11 +34,11 @@ public sealed class EntityMonitorTest(ApplicationFixture fixture)
 
         await session.WriteAsync(null, new WriteValueCollection
         {
-            new WriteValue()
+            new WriteValue
             {
                 NodeId = childToWrite.NodeId.AsNodeId(session.NamespaceUris),
                 AttributeId = Attributes.Value,
-                Value = new DataValue()
+                Value = new DataValue
                 {
                     Value = 2
                 }
