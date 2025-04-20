@@ -50,11 +50,6 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
         return res;
     }
 
-    private void Log<T>(LogLevel logResultAs, T a)
-    {
-        Logger.Log(logResultAs, "Got {Values}", a);
-    }
-
     public async Task<T> WhenExecutingAsync<T>(Func<Task<T>> action, LogLevel logResultAs = LogLevel.None)
     {
         if (HasScope)
@@ -108,6 +103,11 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
         return this;
     }
 
+    private void Log<T>(LogLevel logResultAs, T a)
+    {
+        Logger.Log(logResultAs, "Got {Values}", a);
+    }
+    
     private void ExecuteAndLogWithScope(Action action)
     {
         if (_scope != null)

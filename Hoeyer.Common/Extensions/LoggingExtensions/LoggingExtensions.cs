@@ -13,7 +13,6 @@ public static class LoggingExtensions
     public static ILogLevelSelected LogCaughtExceptionAs(this ILogger logger, LogLevel level, 
         Func<Exception, Exception>? customExceptionMapper = null)
     {
-        
         return new LoggingSetup(logger, level, customExceptionMapper ?? Functionals.Identity);
     }
 
@@ -25,17 +24,28 @@ public static class LoggingExtensions
         List<Exception> exceptions = new List<Exception>();
         foreach (var e in elems)
         {
-            var err = logger.Try(() => action.Invoke(e), onError == null ? null : (ex) => onError.Invoke(e, ex));
-            if (err is not null) exceptions.Add(err);
-            else onEachSuccess?.Invoke(e);
+            var err = logger.Try(() => action.Invoke(e), onError == null ? null : ex => onError.Invoke(e, ex));
+            if (err is not null)
+            {
+                exceptions.Add(err);
+            }
+            else
+            {
+                onEachSuccess?.Invoke(e);
+            }
         }
 
-        if (exceptions.Count == 0) onSuccess?.Invoke();
+        if (exceptions.Count == 0)
+        {
+            onSuccess?.Invoke();
+        }
+
         return exceptions.Count > 0 ? new AggregateException(exceptions) : null;
     }
-    
-    
-    public static Exception? Try(this ILogger logger, Action action, Action<Exception>? errHandle = null, Action? onSuccess = null)
+
+
+    public static Exception? Try(this ILogger logger, Action action, Action<Exception>? errHandle = null,
+        Action? onSuccess = null)
     {
         try
         {
