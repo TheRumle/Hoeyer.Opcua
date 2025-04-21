@@ -15,14 +15,14 @@ internal class HandleCollection(IEntityNode entityNode)
 
     public IReadOnlyDictionary<PropertyState, PropertyHandle> PropertyHandles => _propertyHandles;
 
-    private IEntityNodeHandle AddProperty(PropertyState state)
+    private PropertyHandle AddProperty(PropertyState state)
     {
         var handle = new PropertyHandle(state);
         _propertyHandles.Add(state, handle);
         return handle;
     }
 
-    public IEntityNodeHandle GetOrCreatePropertyHandle(PropertyState state)
+    public PropertyHandle GetOrCreatePropertyHandle(PropertyState state)
     {
         return _propertyHandles.TryGetValue(state, out var handle) ? handle : AddProperty(state);
     }

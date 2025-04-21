@@ -18,9 +18,9 @@ public sealed class OpcUaEntityServerObservation(ApplicationFixture fixture)
     public async Task WhenClientWritesToEntity_ObserverShouldBeNotified()
     {
         var session = await fixture.CreateSession(Guid.NewGuid().ToString());
-        var publisher = await fixture.GetService<IEntityChangedMessenger<Gantry>>();
+        IEntityChangedBroadcaster<Gantry> publisher = await fixture.GetService<IEntityChangedBroadcaster<Gantry>>();
         var observer = new TestSubscriber<Gantry>();
-        _ = publisher!.Subscribe(observer);
+        _ = publisher.EntitySubcribable.Subscribe(observer);
         
         await WriteNode(session);
         await Assert.That(observer.Count).IsNotZero();

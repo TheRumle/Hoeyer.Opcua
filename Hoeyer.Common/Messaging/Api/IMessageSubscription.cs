@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Hoeyer.Common.Messaging;
+namespace Hoeyer.Common.Messaging.Api;
 
 public interface IMessageSubscription : IDisposable
 {
@@ -9,4 +9,9 @@ public interface IMessageSubscription : IDisposable
     bool IsPaused { get; }
     void Unpause();
     void Pause();
+}
+
+public interface IMessageSubscription<in T> : IMessageSubscription
+{
+    void Forward(IMessage<T> message);
 }

@@ -5,7 +5,7 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Connection;
 
-public sealed class DefaultReconnectStrategy : IReconnectionStrategy
+public sealed class DefaultReconnectStrategy() : IReconnectionStrategy
 {
     /// <inheritdoc />
     public async Task<ISession> ReconnectIfNotConnected(ISession session, CancellationToken cancellationToken = default)

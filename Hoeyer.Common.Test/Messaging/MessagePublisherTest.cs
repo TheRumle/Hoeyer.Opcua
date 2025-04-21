@@ -5,22 +5,22 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.Common.Messaging;
+using Hoeyer.Common.Messaging.Api;
 using JetBrains.Annotations;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Hoeyer.Common.Test.Messaging;
 
 [TestSubject(typeof(MessagePublisher<>))]
 public class MessagePublisherTest
 {
-    private readonly MessagePublisher<int> publisher = new(NullLoggerFactory.Instance.CreateLogger("Loggger"));
+    private readonly MessagePublisher<int> publisher = new();
     private readonly TestSubscriber _subscriber = new();
     private readonly Random _rand = new(46378919);
     private sealed class TestSubscriber : IMessageConsumer<int>
     {
         public int Count; 
         public IMessageSubscription MessageSubscription { get; set; }
-        public void Consume(IMessage<int> message) => Count += 1;
+        public void Consume(IMessage<int> changedProperties) => Count += 1;
     }
     
     public static IEnumerable<Func<(int consumers, int messages)>> IncreasingLoad()

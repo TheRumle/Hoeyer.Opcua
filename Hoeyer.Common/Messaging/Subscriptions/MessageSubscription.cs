@@ -1,13 +1,14 @@
 ﻿using System;
+using Hoeyer.Common.Messaging.Api;
 
-namespace Hoeyer.Common.Messaging;
+namespace Hoeyer.Common.Messaging.Subscriptions;
 
 public abstract record MessageSubscription : IMessageSubscription
 {
     public Guid SubscriptionId { get; } = Guid.NewGuid();
-    private readonly IUnsubscribable _creator;
+    private readonly IMessageUnsubscribable _creator;
 
-    protected MessageSubscription(IUnsubscribable creator)
+    protected MessageSubscription(IMessageUnsubscribable creator)
     {
         _creator = creator;
     }
@@ -29,21 +30,17 @@ public abstract record MessageSubscription : IMessageSubscription
 
     }
 
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-    
+    public void Dispose() => Dispose(true);
+
     ~MessageSubscription()
     {
         Dispose(false);
     }
 }
 
-public sealed record MessageSubscription<T> : MessageSubscription
+public sealed record MessageSubscription<T> : MessageSubscription, IMessageSubscription<T>
 {
-    public MessageSubscription(SubscriptionManager<T> creator, IMessageConsumer<T> consumer) : base(creator)
+    public MessageSubscription(IMessageUnsubscribable creator, IMessageConsumer<T> consumer) : base(creator)
     {
         _consumer = consumer;
     }

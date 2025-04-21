@@ -25,6 +25,7 @@ internal class SessionFactory(IOpcUaEntityServerInfo applicationOptions) : IEnti
             new UserIdentity(new AnonymousIdentityToken()),
             null);
         session.TransferSubscriptionsOnReconnect = true;
+        session.DeleteSubscriptionsOnClose = false;
 
         return session;
     }

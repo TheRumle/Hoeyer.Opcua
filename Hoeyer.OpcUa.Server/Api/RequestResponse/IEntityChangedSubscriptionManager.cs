@@ -1,4 +1,5 @@
 ﻿using Hoeyer.Common.Messaging;
+using Hoeyer.Common.Messaging.Api;
 using Hoeyer.OpcUa.Core.Entity.Node;
 
 namespace Hoeyer.OpcUa.Server.Api.RequestResponse;

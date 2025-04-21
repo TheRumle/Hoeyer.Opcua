@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using FluentResults;
-using Hoeyer.OpcUa.Core.Entity.Node;
+﻿using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Api;
 using Opc.Ua;
 
@@ -10,13 +8,8 @@ internal sealed class EntityHandler(IEntityNode entityNode) : IEntityHandleManag
 {
     private readonly HandleCollection _handles = new(entityNode);
 
-    /// <inheritdoc />
     public IEntityNodeHandle EntityHandle => _handles.ManagedHandle;
 
-    /// <inheritdoc />
-    public IEnumerable<IEntityNodeHandle> PropertyHandles => _handles.PropertyHandles.Values;
-
-    /// <inheritdoc />
     public bool IsHandleToAnyRelatedNode(object? handle)
     {
         if (handle == null)
@@ -28,7 +21,7 @@ internal sealed class EntityHandler(IEntityNode entityNode) : IEntityHandleManag
     }
 
     /// <inheritdoc />
-    public Result<BaseInstanceState> GetState(NodeId nodeId)
+    public BaseInstanceState? GetState(NodeId nodeId)
     {
         if (IsManagedEntityHandle(nodeId))
         {
@@ -40,7 +33,7 @@ internal sealed class EntityHandler(IEntityNode entityNode) : IEntityHandleManag
             return property.Value;
         }
 
-        return Result.Fail($"Entity {entityNode.BaseObject.BrowseName} does not have any data for state {nodeId}");
+        return null;
     }
 
     /// <inheritdoc />
@@ -60,7 +53,7 @@ internal sealed class EntityHandler(IEntityNode entityNode) : IEntityHandleManag
     }
 
 
-    public bool IsManagedPropertyHandle(object? handle, out IEntityNodeHandle managedPropertyHandle)
+    public bool IsManagedPropertyHandle(object? handle, out ManagedHandle<PropertyState> managedPropertyHandle)
     {
         if (handle is PropertyHandle p
             && entityNode.PropertyStates.TryGetValue(p.Value.NodeId, out _))
@@ -74,7 +67,7 @@ internal sealed class EntityHandler(IEntityNode entityNode) : IEntityHandleManag
     }
 
     /// <inheritdoc />
-    public bool IsManagedPropertyHandle(NodeId id, out IEntityNodeHandle managedPropertyHandle)
+    public bool IsManagedPropertyHandle(NodeId id, out ManagedHandle<PropertyState> managedPropertyHandle)
     {
         if (entityNode.PropertyStates.TryGetValue(id, out var property))
         {
@@ -87,24 +80,23 @@ internal sealed class EntityHandler(IEntityNode entityNode) : IEntityHandleManag
     }
 
     /// <inheritdoc />
-    public Result<IEntityNodeHandle> GetHandle(NodeId nodeId)
+    public IEntityNodeHandle? GetHandle(NodeId nodeId)
     {
         if (IsManagedPropertyHandle(nodeId, out var propertyHandle))
         {
-            return Result.Ok(propertyHandle);
+            return propertyHandle;
         }
 
         if (TryGetEntityHandle(nodeId, out var entityHandle))
         {
-            return Result.Ok(entityHandle);
+            return entityHandle;
         }
 
-        return Result.Fail(
-            $"Entity {entityNode.BaseObject.BrowseName} does not have any data for state handle {nodeId}");
+        return null;
     }
 
 
-    public bool TryGetEntityHandle(NodeId id, out IEntityNodeHandle entityHandle)
+    public bool TryGetEntityHandle(NodeId id, out ManagedHandle<BaseObjectState> entityHandle)
     {
         if (IsManagedEntityHandle(id) || id.Equals(entityNode.BaseObject.NodeId))
         {

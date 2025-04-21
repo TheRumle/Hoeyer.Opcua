@@ -1,4 +1,5 @@
 ﻿using System;
+using Hoeyer.Common.Messaging.Api;
 
 namespace Hoeyer.Common.Messaging;
 

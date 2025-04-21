@@ -10,13 +10,10 @@ namespace Hoeyer.OpcUa.Core.Application.RequestResponse;
 public class RequestResponseProcessor<T>(
     IEnumerable<T> valuesToProcess,
     Action<T> processSuccess,
-    Action<T> processError,
-    string? operationName = null
-) : IRequestResponseProcessor<T> where T : IRequestResponse
+    Action<T> processError) : IRequestResponseProcessor<T> where T : IRequestResponse
 {
     private LogLevel _errorLevel;
     private ILogger? _logger;
-    private string? _operationName = operationName;
     private LogLevel _successLevel;
 
     /// <inheritdoc />
@@ -48,21 +45,18 @@ public class RequestResponseProcessor<T>(
 
     public RequestResponseProcessor<T> WithLogging(
         ILogger logger,
-        string operationName,
         LogLevel errorLevel = LogLevel.Error,
         LogLevel successLevel = LogLevel.None)
     {
         _errorLevel = errorLevel;
         _successLevel = successLevel;
         _logger = logger;
-        _operationName = operationName;
         return this;
     }
 
     private void LogSuccess(List<T> fits, Func<T, string> formatSuccess)
     {
-        _logger?.Log(_successLevel, "{OperationName} : [{@Attributes}]",
-            _operationName,
+        _logger?.Log(_successLevel, "Success: [{@Attributes}]",
             fits.Select(formatSuccess)
                 .OrderBy(text => text)
                 .SeparateBy(", "));
@@ -70,8 +64,7 @@ public class RequestResponseProcessor<T>(
 
     private void LogErrors(List<T> fails, Func<T, string> formatError)
     {
-        _logger?.Log(_errorLevel, "Failed {OperationName} : [{@AttributeAndStatus}]",
-            _operationName,
+        _logger?.Log(_errorLevel, "Failed: [{@AttributeAndStatus}]",
             fails.Select(formatError)
                 .OrderBy(text => text)
                 .SeparateBy(", "));

@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.Common.Messaging;
+﻿namespace Hoeyer.Common.Messaging.Api;
 
 public interface IMessage<out T>
 {

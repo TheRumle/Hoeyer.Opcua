@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hoeyer.Common.Messaging;
+using Hoeyer.Common.Messaging.Api;
 using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.RequestResponse;
@@ -11,19 +11,19 @@ namespace Hoeyer.OpcUa.Server.Application;
 /// <summary>
 ///     Edits entities. Handles modification of an Entity.
 /// </summary>
-internal class EntityStateChanger(IEntityNode entityNode, IMessagePublisher<IEntityNode> broadcastChange) : IEntityWriter
+internal class EntityStateChanger(IEntityNode entityNode, IEntityChangedBroadcaster broadcastChange) : IEntityWriter
 {
     public IEnumerable<EntityWriteResponse> Write(IEnumerable<WriteValue> nodesToWrite)
     {
-        var result = ProcessWriteRequests(nodesToWrite, out var stateChanged);
-        if (stateChanged) broadcastChange.Publish(entityNode);
+        var result = ProcessWriteRequests(nodesToWrite, out var changes);
+        if (changes.Count > 0) broadcastChange.Publish((entityNode, changes));
         return result;
     }
 
-    private IEnumerable<EntityWriteResponse> ProcessWriteRequests(IEnumerable<WriteValue> nodesToWrite, out bool stateChange)
+    private IEnumerable<EntityWriteResponse> ProcessWriteRequests(IEnumerable<WriteValue> nodesToWrite, out List<StateChange<PropertyState, object>> changes)
     {
-        stateChange = false;
-        List<EntityWriteResponse> result = new List<EntityWriteResponse>();
+        changes = new();
+        var result = new List<EntityWriteResponse>();
         foreach (var toWrite in nodesToWrite)
         {
             if (toWrite.AttributeId != Attributes.Value)
@@ -33,8 +33,9 @@ internal class EntityStateChanger(IEntityNode entityNode, IMessagePublisher<IEnt
 
             if (entityNode.PropertyStates.TryGetValue(toWrite.NodeId, out var property))
             {
+                var oldValue = property.Value;
                 result.Add(Write(toWrite, property));
-                stateChange = true;
+                changes.Add(new StateChange<PropertyState, object>(property, oldValue, property.Value ));
             }
             else
             {

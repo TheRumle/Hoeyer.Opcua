@@ -1,30 +1,29 @@
 ﻿using Hoeyer.OpcUa.Client.Api.Browsing;
-using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Client.Application.Monitoring;
 using Hoeyer.OpcUa.Core.Extensions;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.EndToEndTest.TestApplication;
-using JetBrains.Annotations;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.EndToEndTest;
 
-[TestSubject(typeof(EntityMonitor<>))]
 [ClassDataSource<ApplicationFixture>]
-public sealed class EntityMonitorTest(ApplicationFixture fixture)
+public class EntityObserverSessionInteractionTest(ApplicationFixture fixture)
 {
     [Test]
-    public async Task WhenWritingNode_ObserverIsNotified()
+    public async Task WhenSessionIsClosed_SubscriptionsArePreserved()
     {
         var observer = new TestSubscriber<Gantry>();
-        var monitor = await fixture.GetService<IEntityMonitor<Gantry>>();
+        var monitor = await fixture.GetService<EntitySubscription<Gantry>>();
         _ = await monitor.SubscribeToChange(observer);
         
+        await monitor.Session!.CloseAsync();
+        await monitor.Session.ReconnectAsync();
+        
         await WriteNode();
-        await Assert.That(observer.Count).IsNotZero();
         await Assert.That(observer.Count).IsEqualTo(1);
     }
-
+    
     private async Task WriteNode()
     {
         var session = await fixture.CreateSession(Guid.NewGuid().ToString());
@@ -45,4 +44,7 @@ public sealed class EntityMonitorTest(ApplicationFixture fixture)
             }
         }, fixture.Token);
     }
+
+
+    
 }

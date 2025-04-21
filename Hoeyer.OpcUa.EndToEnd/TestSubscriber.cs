@@ -1,9 +1,10 @@
 ﻿using Hoeyer.Common.Messaging;
+using Hoeyer.Common.Messaging.Api;
 
 namespace Hoeyer.OpcUa.EndToEndTest;
 
 internal sealed class TestSubscriber<T> : IMessageConsumer<T>
 {
-    public int Count { get; private set; }
-    public void Consume(IMessage<T> message) => Count += 1;
+    public int Count { get; private set; } = 0;
+    public void Consume(IMessage<T> changedProperties) => Count += 1;
 }

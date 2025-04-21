@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using Hoeyer.Common.Messaging;
+using Hoeyer.Common.Messaging.Api;
+using Hoeyer.Common.Messaging.Subscriptions;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
@@ -14,19 +16,16 @@ public sealed class EntityChangedSubscriptionManager<T>(IEntityTranslator<T> tra
     : IEntityChangedSubscriptionManager<T>
 {
     private readonly SubscriptionManager<T> _subscriptionManager = new();
+
+    public ISubscriptionCollection<T> Collection => _subscriptionManager.Collection;
     public void Publish(IEntityNode message) => _subscriptionManager.Publish(translator.Translate(message));
     public void Publish(T message) => _subscriptionManager.Publish(message);
 
-    public void Dispose()
-    {
-        _subscriptionManager.Dispose();
-    }
-
-    public IEnumerable<MessageSubscription> Subscribers { get; }
-
-    public MessageSubscription Subscribe(IMessageConsumer<T> subscriber) => _subscriptionManager.Subscribe(subscriber);
+    public void Dispose() => _subscriptionManager.Dispose();
+    public IMessageSubscription<T> Subscribe(IMessageConsumer<T> subscriber) => _subscriptionManager.Subscribe(subscriber);
     public void Unpause() => _subscriptionManager.Unpause();
     public void Pause() => _subscriptionManager.Pause();
+    public void Unsubscribe(IMessageSubscription messageSubscription) => _subscriptionManager.Unsubscribe(messageSubscription);
 }
 
 

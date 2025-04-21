@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Hoeyer.Common.Messaging;
+using Hoeyer.Common.Messaging.Api;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
@@ -9,22 +9,20 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Server.Application.Management;
 
-[OpcUaEntityService(typeof(IEntityServiceContainer), ServiceLifetime.Singleton)]
-public sealed class EntityServiceContainer<T>(
+[OpcUaEntityService(typeof(IEntityServiceContainerFactory), ServiceLifetime.Singleton)]
+public sealed class EntityServiceContainerFactory<T>(
     IEntityLoader<T> value,
     IEntityTranslator<T> translator,
     IEntityNodeStructureFactory<T> structureFactory,
-    IEntityChangedMessenger<T> messenger) : IEntityServiceContainer
+    IEntityChangedBroadcaster<T> entityChangedBroadcaster) : IEntityServiceContainerFactory
 {
-    /// <inheritdoc />
-    public IMessagePublisher<IEntityNode> EntityChangedPublisher => messenger;
     public string EntityName { get; } = typeof(T).Name;
 
-    public async Task<IEntityNode> CreateNode(ushort namespaceIndex)
+    public async Task<ServiceContainer> CreateServiceContainer(ushort namespaceIndex)
     {
         var entity = await value.LoadCurrentState();
         var nodeRepresentation = structureFactory.Create(namespaceIndex);
         translator.AssignToNode(entity, nodeRepresentation);
-        return nodeRepresentation;
+        return new ServiceContainer(nodeRepresentation, entityChangedBroadcaster);
     }
 }

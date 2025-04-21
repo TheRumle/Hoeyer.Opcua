@@ -1,5 +1,6 @@
 ﻿using System;
 using Hoeyer.Common.Messaging;
+using Hoeyer.Common.Messaging.Api;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Monitoring;

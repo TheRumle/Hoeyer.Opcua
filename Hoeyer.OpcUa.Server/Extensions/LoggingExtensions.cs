@@ -65,4 +65,20 @@ public static class LoggingExtensions
             },
         };
     }
+
+    public static object ToLoggingObject(this MonitoredItemCreateRequest request)
+    {
+        return new
+        {
+            ItemToMonitor = request.ItemToMonitor.NodeId,
+            RequestParams = new
+            {
+                request.RequestedParameters.DiscardOldest,
+                request.RequestedParameters.ClientHandle,
+                request.RequestedParameters.SamplingInterval,
+                request.RequestedParameters.Filter,
+            }
+        };
+
+    }
 }

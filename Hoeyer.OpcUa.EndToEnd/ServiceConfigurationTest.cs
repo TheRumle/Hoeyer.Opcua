@@ -32,21 +32,21 @@ public sealed class ServiceConfigurationTest
     [Test]
     [ClassDataSource<AllOpcUaServicesFixture>]
     public async Task EntityInitializer_IsRegistered(AllOpcUaServicesFixture fixture) 
-        => await AssertNumberEntitiesMatchesNumberServices(fixture.Services, typeof(IEntityServiceContainer));
+        => await AssertNumberEntitiesMatchesNumberServices(fixture.Services, typeof(IEntityServiceContainerFactory));
     
     [Test]
     [ClassDataSource<AllOpcUaServicesFixture>]
     public async Task EntityChanged_IsRegistered(AllOpcUaServicesFixture fixture) 
-        => await AssertNumberEntitiesMatchesNumberServices(fixture.Services, typeof(IEntityChangedMessenger<>));
+        => await AssertNumberEntitiesMatchesNumberServices(fixture.Services, typeof(IEntityChangedBroadcaster<>));
     
     [Test]
     [ClassDataSource<AllOpcUaServicesFixture>]
     public async Task EntityMonitor_IsRegistered(AllOpcUaServicesFixture fixture) 
-        => await AssertNumberEntitiesMatchesNumberServices(fixture.Services, typeof(IEntityMonitor<>));
+        => await AssertNumberEntitiesMatchesNumberServices(fixture.Services, typeof(IEntitySubscriptionManager<>));
     
         
     [Test]
-    [AllEntityServiceDescriptorsOfType(typeof(IEntityMonitor<>))]
+    [AllEntityServiceDescriptorsOfType(typeof(IEntitySubscriptionManager<>))]
     public async Task EntityMonitor_IsOnlyRegisteredAsSingleton(IReadOnlyCollection<ServiceDescriptor> messengers)
     {
         var numberOfSingletons = messengers.Count(e => e.Lifetime == ServiceLifetime.Singleton);
@@ -55,7 +55,7 @@ public sealed class ServiceConfigurationTest
     }  
     
     [Test]
-    [AllEntityServiceDescriptorsOfType(typeof(IEntityChangedMessenger<>))]
+    [AllEntityServiceDescriptorsOfType(typeof(IEntityChangedBroadcaster<>))]
     public async Task EntityChangedMessenger_IsOnlyRegisteredAsSingleton(IReadOnlyCollection<ServiceDescriptor> messengers)
     {
         var numberOfSingletons = messengers.Count(e => e.Lifetime == ServiceLifetime.Singleton);
