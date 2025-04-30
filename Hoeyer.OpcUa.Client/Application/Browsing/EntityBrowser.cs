@@ -1,15 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Hoeyer.Common.Extensions.Async;
 using Hoeyer.Common.Extensions.LoggingExtensions;
-using Hoeyer.Common.Extensions.Types;
-using Hoeyer.OpcUa.Client.Application.Reading;
+using Hoeyer.OpcUa.Client.Api.Browsing;
+using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
+using Hoeyer.OpcUa.Client.Api.Reading;
 using Hoeyer.OpcUa.Client.Extensions;
-using Hoeyer.OpcUa.Client.Services;
-using Hoeyer.OpcUa.Core.Extensions;
-using Hoeyer.OpcUa.Core.Extensions.Logging;
+using Hoeyer.OpcUa.Client.MachineProxy;
+using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Core.Entity.Node;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Client;
@@ -25,91 +26,87 @@ namespace Hoeyer.OpcUa.Client.Application.Browsing;
 /// <param name="traversalStrategy">A strategy for traversing the node tree</param>
 /// <param name="identityMatcher">True if the provided <see cref="ReferenceDescription"/> is a description for the entity - if null, equality between the name of the <typeparamref name="TEntity"/> and the browse name of nodes is used.</param>
 /// <typeparam name="TEntity">The entity the EntityBrowser is assigned to</typeparam>
-[ClientService(typeof(IEntityBrowser<>))]
+[OpcUaEntityService(typeof(IEntityBrowser<>))]
 public sealed class EntityBrowser<TEntity>(
     ILogger<EntityBrowser<TEntity>> logger,
     INodeTreeTraverser traversalStrategy,
+    IEntitySessionFactory sessionFactory,
     INodeReader reader,
+    IEntityNodeStructureFactory<TEntity> nodeStructureFactory,
     EntityDescriptionMatcher<TEntity>? identityMatcher = null) : IEntityBrowser<TEntity>
 {
-    private Node? _entityNode;
+    private Node? _entityRoot;
     private static readonly string EntityName = typeof(TEntity).Name;
     private readonly EntityDescriptionMatcher<TEntity> _identityMatcher 
         = identityMatcher ?? (n => EntityName.Equals(n.BrowseName.Name));
 
+    private readonly ISession session = sessionFactory.CreateSession(typeof(TEntity).Name + "Browser");
+    
+    public (IEntityNode? node, DateTime timeLoaded)? LastState { get; private set; }
 
-    public async Task<EntityReadResult> BrowseEntityNode(
-        ISession session,
-        NodeId treeRoot,
-        CancellationToken cancellationToken = default)
+    private async Task<Node> FindEntityRoot(CancellationToken cancellationToken = default)
     {
-        return await logger.LogCaughtExceptionAs(LogLevel.Error, exception => new EntityBrowseException(exception.Message))
-            .WithScope("Browsing entity")
-            .WithErrorMessage("An error occured while browsing  ")
-            .WhenExecutingAsync(async () =>
-            {
-                using var scope = logger.BeginScope(new
-                {
-                    Session = session.ToLoggingObject(),
-                    Entity = EntityName,
-                    TreeRoot = treeRoot,
-                });
-                
-                Node node = _entityNode ?? await FindEntityNode(session, treeRoot, (p) => _identityMatcher.Invoke(p), cancellationToken);
-                
-                _entityNode = node;
-                IEnumerable<ReferenceDescription> children = await Browse(session, cancellationToken: cancellationToken)
-                    .ThenAsync(e => e.SelectMany(child => child.References));
-                return new EntityReadResult(node, children);
-            });
+        return await logger.LogWithScopeAsync(new
+        {
+            Session = session.ToLoggingObject(),
+            Entity = EntityName,
+        }, async () =>
+        {
+            var r = await traversalStrategy
+                .TraverseUntil(session,
+                    ObjectIds.RootFolder,
+                    predicate: _identityMatcher.Invoke,
+                    token: cancellationToken);
+
+            return await reader.ReadNodeAsync(session, r.NodeId, cancellationToken);
+        });
+
     }
 
-    private async Task<Node> FindEntityNode(ISession session,
-        NodeId root,
-        Predicate<ReferenceDescription> entityReferenceMatcher,
-        CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public async Task<IEntityNode> BrowseEntityNode(CancellationToken cancellationToken = default)
     {
-        return await logger.LogCaughtExceptionAs(LogLevel.Error, exception => new EntityBrowseException(exception.Message))
-            .WithScope("Locating entity node")
-            .WithErrorMessage("Failed to locate entity node")
-            .WhenExecutingAsync(async () =>
-            {
-                return await traversalStrategy
-                    .TraverseUntil(session,
-                        root,
-                        predicate: entityReferenceMatcher,
-                        token: cancellationToken)
-                    .ThenAsync(referenceDescription => referenceDescription.NodeId.AsNodeId(session.NamespaceUris))
-                    .ThenAsync(nodeId => reader.ReadNodeAsync(session, nodeId, cancellationToken));
-            });
+        var values = await ReadEntity(cancellationToken);
+        var index = _entityRoot!.NodeId.NamespaceIndex;
+        var structure = nodeStructureFactory.Create(index);
+        return await ParseToEntity(session, cancellationToken, values, structure);
     }
 
-    private Task<IEnumerable<BrowseResult>> Browse(ISession session,
-        NodeClass filter = NodeClassFilters.EntityData,
-        CancellationToken cancellationToken = default)
+    private async Task<IEntityNode> ParseToEntity(ISession session, CancellationToken cancellationToken, ReadResult values,
+        IEntityNode structure)
     {
-        return session.BrowseAsync(
-                null,
-                null,
-                250u,
-                new BrowseDescriptionCollection
-                {
-                    new BrowseDescription
-                    {
-                        BrowseDirection = BrowseDirection.Forward,
-                        NodeId = _entityNode!.NodeId,
-                        ResultMask = (uint)BrowseResultMask.All,
-                        NodeClassMask = (uint)filter,
-                    }
-                },
-                cancellationToken)
-            .ThenAsync(response =>
+        foreach (var read in values.SuccesfulReads.Select(value => value!.NodeId))
+        {
+            var v = await reader.ReadNodeAsync(session, read, cancellationToken);
+            var value = v switch
             {
-                if (!response.DiagnosticInfos.Any()) return;
-                logger.LogInformation("Browsing diagnostics for {@Node}: {@Diagnostics}",
-                    _entityNode.ToLoggingObject(),
-                    response.DiagnosticInfos.ToLoggingObject());
-            })
-            .ThenAsync(e => e.Results.Select(result => result));
+                VariableTypeNode variableTypeNode => variableTypeNode.Value,
+                VariableNode variableNode => variableNode.Value,
+                _ => default
+            };
+            if (value == default)
+            {
+                logger.LogWarning("Cannot handle node of type {TypeName} ", v.GetType().Name);
+                continue;
+            }
+            
+            foreach (var state in structure.PropertyStates)
+            {
+                if (state.NodeId == read)
+                {
+                    state.Value = value;
+                }
+            }
+        }
+        LastState = new ValueTuple<IEntityNode, DateTime>(structure, DateTime.Now);
+        return structure;
+    }
+
+    private async Task<ReadResult> ReadEntity(CancellationToken cancellationToken)
+    {
+        _entityRoot ??= await FindEntityRoot(cancellationToken);
+        var descendants = await traversalStrategy.TraverseFrom(_entityRoot.NodeId, session, cancellationToken).Collect();
+        var values = await reader.ReadNodesAsync(session, descendants.Select(e=>e.NodeId), ct: cancellationToken);
+        return values;
     }
 }

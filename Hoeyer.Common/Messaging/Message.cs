@@ -1,10 +1,11 @@
 ﻿using System;
+using Hoeyer.Common.Messaging.Api;
 
 namespace Hoeyer.Common.Messaging;
 
-public sealed record Message<T>(T Payload)
+public sealed record Message<T>(T Payload) : IMessage<T>
 {
     public readonly Guid MessageId = Guid.NewGuid();
-    public readonly T Payload = Payload;
+    public T Payload { get; } = Payload;
     public readonly DateTime Timestamp = DateTime.UtcNow;
 }

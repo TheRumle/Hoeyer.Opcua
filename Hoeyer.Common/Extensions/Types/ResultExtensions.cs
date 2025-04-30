@@ -7,8 +7,6 @@ namespace Hoeyer.Common.Extensions.Types;
 
 public static class ResultExtensions
 {
-    
-
     /// <summary>
     ///     Pipes the values of the result into a the action and returns the original result unmodified
     /// </summary>
@@ -33,12 +31,16 @@ public static class ResultExtensions
 
         return enumerable;
     }
-    
 
-    public static Result<(TLeft Left, TRight Right)> MergeWith<TLeft, TRight>(this Result<TLeft> left, Result<TRight> right)
+
+    public static Result<(TLeft Left, TRight Right)> MergeWith<TLeft, TRight>(this Result<TLeft> left,
+        Result<TRight> right)
     {
-        if (left.IsFailed || right.IsFailed) return Result.Fail(left.Errors.Union(right.Errors));
+        if (left.IsFailed || right.IsFailed)
+        {
+            return Result.Fail(left.Errors.Union(right.Errors));
+        }
+
         return (left.Value, right.Value);
     }
-    
 }

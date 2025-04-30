@@ -68,7 +68,26 @@ public static class LoggingExtensions
             Request = response.RequestString(),
             Response = response.ResponseCode.ToString()
         };
-
+    }
+    
+    public static object ToLoggingObject(this ApplicationConfiguration configuration)
+    {
+        return new
+        {
+            configuration.ApplicationName,
+            configuration.ProductUri,
+            configuration.Properties,
+            Extensions = configuration.ExtensionObjects,
+            Other = new
+            {
+                DomainNames = configuration.GetServerDomainNames(),
+            },
+            Security = new
+            {
+                configuration.SecurityConfiguration?.SupportedSecurityPolicies
+            },
+            KnownDiscoveryUrls = configuration.ClientConfiguration?.WellKnownDiscoveryUrls?.Select(e => e).ToArray()
+        };
     }
     
 }

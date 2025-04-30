@@ -14,6 +14,7 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
     private string? _scope;
     private object[]? _scopeArgs;
     private bool HasScope => _scope != null;
+    public ILogger Logger { get; } = logger;
 
     public void WhenExecuting(Action action)
     {
@@ -49,11 +50,6 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
         return res;
     }
 
-    private void Log<T>(LogLevel logResultAs, T a)
-    {
-        logger.Log(logResultAs, "Got {Values}", a);
-    }
-
     public async Task<T> WhenExecutingAsync<T>(Func<Task<T>> action, LogLevel logResultAs = LogLevel.None)
     {
         if (HasScope)
@@ -84,6 +80,14 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
     }
 
     /// <inheritdoc />
+    public IScopeSelected WithScope(object scopeArguments)
+    {
+        this._scopeArgs = [scopeArguments];
+        this._message = "";
+        return this;
+    }
+
+    /// <inheritdoc />
     IMessageSelected ILogLevelSelected.WithErrorMessage(string message, params object[] messageArguments)
     {
         _message = message;
@@ -108,11 +112,16 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
         return this;
     }
 
+    private void Log<T>(LogLevel logResultAs, T a)
+    {
+        Logger.Log(logResultAs, "Got {Values}", a);
+    }
+    
     private void ExecuteAndLogWithScope(Action action)
     {
         if (_scope != null)
         {
-            using var a = logger.BeginScope(_scope);
+            using var a = Logger.BeginScope(_scope);
             ExecuteAndLog(action);
         }
         else
@@ -125,7 +134,7 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
     {
         if (_scope != null)
         {
-            using var a = logger.BeginScope(_scope, _scopeArgs ?? []);
+            using var a = Logger.BeginScope(_scope, _scopeArgs ?? []);
             return ExecuteAndLog(action);
         }
 
@@ -175,6 +184,6 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
 
     private void LogException(Exception e)
     {
-        logger.Log(logLevel, e, _message, _messageArgs ?? []);
+        Logger.Log(logLevel, e, _message, _messageArgs ?? []);
     }
 }

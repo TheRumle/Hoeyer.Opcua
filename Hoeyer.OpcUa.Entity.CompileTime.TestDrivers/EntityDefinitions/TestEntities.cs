@@ -12,13 +12,14 @@ public static class TestEntities
     private static IEnumerable<string> ValidEntityClassDefinitions =
     [
         """
+        namespace Test;
         using System;
         using System.Collections.Generic;
+        using Hoeyer.OpcUa.Core;
         [OpcUaEntity]
         public class SupportedDataTypes
         {
             public List<int> ListField { get; set; } = null!;
-            public HashSet<int> HashSetField { get; set; } = null!;
             public bool boolField { get; set; } = default!;
             public byte byteField { get; set; } = default!;
             public short shortField { get; set; } = default!;
@@ -33,8 +34,10 @@ public static class TestEntities
         }
         """,
         """
+        namespace Test;
         using System;
         using System.Collections.Generic;
+        using Hoeyer.OpcUa.Core;
         [OpcUaEntity]
         public class PropertyAccessesTestEntity
         {
@@ -42,6 +45,10 @@ public static class TestEntities
         }
         """,
         """
+        namespace Test;
+        using System;
+        using System.Collections.Generic;
+        using Hoeyer.OpcUa.Core;
         [OpcUaEntity]
         public class FullyQualifiedLongAttributeName
         {
@@ -49,6 +56,10 @@ public static class TestEntities
         }
         """,
         """
+        namespace Test;
+        using System;
+        using System.Collections.Generic;
+        using Hoeyer.OpcUa.Core;
         public enum Position
         {
             OverThere,

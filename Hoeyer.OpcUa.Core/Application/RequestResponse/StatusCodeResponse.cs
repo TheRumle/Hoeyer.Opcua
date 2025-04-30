@@ -16,6 +16,7 @@ public abstract class StatusCodeResponse<TRequest, TResponse>
             Error = error;
         }
 
+        ResponseData = default!;
         Response = new ValueTuple<TResponse, StatusCode>(default!, code.Code);
     }
 
@@ -28,6 +29,7 @@ public abstract class StatusCodeResponse<TRequest, TResponse>
             Response = response.Invoke();
             ResponseCode = Response.StatusCode;
             IsSuccess = true;
+            this.ResponseData = Response.DataValue;
         }
         catch (Exception e)
         {
@@ -36,6 +38,8 @@ public abstract class StatusCodeResponse<TRequest, TResponse>
             Error = e.Message;
         }
     }
+
+    public TResponse ResponseData { get; }
 
     /// <inheritdoc />
     public string Error { get; } = "";

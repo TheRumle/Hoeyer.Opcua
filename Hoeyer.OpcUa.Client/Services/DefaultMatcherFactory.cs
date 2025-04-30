@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Application.Browsing;
 using Opc.Ua;
 

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.OpcUa.Core.Application.RequestResponse;
 
-public class StatusCodeResponseProcessorFactory(LogLevel errorLevel, LogLevel successLevel)
+public class StatusCodeResponseProcessorFactory(LogLevel errorLevel, LogLevel successLevel, ILogger logger)
 {
     [SuppressMessage("Maintainability", "S2325",
         Justification =
@@ -22,38 +22,32 @@ public class StatusCodeResponseProcessorFactory(LogLevel errorLevel, LogLevel su
 
     [Pure]
     public IRequestResponseProcessor<T> GetProcessorWithLoggingFor<T>(
-        string operationName,
         IEnumerable<T> valuesToProcess,
         Action<T> processSuccess,
-        Action<T> processError,
-        ILogger logger
+        Action<T> processError
     ) where T : IStatusCodeResponse
     {
-        return GetProcessorImpl(valuesToProcess, processSuccess, processError, operationName)
-            .WithLogging(logger, operationName, errorLevel, successLevel);
+        return GetProcessorImpl(valuesToProcess, processSuccess, processError)
+            .WithLogging(logger, errorLevel, successLevel);
     }
     
     [Pure]
-    public IRequestResponseProcessor<T> GetProcessorWithLoggingForFailedOnly<T>(
-        string operationName,
-        IEnumerable<T> valuesToProcess,
+    public IRequestResponseProcessor<T> GetProcessorWithLoggingForFailedOnly<T>(IEnumerable<T> valuesToProcess,
         Action<T> processSuccess,
         Action<T> processError,
         ILogger logger
     ) where T : IStatusCodeResponse
     {
-        return GetProcessorImpl(valuesToProcess, processSuccess, processError, operationName)
-            .WithLogging(logger, operationName, errorLevel, LogLevel.None);
+        return GetProcessorImpl(valuesToProcess, processSuccess, processError)
+            .WithLogging(logger, errorLevel);
     }
 
     [Pure]
     private static RequestResponseProcessor<T> GetProcessorImpl<T>(
         IEnumerable<T> valuesToProcess,
         Action<T> processSuccess,
-        Action<T> processError,
-        string? operationName = null
-    ) where T : IStatusCodeResponse
+        Action<T> processError) where T : IStatusCodeResponse
     {
-        return new RequestResponseProcessor<T>(valuesToProcess, processSuccess, processError, operationName);
+        return new RequestResponseProcessor<T>(valuesToProcess, processSuccess, processError);
     }
 }

@@ -21,7 +21,7 @@ public static class Locations
                 "System.Collections",
                 "System.Collections.Generic",
                 "Hoeyer.OpcUa.Core.Entity",
-                "Hoeyer.OpcUa.Core.Observation",
+                "Hoeyer.OpcUa.Core",
                 "Hoeyer.OpcUa.Core.Entity.Node",
                 "Hoeyer.OpcUa.Core.Entity.State"
             }

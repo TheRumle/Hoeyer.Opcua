@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Hoeyer.OpcUa.Core;
 using Microsoft.CodeAnalysis;
 using Assembly = System.Reflection.Assembly;
 
@@ -12,7 +13,8 @@ public static class AssemblyLoader
     [
         Assembly.Load("mscorlib"),
         Assembly.Load("netstandard"),
-        Assembly.Load("System")
+        Assembly.Load("System"),
+        typeof(OpcUaEntityAttribute).Assembly,
     ];
 
     public static readonly IReadOnlySet<MetadataReference> CoreMetadataReferences = CoreAssemblies

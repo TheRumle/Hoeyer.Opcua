@@ -21,7 +21,7 @@ public static class TaskExtensions
                 })
             .Unwrap();
     }
-    
+
     public static Task<Result<TIn>> AsResultTask<TIn>(this Task<TIn> task)
     {
         return task.ContinueWith(t =>
@@ -59,9 +59,8 @@ public static class TaskExtensions
             })
             .Unwrap();
     }
-    
 
-    
+
     public static Task<TIn> ThenAsync<TIn>(this Task<TIn> task, Action<TIn> onSuccess)
     {
         var constActionThenReturn = (Task<TIn> r) =>
@@ -69,7 +68,7 @@ public static class TaskExtensions
             onSuccess(r.Result);
             return r;
         };
-        
+
         return task.ContinueWith(t =>
                 t.Status switch
                 {
@@ -80,17 +79,21 @@ public static class TaskExtensions
                 })
             .Unwrap();
     }
-    
-    private static Task<Result<TOut>> HandleCompletedTask<TIn, TOut>(Task<TIn> result,  Func<TIn, TOut> mapper, Action<TIn>? onSuccess = null )
+
+    private static Task<Result<TOut>> HandleCompletedTask<TIn, TOut>(Task<TIn> result, Func<TIn, TOut> mapper,
+        Action<TIn>? onSuccess = null)
     {
         onSuccess?.Invoke(result.Result);
         return Task.FromResult(Result.Ok(mapper.Invoke(result.Result)));
     }
-    
+
     private static Task<Result<TOut>> HandleFailedTask<TIn, TOut>(Task<TIn> result)
     {
         return Task.FromResult(Result.Fail<TOut>(result.Exception!.Message));
     }
-    
-    private static Task<Result<TOut>> HandleCancelled<TOut>() => Task.FromCanceled<Result<TOut>>(new CancellationToken(true));
+
+    private static Task<Result<TOut>> HandleCancelled<TOut>()
+    {
+        return Task.FromCanceled<Result<TOut>>(new CancellationToken(true));
+    }
 }

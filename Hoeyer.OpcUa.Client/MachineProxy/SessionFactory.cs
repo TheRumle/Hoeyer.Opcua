@@ -8,7 +8,7 @@ namespace Hoeyer.OpcUa.Client.MachineProxy;
 internal class SessionFactory(IOpcUaEntityServerInfo applicationOptions) : IEntitySessionFactory
 {
     private readonly string _opcServerUrl = applicationOptions.OpcUri.ToString();
-    public ApplicationConfiguration Configuration { get; } = CreateApplicationConfig();
+    private ApplicationConfiguration Configuration { get; } = CreateApplicationConfig();
 
     public async Task<ISession> CreateSessionAsync(string sessionId)
     {
@@ -19,14 +19,19 @@ internal class SessionFactory(IOpcUaEntityServerInfo applicationOptions) : IEnti
         var session = await Session.Create(
             Configuration,
             endpoint,
-            false,
+            updateBeforeConnect: false,
             sessionId,
             60000,
             new UserIdentity(new AnonymousIdentityToken()),
             null);
+        session.TransferSubscriptionsOnReconnect = true;
+        session.DeleteSubscriptionsOnClose = false;
 
         return session;
     }
+
+    /// <inheritdoc />
+    public ISession CreateSession(string sessionId) => CreateSessionAsync(sessionId).Result;
 
     private static ApplicationConfiguration CreateApplicationConfig()
     {
