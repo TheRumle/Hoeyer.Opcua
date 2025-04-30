@@ -26,9 +26,4 @@ public static class OpcExtensions
             ServerTimestamp = DateTime.Now
         };
     }
-
-    public static string StringName(this NodeState property)
-    {
-        return property.BrowseName.Name;
-    }
 }

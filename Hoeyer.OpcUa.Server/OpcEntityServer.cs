@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Extensions.Logging;
-using Hoeyer.OpcUa.Server.Api;
-using Hoeyer.OpcUa.Server.Api.Management;
-using Hoeyer.OpcUa.Server.Application.Management;
+using Hoeyer.OpcUa.Server.Api.NodeManagement;
+using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Extensions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
@@ -13,8 +12,8 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server;
 
-public sealed class OpcEntityServer(
-    EntityServerStartedMarker marker,
+
+internal sealed class OpcEntityServer(
     IOpcUaEntityServerInfo applicationProductDetails,
     IDomainMasterManagerFactory managerFactory,
     ILogger<OpcEntityServer> logger)
@@ -30,7 +29,6 @@ public sealed class OpcEntityServer(
     protected override void OnServerStarted(IServerInternal server)
     {
         base.OnServerStarted(server);
-        marker.MarkCompleted();
     }
 
 
@@ -38,7 +36,8 @@ public sealed class OpcEntityServer(
         ApplicationConfiguration configuration)
     {
         logger.BeginScope("Creating master manager");
-        return managerFactory.ConstructMasterManager(server, configuration);
+        var managerCreated = managerFactory.ConstructMasterManager(server, configuration);
+        return managerCreated;
     }
 
 
@@ -101,13 +100,11 @@ public sealed class OpcEntityServer(
         }
     }
 
+    public int a;
     /// <inheritdoc />
     protected override void StartApplication(ApplicationConfiguration configuration)
     {
-        logger.LogInformation("Starting application at {@ApplicationUri} with configuration {@Configuration}",
-                configuration.ApplicationUri,
-                configuration.ToLoggingObject()
-            );
+        logger.LogInformation("Starting application with configuration {@Configuration}", configuration.ToLoggingObject());
         base.StartApplication(configuration);
     }
 

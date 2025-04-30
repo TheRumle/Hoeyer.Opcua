@@ -12,4 +12,6 @@ public interface INodeBrowser
     Task<BrowseResponse> BrowseById(ISession session, IEnumerable<NodeId> ids,
         NodeClass filter = NodeClassFilters.Any,
         CancellationToken ct = default);
+    
+    Task<BrowseResponse> BrowseById(ISession session, NodeId id, CancellationToken ct = default);
 }

@@ -9,9 +9,9 @@ namespace Hoeyer.OpcUa.Client.Api.Browsing;
 
 public interface INodeTreeTraverser
 {
-    public IAsyncEnumerable<ReferenceDescription> TraverseFrom(ISession session, NodeId id,  CancellationToken ct);
+    public IAsyncEnumerable<ReferenceWithId> TraverseFrom(NodeId id, ISession session, CancellationToken ct);
 
-    public Task<ReferenceDescription> TraverseUntil(
+    public Task<ReferenceWithId> TraverseUntil(
         ISession session,
         NodeId root,
         Predicate<ReferenceDescription> predicate,

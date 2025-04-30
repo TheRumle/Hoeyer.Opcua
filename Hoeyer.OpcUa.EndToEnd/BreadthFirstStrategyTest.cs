@@ -1,0 +1,10 @@
+﻿using Hoeyer.OpcUa.Client.Application.Browsing;
+using Hoeyer.OpcUa.EndToEndTest.Fixtures;
+using JetBrains.Annotations;
+
+namespace Hoeyer.OpcUa.EndToEndTest;
+
+[InheritsTests]
+[TestSubject(typeof(BreadthFirstStrategy))]
+[ApplicationFixtureGenerator<BreadthFirstStrategy>]
+public sealed class BreadthFirstStrategyTest(ApplicationFixture<BreadthFirstStrategy> fixture) : NodeTreeTraverserTest<BreadthFirstStrategy>(fixture);

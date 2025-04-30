@@ -4,7 +4,7 @@ namespace Hoeyer.Common.Extensions;
 
 public static class RandomExtensions
 {
-    public static uint UInt(this Random random)
+    public static uint GetUInt(this Random random)
     {
         var bytes = new byte[sizeof(uint)];
         random.NextBytes(bytes);

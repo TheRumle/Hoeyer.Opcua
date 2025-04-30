@@ -9,4 +9,6 @@ public interface ILogLevelSelected : IFinishedLoggingSetup
 
     [Pure]
     IScopeSelected WithScope([StructuredMessageTemplate] string scopeTitle, params object[] scopeArguments);
+    [Pure]
+    IScopeSelected WithScope(object scopeArguments);
 }

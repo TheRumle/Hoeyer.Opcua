@@ -1,61 +1,84 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Hoeyer.Common.Extensions;
-using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Core.Entity.Node;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Monitoring;
 
-[OpcUaEntityService(typeof(IMonitorItemsFactory<>), ServiceLifetime.Singleton)]
-public sealed class MonitorItemFactory<T>(IEntityBrowser<T> browser,  EntityMonitoringConfiguration? entityMonitoringConfiguration = null) : IMonitorItemsFactory<T>
+[OpcUaEntityService(typeof(TruthSource<>), ServiceLifetime.Singleton)]
+public sealed class TruthSource<T>(T value)
 {
-    private readonly EntityMonitoringConfiguration _entityMonitoringConfiguration = entityMonitoringConfiguration ?? new();
-    private Subscription? Subscription { get; set; }
-    private MonitoredItem? MonitoredItem { get; set; }
+    public bool HasValue;
+    private readonly object _lock = new();
 
-    private static readonly uint TransferId = new Random().UInt();
-    public async Task<(Subscription subscription, MonitoredItem variableMonitoring)> GetOrCreate(ISession session, CancellationToken cancellationToken = default)
+    public void Modify(Action<T> modification)
     {
-        if (Subscription != null && MonitoredItem != null) return (Subscription, MonitoredItem);
-        return await Create(session, cancellationToken);
+        lock (_lock) modification.Invoke(value);
     }
+}
 
-    public async Task<(Subscription subscription, MonitoredItem variableMonitoring)> Create(ISession session, CancellationToken cancellationToken)
+[OpcUaEntityService(typeof(IMonitorItemsFactory<>))]
+public sealed class MonitorItemFactory<T>(ILogger<MonitorItemFactory<T>> logger,
+    EntityMonitoringConfiguration entityMonitoringConfiguration) : IMonitorItemsFactory<T>
+{
+    private Subscription? Subscription { get; set; }
+    private IEnumerable<MonitoredItem> MonitoredItems { get; set; } = [];
+    private readonly Random _guids = new Random(231687);
+
+    
+    public (Subscription subscription, IEnumerable<MonitoredItem> variableMonitoring)
+        GetOrCreate(ISession session, IEntityNode node)
     {
-        Subscription = new Subscription(session!.DefaultSubscription)
+        Subscription ??= new Subscription(session!.DefaultSubscription)
         {
-            PublishingInterval = _entityMonitoringConfiguration.WantedPublishingInterval.Milliseconds,
+            PublishingInterval = entityMonitoringConfiguration!.ServerPublishingInterval.Milliseconds,
             SequentialPublishing = true,
             Priority = 0,
-            DisplayName = typeof(T).Name + "Subscription",
-            TransferId = TransferId
+            DisplayName = node.BaseObject.BrowseName.Name + "Subscription",
+            TransferId = _guids.GetUInt(),
         };
+        return Create(session, node);
+    }
 
-        var node = await browser.BrowseEntityNode(session, cancellationToken);
-        MonitoredItem = new MonitoredItem(Subscription.DefaultItem)
-        {
-            DisplayName = typeof(T).Name+"Values",
-            StartNodeId = node.Node.NodeId,
-            AttributeId = Attributes.Value,
-            SamplingInterval = 200,
-            QueueSize = 10,
-            DiscardOldest = true
-        };
-        Subscription.AddItem(MonitoredItem);
+    public (Subscription Subscription, List<MonitoredItem> items) Create(ISession session, IEntityNode node)
+    {
+        logger.LogInformation("Creating subscription and monitored items");
+        var items = node
+            .PropertyStates
+            .Where(e => !MonitoredItems
+                .Select(item => item.StartNodeId)
+                .Contains(e.NodeId))
+            .Select(e => CreateMonitoredItem(e.NodeId, e.BrowseName.Name))
+            .Concat([CreateMonitoredItem(node.BaseObject.NodeId, node.BaseObject.BrowseName.Name)])
+            .ToList();
+        
+        Subscription!.AddItems(items);
         
         if (session.Subscriptions.All(e => e.Id != Subscription.Id))
         {
             session.AddSubscription(Subscription);
         }
-
-        await Subscription.CreateAsync(cancellationToken);
         
-        return (Subscription, MonitoredItem);
+        return (Subscription, items);
+    }
+
+    private MonitoredItem CreateMonitoredItem(NodeId nodeId, string name)
+    {
+        return new MonitoredItem(Subscription!.DefaultItem)
+        {
+            DisplayName = name,
+            StartNodeId = nodeId,
+            AttributeId = Attributes.Value,
+            SamplingInterval = 200,
+            QueueSize = 10,
+            DiscardOldest = true
+        };
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FluentResults;
+using Opc.Ua;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Extensions;
@@ -25,6 +26,34 @@ public static class LoggingExtensions
             session.Handle,
             session.KeepAliveInterval,
             session.LastKeepAliveTime,
+        };
+    }
+
+    public static object ToLoggingObject(this Subscription subscription)
+    {
+        return new
+        {
+            subscription.Id,
+            subscription.Priority,
+            DisplayName = subscription.DisplayName.ToString(),
+            subscription.PublishingEnabled,
+            subscription.PublishTime,
+            subscription.LastNotificationTime,
+            subscription.TransferId
+        };
+    }
+
+    public static object ToLoggingObject(this MonitoredItem item)
+    {
+        return new
+        {
+            Subscription = item.Subscription.ToLoggingObject(),
+            item.Created,
+            TypeBeingMonitored =  item.NodeClass.ToString(),
+            Status = item.Status.ToString(),
+            LastValue = item.LastValue.ToString(),
+            item.SamplingInterval,
+            Monitored = item.StartNodeId.ToString()
         };
     }
 }

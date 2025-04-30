@@ -7,7 +7,7 @@ using Opc.Ua.Configuration;
 
 namespace Hoeyer.OpcUa.Server;
 
-internal sealed class StartableEntityServer(ApplicationInstance applicationInstance, OpcEntityServer entityServer)
+internal sealed class StartableEntityServer(ApplicationInstance applicationInstance, OpcEntityServer entityServer, EntityServerStartedMarker marker)
     : IStartableEntityServer, IStartedEntityServer
 {
     private readonly ApplicationInstance _applicationInstance =
@@ -28,6 +28,7 @@ internal sealed class StartableEntityServer(ApplicationInstance applicationInsta
         try
         {
             await _applicationInstance.Start(_entityServer);
+            marker.MarkCompleted();
         }
         catch (ServiceResultException e)
         {

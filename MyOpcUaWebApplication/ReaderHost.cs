@@ -3,7 +3,6 @@ using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Extensions;
 using Hoeyer.OpcUa.Client.MachineProxy;
-using Hoeyer.OpcUa.Core.Extensions;
 using Hoeyer.OpcUa.Server.Api;
 
 namespace MyOpcUaWebApplication;
@@ -16,8 +15,8 @@ public class ReaderHost(IEntityBrowser<Gantry> client, IEntitySessionFactory fac
         await marker.ServerRunning();
         var session = await factory.CreateSessionAsync("Gantry browser");
         var node = await client
-            .BrowseEntityNode(session, stoppingToken)
-            .AsResultTask(e => e.Children.Select(child => child.NodeId.AsNodeId(session.NamespaceUris)).ToList())
+            .BrowseEntityNode(stoppingToken)
+            .AsResultTask(e => e.PropertyStates.Select(child => child.NodeId).ToList())
             .Bind(ids => session.ReadValuesAsync(ids, ct: stoppingToken).AsResultTask());
             
 

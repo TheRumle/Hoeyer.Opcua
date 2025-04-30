@@ -6,18 +6,11 @@ using Microsoft.Extensions.Hosting;
 
 namespace Hoeyer.OpcUa.Server.Services;
 
-public sealed class OpcUaServerBackgroundService : BackgroundService
+public sealed class OpcUaServerBackgroundService(IServiceProvider serviceProvider) : BackgroundService
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public OpcUaServerBackgroundService(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var factory = _serviceProvider.GetRequiredService<OpcUaEntityServerFactory>();
+        var factory = serviceProvider.GetRequiredService<OpcUaEntityServerFactory>();
         var server = factory.CreateServer();
         await server.StartAsync();
         await Task.Delay(Timeout.Infinite, stoppingToken);

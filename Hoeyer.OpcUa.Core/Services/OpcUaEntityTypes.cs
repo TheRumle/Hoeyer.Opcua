@@ -22,16 +22,24 @@ public static class OpcUaEntityTypes
     
     public static readonly FrozenSet<GenericEntityServiceTypeInfo> GenericServices = ServiceTypes
         .Where(e=>e.IsGenericTypeDefinition)
-        .Select(type => new GenericEntityServiceTypeInfo(
-            type.GetCustomAttribute<OpcUaEntityServiceAttribute>().ServiceType,
-            type))
+        .SelectMany(type =>
+        {
+            return type.GetCustomAttributes<OpcUaEntityServiceAttribute>()
+                .Select(attr => new GenericEntityServiceTypeInfo(
+                    attr,
+                    type));
+        })
         .ToFrozenSet();
     
     public static readonly FrozenSet<InstantiatedEntityServiceTypeInfo> InstantiatedServices = ServiceTypes
         .Where(e=> e is { IsGenericTypeDefinition: false, IsInterface: false, IsAbstract: false })
-        .Select(type => new InstantiatedEntityServiceTypeInfo(
-            type.GetCustomAttribute<OpcUaEntityServiceAttribute>().ServiceType,
-            type))
+        .SelectMany(type =>
+        {
+            return type.GetCustomAttributes<OpcUaEntityServiceAttribute>()
+                .Select(attr => new InstantiatedEntityServiceTypeInfo(
+                    attr,
+                    type));
+        })
         .ToFrozenSet();
     
     public static readonly FrozenSet<IEntityServiceTypeInfo> AllServices = GenericServices

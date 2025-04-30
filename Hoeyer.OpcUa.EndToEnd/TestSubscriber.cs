@@ -1,5 +1,4 @@
-﻿using Hoeyer.Common.Messaging;
-using Hoeyer.Common.Messaging.Api;
+﻿using Hoeyer.Common.Messaging.Api;
 
 namespace Hoeyer.OpcUa.EndToEndTest;
 

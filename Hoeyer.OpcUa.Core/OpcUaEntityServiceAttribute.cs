@@ -6,7 +6,7 @@ namespace Hoeyer.OpcUa.Core;
 /// <summary>
 /// A marker attribute marking generic classes as an Entity Service. An entity service is a service that is instantiated with a type parameter T where T is annotated with the <seealso cref="OpcUaEntityAttribute"/>. The marker is used for reflection scanning. 
 /// </summary>
-[AttributeUsage(AttributeTargets.Class)]
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 public class OpcUaEntityServiceAttribute : Attribute
 {
     public OpcUaEntityServiceAttribute(Type t, ServiceLifetime lifetime = ServiceLifetime.Transient)

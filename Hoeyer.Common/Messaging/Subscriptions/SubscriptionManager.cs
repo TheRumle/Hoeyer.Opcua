@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Hoeyer.Common.Messaging.Api;
 
 namespace Hoeyer.Common.Messaging.Subscriptions;
@@ -16,7 +17,7 @@ public sealed class SubscriptionManager<T> : ISubscriptionManager<T>
     {
         if(_isPaused) return;
         var letter = new Message<T>(message);
-        foreach (var subscription in Collection.Subscriptions)
+        foreach (var subscription in Collection.Subscriptions.ToList())
         {
             if (subscription.IsCancelled || subscription.IsPaused) continue;
             subscription.Forward(letter);

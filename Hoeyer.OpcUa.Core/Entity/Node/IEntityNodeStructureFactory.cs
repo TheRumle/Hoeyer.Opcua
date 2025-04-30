@@ -2,7 +2,6 @@
 
 public interface IEntityNodeStructureFactory
 {
-    public string EntityName { get; }
     IEntityNode Create(ushort applicationNamespaceIndex);
 }
 

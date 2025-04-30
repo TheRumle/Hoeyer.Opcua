@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Server.Api;
-using Hoeyer.OpcUa.Server.Api.Management;
-using Hoeyer.OpcUa.Server.Application.Management;
+using Hoeyer.OpcUa.Server.Api.NodeManagement;
+using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Services.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua;
@@ -15,7 +17,7 @@ public static class ServiceExtensions
         this OnGoingOpcEntityServiceRegistration serviceRegistration,
         Action<ServerConfiguration>? additionalConfiguration = null)
     {
-        serviceRegistration.Collection.AddSingleton<IEntityNodeManagerFactory, EntityNodeManagerFactory>();
+        
         serviceRegistration.Collection.AddSingleton<OpcUaEntityServerSetup>(p =>
         {
             var standardConfig = p.GetService<IOpcUaEntityServerInfo>();
@@ -28,15 +30,11 @@ public static class ServiceExtensions
             return new OpcUaEntityServerSetup(standardConfig, additionalConfiguration ?? (value => { }));
         });
 
-        serviceRegistration.Collection.AddSingleton<IDomainMasterManagerFactory>(p =>
-        {
-            var nodeManagers = p.GetService<IEntityNodeManagerFactory>();
-            var setup = p.GetService<IOpcUaEntityServerInfo>();
-            return new DomainMasterNodeManagerFactory(nodeManagers!, setup!);
-        });
-
+        serviceRegistration.Collection.AddSingleton<IEntityNodeAccessConfigurator, NoAccessRestrictionsConfigurator>();
+        serviceRegistration.Collection.AddSingleton<IDomainMasterManagerFactory, DomainMasterNodeManagerFactory>();
         serviceRegistration.Collection.AddSingleton<EntityServerStartedMarker>();
         serviceRegistration.Collection.AddSingleton<OpcUaEntityServerFactory>();
+        serviceRegistration.Collection.AddSingleton<OpcEntityServer>();
         serviceRegistration.Collection.AddSingleton<IStartableEntityServer>(p =>
         {
             var factory = p.GetRequiredService<OpcUaEntityServerFactory>();

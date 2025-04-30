@@ -58,7 +58,7 @@ public static class AssemblyExtensions
             throw new ArgumentNullException(nameof(type));
         }
 
-        if (type.GetCustomAttribute<T>() != null || type.GetInterfaces().Any(i => i.GetCustomAttribute<T>() != null))
+        if (type.GetCustomAttributes<T>().Any() || type.GetInterfaces().Any(i => i.GetCustomAttribute<T>() != null))
         {
             return true;
         }

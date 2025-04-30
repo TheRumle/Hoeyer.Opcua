@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using Hoeyer.Common.Messaging.Api;
 using Hoeyer.Common.Messaging.Subscriptions;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Core.Entity.Node;
-using Hoeyer.OpcUa.Server.Api.RequestResponse;
+using Hoeyer.OpcUa.Server.Api;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua;
 
@@ -13,23 +13,33 @@ namespace Hoeyer.OpcUa.Server.Application;
 [OpcUaEntityService(typeof(IEntityChangedBroadcaster<>), ServiceLifetime.Singleton)]
 public sealed class EntityChangedBroadcaster<T>(IEntityTranslator<T> translator) : IEntityChangedBroadcaster<T>
 {
-    private readonly SubscriptionManager<T> _entitySubscriptionManager = new();
-    private readonly SubscriptionManager<IEntityNode> _entityNodeSubscription = new();
-    private readonly StateChangePublisher<PropertyState, object> _stateChangePublisher = new();
-    
-    public IMessageSubscription<IEntityNode> Subscribe(IMessageConsumer<IEntityNode> subscriber) => _entityNodeSubscription.Subscribe(subscriber);
-    public IMessageSubscription<IEnumerable<StateChange<PropertyState, object>>> Subscribe(IMessageConsumer<IEnumerable<StateChange<PropertyState, object>>> subscriber) => _stateChangePublisher.Subscribe(subscriber);
-    
+    private IEntityNode? Node { get; set; }
+    public ISubscriptionManager<IEntityNode> NodeSubscriptionManager { get; } =  new SubscriptionManager<IEntityNode>();
+    public ISubscriptionManager<T> EntitySubscriptionManager { get; private set; } = new SubscriptionManager<T>();
 
-    public void Publish((IEntityNode NewState, IEnumerable<StateChange<PropertyState, object>> Changes) message)
+    /// <inheritdoc />
+    public void BeginObserve(IEntityNode entityNode)
     {
-        var entity = translator.Translate(message.NewState);
-        _stateChangePublisher.Publish(message.Changes);
-        _entityNodeSubscription.Publish(message.NewState);
-        _entitySubscriptionManager.Publish(entity);
+        Node = entityNode;
+        foreach (var propertyState in Node.PropertyStates)
+        {
+            propertyState.OnWriteValue += OnPropertyWritten;
+        }
     }
     
-    public ISubscribable<T> EntitySubcribable => _entitySubscriptionManager;
+    private void Publish()
+    {
+        if (Node == null) return;
+        var entity = translator.Translate(Node);
+        EntitySubscriptionManager.Publish(entity);
+        NodeSubscriptionManager.Publish(Node);
+    }
+    
+    private ServiceResult OnPropertyWritten(ISystemContext context, NodeState node, NumericRange indexrange, QualifiedName dataencoding, ref object value, ref StatusCode statuscode, ref DateTime timestamp)
+    {
+        if(StatusCode.IsGood(statuscode)) Publish();
+        return ServiceResult.Good;
+    }
 }
 
 

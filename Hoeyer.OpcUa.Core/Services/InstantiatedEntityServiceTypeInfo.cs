@@ -12,9 +12,9 @@ public record InstantiatedEntityServiceTypeInfo : IEntityServiceTypeInfo
     public Type InstantiatedServiceType { get; set; }
     public Type ImplementationType { get; set; }
     
-    public InstantiatedEntityServiceTypeInfo(Type InstantiatedServiceType, Type ImplementationType)
+    public InstantiatedEntityServiceTypeInfo(OpcUaEntityServiceAttribute attr, Type ImplementationType)
     {
-        this.InstantiatedServiceType = InstantiatedServiceType;
+        InstantiatedServiceType = attr.ServiceType;
         this.ImplementationType = ImplementationType;
         
         var implementedServiceInterface = ImplementationType
@@ -22,7 +22,7 @@ public record InstantiatedEntityServiceTypeInfo : IEntityServiceTypeInfo
             .First(i => i.IsGenericType && i.GetGenericTypeDefinition() == InstantiatedServiceType);
         
         Entity = implementedServiceInterface.GenericTypeArguments.FirstOrDefault()!;
-        ServiceLifetime = ImplementationType.GetCustomAttribute<OpcUaEntityServiceAttribute>().Lifetime;
+        ServiceLifetime = attr.Lifetime;
     }
 
     /// <inheritdoc />

@@ -78,6 +78,15 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
         _scopeArgs = scopeArguments;
         return this;
     }
+
+    /// <inheritdoc />
+    public IScopeSelected WithScope(object scopeArguments)
+    {
+        this._scopeArgs = [scopeArguments];
+        this._message = "";
+        return this;
+    }
+
     /// <inheritdoc />
     IMessageSelected ILogLevelSelected.WithErrorMessage(string message, params object[] messageArguments)
     {

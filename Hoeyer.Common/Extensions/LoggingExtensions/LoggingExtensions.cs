@@ -104,4 +104,16 @@ public static class LoggingExtensions
             _ => throw new InvalidOperationException("Unhandled task status")
         }).Unwrap();
     }
+
+    public static T? LogWithScope<T>(this ILogger logger, object scope, Func<T> t)
+    {
+        logger.BeginScope(scope);
+        return logger.Try(t);
+    }
+    
+    public static Task<T> LogWithScopeAsync<T>(this ILogger logger, object scope, Func<Task<T>> t)
+    {
+        logger.BeginScope(scope);
+        return logger.TryAsync(t);
+    }
 }

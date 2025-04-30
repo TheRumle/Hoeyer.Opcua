@@ -1,7 +1,8 @@
 ﻿using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Services;
-using Hoeyer.OpcUa.EndToEndTest.TestApplication;
+using Hoeyer.OpcUa.EndToEndTest.TestEntities;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.OpcUa.EndToEndTest.Fixtures;
 
@@ -12,7 +13,9 @@ public class OpcUaCoreServicesFixture
     public OpcUaCoreServicesFixture()
     {
         ReservedPort reservedPort = new();
-        OnGoingOpcEntityServiceRegistration = new ServiceCollection().AddOpcUaServerConfiguration(conf => conf
+        var services = new ServiceCollection();
+        OnGoingOpcEntityServiceRegistration = services.AddLogging(c => c.SetMinimumLevel(LogLevel.Warning))
+            .AddOpcUaServerConfiguration(conf => conf
                 .WithServerId("MyServer")
                 .WithServerName("My Server")
                 .WithHttpsHost("localhost", reservedPort.Port)
