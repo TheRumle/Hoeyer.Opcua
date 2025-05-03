@@ -1,4 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Core.Entity.Node;
+using Opc.Ua;
 
 namespace MyOpcUaWebApplication;
 
@@ -11,7 +13,6 @@ public sealed class GantryNumberTwo
     public string message { get; set; }
     public List<string> messages { get; set; }
 
-    public delegate void ChangePosition(Position oldPosition, Position newPosition);
 
     public List<string> Names { get; set; } = ["rasmus", "christmas"];
 }

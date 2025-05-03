@@ -1,18 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using FluentResults;
-using Opc.Ua;
+﻿using System.Linq;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Extensions;
 
 public static class LoggingExtensions
 {
-
-    public static object ToLoggingObject(this IEnumerable<IError> result)
-    {
-        return result.Select(e => e.Message.ToString());
-    }
     
     public static object ToLoggingObject(this ISession session)
     {

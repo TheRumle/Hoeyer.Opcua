@@ -29,6 +29,11 @@ public static class SupportedTypes
         
         return Simple.Supports(symbol) || Collection.Supports(symbol);
     }
+    
+    public static bool NotSupported(ITypeSymbol symbol) => !IsSupported(symbol);
+    
+    public static bool NotSupported(TypeSyntax syntax, SemanticModel model) => !IsSupported(syntax, model);
+
 
     private static ITypeSymbol UnwrapNullable(ITypeSymbol typeSymbol)
     {

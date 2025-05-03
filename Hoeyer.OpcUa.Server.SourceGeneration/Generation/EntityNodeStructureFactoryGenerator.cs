@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Opc.Ua;
+using TypeInfo = Opc.Ua.TypeInfo;
 
 namespace Hoeyer.OpcUa.Server.SourceGeneration.Generation;
 

@@ -23,19 +23,21 @@ public class MemberMustBeSupported() : ConcurrentAnalyzer([Rules.MemberMustBeOpc
         {
             return;
         }
-
-        var members = typeSyntax
+        
+        var supportedMemberSyntax = typeSyntax
             .Members
             .Where(member => member switch
             {
-                PropertyDeclarationSyntax p => false,
-                DelegateDeclarationSyntax d => false,
-                EnumDeclarationSyntax e => false,
+                PropertyDeclarationSyntax => false,
+                EventDeclarationSyntax => false,
+                EventFieldDeclarationSyntax => false,
+                EnumDeclarationSyntax=> false,
+                DelegateDeclarationSyntax => false,
                 _ => true
             })
             .Select(GetIdentifierText);
 
-        foreach (var member in members)
+        foreach (var member in supportedMemberSyntax)
             context.ReportDiagnostic(
                 Diagnostic.Create(
                     Rules.MemberMustBeOpcSupportedDescriptor,

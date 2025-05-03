@@ -5,24 +5,11 @@ using Hoeyer.Common.Extensions;
 using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Entity.Node;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Monitoring;
-
-[OpcUaEntityService(typeof(TruthSource<>), ServiceLifetime.Singleton)]
-public sealed class TruthSource<T>(T value)
-{
-    public bool HasValue;
-    private readonly object _lock = new();
-
-    public void Modify(Action<T> modification)
-    {
-        lock (_lock) modification.Invoke(value);
-    }
-}
 
 [OpcUaEntityService(typeof(IMonitorItemsFactory<>))]
 public sealed class MonitorItemFactory<T>(ILogger<MonitorItemFactory<T>> logger,

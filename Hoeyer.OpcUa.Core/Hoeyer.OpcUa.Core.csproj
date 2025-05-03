@@ -14,7 +14,4 @@
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj"/>
     </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Extensions\Types\" />
-    </ItemGroup>
 </Project>

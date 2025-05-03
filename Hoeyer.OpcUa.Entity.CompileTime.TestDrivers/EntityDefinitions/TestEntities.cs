@@ -7,9 +7,9 @@ namespace Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 
 public static class TestEntities
 {
-    private static Regex regex = new(@"class\s+([A-Za-z_][A-Za-z0-9_]*)\s*");
+    private static readonly Regex Regex = new(@"class\s+([A-Za-z_][A-Za-z0-9_]*)\s*");
 
-    private static IEnumerable<string> ValidEntityClassDefinitions =
+    private static readonly IEnumerable<string> ValidEntityClassDefinitions =
     [
         """
         namespace Test;
@@ -60,6 +60,29 @@ public static class TestEntities
         using System;
         using System.Collections.Generic;
         using Hoeyer.OpcUa.Core;
+        [OpcUaEntity]
+        public class ActionEvent
+        {
+            public string MyString { get; set; } = "";
+            public event Action<int, int> action;
+        }
+        """,
+        """
+        namespace Test;
+        using System;
+        using System.Collections.Generic;
+        using Hoeyer.OpcUa.Core;
+        [OpcUaEntity]
+        public class FuncEvent
+        {
+            public event Func<int, int, string> function;
+        }
+        """,
+        """
+        namespace Test;
+        using System;
+        using System.Collections.Generic;
+        using Hoeyer.OpcUa.Core;
         public enum Position
         {
             OverThere,
@@ -74,11 +97,63 @@ public static class TestEntities
         }
         """
     ];
+    
+    private static readonly IEnumerable<string> UnsupportedEntityClassDefinitions =
+    [
+        """
+        namespace Test;
+        using System;
+        using System.Collections.Generic;
+        using Hoeyer.OpcUa.Core;
+        [OpcUaEntity]
+        public class HashSetType
+        {
+            public HashSet<int> ListField { get; set; } = null!;
+        }
+        """,
+        """
+        namespace Test;
+        using System;
+        using System.Collections.Generic;
+        using Hoeyer.OpcUa.Core;
+        [OpcUaEntity]
+        public class DelegateType
+        {
+            public delegate void ChangePosition(Position oldPosition, Position newPosition);
+        }
+        """,
+        """
+        namespace Test;
+        using System;
+        using System.Collections.Generic;
+        using Hoeyer.OpcUa.Core;
+        [OpcUaEntity]
+        public class SelfReference
+        {
+            public SelfReference self {get; set;}
+        }
+        """,
+        """
+        namespace Test;
+        using System;
+        using System.Collections.Generic;
+        using Hoeyer.OpcUa.Core;
+        [OpcUaEntity]
+        public class FuncReferencingSelf
+        {
+            public event Func<int, int, FuncEvent> function;
+        }
+        """,
+    ];
 
 
     public static readonly ImmutableHashSet<EntitySourceCode> Valid = ValidEntityClassDefinitions
-        .Select(sourceCode => new EntitySourceCode(regex.Match(sourceCode).Groups[1].Value, sourceCode))
+        .Select(sourceCode => new EntitySourceCode(Regex.Match(sourceCode).Groups[1].Value, sourceCode))
+        .ToImmutableHashSet();
+    
+    public static readonly ImmutableHashSet<EntitySourceCode> UnsupportedTypes = UnsupportedEntityClassDefinitions
+        .Select(sourceCode => new EntitySourceCode(Regex.Match(sourceCode).Groups[1].Value, sourceCode))
         .ToImmutableHashSet();
 
-    public static readonly ImmutableHashSet<EntitySourceCode> All = Valid;
+    public static readonly ImmutableHashSet<EntitySourceCode> All = Valid.Union(UnsupportedTypes);
 }

@@ -7,5 +7,5 @@ internal interface IEntityNodeManager<T> : IEntityNodeManager;
 
 internal interface IEntityNodeManager : INodeManager2
 {
-    public IEntityNode ManagedEntity { get; }
+    public IManagedEntityNode ManagedEntity { get; }
 }

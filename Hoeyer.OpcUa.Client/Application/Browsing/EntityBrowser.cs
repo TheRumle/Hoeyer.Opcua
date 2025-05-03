@@ -40,7 +40,8 @@ public sealed class EntityBrowser<TEntity>(
     private readonly EntityDescriptionMatcher<TEntity> _identityMatcher 
         = identityMatcher ?? (n => EntityName.Equals(n.BrowseName.Name));
 
-    private readonly ISession session = sessionFactory.CreateSession(typeof(TEntity).Name + "Browser");
+    private readonly Lazy<ISession> _session = new(() => sessionFactory.CreateSession(typeof(TEntity).Name + "Browser"));
+    private ISession Session => _session.Value; 
     
     public (IEntityNode? node, DateTime timeLoaded)? LastState { get; private set; }
 
@@ -48,17 +49,17 @@ public sealed class EntityBrowser<TEntity>(
     {
         return await logger.LogWithScopeAsync(new
         {
-            Session = session.ToLoggingObject(),
+            Session = Session.ToLoggingObject(),
             Entity = EntityName,
         }, async () =>
         {
             var r = await traversalStrategy
-                .TraverseUntil(session,
+                .TraverseUntil(Session,
                     ObjectIds.RootFolder,
                     predicate: _identityMatcher.Invoke,
                     token: cancellationToken);
 
-            return await reader.ReadNodeAsync(session, r.NodeId, cancellationToken);
+            return await reader.ReadNodeAsync(Session, r.NodeId, cancellationToken);
         });
 
     }
@@ -69,7 +70,7 @@ public sealed class EntityBrowser<TEntity>(
         var values = await ReadEntity(cancellationToken);
         var index = _entityRoot!.NodeId.NamespaceIndex;
         var structure = nodeStructureFactory.Create(index);
-        return await ParseToEntity(session, cancellationToken, values, structure);
+        return await ParseToEntity(Session, cancellationToken, values, structure);
     }
 
     private async Task<IEntityNode> ParseToEntity(ISession session, CancellationToken cancellationToken, ReadResult values,
@@ -105,8 +106,8 @@ public sealed class EntityBrowser<TEntity>(
     private async Task<ReadResult> ReadEntity(CancellationToken cancellationToken)
     {
         _entityRoot ??= await FindEntityRoot(cancellationToken);
-        var descendants = await traversalStrategy.TraverseFrom(_entityRoot.NodeId, session, cancellationToken).Collect();
-        var values = await reader.ReadNodesAsync(session, descendants.Select(e=>e.NodeId), ct: cancellationToken);
+        var descendants = await traversalStrategy.TraverseFrom(_entityRoot.NodeId, Session, cancellationToken).Collect();
+        var values = await reader.ReadNodesAsync(Session, descendants.Select(e=>e.NodeId), ct: cancellationToken);
         return values;
     }
 }

@@ -7,8 +7,8 @@ namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
 
 public abstract class AnalyzerTest<TAnalyzer> where TAnalyzer : DiagnosticAnalyzer, new()
 {
-    private readonly TAnalyzer _analyzer = new();
-    private AnalyzerTestDriver<DiagnosticAnalyzer> Driver => new(_analyzer, Console.WriteLine);
+    protected readonly TAnalyzer Analyzer = new();
+    protected AnalyzerTestDriver<DiagnosticAnalyzer> Driver => new(Analyzer, Console.WriteLine);
 
     [Test]
     [ValidEntitySourceCodeGenerator]
@@ -17,7 +17,7 @@ public abstract class AnalyzerTest<TAnalyzer> where TAnalyzer : DiagnosticAnalyz
     {
         var res = await Driver.RunAnalyzerOn(entitySourceCode);
         var diagnosticsReportedByAnalyzer =
-            res.Diagnostics.Where(diagnostic => _analyzer.SupportedDiagnostics.Contains(diagnostic.Descriptor));
+            res.Diagnostics.Where(diagnostic => Analyzer.SupportedDiagnostics.Contains(diagnostic.Descriptor));
         await Assert.That(diagnosticsReportedByAnalyzer).IsEmpty()
             .Because("Correct entities should not have diagnostics.");
     }

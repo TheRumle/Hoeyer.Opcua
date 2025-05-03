@@ -7,7 +7,8 @@ namespace Hoeyer.OpcUa.Core.Entity.Node;
 public sealed record EntityNode(BaseObjectState BaseObject, ISet<PropertyState> PropertyStates)
     : IEntityNode
 {
-    public EntityNode(BaseObjectState BaseObject, IEnumerable<PropertyState> PropertyStates) : this(BaseObject, new HashSet<PropertyState>(PropertyStates))
+    public EntityNode(BaseObjectState BaseObject, IEnumerable<PropertyState> PropertyStates) 
+        : this(BaseObject, new HashSet<PropertyState>(PropertyStates))
     {}
     
     public BaseObjectState BaseObject { get; } = BaseObject;
