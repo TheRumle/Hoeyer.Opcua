@@ -11,10 +11,4 @@ public static class SyntaxExtensions
     {
         return SyntaxFactory.SeparatedList(syntaxNodes);
     }
-
-
-    public static SeparatedSyntaxList<TNode> ToSingletonList<TNode>(this TNode syntaxNodes) where TNode : SyntaxNode
-    {
-        return SyntaxFactory.SingletonSeparatedList(syntaxNodes);
-    }
 }

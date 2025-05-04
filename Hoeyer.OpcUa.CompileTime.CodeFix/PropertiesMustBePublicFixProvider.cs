@@ -19,7 +19,7 @@ namespace Hoeyer.OpcUa.CompileTime.CodeFix;
 public sealed class PropertiesMustBePublicFixProvider : CodeFixProvider
 {
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-        ImmutableArray.Create(Rules.MustHavePublicSetter.Id);
+        [Rules.MustHavePublicSetter.Id];
 
     public override FixAllProvider? GetFixAllProvider()
     {

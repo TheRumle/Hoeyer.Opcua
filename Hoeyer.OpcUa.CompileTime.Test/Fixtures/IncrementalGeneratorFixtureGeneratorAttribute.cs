@@ -6,4 +6,4 @@ namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures;
 
 [SuppressMessage("Design", "S3993", Justification = "TUnits' attributeusage must not and cannot be overwritten.")]
 internal sealed class
-    IncrementalGeneratorFixtureGeneratorAttribute : TypesWithEmptyCtorScanningGeneratorAttribute<IIncrementalGenerator, EntityNodeStructureFactoryGenerator>;
+    IncrementalGeneratorFixtureGeneratorAttribute : TypesWithEmptyCtorScanningGeneratorAttribute<IIncrementalGenerator, EntityTranslatorGenerator>;
