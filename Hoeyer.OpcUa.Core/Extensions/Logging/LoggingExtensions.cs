@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.Common.Extensions;
-using Hoeyer.OpcUa.Core.Application.RequestResponse;
-using Hoeyer.OpcUa.Core.Entity.Node;
+using Hoeyer.OpcUa.Core.Api;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Extensions.Logging;
@@ -63,25 +62,6 @@ public static class LoggingExtensions
             .Select(diagnostic => diagnostic);
     }
 
-    public static object ToLoggingObject<TRequest, TResponse>(this StatusCodeResponse<TRequest, TResponse> response)
-    {
-        if (response.IsSuccess)
-        {
-            return new
-            {
-                response.Error,
-                Request = response.RequestString(),
-                ResponseCode = response.ResponseCode.ToString()
-            };
-        }
-
-        return new
-        {
-            Request = response.RequestString(),
-            Response = response.ResponseCode.ToString()
-        };
-    }
-    
     public static object ToLoggingObject(this ApplicationConfiguration configuration)
     {
         return new

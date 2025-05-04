@@ -99,6 +99,9 @@ public static class SupportedTypes
         }
     }
 
+    /// <summary>
+    /// Currently supported types are: generic lists
+    /// </summary>
     private static class Collection
     {
         public static bool Supports(ITypeSymbol typeSymbol)

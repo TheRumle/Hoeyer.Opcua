@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.Core.Entity.Node;
+﻿using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Opc.Ua;
 

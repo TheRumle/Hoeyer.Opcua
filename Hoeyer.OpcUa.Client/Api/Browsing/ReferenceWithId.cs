@@ -11,7 +11,8 @@ public sealed class ReferenceWithId(NodeId nodeId, ReferenceDescription descript
     public readonly NodeId NodeId = nodeId;
 
     public ReferenceWithId(ISession session, ReferenceDescription description)
-        : this(description.NodeId.AsNodeId(session.NamespaceUris), description)
+        : this(ExpandedNodeId.ToNodeId( description.NodeId, session.NamespaceUris),
+            description)
     {
     }
 

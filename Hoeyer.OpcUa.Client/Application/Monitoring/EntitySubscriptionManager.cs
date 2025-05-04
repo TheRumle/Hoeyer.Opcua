@@ -11,7 +11,7 @@ using Hoeyer.OpcUa.Client.Application.Connection;
 using Hoeyer.OpcUa.Client.Extensions;
 using Hoeyer.OpcUa.Client.MachineProxy;
 using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.Core.Entity.Node;
+using Hoeyer.OpcUa.Core.Api;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
@@ -24,7 +24,6 @@ internal sealed class EntitySubscriptionManager<T>(
     IEntitySessionFactory sessionFactory,
     IEntityBrowser<T> browser,
     IMonitorItemsFactory<T> monitorFactory,
-    ILogger<EntitySubscriptionManager<T>> logger, 
     IReconnectionStrategy? reconnectionStrategy = null)
     : IEntitySubscriptionManager<T>
 {

@@ -22,6 +22,7 @@ public static class Locations
                 "System.Collections.Generic",
                 "Hoeyer.OpcUa.Core.Entity",
                 "Hoeyer.OpcUa.Core",
+                "Hoeyer.OpcUa.Core.Api",
                 "Hoeyer.OpcUa.Core.Entity.Node",
                 "Hoeyer.OpcUa.Core.Entity.State"
             }

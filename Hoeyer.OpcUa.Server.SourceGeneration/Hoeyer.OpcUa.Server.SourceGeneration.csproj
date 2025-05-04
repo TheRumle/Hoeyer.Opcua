@@ -23,7 +23,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.Analysis\Hoeyer.OpcUa.CompileTime.Analysis.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
     </ItemGroup>
 

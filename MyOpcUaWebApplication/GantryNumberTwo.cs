@@ -1,5 +1,4 @@
 ﻿using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.Core.Entity.Node;
 using Opc.Ua;
 
 namespace MyOpcUaWebApplication;

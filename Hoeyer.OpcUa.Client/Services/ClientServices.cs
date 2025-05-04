@@ -8,6 +8,7 @@ using Hoeyer.OpcUa.Client.Application.Reading;
 using Hoeyer.OpcUa.Client.MachineProxy;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Services;
+using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Client.Services;

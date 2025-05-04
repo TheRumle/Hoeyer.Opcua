@@ -11,6 +11,9 @@ public sealed class Gantry
     public string message { get; set; }
     public List<string> messages { get; set; }
     
+    public event Func<int, int, int> MyEvent;
+
+    
     public List<string> Names { get; set; } = ["rasmus", "christmas"];
     
 }

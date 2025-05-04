@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Core.Entity.Node;
+using Hoeyer.OpcUa.Core.Api;
 
 namespace Hoeyer.OpcUa.Client.Api.Browsing;
 

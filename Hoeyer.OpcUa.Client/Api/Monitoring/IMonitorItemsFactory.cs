@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Hoeyer.OpcUa.Core.Entity.Node;
+using Hoeyer.OpcUa.Core.Api;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Api.Monitoring;

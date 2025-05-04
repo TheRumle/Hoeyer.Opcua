@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.Core.Entity.Node;
+using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Server.SourceGeneration.Constants;
 using Hoeyer.OpcUa.Server.SourceGeneration.Generation.IncrementalProvider;
 using Hoeyer.OpcUa.Server.SourceGeneration.OpcUaTypes;
@@ -11,7 +11,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Opc.Ua;
-using TypeInfo = Opc.Ua.TypeInfo;
 
 namespace Hoeyer.OpcUa.Server.SourceGeneration.Generation;
 
@@ -28,7 +27,6 @@ public class EntityNodeStructureFactoryGenerator : IIncrementalGenerator
 
         context.RegisterImplementationSourceOutput(classProviders.Collect(), (productionContext, compilations) =>
         {
-            foreach (var factoryAndContext in compilations) factoryAndContext.AddToContext(productionContext);
         });
     }
 

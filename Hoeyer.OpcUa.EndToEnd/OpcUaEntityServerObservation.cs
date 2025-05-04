@@ -1,5 +1,5 @@
 ﻿using Hoeyer.OpcUa.Client.Api.Browsing;
-using Hoeyer.OpcUa.Core.Entity.Node;
+using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Extensions;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.EndToEndTest.TestEntities;

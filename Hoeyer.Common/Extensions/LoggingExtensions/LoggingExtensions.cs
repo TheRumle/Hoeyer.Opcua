@@ -68,7 +68,6 @@ public static class LoggingExtensions
         }
     }
     
-    
     public static T? Try<T>(this ILogger logger, Func<T> action)
     {
         try
@@ -115,5 +114,19 @@ public static class LoggingExtensions
     {
         logger.BeginScope(scope);
         return logger.TryAsync(t);
+    }
+    
+    public static void TryAndReThrow(this ILogger logger, Action action, Action? onSuccess = null)
+    {
+        try
+        {
+            action.Invoke();
+            onSuccess?.Invoke();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, null);
+            throw;
+        }
     }
 }

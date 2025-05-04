@@ -10,7 +10,7 @@ using Hoeyer.OpcUa.Client.Api.Reading;
 using Hoeyer.OpcUa.Client.Extensions;
 using Hoeyer.OpcUa.Client.MachineProxy;
 using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.Core.Entity.Node;
+using Hoeyer.OpcUa.Core.Api;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Client;

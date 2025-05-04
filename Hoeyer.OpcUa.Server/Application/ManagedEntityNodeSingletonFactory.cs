@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Entity;
-using Hoeyer.OpcUa.Core.Entity.Node;
 using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Microsoft.Extensions.DependencyInjection;

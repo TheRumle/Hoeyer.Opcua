@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.Core.Entity;
+﻿using Hoeyer.OpcUa.Core.Api;
+using Hoeyer.OpcUa.Core.Entity;
 
 namespace MyOpcUaWebApplication;
 
