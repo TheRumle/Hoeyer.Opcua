@@ -3,7 +3,6 @@ using Hoeyer.Common.Messaging.Api;
 using Hoeyer.Common.Messaging.Subscriptions;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Core.Entity;
 using Hoeyer.OpcUa.Server.Api;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua;

@@ -19,12 +19,10 @@ public static class Locations
                 "System",
                 "System.Linq",
                 "System.Collections",
+                "Hoeyer.OpcUa.Core.Application.Translator",
                 "System.Collections.Generic",
-                "Hoeyer.OpcUa.Core.Entity",
                 "Hoeyer.OpcUa.Core",
                 "Hoeyer.OpcUa.Core.Api",
-                "Hoeyer.OpcUa.Core.Entity.Node",
-                "Hoeyer.OpcUa.Core.Entity.State"
             }
             .Select(e => SyntaxFactory.ParseName(e))
             .Select(SyntaxFactory.UsingDirective)

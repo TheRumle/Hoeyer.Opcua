@@ -5,7 +5,6 @@ using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Writing;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Core.Entity;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Client;

@@ -1,8 +1,6 @@
 ﻿using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Core.Entity;
-using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.EndToEndTest.Generators;
