@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Application;
+using Hoeyer.OpcUa.Core.Application.Translator;
 using Hoeyer.OpcUa.Server.SourceGeneration.Constants;
 using Hoeyer.OpcUa.Server.SourceGeneration.Generation.IncrementalProvider;
 using Microsoft.CodeAnalysis;

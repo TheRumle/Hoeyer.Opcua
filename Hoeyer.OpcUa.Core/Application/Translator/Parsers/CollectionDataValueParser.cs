@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Hoeyer.OpcUa.Core.Application.Parsers;
+namespace Hoeyer.OpcUa.Core.Application.Translator.Parsers;
 
 public sealed class CollectionDataValueParser<TCollection, TValue>(Func<TCollection> identity)
     : DataValueParser<TCollection>(identity) where TCollection : ICollection<TValue>

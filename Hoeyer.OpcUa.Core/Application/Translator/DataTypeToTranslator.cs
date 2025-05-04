@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Core.Application.Parsers;
+using Hoeyer.OpcUa.Core.Application.Translator.Parsers;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Application;
+namespace Hoeyer.OpcUa.Core.Application.Translator;
 
 public static class DataTypeToTranslator
 {

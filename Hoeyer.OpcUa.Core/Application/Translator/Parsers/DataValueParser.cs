@@ -1,7 +1,7 @@
 ﻿using System;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Application.Parsers;
+namespace Hoeyer.OpcUa.Core.Application.Translator.Parsers;
 
 public abstract class DataValueParser<TTarget> : IValueParser<DataValue?, TTarget>
 {

@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Core.Entity;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Application;
+namespace Hoeyer.OpcUa.Core.Application.NodeStructureFactory;
 
 [OpcUaEntityService(typeof(IEntityNodeStructureFactory<>), ServiceLifetime.Singleton)]
 public class EntityStructureSingletonFactory<T> : IEntityNodeStructureFactory<T>

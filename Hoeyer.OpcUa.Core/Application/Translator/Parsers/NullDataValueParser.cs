@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.OpcUa.Core.Application.Parsers;
+﻿namespace Hoeyer.OpcUa.Core.Application.Translator.Parsers;
 
 public class NullDataValueParser<T>() : DataValueParser<T?>(() => default)
 {

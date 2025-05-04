@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Hoeyer.OpcUa.Core.Application.Parsers;
+namespace Hoeyer.OpcUa.Core.Application.Translator.Parsers;
 
 public static class DataValueParsers
 {

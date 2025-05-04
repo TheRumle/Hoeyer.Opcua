@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.OpcUa.Core.Application.Parsers;
+﻿namespace Hoeyer.OpcUa.Core.Application.Translator.Parsers;
 
 public interface IValueParser<in TSource, out TTarget>
 {

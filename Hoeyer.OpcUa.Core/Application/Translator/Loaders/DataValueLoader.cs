@@ -1,7 +1,7 @@
 ﻿using System;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Entity.State.Loaders;
+namespace Hoeyer.OpcUa.Core.Application.Translator.Loaders;
 
 public class DataValueLoader<T> : IDataValueLoader<T>
 {

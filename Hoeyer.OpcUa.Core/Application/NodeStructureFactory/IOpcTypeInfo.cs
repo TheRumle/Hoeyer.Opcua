@@ -1,6 +1,6 @@
 ﻿using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Application;
+namespace Hoeyer.OpcUa.Core.Application.NodeStructureFactory;
 
 internal interface IOpcTypeInfo
 {

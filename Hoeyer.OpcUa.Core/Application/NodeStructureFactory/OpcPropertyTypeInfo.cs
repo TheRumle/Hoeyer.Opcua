@@ -2,7 +2,7 @@
 using Hoeyer.OpcUa.Core.Extensions.Reflection;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Application;
+namespace Hoeyer.OpcUa.Core.Application.NodeStructureFactory;
 
 internal sealed record OpcPropertyTypeInfo : IOpcTypeInfo
 {

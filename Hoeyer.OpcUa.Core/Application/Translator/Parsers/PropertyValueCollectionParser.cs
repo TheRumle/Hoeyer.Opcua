@@ -2,7 +2,7 @@
 using System.Linq;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Application.Parsers;
+namespace Hoeyer.OpcUa.Core.Application.Translator.Parsers;
 
 public sealed class PropertyValueCollectionParser<T> : IValueParser<PropertyState, T[]?>
 {

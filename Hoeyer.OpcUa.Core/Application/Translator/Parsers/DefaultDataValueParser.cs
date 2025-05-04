@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.OpcUa.Core.Application.Parsers;
+﻿namespace Hoeyer.OpcUa.Core.Application.Translator.Parsers;
 
 public sealed class DefaultDataValueParser<T>(T identity) : DataValueParser<T>(() => identity)
 {
