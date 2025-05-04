@@ -72,13 +72,13 @@ public class EntityStructureSingletonFactory<T> : IEntityNodeStructureFactory<T>
             .Where(nameAndHandler => nameAndHandler.delegateType != null
                                      && typeof(Delegate).IsAssignableFrom(nameAndHandler.delegateType)
                                      && nameAndHandler.invokeMethod != null)
-            .Select( e => (e.name, e.invokeMethod));
+            .Select( e => (e.name, e.invokeMethod));    
         
         return methodCandidates.Select(delegateTypeInfo =>
         {
             var (name, invokeMethod) = delegateTypeInfo;
             var parameters = invokeMethod!.GetParameters().Select(p => (p.ParameterType, p.Name ?? "arg" + p.Position)).ToArray();
-            var returnType = invokeMethod.ReturnType;
+            var returnType = invokeMethod.ReturnType == typeof(void) ? null : invokeMethod.ReturnType;
             return new OpcMethodTypeInfo(name, parameters, returnType, entity);
         });
 
