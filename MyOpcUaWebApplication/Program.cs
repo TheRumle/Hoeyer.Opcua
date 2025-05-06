@@ -19,7 +19,7 @@ builder.Logging.AddJsonConsole(options =>
     };
     options.TimestampFormat = "yyyy-MM-dd HH:mm:ss";
 });
-builder.Services.AddHostedService<ReaderHost>();
+builder.Services.AddHostedService<ExampleHost>();
 builder.Services.Configure<HostOptions>(options =>
 {
     options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;

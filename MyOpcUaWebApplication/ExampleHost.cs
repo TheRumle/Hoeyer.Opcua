@@ -4,7 +4,7 @@ using Hoeyer.OpcUa.Server.Api;
 
 namespace MyOpcUaWebApplication;
 
-public class ReaderHost(IEntityBrowser<Gantry> client, IEntityWriter<Gantry> writer, EntityServerStartedMarker marker) : BackgroundService
+public class ExampleHost(IEntityBrowser<Gantry> client, IEntityWriter<Gantry> writer, EntityServerStartedMarker marker) : BackgroundService
 {
     private readonly Random _random = new();
     /// <inheritdoc />
