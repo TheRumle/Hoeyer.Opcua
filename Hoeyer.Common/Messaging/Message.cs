@@ -5,7 +5,7 @@ namespace Hoeyer.Common.Messaging;
 
 public sealed record Message<T>(T Payload) : IMessage<T>
 {
-    public readonly Guid MessageId = Guid.NewGuid();
+    public Guid MessageId { get; } = Guid.NewGuid();
     public T Payload { get; } = Payload;
-    public readonly DateTime Timestamp = DateTime.UtcNow;
+    public DateTime Timestamp { get; } = DateTime.UtcNow;
 }

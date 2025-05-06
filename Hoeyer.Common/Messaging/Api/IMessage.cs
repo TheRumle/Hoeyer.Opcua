@@ -1,6 +1,10 @@
-﻿namespace Hoeyer.Common.Messaging.Api;
+﻿using System;
+
+namespace Hoeyer.Common.Messaging.Api;
 
 public interface IMessage<out T>
 {
-    T Payload { get; }
+    public Guid MessageId { get; }
+    public T Payload { get; } 
+    public DateTime Timestamp { get; }
 }

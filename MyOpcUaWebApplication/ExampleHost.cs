@@ -1,10 +1,12 @@
-﻿using Hoeyer.OpcUa.Client.Api.Browsing;
+﻿using Hoeyer.Common.Messaging.Api;
+using Hoeyer.OpcUa.Client.Api.Browsing;
+using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Client.Api.Writing;
 using Hoeyer.OpcUa.Server.Api;
 
 namespace MyOpcUaWebApplication;
 
-public class ExampleHost(IEntityBrowser<Gantry> client, IEntityWriter<Gantry> writer, EntityServerStartedMarker marker) : BackgroundService
+public class ExampleHost(IEntityBrowser<Gantry> client, IEntityWriter<Gantry> writer, IEntitySubscriptionManager<Gantry> subscriptionManager, EntityServerStartedMarker marker) : BackgroundService
 {
     private readonly Random _random = new();
     /// <inheritdoc />
@@ -14,20 +16,20 @@ public class ExampleHost(IEntityBrowser<Gantry> client, IEntityWriter<Gantry> wr
         while (!stoppingToken.IsCancellationRequested)
         {
             var result = await client.BrowseEntityNode(stoppingToken);
-
             foreach (var (propertyName, propertyState) in result.PropertyByBrowseName)
             {
                 Console.WriteLine(propertyName + " has the value " + propertyState.Value);
             }
 
             Console.WriteLine("___________________________________________________");
-            Console.WriteLine();
             Console.WriteLine("___________________________________________________");
 
             await writer.AssignEntityValues(CreateRandomGantry(), stoppingToken);
             await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
         }
     }
+
+    public IMessageSubscription Subscription { get; set; }
 
     private Gantry CreateRandomGantry()
     {

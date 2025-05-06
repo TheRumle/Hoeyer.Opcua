@@ -20,7 +20,7 @@ public class MessagePublisherTest
     {
         public int Count; 
         public IMessageSubscription MessageSubscription { get; set; }
-        public void Consume(IMessage<int> changedProperties) => Count += 1;
+        public void Consume(IMessage<int> message) => Count += 1;
     }
     
     public static IEnumerable<Func<(int consumers, int messages)>> IncreasingLoad()
