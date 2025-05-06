@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.Common.Extensions.Async;
 using Hoeyer.Common.Extensions.LoggingExtensions;
+using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
 using Hoeyer.OpcUa.Client.Api.Reading;
@@ -76,27 +77,27 @@ public sealed class EntityBrowser<TEntity>(
     private async Task<IEntityNode> ParseToEntity(ISession session, CancellationToken cancellationToken, ReadResult values,
         IEntityNode structure)
     {
-        foreach (var read in values.SuccesfulReads.Select(value => value!.NodeId))
-        {
-            var v = await reader.ReadNodeAsync(session, read, cancellationToken);
-            var value = v switch
+        var nodesAndValues = await reader
+            .ReadNodesAsync(session, values.SuccesfulReads.Select(value => value!.NodeId),
+                ct: cancellationToken)
+            .ThenAsync(e => e.SuccesfulReads)
+            .ThenAsync(nodes => nodes.Select(v => (node: v!, variableValue: v switch
             {
                 VariableTypeNode variableTypeNode => variableTypeNode.Value,
                 VariableNode variableNode => variableNode.Value,
                 _ => default
-            };
-            if (value == default)
+            })))
+            .ThenAsync( e => e.ToList());
+        
+        foreach (var state in structure.PropertyStates)
+        {
+            var match = nodesAndValues
+                .Where(n => n.variableValue != default && n.node != null)
+                .FirstOrDefault(n => n.node.NodeId.Equals(state.NodeId));
+
+            if (match != default)
             {
-                logger.LogWarning("Cannot handle node of type {TypeName} ", v.GetType().Name);
-                continue;
-            }
-            
-            foreach (var state in structure.PropertyStates)
-            {
-                if (state.NodeId == read)
-                {
-                    state.Value = value;
-                }
+                state.Value = match;
             }
         }
         LastState = new ValueTuple<IEntityNode, DateTime>(structure, DateTime.Now);

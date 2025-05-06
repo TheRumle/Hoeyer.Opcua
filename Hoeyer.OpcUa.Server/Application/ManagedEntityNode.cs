@@ -7,21 +7,22 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-internal sealed record ManagedEntityNode<T>(
-    BaseObjectState BaseObject,
-    ISet<PropertyState> PropertyStates,
-    string Namespace,
-    ushort EntityNameSpaceIndex) : IManagedEntityNode
+internal sealed record ManagedEntityNode<T> : IManagedEntityNode
 {
     public ManagedEntityNode(IEntityNode node, string entityNamespace, ushort entityNamespaceIndex)
-        : this(node.BaseObject, node.PropertyStates, entityNamespace, entityNamespaceIndex)
     {
+        this.BaseObject = node.BaseObject;
+        this.Namespace = entityNamespace;
+        this.EntityNameSpaceIndex = entityNamespaceIndex;
+        this.PropertyStates = node.PropertyStates;
+        this.Methods = node.Methods;
     }
 
-    public string Namespace { get; } = Namespace;
-    public ushort EntityNameSpaceIndex { get; } = EntityNameSpaceIndex;
-    public BaseObjectState BaseObject { get; } = BaseObject;
-    public ISet<PropertyState> PropertyStates { get; } = PropertyStates;
+    public string Namespace { get; }
+    public ushort EntityNameSpaceIndex { get; }
+    public BaseObjectState BaseObject { get; }
+    public ISet<PropertyState> PropertyStates { get; } 
+    public ISet<MethodState> Methods { get; }
 
     public Dictionary<string, PropertyState> PropertyByBrowseName => PropertyStates.ToDictionary(e => e.BrowseName.Name);
     

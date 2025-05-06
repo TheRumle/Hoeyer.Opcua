@@ -7,25 +7,67 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Extensions.Logging;
 
+public class ArgumentInfo(string Name, object Value)
+{
+    public ArgumentInfo(Argument argument):this(argument.Name, argument.Value)
+    {}
+    public object Value { get; } = Value;
+    public string Name { get; } = Name;
+        
+    public static ArgumentInfo Of(Argument argument) => new(argument.Name, argument.Value);
+}
+
 public static class LoggingExtensions
 {
-    public static object ToLoggingObject(this Node node)
+
+    
+    public static object ToLoggingObjectWithArguments(this MethodState method)
+    {
+        var outArgs = method.OutputArguments?.Value?.Select(ArgumentInfo.Of).ToArray();
+        var inArgs = method.InputArguments?.Value?.Select(ArgumentInfo.Of).ToArray();
+        
+        if (outArgs != null && inArgs != null)
+        {
+            return new
+            {
+                Info = method.CoreInfoObject(),
+                Arguments = inArgs,
+                Result = outArgs
+            };
+        }
+
+        if (outArgs != null)
+        {
+            return new
+            {
+                Info = method.CoreInfoObject(),
+                Arguments = inArgs
+            };
+        }
+
+        if (inArgs != null)
+        {
+            return new
+            {
+                Info = method.CoreInfoObject(),
+                Arguments = inArgs
+            };
+        }
+
+        return new
+        {
+            Info = method.CoreInfoObject(),
+            method.AreEventsMonitored,
+        };
+    }
+
+    public static object ToLoggingObject(this MethodState method)
     {
         return new
         {
-            node.NodeId,
-            node.BrowseName,
-            node.Handle,
-            node.NodeClass,
-            References = node.References.Select(e => new
-            {
-                TypeId = new {
-                    IdentifierObject = e.TypeId.Identifier,
-                    e.ReferenceTypeId,
-                },
-                e.TargetId
-            }).ToCommaSeparatedString(),
-            Description = node.Description.Text,
+            Name = method.BrowseName.Name,
+            Details = method.CoreInfoObject(),
+            Arguments = method?.InputArguments.Value.Select(ArgumentInfo.Of).ToArray()
         };
     }
     
@@ -51,16 +93,7 @@ public static class LoggingExtensions
             des.Handle
         });
     }
-
-
-    public static object ToLoggingObject(this DiagnosticInfoCollection collection, Predicate<StatusCode>? filter = null)
-    {
-        var f = filter ?? StatusCode.IsNotGood;
-        
-        return collection
-            .Where(e => f.Invoke(e.InnerStatusCode))
-            .Select(diagnostic => diagnostic);
-    }
+    
 
     public static object ToLoggingObject(this ApplicationConfiguration configuration)
     {

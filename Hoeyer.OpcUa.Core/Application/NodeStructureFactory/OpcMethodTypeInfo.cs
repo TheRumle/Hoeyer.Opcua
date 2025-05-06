@@ -27,7 +27,7 @@ internal sealed record OpcMethodTypeInfo : IOpcTypeInfo
         {
             CreateReturnValueNode(methodName, returnType, parent, method);
         }
-        InstanceState = method;
+        Method = method;
     }
 
     private static void CreateInputArguments(string methodName, (Type type, string name)[] arguments,
@@ -80,5 +80,6 @@ internal sealed record OpcMethodTypeInfo : IOpcTypeInfo
         method.AddReference(ReferenceTypeIds.HasProperty, false, outputArgument.NodeId);
     }
 
-    public BaseInstanceState InstanceState { get; set; }
+    public BaseInstanceState InstanceState => Method;
+    public MethodState Method { get; set; }
 }

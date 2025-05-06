@@ -33,6 +33,19 @@ internal sealed class EntityNodeManager<T>(
                     externalReferences[ObjectIds.ObjectsFolder] = references;
                 }
                 references.Add(new NodeStateReference(ReferenceTypeIds.Organizes, false, node.NodeId));
+
+                foreach (var method in ManagedEntity.Methods)
+                {
+                    method.OnCallMethod += (context, method, arguments, results) =>
+                    {
+                        logger.LogInformation("Session {@Session} invoked method {@Method}",
+                            context.SessionId,
+                            method.ToLoggingObject());
+                        return ServiceResult.Good;
+                    };
+
+                }
+                
             }
         });
     }

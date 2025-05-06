@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using Hoeyer.OpcUa.Core.Api;
@@ -25,24 +26,26 @@ public class EntityStructureSingletonFactory<T> : IEntityNodeStructureFactory<T>
         entity.AccessRestrictions = AccessRestrictionType.None;
         
         IEnumerable<OpcPropertyTypeInfo> properties = CreateProperties(type, entity).ToList();
-        IEnumerable<IOpcTypeInfo> methods = CreateMethods(type, entity).ToList();
+        IEnumerable<OpcMethodTypeInfo> methods = CreateMethods(type, entity).ToList();
         
         AssignProperties(properties, entity);
         AssignMethods(methods, entity);
         
-        return new EntityNode(entity, properties.Select(e=>e.OpcProperty));
+        return new EntityNode(entity,
+            new HashSet<PropertyState>(properties.Select(e=>e.OpcProperty)),
+            new HashSet<MethodState>(methods.Select(e=>e.Method)));
     }
 
-    private void AssignMethods(IEnumerable<IOpcTypeInfo> methods, BaseObjectState entity)
+    private static void AssignMethods(IEnumerable<IOpcTypeInfo> methods, BaseObjectState entity)
     {
-        foreach (var pr in methods)
+        foreach (var pr in methods.Select(type => type.InstanceState))
         {
-            entity.AddReference(ReferenceTypeIds.HasComponent, false, pr.InstanceState.NodeId);
-            entity.AddChild(pr.InstanceState);
+            entity.AddReference(ReferenceTypeIds.HasComponent, false, pr.NodeId);
+            entity.AddChild(pr);
         }
     }
 
-    private void AssignProperties(IEnumerable<IOpcTypeInfo> values, BaseObjectState entity)
+    private static void AssignProperties(IEnumerable<IOpcTypeInfo> values, BaseObjectState entity)
     {
         foreach (var pr in values)
         {
@@ -50,7 +53,7 @@ public class EntityStructureSingletonFactory<T> : IEntityNodeStructureFactory<T>
             {
                 OpcMethodTypeInfo => ReferenceTypeIds.HasComponent,
                 OpcPropertyTypeInfo => ReferenceTypeIds.HasProperty,
-                _ => throw new ArgumentOutOfRangeException(nameof(pr))
+                _ => throw new ArgumentOutOfRangeException(pr.GetType().Name + " is not supported!")
             };
             entity.AddChild(pr.InstanceState);
             entity.AddReference(referenceTypeid, false, pr.InstanceState.NodeId);

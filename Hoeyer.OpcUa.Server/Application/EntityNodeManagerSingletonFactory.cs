@@ -19,7 +19,7 @@ internal sealed class EntityNodeManagerSingletonFactory<T>(
     {
         if (CreatedManager != null) return CreatedManager;
         var node = await nodeFactory.CreateManagedEntityNode(server.NamespaceUris.GetIndexOrAppend);
-        configurator.ConfigureAccess(node);
+        configurator.Configure(node);
         var logger = factory.CreateLogger(node.BaseObject.BrowseName.Name+"Manager");
         CreatedManager = new EntityNodeManager<T>(node, server, logger);
         return CreatedManager;

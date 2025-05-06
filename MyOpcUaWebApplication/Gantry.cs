@@ -12,6 +12,7 @@ public sealed class Gantry
     public List<string> messages { get; set; }
     
     public event Action<int, int, int> MethodWithNoOutput;
+    public event Func<int, int, Position> MethodWithOutput;
 
     
     public List<string> Names { get; set; } = ["rasmus", "christmas"];

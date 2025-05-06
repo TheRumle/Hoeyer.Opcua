@@ -185,7 +185,12 @@ internal sealed class OpcEntityServer(
     {
         if (diagnosticInfos is { Count: > 0 })
         {
-            logger.LogError("Diagnostics: {Diagnostics}", diagnosticInfos.Select(e=>e));
+            logger.LogError("Diagnostics: {@Diagnostics}", diagnosticInfos.Select(e=> new
+            {
+                e.AdditionalInfo,
+                e.InnerStatusCode,
+                Message = e.ToString()
+            }).ToArray());
         }
         
         if (responseHeader == null)
@@ -195,7 +200,7 @@ internal sealed class OpcEntityServer(
         else if (StatusCode.IsBad(responseHeader.ServiceResult))
         {
             logger.LogError("Header status code is bad: {Code}\n" +
-                            "@{Header}", StatusCodes.GetBrowseName(responseHeader.ServiceResult.Code), responseHeader.ToLoggingObject());
+                            "{@Header}", StatusCodes.GetBrowseName(responseHeader.ServiceResult.Code), responseHeader.ToLoggingObject());
         }
         return responseHeader;
     }

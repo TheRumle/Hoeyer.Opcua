@@ -2,8 +2,9 @@
 
 namespace Hoeyer.OpcUa.Server.Api.NodeManagement;
 
-public interface IEntityNodeAccessConfigurator
-{
-    public void ConfigureAccess(IEntityNode node);
+public interface IEntityNodeAccessConfigurator : IEntityNodeConfigurator;
 
+public interface IEntityNodeConfigurator
+{
+    public void Configure(IEntityNode node);
 }

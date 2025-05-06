@@ -15,6 +15,7 @@ builder.Logging.AddJsonConsole(options =>
     options.JsonWriterOptions = new JsonWriterOptions
     {
         Indented = true,
+        MaxDepth = 10,
     };
     options.TimestampFormat = "yyyy-MM-dd HH:mm:ss";
 });
