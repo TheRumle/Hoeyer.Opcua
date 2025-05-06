@@ -10,6 +10,7 @@ To define a node, simply create a class and annotate it with the OpcUaEntityAttr
 ## Browsing an Entity
 After defining an Entity class, simply inject an IEntityBrowser<MyEntityClass> where you want to use it. 
 
+## Example
 A small example has been included in the project MyOpcUaWebApplication - when starting the application, services are wired up - this includes an OpcUa server with two defined nodes. There will also be autowired a service to browse entities and one to write entities. 
 The program also starts a hosted service that will 
 An example showing both can be seen in ExampleHost.cs. The example show the browsing of a simple Entity and changing its values semi-randomly. 
