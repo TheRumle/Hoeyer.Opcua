@@ -3,7 +3,7 @@
 namespace Hoeyer.OpcUa.EndToEndTest.TestEntities;
 
 [OpcUaEntity]
-public sealed class CristinesGantry
+public sealed class OtherGantry
 {
     public int IntValue { get; set; }
     public string StringValue { get; set; }

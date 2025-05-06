@@ -3,19 +3,19 @@
 
 namespace Hoeyer.OpcUa.EndToEndTest.TestEntities;
 
-public class CristinesGantryLoader : IEntityLoader<CristinesGantry>
+public class OtherGantryLoader : IEntityLoader<OtherGantry>
 {
     /// <inheritdoc />
-    public ValueTask<CristinesGantry> LoadCurrentState()
+    public ValueTask<OtherGantry> LoadCurrentState()
     {
-        return new ValueTask<CristinesGantry>(new CristinesGantry
+        return new ValueTask<OtherGantry>(new OtherGantry
         {
             AList = new List<string>
             {
                 "stnreisss"
             },
             IntValue = 231,
-            StringValue = "HEJSA CRssISTINE"
+            StringValue = "This is another string value"
         });
     }
 }

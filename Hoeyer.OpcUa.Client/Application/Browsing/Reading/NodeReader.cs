@@ -9,7 +9,7 @@ using Hoeyer.OpcUa.Client.Api.Reading;
 using Opc.Ua;
 using Opc.Ua.Client;
 
-namespace Hoeyer.OpcUa.Client.Application.Reading;
+namespace Hoeyer.OpcUa.Client.Application.Browsing.Reading;
 
 internal sealed class NodeReader : INodeReader
 {

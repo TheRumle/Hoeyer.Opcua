@@ -69,35 +69,38 @@ public sealed class EntityBrowser<TEntity>(
     public async Task<IEntityNode> BrowseEntityNode(CancellationToken cancellationToken = default)
     {
         var values = await ReadEntity(cancellationToken);
-        var index = _entityRoot!.NodeId.NamespaceIndex;
-        var structure = nodeStructureFactory.Create(index);
-        return await ParseToEntity(Session, cancellationToken, values, structure);
+        return await ParseToEntity(Session, cancellationToken, values);
     }
 
-    private async Task<IEntityNode> ParseToEntity(ISession session, CancellationToken cancellationToken, ReadResult values,
-        IEntityNode structure)
+    private async Task<IEntityNode> ParseToEntity(ISession session, CancellationToken cancellationToken, ReadResult values)
     {
-        var nodesAndValues = await reader
+        var variables = await reader
             .ReadNodesAsync(session, values.SuccesfulReads.Select(value => value!.NodeId),
                 ct: cancellationToken)
             .ThenAsync(e => e.SuccesfulReads)
-            .ThenAsync(nodes => nodes.Select(v => (node: v!, variableValue: v switch
+            .ThenAsync(nodes => nodes.Where(v => v switch
             {
-                VariableTypeNode variableTypeNode => variableTypeNode.Value,
-                VariableNode variableNode => variableNode.Value,
-                _ => default
-            })))
-            .ThenAsync( e => e.ToList());
-        
+                VariableNode => true,
+                _ => false
+            }))
+            .ThenAsync( e => e.Select(node => node as VariableNode!).ToList());
+
+        var (readValues, _) = await session.ReadValuesAsync(variables.Select(e=>e.NodeId).ToList(), cancellationToken);
+        for (int i = 0; i < readValues.Count; i++)
+        {
+            variables[i]!.Value = readValues[i].WrappedValue;
+        }
+
+        var index = _entityRoot!.NodeId.NamespaceIndex;
+        var structure = nodeStructureFactory.Create(index);
         foreach (var state in structure.PropertyStates)
         {
-            var match = nodesAndValues
-                .Where(n => n.variableValue != default && n.node != null)
-                .FirstOrDefault(n => n.node.NodeId.Equals(state.NodeId));
-
-            if (match != default)
+            
+            var match = variables
+                .FirstOrDefault(n => n != null && n.NodeId.Equals(state.NodeId));
+            if (match != null)
             {
-                state.Value = match;
+                state.Value = match.Value;
             }
         }
         LastState = new ValueTuple<IEntityNode, DateTime>(structure, DateTime.Now);

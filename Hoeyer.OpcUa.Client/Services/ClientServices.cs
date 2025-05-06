@@ -1,13 +1,10 @@
 ﻿using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
-using Hoeyer.OpcUa.Client.Api.Monitoring;
-using Hoeyer.OpcUa.Client.Api.Reading;
 using Hoeyer.OpcUa.Client.Application.Browsing;
+using Hoeyer.OpcUa.Client.Application.Browsing.Reading;
 using Hoeyer.OpcUa.Client.Application.Monitoring;
-using Hoeyer.OpcUa.Client.Application.Reading;
 using Hoeyer.OpcUa.Client.MachineProxy;
 using Hoeyer.OpcUa.Core.Configuration;
-using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Microsoft.Extensions.DependencyInjection;
 

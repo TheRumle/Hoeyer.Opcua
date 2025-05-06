@@ -10,12 +10,17 @@ public class ReaderHost(IEntityBrowser<Gantry> client, IEntitySessionFactory fac
     /// <inheritdoc />
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await marker.ServerRunning();
-        var session = await factory.CreateSessionAsync("Gantry browser");
-        await client
-            .BrowseEntityNode(stoppingToken)
-            .ThenAsync(e => e.PropertyStates.Select(child => child.NodeId).ToList())
-            .ThenAsync(ids => session.ReadValuesAsync(ids, ct: stoppingToken));
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            var result = await client.BrowseEntityNode(stoppingToken);
+
+            foreach (var (propertyName, propertyState) in result.PropertyByBrowseName)
+            {
+                Console.WriteLine(propertyName + " has the value " + propertyState.Value);
+            }
+
+            await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+        }
     }
 
 }
