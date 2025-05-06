@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Writing;
+using Hoeyer.OpcUa.Client.MachineProxy;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
 using Microsoft.Extensions.Logging;
@@ -15,11 +16,14 @@ namespace Hoeyer.OpcUa.Client.Application.Writing;
 public sealed class EntityWriter<TEntity>(
     ILogger<IEntityWriter<TEntity>> logger,
     IEntityTranslator<TEntity> translator,
+    IEntitySessionFactory factory,
     IEntityBrowser<TEntity> browser) : IEntityWriter<TEntity>
 {
     
-    public async Task AssignEntityValues(ISession session, TEntity entity, CancellationToken cancellationToken = default)
+    public async Task AssignEntityValues(TEntity entity, CancellationToken cancellationToken = default)
     {
+        var session = await factory.CreateSessionAsync("WRITER");
+        
         //Only fetch the first time - then reuse the structure to write to the node
         ValuesToWrite ??= browser.LastState?.node ?? await browser.BrowseEntityNode(cancellationToken);
         translator.AssignToNode(entity, ValuesToWrite);
@@ -33,7 +37,6 @@ public sealed class EntityWriter<TEntity>(
             {
                 Value = e.Value,
             }
-                
         });
         var res = await session.WriteAsync(null, new WriteValueCollection(values), cancellationToken);
         foreach (var s in res.DiagnosticInfos.Where( e=> !e.IsNullDiagnosticInfo))

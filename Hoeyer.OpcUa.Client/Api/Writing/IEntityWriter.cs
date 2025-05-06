@@ -8,5 +8,5 @@ namespace Hoeyer.OpcUa.Client.Api.Writing;
 public interface IEntityWriter;
 public interface IEntityWriter<in T> : IEntityWriter
 {
-    public Task AssignEntityValues(ISession session, T entity, CancellationToken cancellationToken = default);
+    public Task AssignEntityValues(T entity, CancellationToken cancellationToken = default);
 }
