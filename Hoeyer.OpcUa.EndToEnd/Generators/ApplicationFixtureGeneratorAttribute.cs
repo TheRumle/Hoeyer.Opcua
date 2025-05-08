@@ -12,7 +12,8 @@ public sealed class ApplicationFixtureGeneratorAttribute<T> : DataSourceGenerato
             .Descriptors
             .DistinctBy(e => e.ImplementationType)
             .ToList();
-        
+
+        if (serviceMatches.Count == 0) throw new ArgumentException("There were no services to test!");
         foreach (var service in serviceMatches)
         {
             var f = new ApplicationFixture<T>(service, allServices);

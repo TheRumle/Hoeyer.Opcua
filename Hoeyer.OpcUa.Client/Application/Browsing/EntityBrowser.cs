@@ -61,12 +61,6 @@ public sealed class EntityBrowser<TEntity>(
             .ThenAsync(result => result.SuccesfulReads.OfType<VariableNode>())
             .ThenAsync( nodes => nodes.ToList());
 
-        var (readValues, _) = await session.ReadValuesAsync(variables.Select(e=>e.NodeId).ToList(), cancellationToken);
-        for (int i = 0; i < readValues.Count; i++)
-        {
-            variables[i]!.Value = readValues[i].WrappedValue;
-        }
-
         var structure = AssignReadValues(variables);
         return structure;
     }

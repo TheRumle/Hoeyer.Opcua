@@ -6,6 +6,7 @@ using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.EndToEndTest.Generators;
 using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.EndToEndTest;
@@ -39,45 +40,46 @@ public sealed class ServiceConfigurationTest(AllOpcUaServicesFixture fixture)
 
 
     [Test]
-    [AllEntityServiceDescriptorsOfType(typeof(IEntitySubscriptionManager<>))]
-    public async Task EntityMonitor_IsOnlyRegisteredAsSingleton(IReadOnlyCollection<ServiceDescriptor> descriptors)
+    [ClassDataSource<AllOpcUaServicesFixture>]
+    [TestSubject(typeof(IEntitySubscriptionManager<>))]
+    public async Task EntityMonitor_IsOnlyRegisteredAsSingleton(List<ServiceDescriptor> descriptors)
     {
-        var numberOfSingletons = descriptors.Count(e => e.Lifetime == ServiceLifetime.Singleton);
-        await Assert.That(numberOfSingletons).IsEqualTo(OpcUaEntityTypes.Entities.Count);
-        await Assert.That(descriptors.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
+        var services = await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IEntitySubscriptionManager<>));
+        await Assert.That(services.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
     }
 
     [Test]
-    [AllEntityServiceDescriptorsOfType(typeof(IEntityNodeManagerFactory<>))]
-    public async Task EntityNodeManagerFactory_Generic_AreSingleton(IReadOnlyCollection<ServiceDescriptor> descriptors)
+    [ClassDataSource<AllOpcUaServicesFixture>]
+    [TestSubject(typeof(IEntityNodeManagerFactory<>))]
+    public async Task EntityNodeManagerFactory_Generic_AreSingleton(List<ServiceDescriptor> descriptors)
     {
-        var numberOfSingletons = descriptors.Count(e => e.Lifetime == ServiceLifetime.Singleton);
-        await Assert.That(numberOfSingletons).IsEqualTo(OpcUaEntityTypes.Entities.Count);
-        await Assert.That(descriptors.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
+        var services = await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IEntityNodeManagerFactory<>));
+        await Assert.That(services.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
     }
 
     [Test]
-    [AllEntityServiceDescriptorsOfType(typeof(IEntityNodeManagerFactory))]
-    public async Task EntityNodeManagerFactory_NonGeneric_AreSingleton(
-        IReadOnlyCollection<ServiceDescriptor> descriptors)
+    [TestSubject(typeof(IEntityNodeManagerFactory))]
+    [DisplayName("Node manager factory (non-generic) - number of singletons")]
+    [ClassDataSource<AllOpcUaServicesFixture>]
+    public async Task EntityNodeManagerFactory_NonGeneric_AreSingleton(List<ServiceDescriptor> descriptors)
     {
-        var numberOfSingletons = descriptors.Count(e => e.Lifetime == ServiceLifetime.Singleton);
-        await Assert.That(numberOfSingletons).IsEqualTo(OpcUaEntityTypes.Entities.Count);
-        await Assert.That(descriptors.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
+        var services = await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IEntityNodeManagerFactory));
+        await Assert.That(services.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
     }
 
     [Test]
-    [AllEntityServiceDescriptorsOfType(typeof(IEntityChangedBroadcaster<>))]
+    [ClassDataSource<AllOpcUaServicesFixture>]
+    [TestSubject(typeof(IEntityChangedBroadcaster<>))]
     public async Task EntityChangedMessenger_IsOnlyRegisteredAsSingleton(
-        IReadOnlyCollection<ServiceDescriptor> descriptors)
+        List<ServiceDescriptor> descriptors)
     {
-        var numberOfSingletons = descriptors.Count(e => e.Lifetime == ServiceLifetime.Singleton);
-        await Assert.That(numberOfSingletons).IsEqualTo(OpcUaEntityTypes.Entities.Count);
-        await Assert.That(descriptors.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
+        var services = await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IEntityChangedBroadcaster<>));
+        await Assert.That(services.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
     }
 
 
-    private static async Task AssertNumberEntitiesMatchesNumberServices(IEnumerable<ServiceDescriptor> collection,
+    private static async Task<IEnumerable<ServiceDescriptor>> AssertNumberEntitiesMatchesNumberServices(
+        IEnumerable<ServiceDescriptor> collection,
         Type wantedType)
     {
         Predicate<Type> typeFilter = wantedType.IsGenericTypeDefinition
@@ -86,7 +88,8 @@ public sealed class ServiceConfigurationTest(AllOpcUaServicesFixture fixture)
             : serviceType => serviceType.IsAssignableFrom(wantedType);
 
         var services = collection.Where(e => typeFilter.Invoke(e.ServiceType)).ToList();
-        await Assert.That(services).IsNotEmpty();
+        await Assert.That(services).IsNotEmpty().Because(" there should be at least one service registered");
         await Assert.That(services.Count).IsEqualTo(OpcUaEntityTypes.Entities.Count);
+        return services;
     }
 }

@@ -6,18 +6,21 @@ using TUnit.Core.Interfaces;
 
 namespace Hoeyer.OpcUa.EndToEndTest.Fixtures;
 
-/// <summary>
-/// A fixture with a hosted application with OpcUa server and clients. Has a method get any service from the service collection contained within. See <see cref="OpcUaClientAndServerFixture"/> for the concrete hosted application
-/// </summary>
-public class ApplicationFixture(IServiceCollection collection) : IAsyncDisposable, IAsyncInitializer
+public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
 {
-
+    
+    private readonly CancellationTokenSource _cancellationTokenSource = new();
+    private readonly IServiceCollection _collection;
+    public ApplicationFixture(IServiceCollection collection)
+    {
+        _collection = collection;
+    }
+    
     public ApplicationFixture() : this(new AllOpcUaServicesFixture().ServiceCollection)
     {
         
     }
-    
-    private readonly CancellationTokenSource _cancellationTokenSource = new();
+
     public CancellationToken Token => _cancellationTokenSource.Token;
     public IServiceScope Scope { get; private set; } = null!;
     public IServiceProvider ServiceProvider { get; private set; }
@@ -40,7 +43,7 @@ public class ApplicationFixture(IServiceCollection collection) : IAsyncDisposabl
     
     public async Task InitializeAsync()
     {
-        ServiceProvider = collection.BuildServiceProvider();
+        ServiceProvider = _collection.BuildServiceProvider();
         Scope = ServiceProvider.CreateAsyncScope();
         await Scope.ServiceProvider.GetRequiredService<IStartableEntityServer>().StartAsync();
         var serverStarted = Scope.ServiceProvider.GetService<EntityServerStartedMarker>()!;
@@ -98,6 +101,11 @@ public sealed class ApplicationFixture<T> : ApplicationFixture where T : notnull
     {
         var session =  await CreateSession(Guid.NewGuid().ToString());
         return await execute(session, TestedService);
+    }
+    
+    public async Task<TOut> ExecuteAsync<TOut>(Func<T, Task<TOut>> execute)
+    {
+        return await execute.Invoke(TestedService);
     }
 
 }

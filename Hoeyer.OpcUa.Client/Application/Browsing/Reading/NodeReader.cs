@@ -6,6 +6,7 @@ using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Api;
 using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
 using Hoeyer.OpcUa.Client.Api.Reading;
+using Hoeyer.OpcUa.Core.Extensions.Opc;
 using Opc.Ua;
 using Opc.Ua.Client;
 
@@ -29,16 +30,30 @@ internal sealed class NodeReader : INodeReader
     {
         return session
             .ReadNodesAsync(idList, filter, ct: ct)
-            .ContinueWith(response =>
+            .ThenAsync(responseTuples =>
             {
-                if (response.IsCompletedSuccessfully)
-                {
-                    return new ReadResult(response.Result.Zip());
-                }
+                var zipped = responseTuples.Zip().ToList();
+                var variables = zipped
+                    .Where(readResponse => readResponse.second.IsGood())
+                    .Select(readResponse => readResponse.first)
+                    .OfType<VariableNode>()
+                    .ToList();
 
-                var errors = response.Exception!.InnerExceptions.OfType<ServiceResultException>().FirstOrDefault();
-                if (errors is not null) throw new NodeReadException(idList, errors);
-                throw new NodeReadException(idList, response.Exception.Message);
+                return session
+                    .ReadValuesAsync(variables.Select(e => e.NodeId).ToList(), ct)
+                    .ThenAsync(valueReadResponse =>
+                    {
+                        var (readValues, responseCodes) = valueReadResponse;
+                        for (int i = 0; i < readValues.Count; i++)
+                        {
+                            if (responseCodes[i].IsGood())
+                            {
+                                variables[i]!.Value = readValues[i].WrappedValue;
+                            }
+                        }
+
+                        return new ReadResult(zipped);
+                    });
             }, ct);
     }
 

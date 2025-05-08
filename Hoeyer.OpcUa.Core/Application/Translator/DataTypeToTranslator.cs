@@ -51,20 +51,20 @@ public static class DataTypeToTranslator
         var p = node.PropertyByBrowseName.TryGetValue(name, out var value) ? value : null;
         if (p == null)
         {
-            return default;
+            return [];
         }
 
         var dataTypeId = p.DataType;
         if (!TypeIds.Contains(dataTypeId))
         {
-            return default;
+            return [];
         }
 
         var res = new PropertyValueCollectionParser<T>().Parse(p);
 
         if (res == null)
         {
-            return default;
+            return [];
         }
 
         return res.Aggregate(new TCollection(), (current, element) =>

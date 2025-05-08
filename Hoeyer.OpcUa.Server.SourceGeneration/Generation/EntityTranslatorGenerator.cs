@@ -81,9 +81,10 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
                      }
                      
                      /// <inheritdoc />
-                     public {{entityName}}? {{nameof(IEntityTranslator<int>.Translate)}}({{entityNode}} state)
+                     public {{entityName}} {{nameof(IEntityTranslator<int>.Translate)}}({{entityNode}} state)
                      {
                          {{translateStatements}}
+                         
                          return new {{entityName}}()
                          {
                            {{fieldAssignments}}
@@ -124,7 +125,6 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
 
         return $$"""
                  {{typeSyntax.ToString()}} {{property.Identifier.Text}} = {{translationMethod}};
-                 if ({{propName}} == default) return null;
                  """;
     }
 
@@ -134,7 +134,6 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         var typeSyntax = property.Type;
         return $$"""
                  {{typeSyntax.ToString()}} {{property.Identifier.Text}} = {{nameof(DataTypeToTranslator)}}.{{nameof(DataTypeToTranslator.TranslateToSingle)}}<{{typeSyntax.ToString()}}>(state, "{{propName}}");
-                 if ({{propName}} == default) return null;
                  """;
     }
 

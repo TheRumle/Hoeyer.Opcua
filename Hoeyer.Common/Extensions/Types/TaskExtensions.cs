@@ -22,7 +22,9 @@ public static class TaskExtensions
             .Unwrap();
     }
 
-    public static Task<TOut> ThenAsync<TIn, TOut>(this Task<TIn> task, Func<TIn, Task<TOut>> mapper)
+    public static Task<TOut> ThenAsync<TIn, TOut>(this Task<TIn> task, Func<TIn, Task<TOut>> mapper) => ThenAsync(task, mapper, CancellationToken.None);
+
+    public static Task<TOut> ThenAsync<TIn, TOut>(this Task<TIn> task, Func<TIn, Task<TOut>> mapper, CancellationToken ct)
     {
         return task.ContinueWith(t => t.Status switch
             {
@@ -30,7 +32,7 @@ public static class TaskExtensions
                 TaskStatus.Canceled => Task.FromCanceled<TOut>(new CancellationToken(true)),
                 TaskStatus.RanToCompletion => mapper.Invoke(t.Result),
                 _ => throw new InvalidOperationException(UNEXPECTED_TASK_STATUS)
-            })
+            }, ct)
             .Unwrap();
     }
 
