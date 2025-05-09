@@ -1,6 +1,7 @@
-﻿using Hoeyer.OpcUa.EndToEndTest.Generators;
+﻿using Hoeyer.OpcUa.EndToEndTest.Fixtures;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Hoeyer.OpcUa.EndToEndTest.Fixtures;
+namespace Hoeyer.OpcUa.EndToEndTest.Generators;
 
 public sealed class ApplicationFixtureGeneratorAttribute<T> : DataSourceGeneratorAttribute<ApplicationFixture<T>> where T : notnull
 {
@@ -12,12 +13,19 @@ public sealed class ApplicationFixtureGeneratorAttribute<T> : DataSourceGenerato
             .Descriptors
             .DistinctBy(e => e.ImplementationType)
             .ToList();
-
         if (serviceMatches.Count == 0) throw new ArgumentException("There were no services to test!");
+        return ApplicationFixtureIterator(dataGeneratorMetadata, serviceMatches);
+    }
+
+    private static IEnumerable<Func<ApplicationFixture<T>>> ApplicationFixtureIterator(DataGeneratorMetadata dataGeneratorMetadata, List<ServiceDescriptor> serviceMatches)
+    {
         foreach (var service in serviceMatches)
         {
-            var f = new ApplicationFixture<T>(service, allServices);
-            f.InitializeAsync().Wait();
+            var f = new ApplicationFixture<T>(service, new AllOpcUaServicesFixture().ServiceCollection);
+            dataGeneratorMetadata.TestBuilderContext.Current.Events.OnTestRegistered += async (_, _) =>
+            {
+                await f.InitializeAsync();
+            };
             yield return () => f;
         }
     }

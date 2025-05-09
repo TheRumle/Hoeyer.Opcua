@@ -1,5 +1,6 @@
 ﻿using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
+using Hoeyer.OpcUa.EndToEndTest.Generators;
 using JetBrains.Annotations;
 
 namespace Hoeyer.OpcUa.EndToEndTest;

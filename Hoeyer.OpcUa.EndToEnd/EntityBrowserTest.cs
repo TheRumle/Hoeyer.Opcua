@@ -2,6 +2,7 @@
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
+using Hoeyer.OpcUa.EndToEndTest.Generators;
 using Hoeyer.OpcUa.EndToEndTest.TestEntities;
 using JetBrains.Annotations;
 
