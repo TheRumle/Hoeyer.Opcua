@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
 
-public abstract class AnalyzerTest<TAnalyzer> where TAnalyzer : DiagnosticAnalyzer, new()
+public abstract class EntityAnalyzerTest<TAnalyzer> where TAnalyzer : DiagnosticAnalyzer, new()
 {
     protected readonly TAnalyzer Analyzer = new();
     protected AnalyzerTestDriver<DiagnosticAnalyzer> Driver => new(Analyzer, Console.WriteLine);

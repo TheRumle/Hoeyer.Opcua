@@ -7,7 +7,7 @@ namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
 
 [TestSubject(typeof(FieldMustBeOfSupportedTypeAnalyser))]
 [InheritsTests]
-public sealed class FieldMustBeOfSupportedTypeAnalyserTest : AnalyzerTest<FieldMustBeOfSupportedTypeAnalyser>
+public sealed class FieldMustBeOfSupportedTypeAnalyserTest : EntityAnalyzerTest<FieldMustBeOfSupportedTypeAnalyser>
 {
     
     [Test]

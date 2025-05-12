@@ -60,29 +60,6 @@ public static class TestEntities
         using System;
         using System.Collections.Generic;
         using Hoeyer.OpcUa.Core;
-        [OpcUaEntity]
-        public class ActionEvent
-        {
-            public string MyString { get; set; } = "";
-            public event Action<int, int> action;
-        }
-        """,
-        """
-        namespace Test;
-        using System;
-        using System.Collections.Generic;
-        using Hoeyer.OpcUa.Core;
-        [OpcUaEntity]
-        public class FuncEvent
-        {
-            public event Func<int, int, string> function;
-        }
-        """,
-        """
-        namespace Test;
-        using System;
-        using System.Collections.Generic;
-        using Hoeyer.OpcUa.Core;
         public enum Position
         {
             OverThere,
@@ -144,6 +121,29 @@ public static class TestEntities
             public event Func<int, int, FuncEvent> function;
         }
         """,
+        """
+        namespace Test;
+        using System;
+        using System.Collections.Generic;
+        using Hoeyer.OpcUa.Core;
+        [OpcUaEntity]
+        public class ActionEvent
+        {
+            public string MyString { get; set; } = "";
+            public event Action<int, int> action;
+        }
+        """,
+        """
+        namespace Test;
+        using System;
+        using System.Collections.Generic;
+        using Hoeyer.OpcUa.Core;
+        [OpcUaEntity]
+        public class FuncEvent
+        {
+            public event Func<int, int, string> function;
+        }
+        """
     ];
 
 

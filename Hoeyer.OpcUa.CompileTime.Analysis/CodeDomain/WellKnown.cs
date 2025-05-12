@@ -5,6 +5,8 @@ public static class WellKnown
     public static class FullyQualifiedAttribute
     {
         public static readonly FullyQualifiedTypeName EntityAttribute = GetTypeName("OpcUaEntityAttribute");
+        
+        public static readonly FullyQualifiedTypeName EntityBehaviourAttribute = GetTypeName("OpcUaEntityMethods");
 
         private static FullyQualifiedTypeName GetTypeName(string className)
         {

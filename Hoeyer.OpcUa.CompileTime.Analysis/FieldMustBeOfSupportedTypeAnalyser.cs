@@ -10,20 +10,6 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Hoeyer.OpcUa.CompileTime.Analysis;
 
-internal record struct MemberSupport(bool IsSupported, MemberDeclarationSyntax DeclarationSyntax, params IEnumerable<string> TypesWithError)
-{
-    public static MemberSupport Success(MemberDeclarationSyntax member) =>
-        new MemberSupport(true, member);
-    
-    public static MemberSupport Failure(MemberDeclarationSyntax syntax, IEnumerable<TypeSyntax> types) =>
-        new MemberSupport(false, syntax, types.Select(e=>e.ToString()));
-    
-    public static MemberSupport Failure(MemberDeclarationSyntax syntax, TypeSyntax types) =>
-        new MemberSupport(false, syntax, types.ToString());
-
-    public static MemberSupport Failure(MemberDeclarationSyntax eventSyntax, List<ITypeSymbol> errors) => new MemberSupport(false, eventSyntax, string.Join(", ", errors.Select(t => t.ToString())));
-}
-
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class FieldMustBeOfSupportedTypeAnalyser() : ConcurrentAnalyzer([Rules.MustBeSupportedOpcUaType])
 {
@@ -45,21 +31,17 @@ public class FieldMustBeOfSupportedTypeAnalyser() : ConcurrentAnalyzer([Rules.Mu
         
         var analysisResult = typeSyntax.Members
             .Select( member => member switch
-        {
-            FieldDeclarationSyntax field => SupportedTypes.IsSupported(field.Declaration.Type, model)
-            ? MemberSupport.Success(member)
-            : MemberSupport.Failure(member, field.Declaration.Type),
+            {
+                FieldDeclarationSyntax field => SupportedTypes.IsSupported(field.Declaration.Type, model)
+                    ? MemberSupport.Success(member)
+                    : MemberSupport.Failure(member, field.Declaration.Type),
 
-            PropertyDeclarationSyntax property => SupportedTypes.IsSupported(property.Type, model)
-            ? MemberSupport.Success(member)
-            : MemberSupport.Failure(member, property.Type),
+                PropertyDeclarationSyntax property => SupportedTypes.IsSupported(property.Type, model)
+                    ? MemberSupport.Success(member)
+                    : MemberSupport.Failure(member, property.Type),
             
-            DelegateDeclarationSyntax delegateDecl => MemberSupport.Failure(delegateDecl, delegateDecl.ParameterList.Parameters.Select(e=>e.Type!)), // ExamineDelegateSupport(delegateDecl, model),
-            EventDeclarationSyntax eventSyntax => ExamineEventSupport(eventSyntax, model, context.Compilation),
-            EventFieldDeclarationSyntax eventSyntax => ExamineEventSupport(eventSyntax, model, context.Compilation),
-            _ => MemberSupport.Success(member)
-            
-        }).ToImmutableHashSet();
+                var other => MemberSupport.Failure(other!, new List<TypeSyntax>()) 
+            }).ToImmutableHashSet();
         
 
         foreach (var (_, member, types) in analysisResult.Where(e => !e.IsSupported))

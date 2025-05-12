@@ -33,4 +33,23 @@ public sealed class CompilationFactory(string compilationName, Action<string>? l
 
         return compilation;
     }
+    
+    [Pure]
+    public CSharpCompilation CreateCompilation(string sourceCode)
+    {
+        _log(sourceCode);
+        var referencedAssemblies = AssemblyLoader.CoreMetadataReferences;
+        var compilation = CSharpCompilation.Create(compilationName,
+            [CSharpSyntaxTree.ParseText(sourceCode)],
+            referencedAssemblies,
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+        if (compilation.GetDiagnostics().Any())
+        {
+            _log("The original compilation of the source code had errors! \n" +
+                 string.Join("\n", compilation.GetDiagnostics()));
+        }
+
+        return compilation;
+    }
 }

@@ -18,7 +18,7 @@ public class CompileTimeTypeAnnotations
 
     [Test]
     [AnalyserFixtureGenerator]
-    public async Task IsAnnotatedWithGenerator(DiagnosticAnalyzer analyzer)
+    public async Task IsAnnotatedWithAnalyzer(DiagnosticAnalyzer analyzer)
     {
         await Assert.That(analyzer.GetType().IsAnnotatedWith<DiagnosticAnalyzerAttribute>()).IsTrue()
             .Because("if the class is not annotated with the attribute it will not be used doing source generation.");

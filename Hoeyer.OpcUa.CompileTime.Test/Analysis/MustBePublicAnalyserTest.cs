@@ -5,4 +5,4 @@ namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
 
 [TestSubject(typeof(MustBePublicAnalyser))]
 [InheritsTests]
-public class MustBePublicAnalyserTest : AnalyzerTest<MustBePublicAnalyser>;
+public class MustBePublicAnalyserTest : EntityAnalyzerTest<MustBePublicAnalyser>;

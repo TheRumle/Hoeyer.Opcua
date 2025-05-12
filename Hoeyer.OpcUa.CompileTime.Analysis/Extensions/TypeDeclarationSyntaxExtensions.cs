@@ -18,6 +18,16 @@ public static class TypeDeclarationSyntaxExtensions
 
         return isAnnotated != null && isAnnotated.Value;
     }
+    
+    public static bool IsAnnotatedAsOpcUaEntityBehaviour(this TypeDeclarationSyntax typeSyntax, SemanticModel semanticModel)
+    {
+        var symbol = semanticModel.GetDeclaredSymbol(typeSyntax);
+        var isAnnotated = symbol?
+            .GetAttributes()
+            .Any(IsOpcEntityBehaviourAttributeSymbol);
+
+        return isAnnotated != null && isAnnotated.Value;
+    }
 
     public static bool IsAnnotatedAsOpcUaEntity(this INamedTypeSymbol symbol)
     {
@@ -28,6 +38,14 @@ public static class TypeDeclarationSyntaxExtensions
         return isAnnotated != null && isAnnotated.Value;
     }
 
+    private static bool IsOpcEntityBehaviourAttributeSymbol(AttributeData x)
+    {
+        return WellKnown
+            .FullyQualifiedAttribute
+            .EntityBehaviourAttribute
+            .WithGlobalPrefix.Equals(x.AttributeClass?.GloballyQualifiedNonGeneric());
+    }
+
     private static bool IsOpcEntityAttributeSymbol(AttributeData x)
     {
         return WellKnown.FullyQualifiedAttribute
@@ -35,6 +53,7 @@ public static class TypeDeclarationSyntaxExtensions
             .WithGlobalPrefix.Equals(x.AttributeClass?.GloballyQualifiedNonGeneric());
     }
 
+    
     public static IEnumerable<PropertyDeclarationSyntax> GetOpcEntityPropertyDeclarations(
         this SyntaxNodeAnalysisContext context)
     {
