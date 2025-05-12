@@ -18,7 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{592D1AA6-E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "compiletime", "compiletime", "{E6628798-D193-491C-A8F9-8EE1B7774E1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Entity.CompileTime.TestDrivers", "Hoeyer.OpcUa.Entity.CompileTime.TestDrivers\Hoeyer.OpcUa.Entity.CompileTime.TestDrivers.csproj", "{5FF998E2-4895-4ABC-A38A-BB667CA70484}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.CompileTime.TestDrivers", "Hoeyer.OpcUa.CompileTime.TestDrivers\Hoeyer.OpcUa.CompileTime.TestDrivers.csproj", "{5FF998E2-4895-4ABC-A38A-BB667CA70484}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "compiletime", "compiletime", "{BDF28345-C176-4EF1-887D-12F7EDECF811}"
 EndProject
