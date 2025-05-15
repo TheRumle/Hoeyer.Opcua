@@ -8,6 +8,21 @@ namespace Hoeyer.OpcUa.CompileTime.Analysis;
 
 public static class SupportedTypes
 {
+    public static bool IsSupportedTask(TypeSyntax syntax, SemanticModel model)
+    {
+        var taskType = model.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
+        var taskOfTType = model.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task`1");
+
+        ITypeSymbol? typeSymbol = model.GetTypeInfo(syntax).Type;
+        if (typeSymbol is not INamedTypeSymbol namedTypeSymbol) return false;
+        
+        if (SymbolEqualityComparer.Default.Equals(namedTypeSymbol, taskType) ) return true;
+        
+        if (!SymbolEqualityComparer.Default.Equals(namedTypeSymbol.OriginalDefinition, taskOfTType)) return false;
+
+        ITypeSymbol typeArg = namedTypeSymbol.TypeArguments.First();
+        return Simple.Supports(typeArg);
+    }
 
     public static bool IsSupported(TypeSyntax syntax, SemanticModel model)
     {
@@ -16,7 +31,6 @@ public static class SupportedTypes
         {
             return false;
         }
-
         if (symbol.NullableAnnotation == NullableAnnotation.Annotated)
         {
             var s = UnwrapNullable(symbol);

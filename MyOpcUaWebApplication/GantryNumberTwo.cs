@@ -1,7 +1,12 @@
 ﻿using Hoeyer.OpcUa.Core;
-using Opc.Ua;
 
 namespace MyOpcUaWebApplication;
+
+[OpcUaEntityMethods<Gantry>]
+public interface IGantryMethods
+{
+    Task MyMethod(int q, int b, List<int> dict);
+}
 
 [OpcUaEntity]
 public sealed class GantryNumberTwo

@@ -11,14 +11,13 @@ public static class Rules
     public static readonly DiagnosticDescriptor MustHavePublicSetter = CreateErrorDescriptor(
         "HOEYERUA0001",
         DesignCategory,
-        "Entities property must have GetUnsupportedTypes public setter.");
+        "Entities property must have a public setter.");
 
 
     public static readonly DiagnosticDescriptor MustBeSupportedOpcUaType = CreateErrorDescriptor(
         "HOEYERUA0002",
         DesignCategory,
-        "The type '{0}' is not supported for OpcUa entities. It must be either GetUnsupportedTypes native OpcUa type or an IList of such type with GetUnsupportedTypes default constructor.");
-    
+        "The type '{0}' is not supported for OpcUa entities. It must be either a native OpcUa type or an IList of such type with a default constructor.");
 
     public static readonly DiagnosticDescriptor MustNotBeNullablePropertyDescriptor = new(
         "HOEYERUA0003",
@@ -42,11 +41,15 @@ public static class Rules
         "The member is not supported for OpcUa entity behaviour definitions.");
 
     
-        
     public static readonly DiagnosticDescriptor MustBeOpcEntityArgument = CreateErrorDescriptor(
         "HOEYERUA0006",
         DesignCategory,
-        $"The argument must be a type annotated with '{WellKnown.FullyQualifiedAttribute.EntityAttribute}'.");
+        $"The argument must be a type annotated with '{WellKnown.FullyQualifiedAttribute.EntityAttribute.WithoutGlobalPrefix}'.");
+    
+    public static readonly DiagnosticDescriptor ReturnTypeMustBeTask = CreateErrorDescriptor(
+        "HOEYERUA0007",
+        DesignCategory,
+        "The return of entity methods must be of type Task or Task<T> and T must be either a native OpcUa type or an IList of such type with a default constructor.");
 
     private static DiagnosticDescriptor CreateDescriptor(
         string diagnosticId,
