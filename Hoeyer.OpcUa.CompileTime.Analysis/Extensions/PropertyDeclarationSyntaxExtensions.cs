@@ -35,7 +35,7 @@ public static class PropertyDeclarationSyntaxExtensions
             return false;
         }
 
-        //a public property cannot have the form 'public T t {get; public set;} and any other modifier will indicate that no public setter exists'
+        //GetUnsupportedTypes public property cannot have the form 'public T t {get; public set;} and any other modifier will indicate that no public setter exists'
         //Therefore, only public T t {get; set;} is validm so ther eshould be no modifier
         return accessor.Modifiers.Count == 0;
     }

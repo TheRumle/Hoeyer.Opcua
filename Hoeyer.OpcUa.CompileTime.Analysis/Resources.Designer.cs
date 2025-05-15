@@ -60,7 +60,7 @@ namespace Hoeyer.OpcUa.CompileTime.Analysis {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Entities property must have a public setter.
+        ///   Looks up a localized string similar to Entities property must have GetUnsupportedTypes public setter.
         /// </summary>
         public static string HOEYERUA0001Description {
             get {
@@ -69,7 +69,7 @@ namespace Hoeyer.OpcUa.CompileTime.Analysis {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Entities property must have a public setter.
+        ///   Looks up a localized string similar to Entities property must have GetUnsupportedTypes public setter.
         /// </summary>
         public static string HOEYERUA0001MessageFormat {
             get {
@@ -78,7 +78,7 @@ namespace Hoeyer.OpcUa.CompileTime.Analysis {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Entities property must have a public setter..
+        ///   Looks up a localized string similar to Entities property must have GetUnsupportedTypes public setter..
         /// </summary>
         public static string HOEYERUA0001Title {
             get {

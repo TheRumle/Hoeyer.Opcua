@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Hoeyer.OpcUa.CompileTime.Analysis.CodeDomain;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Hoeyer.OpcUa.CompileTime.Analysis;
@@ -7,13 +8,16 @@ public static class Rules
 {
     private const string DesignCategory = "Design";
 
-    public static readonly DiagnosticDescriptor MustHavePublicSetter = CreateErrorDescriptor("HOEYERUA0001",
-        DesignCategory, "Entities property must have a public setter.");
-
-
-    public static readonly DiagnosticDescriptor MustBeSupportedOpcUaType = CreateErrorDescriptor("HOEYERUA0002",
+    public static readonly DiagnosticDescriptor MustHavePublicSetter = CreateErrorDescriptor(
+        "HOEYERUA0001",
         DesignCategory,
-        "The type '{0}' is not supported for OpcUa entities. It must be either a native OpcUa type or an IList of such type with a default constructor.");
+        "Entities property must have GetUnsupportedTypes public setter.");
+
+
+    public static readonly DiagnosticDescriptor MustBeSupportedOpcUaType = CreateErrorDescriptor(
+        "HOEYERUA0002",
+        DesignCategory,
+        "The type '{0}' is not supported for OpcUa entities. It must be either GetUnsupportedTypes native OpcUa type or an IList of such type with GetUnsupportedTypes default constructor.");
     
 
     public static readonly DiagnosticDescriptor MustNotBeNullablePropertyDescriptor = new(
@@ -25,23 +29,24 @@ public static class Rules
         true,
         "OpcUa entity properties must not be annotated as nullable.");
 
-    public static Diagnostic MustNotBeNullableProperty(PropertyDeclarationSyntax property)
-    {
-        return Diagnostic.Create(MustNotBeNullablePropertyDescriptor, property.GetLocation(), property.Identifier);
-    }
-    
-    public static readonly DiagnosticDescriptor MemberMustBeOpcSupportedDescriptor = new(
+    public static Diagnostic MustNotBeNullableProperty(PropertyDeclarationSyntax property) => Diagnostic.Create(MustNotBeNullablePropertyDescriptor, property.GetLocation(), property.Identifier);
+
+
+    public static readonly DiagnosticDescriptor OpcUaEntityMemberNotSupported = CreateErrorDescriptor(
         "HOEYERUA0004",
-        "Members must be translatable to OpcUa construct",
-        "Members must be translatable to OpcUa construct",
         DesignCategory,
-        DiagnosticSeverity.Error,
-        true,
-        "OpcUa Entity classes cannot have members that cannot be translated to OpcUa.");
+        "The member is not supported for OpcUa entity definitions");
     
-    public static readonly DiagnosticDescriptor MemberMustBeOpcSupported = CreateErrorDescriptor("HOEYERUA0004",
+    public static readonly DiagnosticDescriptor OpcUaEntityBehaviourMemberNotSupported = CreateErrorDescriptor("HOEYERUA0005",
         DesignCategory,
-        "The member '{0}' is not supported for OpcUa entities. It must be an empty constructor, property or delegate type.");
+        "The member is not supported for OpcUa entity behaviour definitions.");
+
+    
+        
+    public static readonly DiagnosticDescriptor MustBeOpcEntityArgument = CreateErrorDescriptor(
+        "HOEYERUA0006",
+        DesignCategory,
+        $"The argument must be a type annotated with '{WellKnown.FullyQualifiedAttribute.EntityAttribute}'.");
 
     private static DiagnosticDescriptor CreateDescriptor(
         string diagnosticId,

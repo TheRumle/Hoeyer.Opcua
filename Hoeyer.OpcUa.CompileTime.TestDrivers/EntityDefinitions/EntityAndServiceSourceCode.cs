@@ -6,7 +6,7 @@
 /// <param name="ServiceName">The name of the interface</param>
 /// <param name="EntityName">The name of the entity</param>
 /// <param name="CombinedSourceCode"></param>
-public sealed record EntityAndServiceSourceCode(string ServiceName, string EntityName, string CombinedSourceCode)
+public sealed record EntityAndServiceSourceCode(string ServiceName, string EntityName, string EntitySourceCode, string ServiceSourceCode)
 {
     /// <inheritdoc />
     public override string ToString() => ServiceName + " and " + EntityName;

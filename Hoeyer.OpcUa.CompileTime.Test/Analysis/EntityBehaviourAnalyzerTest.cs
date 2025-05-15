@@ -1,4 +1,5 @@
 ﻿using Hoeyer.OpcUa.CompileTime.Analysis;
+using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.Drivers;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.Generators;
@@ -8,11 +9,10 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
 
 
-[TestSubject(typeof(EntityBehaviourMustBeParameterizedWithEntityAnalyzer))]
-public class
-    EntityBehaviourMustBeParameterizedWithEntityEntityAnalyzerTest
+[TestSubject(typeof(EntityBehaviourAnalyzer))]
+public class EntityBehaviourAnalyzerTest
 {
-    protected readonly EntityBehaviourMustBeParameterizedWithEntityAnalyzer Analyzer = new();
+    protected readonly EntityBehaviourAnalyzer Analyzer = new();
     protected AnalyzerTestDriver<DiagnosticAnalyzer> Driver => new(Analyzer, Console.WriteLine);
     private static string GetValidInterfaceFor(string entityName) =>
         $$"""
@@ -20,7 +20,7 @@ public class
           using System;
           using System.Collections.Generic;
           using Hoeyer.OpcUa.Core;
-          [OpcUaEntityMethods(typeof({{entityName}}))]
+          [{{nameof(OpcUaEntityMethodsAttribute<object>)}}<{{entityName}}>]
           public interface FuncReferencingSelf
           {
               public int function(int a, int b, int c);
@@ -48,7 +48,7 @@ public class
         var entityName = "PropertyAccessesTestEntity";
         var interfaceDefinition = GetValidInterfaceFor(entityName);
         var data = new EntityAndServiceSourceCode("TestInterface", entityName,
-            NotAnnotated_PropertyAccessesTestEntity + "\n" + interfaceDefinition);
+            NotAnnotated_PropertyAccessesTestEntity, interfaceDefinition);
         
         
         var result = await Driver.RunAnalyzerOn(data);
@@ -57,11 +57,12 @@ public class
     
     [Test]
     [ValidEntitySourceCodeGenerator]
+    
     public async Task WhenGiven_ValidEntity_ValidInterface_NoDiagnosticPresent(EntitySourceCode sourceCode)
     {
         var interfaceDefinition = GetValidInterfaceFor(sourceCode.Type);
         var data = new EntityAndServiceSourceCode("TestInterface", sourceCode.Type,
-            sourceCode.SourceCodeString + "\n" + interfaceDefinition);
+            sourceCode.SourceCodeString,  interfaceDefinition);
         
         var result = await Driver.RunAnalyzerOn(data, CancellationToken.None) ;
         

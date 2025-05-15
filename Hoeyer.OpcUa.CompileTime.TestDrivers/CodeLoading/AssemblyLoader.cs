@@ -9,12 +9,14 @@ namespace Hoeyer.OpcUa.Entity.CompileTime.Testing.CodeLoading;
 
 public static class AssemblyLoader
 {
-    public static readonly IEnumerable<Assembly> CoreAssemblies =
+    public static readonly HashSet<Assembly> CoreAssemblies =
     [
         Assembly.Load("mscorlib"),
         Assembly.Load("netstandard"),
         Assembly.Load("System"),
+        Assembly.Load("System.Runtime"), // ✅ This is critical
         typeof(OpcUaEntityAttribute).Assembly,
+        typeof(OpcUaEntityMethodsAttribute<>).Assembly,
     ];
 
     public static readonly IReadOnlySet<MetadataReference> CoreMetadataReferences = CoreAssemblies

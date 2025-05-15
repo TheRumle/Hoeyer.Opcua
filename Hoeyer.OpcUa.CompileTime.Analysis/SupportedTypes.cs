@@ -8,10 +8,6 @@ namespace Hoeyer.OpcUa.CompileTime.Analysis;
 
 public static class SupportedTypes
 {
-    public static bool IsSupported(ITypeSymbol symbol)
-    {
-        return Simple.Supports(symbol) || Collection.Supports(symbol);
-    }
 
     public static bool IsSupported(TypeSyntax syntax, SemanticModel model)
     {
@@ -29,10 +25,6 @@ public static class SupportedTypes
         
         return Simple.Supports(symbol) || Collection.Supports(symbol);
     }
-    
-    public static bool NotSupported(ITypeSymbol symbol) => !IsSupported(symbol);
-    
-    public static bool NotSupported(TypeSyntax syntax, SemanticModel model) => !IsSupported(syntax, model);
 
 
     private static ITypeSymbol UnwrapNullable(ITypeSymbol typeSymbol)
@@ -69,22 +61,6 @@ public static class SupportedTypes
             SpecialType.System_DateTime
         ];
 
-     
-
-        public static bool Supports(SpecialType specialType)
-        {
-            return SpecialTypes.Contains(specialType);
-        }
-
-        public static bool Supports(IPropertySymbol? propertySymbol)
-        {
-            return propertySymbol switch
-            {
-                { Type.SpecialType: var specialType } when SpecialTypes.Contains(specialType) => true,
-                { Type: { } type } when Supports(type) => true,
-                _ => false
-            };
-        }
 
         public static bool Supports(ITypeSymbol type)
         {

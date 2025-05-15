@@ -21,7 +21,7 @@ public sealed class GeneratorTestDriver<T>(T generator, Action<string>? logger =
 
     public GeneratorResult RunGeneratorOn(EntitySourceCode entitySourceCode)
     {
-        var compilation = _compilationFactory.CreateCompilation(entitySourceCode);
+        var compilation = _compilationFactory.CreateCompilation(CSharpSyntaxTree.ParseText(entitySourceCode.SourceCodeString));
         var compilationResult = _driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out var diagnostics);
         var result = CreateResult(compilationResult, diagnostics, _driver.GetTimingInfo());
 

@@ -93,6 +93,13 @@ public static class TestEntities
         using System;
         using System.Collections.Generic;
         using Hoeyer.OpcUa.Core;
+        public enum Position
+        {
+            OverThere,
+            OverHere,
+            OnTheMoon
+        }
+        
         [OpcUaEntity]
         public class DelegateType
         {
@@ -118,7 +125,7 @@ public static class TestEntities
         [OpcUaEntity]
         public class FuncReferencingSelf
         {
-            public event Func<int, int, FuncEvent> function;
+            public event Func<int, int, FuncReferencingSelf> function;
         }
         """,
         """
