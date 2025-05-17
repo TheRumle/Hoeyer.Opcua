@@ -25,7 +25,7 @@ public static class AssemblyExtensions
             })
             .ToList();
     }
-    
+
     public static IEnumerable<Type> GetTypesFromConsumingAssemblies(this Type marker)
     {
         return AppDomain.CurrentDomain
@@ -50,7 +50,7 @@ public static class AssemblyExtensions
             .Union(marker.Assembly.GetTypes())
             .ToList();
     }
-    
+
     public static bool IsAnnotatedWith<T>(this Type type) where T : Attribute
     {
         if (type == null)
@@ -76,4 +76,30 @@ public static class AssemblyExtensions
 
         return false;
     }
+
+    public static Type? GetAnnotationInstance(this Type type, Type annotation)
+    {
+        if (!typeof(Attribute).IsAssignableFrom(annotation))
+            throw new ArgumentException(annotation.FullName + " is not an Attribute");
+        if (type == null) throw new ArgumentNullException(nameof(type));
+
+        foreach (Type attributeType in type.GetCustomAttributes().Select(e => e.GetType()))
+        {
+            if (attributeType.IsAssignableFrom(annotation)) return attributeType;
+
+            if (!attributeType.IsConstructedGenericType ||
+                annotation.GenericTypeArguments.Length != attributeType.GetGenericArguments().Length)
+                continue;
+
+            if (IsSameGenericAttribute(annotation, attributeType)) return attributeType;
+        }
+
+        return null;
+    }
+
+    private static bool IsSameGenericAttribute(Type annotation, Type attributeType) =>
+        attributeType == annotation || attributeType.IsAssignableFrom(annotation) ||
+        (attributeType.IsConstructedGenericType
+         && annotation.IsGenericTypeDefinition
+         && attributeType.GetGenericTypeDefinition() == annotation);
 }

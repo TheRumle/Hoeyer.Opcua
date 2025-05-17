@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Hoeyer.OpcUa.Core.Extensions.Reflection;
 using Opc.Ua;
 
@@ -7,8 +9,14 @@ namespace Hoeyer.OpcUa.Core.Application.NodeStructureFactory;
 
 internal sealed record OpcMethodTypeInfo : IOpcTypeInfo
 {
-    public OpcMethodTypeInfo(string methodName, (Type type, string name)[] arguments, Type? returnType,
-        BaseObjectState parent)
+    public OpcMethodTypeInfo(BaseObjectState parent, string methodName, Type? returnType,
+        IEnumerable<ParameterInfo> arguments)
+        : this(parent, methodName, returnType, arguments.Select(e => (Type: e.ParameterType, name: e.Name)))
+    {
+    }
+
+    public OpcMethodTypeInfo(BaseObjectState parent, string methodName, Type? returnType,
+        IEnumerable<(Type type, string name)> arguments)
     {
         var opcMethodName = parent.BrowseName.Name + "." + methodName;
         var method = new MethodState(parent)
@@ -16,7 +24,7 @@ internal sealed record OpcMethodTypeInfo : IOpcTypeInfo
             NodeId = new NodeId(opcMethodName, parent.NodeId.NamespaceIndex),
             SymbolicName = opcMethodName,
             BrowseName = opcMethodName,
-            DisplayName= opcMethodName,
+            DisplayName = opcMethodName,
             AccessRestrictions = AccessRestrictionType.None,
             Executable = true,
             UserExecutable = true,
@@ -27,10 +35,15 @@ internal sealed record OpcMethodTypeInfo : IOpcTypeInfo
         {
             CreateReturnValueNode(methodName, returnType, parent, method);
         }
+
         Method = method;
     }
 
-    private static void CreateInputArguments(string methodName, (Type type, string name)[] arguments,
+    public MethodState Method { get; set; }
+
+    public BaseInstanceState InstanceState => Method;
+
+    private static void CreateInputArguments(string methodName, IEnumerable<(Type type, string name)> arguments,
         BaseObjectState parent, MethodState method)
     {
         var inputArguments = arguments.Select(e =>
@@ -46,7 +59,7 @@ internal sealed record OpcMethodTypeInfo : IOpcTypeInfo
 
         var inputArgument = new PropertyState<Argument[]>(method)
         {
-            NodeId = new NodeId(methodName+"InputArgs", parent.NodeId.NamespaceIndex),
+            NodeId = new NodeId(methodName + "InputArgs", parent.NodeId.NamespaceIndex),
             BrowseName = BrowseNames.InputArguments,
             DisplayName = BrowseNames.InputArguments,
             TypeDefinitionId = VariableTypeIds.PropertyType,
@@ -63,23 +76,23 @@ internal sealed record OpcMethodTypeInfo : IOpcTypeInfo
         var (typeId, valueRank) = returnType.GetOpcTypeInfo();
         var outputArgument = new PropertyState<Argument[]>(method)
         {
-            NodeId = new NodeId(methodName+"Result", parent.NodeId.NamespaceIndex),
+            NodeId = new NodeId(methodName + "Result", parent.NodeId.NamespaceIndex),
             BrowseName = BrowseNames.OutputArguments,
             DisplayName = BrowseNames.OutputArguments,
             TypeDefinitionId = VariableTypeIds.PropertyType,
             DataType = DataTypeIds.Argument,
             ValueRank = ValueRanks.Scalar,
-            Value = [new Argument
-            {
-                Name = "Result",
-                DataType = typeId,
-                ValueRank = valueRank
-            }]
+            Value =
+            [
+                new Argument
+                {
+                    Name = "Result",
+                    DataType = typeId,
+                    ValueRank = valueRank
+                }
+            ]
         };
         method.OutputArguments = outputArgument;
         method.AddReference(ReferenceTypeIds.HasProperty, false, outputArgument.NodeId);
     }
-
-    public BaseInstanceState InstanceState => Method;
-    public MethodState Method { get; set; }
 }

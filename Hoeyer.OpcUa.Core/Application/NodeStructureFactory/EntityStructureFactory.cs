@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Hoeyer.OpcUa.Core.Api;
+using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua;
 
@@ -59,37 +60,24 @@ public class EntityStructureFactory<T> : IEntityNodeStructureFactory<T>
         }
     }
 
-    private static IEnumerable<OpcMethodTypeInfo> CreateMethods(Type type, BaseObjectState entity)
+    private static IEnumerable<OpcMethodTypeInfo> CreateMethods(Type entityType, BaseObjectState entity)
     {
-        var delegateMethods = type.GetNestedTypes(BindingFlags.Public)
-            .Where(definedType => typeof(Delegate).IsAssignableFrom(definedType))
-            .Select(t => (name: t.Name, delegateType: t, invokeMethod: t.GetMethod("Invoke")));
-
-        var events = type
-            .GetEvents(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly)
-            .Select(e => (name: e.Name, delegateType: e.EventHandlerType,
-                invokeMethod: e.EventHandlerType?.GetMethod("Invoke")));
-
-        var methodCandidates = delegateMethods
-            .Concat(events)
-            .Where(nameAndHandler => nameAndHandler.delegateType != null
-                                     && typeof(Delegate).IsAssignableFrom(nameAndHandler.delegateType)
-                                     && nameAndHandler.invokeMethod != null)
-            .Select(e => (e.name, e.invokeMethod));
-
-        return methodCandidates.Select(delegateTypeInfo =>
-        {
-            var (name, invokeMethod) = delegateTypeInfo;
-            (Type ParameterType, string)[] parameters = invokeMethod!.GetParameters()
-                .Select(p => (p.ParameterType, p.Name ?? "arg" + p.Position))
-                .ToArray();
-            var returnType = invokeMethod.ReturnType == typeof(void) ? null : invokeMethod.ReturnType;
-            return new OpcMethodTypeInfo(name, parameters, returnType, entity);
-        });
+        return OpcUaEntityTypes
+            .EntityBehaviours
+            .Where(behaviourService => behaviourService.entity == entityType)
+            .SelectMany(behaviourService => behaviourService.service
+                .GetMembers()
+                .OfType<MethodInfo>())
+            .Select(method => new OpcMethodTypeInfo(
+                methodName: method.Name,
+                parent: entity,
+                returnType: method.ReturnType,
+                arguments: method.GetParameters()
+            ));
     }
 
-    private static IEnumerable<OpcPropertyTypeInfo> CreateProperties(Type type, BaseObjectState entity)
+    private static IEnumerable<OpcPropertyTypeInfo> CreateProperties(Type entityType, BaseObjectState entity)
     {
-        return type.GetProperties().Select(e => new OpcPropertyTypeInfo(e, entity));
+        return entityType.GetProperties().Select(e => new OpcPropertyTypeInfo(e, entity));
     }
 }
