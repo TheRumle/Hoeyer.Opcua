@@ -1,10 +1,11 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Hoeyer.OpcUa.Client.Api.Connection;
 using Hoeyer.OpcUa.Core.Configuration;
 using Opc.Ua;
 using Opc.Ua.Client;
 
-namespace Hoeyer.OpcUa.Client.MachineProxy;
+namespace Hoeyer.OpcUa.Client.Application.Connection;
 
 internal class SessionFactory(IOpcUaEntityServerInfo applicationOptions) : IEntitySessionFactory
 {

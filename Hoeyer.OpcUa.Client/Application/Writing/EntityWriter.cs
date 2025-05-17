@@ -2,13 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Client.Api.Browsing;
+using Hoeyer.OpcUa.Client.Api.Connection;
 using Hoeyer.OpcUa.Client.Api.Writing;
-using Hoeyer.OpcUa.Client.MachineProxy;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
-using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Writing;
 
@@ -19,15 +18,16 @@ public sealed class EntityWriter<TEntity>(
     IEntitySessionFactory factory,
     IEntityBrowser<TEntity> browser) : IEntityWriter<TEntity>
 {
-    
+    private IEntityNode? ValuesToWrite { get; set; }
+
     public async Task AssignEntityValues(TEntity entity, CancellationToken cancellationToken = default)
     {
         var session = await factory.CreateSessionAsync("WRITER");
-        
+
         //Only fetch the first time - then reuse the structure to write to the node
         ValuesToWrite ??= browser.LastState?.node ?? await browser.BrowseEntityNode(cancellationToken);
         translator.AssignToNode(entity, ValuesToWrite);
-        
+
         var values = ValuesToWrite.PropertyStates.Select(e => new WriteValue
         {
             AttributeId = Attributes.Value,
@@ -39,12 +39,9 @@ public sealed class EntityWriter<TEntity>(
             }
         });
         var res = await session.WriteAsync(null, new WriteValueCollection(values), cancellationToken);
-        foreach (var s in res.DiagnosticInfos.Where( e=> !e.IsNullDiagnosticInfo))
+        foreach (DiagnosticInfo? s in res.DiagnosticInfos.Where(e => !e.IsNullDiagnosticInfo))
         {
             logger.LogInformation(s.ToString());
         }
     }
-
-    private IEntityNode? ValuesToWrite { get; set; }
-
 }
