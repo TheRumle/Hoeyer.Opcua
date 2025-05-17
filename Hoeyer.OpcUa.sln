@@ -24,7 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "compiletime", "compiletime"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "unittest", "unittest", "{E8FFFC47-3286-4B5E-B95C-1025F8E36D50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Server.SourceGeneration", "Hoeyer.OpcUa.Server.SourceGeneration\Hoeyer.OpcUa.Server.SourceGeneration.csproj", "{2DBA8172-3BD2-4BDB-A841-0D5EB6290992}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Core.SourceGeneration", "Hoeyer.OpcUa.Core.SourceGeneration\Hoeyer.OpcUa.Core.SourceGeneration.csproj", "{2DBA8172-3BD2-4BDB-A841-0D5EB6290992}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.CompileTime.Test", "Hoeyer.OpcUa.CompileTime.Test\Hoeyer.OpcUa.CompileTime.Test.csproj", "{A1954529-18C3-4C42-A881-0DA8E8C3BF21}"
 EndProject
@@ -39,6 +39,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.Common.Test", "Hoeyer.Common.Test\Hoeyer.Common.Test.csproj", "{B460E684-85BD-45D0-9F3D-95790DEC69AB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Core.Test", "Hoeyer.OpcUa.Core.Test\Hoeyer.OpcUa.Core.Test.csproj", "{99A97AC7-B06E-4877-A8AC-131F08BCA45D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Client.SourceGeneration", "Hoeyer.OpcUa.Client.SourceGeneration\Hoeyer.OpcUa.Client.SourceGeneration.csproj", "{D3B0519A-8C35-47F9-AF56-5AB5C4B954AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,6 +104,10 @@ Global
 		{99A97AC7-B06E-4877-A8AC-131F08BCA45D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99A97AC7-B06E-4877-A8AC-131F08BCA45D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99A97AC7-B06E-4877-A8AC-131F08BCA45D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3B0519A-8C35-47F9-AF56-5AB5C4B954AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3B0519A-8C35-47F9-AF56-5AB5C4B954AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3B0519A-8C35-47F9-AF56-5AB5C4B954AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3B0519A-8C35-47F9-AF56-5AB5C4B954AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{870B9A54-BD11-469A-A8D4-7B727C0B5B43} = {A89A920F-FE1F-41A1-A62D-7E11250B5576}
@@ -122,5 +128,6 @@ Global
 		{F8CE8AF7-9636-42FA-909A-7604DEC0FBA1} = {BDF28345-C176-4EF1-887D-12F7EDECF811}
 		{B460E684-85BD-45D0-9F3D-95790DEC69AB} = {E8FFFC47-3286-4B5E-B95C-1025F8E36D50}
 		{99A97AC7-B06E-4877-A8AC-131F08BCA45D} = {E8FFFC47-3286-4B5E-B95C-1025F8E36D50}
+		{D3B0519A-8C35-47F9-AF56-5AB5C4B954AB} = {BDF28345-C176-4EF1-887D-12F7EDECF811}
 	EndGlobalSection
 EndGlobal
