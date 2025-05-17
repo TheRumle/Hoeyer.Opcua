@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.OpcUa.Server.SourceGeneration.Generation.IncrementalProvider;
+using Hoeyer.OpcUa.Core.SourceGeneration.Generation.IncrementalProvider;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.Server.SourceGeneration.Syntax;
+namespace Hoeyer.OpcUa.Core.SourceGeneration.Syntax;
 
 public static class ClassConstruction
 {
