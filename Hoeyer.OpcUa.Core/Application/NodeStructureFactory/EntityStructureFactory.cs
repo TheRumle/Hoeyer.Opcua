@@ -27,13 +27,26 @@ public class EntityStructureFactory<T> : IEntityNodeStructureFactory<T>
 
         IEnumerable<OpcPropertyTypeInfo> properties = CreateProperties(type, entity).ToList();
         IEnumerable<OpcMethodTypeInfo> methods = CreateMethods(type, entity).ToList();
-
+        VerifyNoDuplicateMethodNames(methods);
         AssignProperties(properties, entity);
         AssignMethods(methods, entity);
 
         return new EntityNode(entity,
             new HashSet<PropertyState>(properties.Select(e => e.OpcProperty)),
             new HashSet<MethodState>(methods.Select(e => e.Method)));
+    }
+
+    private static void VerifyNoDuplicateMethodNames(IEnumerable<OpcMethodTypeInfo> methods)
+    {
+        IEnumerable<string> methodNames = methods.Select(e => e.Method.BrowseName.Name);
+        List<IGrouping<string, string>> duplicateNames = methodNames.GroupBy(x => x).Where(g => g.Count() > 1).ToList();
+
+        if (duplicateNames.Any())
+        {
+            Type type = typeof(T);
+            throw new InvalidEntityConfigurationException(type.FullName!,
+                $"{type.FullName} has the following methods duplicated: {string.Join(", ", duplicateNames)}");
+        }
     }
 
     private static void AssignMethods(IEnumerable<IOpcTypeInfo> methods, BaseObjectState entity)

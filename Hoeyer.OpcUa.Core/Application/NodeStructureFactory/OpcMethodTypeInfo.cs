@@ -74,6 +74,20 @@ internal sealed record OpcMethodTypeInfo : IOpcTypeInfo
     private void CreateReturnValueNode(string methodName, Type returnType, BaseObjectState parent, MethodState method)
     {
         var (typeId, valueRank) = returnType.GetOpcTypeInfo();
+
+        Argument[] value =
+            typeId is null
+                ? []
+                :
+                [
+                    new Argument
+                    {
+                        Name = "Result",
+                        DataType = typeId,
+                        ValueRank = valueRank
+                    }
+                ];
+
         var outputArgument = new PropertyState<Argument[]>(method)
         {
             NodeId = new NodeId(methodName + "Result", parent.NodeId.NamespaceIndex),
@@ -82,15 +96,7 @@ internal sealed record OpcMethodTypeInfo : IOpcTypeInfo
             TypeDefinitionId = VariableTypeIds.PropertyType,
             DataType = DataTypeIds.Argument,
             ValueRank = ValueRanks.Scalar,
-            Value =
-            [
-                new Argument
-                {
-                    Name = "Result",
-                    DataType = typeId,
-                    ValueRank = valueRank
-                }
-            ]
+            Value = value
         };
         method.OutputArguments = outputArgument;
         method.AddReference(ReferenceTypeIds.HasProperty, false, outputArgument.NodeId);
