@@ -85,21 +85,32 @@ public static class AssemblyExtensions
 
         foreach (Type attributeType in type.GetCustomAttributes().Select(e => e.GetType()))
         {
+            //exactly the same type
             if (attributeType.IsAssignableFrom(annotation)) return attributeType;
 
-            if (!attributeType.IsConstructedGenericType ||
-                annotation.GenericTypeArguments.Length != attributeType.GetGenericArguments().Length)
-                continue;
+            //input is generic definition - the attribute must be of that type
+            if (annotation.IsGenericTypeDefinition
+                && attributeType.IsGenericType && attributeType.GetGenericTypeDefinition() == annotation)
+                return attributeType;
 
-            if (IsSameGenericAttribute(annotation, attributeType)) return attributeType;
+            //input is instantiated generic - all args match
+            if (HasSameGenericArgs(annotation, attributeType)) return attributeType;
         }
 
         return null;
     }
 
-    private static bool IsSameGenericAttribute(Type annotation, Type attributeType) =>
-        attributeType == annotation || attributeType.IsAssignableFrom(annotation) ||
-        (attributeType.IsConstructedGenericType
-         && annotation.IsGenericTypeDefinition
-         && attributeType.GetGenericTypeDefinition() == annotation);
+    private static bool HasSameGenericArgs(Type annotation, Type attributeType)
+    {
+        if (attributeType.GenericTypeArguments.Length != annotation.GetGenericArguments().Length) return false;
+
+        for (var index = 0; index < annotation.GenericTypeArguments.Length; index++)
+        {
+            Type first = attributeType.GenericTypeArguments[index];
+            Type second = annotation.GenericTypeArguments[index];
+            if (first != second) return false;
+        }
+
+        return true;
+    }
 }
