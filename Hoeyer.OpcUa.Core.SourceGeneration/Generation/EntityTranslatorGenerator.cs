@@ -2,17 +2,15 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Core.Application;
 using Hoeyer.OpcUa.Core.Application.Translator;
-using Hoeyer.OpcUa.Server.SourceGeneration.Constants;
-using Hoeyer.OpcUa.Server.SourceGeneration.Generation.IncrementalProvider;
+using Hoeyer.OpcUa.Core.SourceGeneration.Constants;
+using Hoeyer.OpcUa.Core.SourceGeneration.Generation.IncrementalProvider;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.Server.SourceGeneration.Generation;
+namespace Hoeyer.OpcUa.Core.SourceGeneration.Generation;
 
 [Generator]
 public class EntityTranslatorGenerator : IIncrementalGenerator
@@ -144,7 +142,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         var collectionProperties = properties.Where(property =>
         {
             var typeInfo = model.GetTypeInfo(property.Type).Type;
-            return  typeInfo is INamedTypeSymbol
+            return typeInfo is INamedTypeSymbol
             {
                 Arity: 1, IsGenericType: true
             };

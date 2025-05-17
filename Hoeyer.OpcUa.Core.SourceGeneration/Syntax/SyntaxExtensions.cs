@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace Hoeyer.OpcUa.Server.SourceGeneration.Syntax;
+namespace Hoeyer.OpcUa.Core.SourceGeneration.Syntax;
 
 public static class SyntaxExtensions
 {

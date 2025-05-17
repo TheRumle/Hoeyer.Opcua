@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.Server.SourceGeneration.Generation.IncrementalProvider;
+namespace Hoeyer.OpcUa.Core.SourceGeneration.Generation.IncrementalProvider;
 
 internal static class IncrementalGeneratorExtensions
 {

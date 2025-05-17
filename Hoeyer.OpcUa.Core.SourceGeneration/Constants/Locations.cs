@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.Server.SourceGeneration.Constants;
+namespace Hoeyer.OpcUa.Core.SourceGeneration.Constants;
 
 public static class Locations
 {

@@ -9,8 +9,8 @@
         <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
         <IsPackable>false</IsPackable>
 
-        <RootNamespace>Hoeyer.OpcUa.Server.SourceGeneration</RootNamespace>
-        <PackageId>Hoeyer.OpcUa.Server.SourceGeneration</PackageId>
+        <RootNamespace>Hoeyer.OpcUa.Core.SourceGeneration</RootNamespace>
+        <PackageId>Hoeyer.OpcUa.Core.SourceGeneration</PackageId>
     </PropertyGroup>
 
     <ItemGroup>

@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Server.SourceGeneration.Constants;
+using Hoeyer.OpcUa.Core.SourceGeneration.Constants;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.Server.SourceGeneration.Generation.IncrementalProvider;
+namespace Hoeyer.OpcUa.Core.SourceGeneration.Generation.IncrementalProvider;
 
 public sealed record TypeContext<T>(SemanticModel SemanticModel, T Node)
     where T : TypeDeclarationSyntax
