@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Configuration;
 using Opc.Ua;
 using Opc.Ua.Client;
@@ -10,10 +11,10 @@ internal class SessionFactory(IOpcUaEntityServerInfo applicationOptions) : IEnti
     private readonly string _opcServerUrl = applicationOptions.OpcUri.ToString();
     private ApplicationConfiguration Configuration { get; } = CreateApplicationConfig();
 
-    public async Task<ISession> CreateSessionAsync(string sessionId)
+    public async Task<ISession> CreateSessionAsync(string sessionId, CancellationToken token = default)
     {
         var selectedEndpoint = CoreClientUtils.SelectEndpoint(_opcServerUrl, false);
-        
+
         var endpointConfiguration = EndpointConfiguration.Create(Configuration);
         var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
         var session = await Session.Create(
@@ -23,7 +24,8 @@ internal class SessionFactory(IOpcUaEntityServerInfo applicationOptions) : IEnti
             sessionId,
             60000,
             new UserIdentity(new AnonymousIdentityToken()),
-            null);
+            null,
+            token);
         session.TransferSubscriptionsOnReconnect = true;
         session.DeleteSubscriptionsOnClose = false;
 
