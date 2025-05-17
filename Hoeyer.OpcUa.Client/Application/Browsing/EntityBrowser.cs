@@ -46,7 +46,7 @@ public sealed class EntityBrowser<TEntity>(
     private Node? _entityRoot;
     private ISession Session => _session.Value;
 
-    public (IEntityNode? node, DateTime timeLoaded)? LastState { get; private set; }
+    public (IEntityNode node, DateTime timeLoaded)? LastState { get; private set; }
 
     /// <inheritdoc />
     public async Task<IEntityNode> BrowseEntityNode(CancellationToken cancellationToken = default)
