@@ -18,17 +18,18 @@ internal sealed class ManagedEntityNodeSingletonFactory<T>(
     IEntityChangedBroadcaster<T> broadcaster) : IManagedEntityNodeSingletonFactory<T>
 {
     public IManagedEntityNode? Node { get; private set; }
+
     public async Task<IManagedEntityNode> CreateManagedEntityNode(Func<string, ushort> namespaceToIndex)
     {
         if (Node != null) return Node;
-        
+
         var @namespace = info.Host + $"/{typeof(T).Name}";
         var namespaceIndex = namespaceToIndex.Invoke(@namespace);
-        
+
         var entity = await value.LoadCurrentState();
         var nodeRepresentation = structureFactory.Create(namespaceIndex);
         translator.AssignToNode(entity, nodeRepresentation);
-        Node =  new ManagedEntityNode<T>(nodeRepresentation, @namespace, namespaceIndex);
+        Node = new ManagedEntityNode(nodeRepresentation, @namespace, namespaceIndex);
         broadcaster.BeginObserve(Node);
         return Node;
     }

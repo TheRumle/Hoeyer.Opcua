@@ -9,4 +9,5 @@ public interface IEntityNode
     public ISet<PropertyState> PropertyStates { get; }
     public ISet<MethodState> Methods { get; }
     public Dictionary<string, PropertyState> PropertyByBrowseName { get; }
+    public Dictionary<string, MethodState> MethodsByName { get; }
 }

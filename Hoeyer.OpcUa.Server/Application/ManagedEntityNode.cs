@@ -7,7 +7,7 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-internal sealed record ManagedEntityNode<T> : IManagedEntityNode
+internal sealed record ManagedEntityNode : IManagedEntityNode
 {
     public ManagedEntityNode(IEntityNode node, string entityNamespace, ushort entityNamespaceIndex)
     {
@@ -21,11 +21,14 @@ internal sealed record ManagedEntityNode<T> : IManagedEntityNode
     public string Namespace { get; }
     public ushort EntityNameSpaceIndex { get; }
     public BaseObjectState BaseObject { get; }
-    public ISet<PropertyState> PropertyStates { get; } 
+    public ISet<PropertyState> PropertyStates { get; }
     public ISet<MethodState> Methods { get; }
 
-    public Dictionary<string, PropertyState> PropertyByBrowseName => PropertyStates.ToDictionary(e => e.BrowseName.Name);
-    
+    public Dictionary<string, PropertyState> PropertyByBrowseName =>
+        PropertyStates.ToDictionary(e => e.BrowseName.Name);
+
+    public Dictionary<string, MethodState> MethodsByName => Methods.ToDictionary(e => e.BrowseName.Name);
+
     /// <inheritdoc />
     public override string ToString()
     {
