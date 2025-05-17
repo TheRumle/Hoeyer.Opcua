@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.Core.SourceGeneration.Constants;
+namespace Hoeyer.OpcUa.Client.SourceGeneration.Constants;
 
 public static class Locations
 {
@@ -22,7 +22,7 @@ public static class Locations
                 "Hoeyer.OpcUa.Core.Application.Translator",
                 "System.Collections.Generic",
                 "Hoeyer.OpcUa.Core",
-                "Hoeyer.OpcUa.Core.Api",
+                "Hoeyer.OpcUa.Core.Api"
             }
             .Select(e => SyntaxFactory.ParseName(e))
             .Select(SyntaxFactory.UsingDirective)

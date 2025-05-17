@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Hoeyer.OpcUa.Entity.CompileTime.Testing.CodeLoading;
-using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -18,10 +17,9 @@ public sealed class GeneratorTestDriver<T>(T generator, Action<string>? logger =
         Justification = "Cannot match the suggested function which uses ISourceGenerator")]
     private readonly CSharpGeneratorDriver _driver = CSharpGeneratorDriver.Create(generator);
 
-
-    public GeneratorResult RunGeneratorOn(EntitySourceCode entitySourceCode)
+    public GeneratorResult RunGeneratorOn(string sourceCode)
     {
-        var compilation = _compilationFactory.CreateCompilation(CSharpSyntaxTree.ParseText(entitySourceCode.SourceCodeString));
+        CSharpCompilation compilation = _compilationFactory.CreateCompilation(CSharpSyntaxTree.ParseText(sourceCode));
         var compilationResult = _driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out var diagnostics);
         var result = CreateResult(compilationResult, diagnostics, _driver.GetTimingInfo());
 

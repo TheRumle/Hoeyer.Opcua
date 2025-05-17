@@ -8,9 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Client.SourceGeneration\Hoeyer.OpcUa.Client.SourceGeneration.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.Analysis\Hoeyer.OpcUa.CompileTime.Analysis.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core.SourceGeneration\Hoeyer.OpcUa.Core.SourceGeneration.csproj"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.TestDrivers\Hoeyer.OpcUa.CompileTime.TestDrivers.csproj" />
+        <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.TestDrivers\Hoeyer.OpcUa.CompileTime.TestDrivers.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Test.TUnit\Hoeyer.OpcUa.Test.TUnit.csproj"/>
     </ItemGroup>
 

@@ -2,6 +2,5 @@
 
 public record EntitySourceCode(string Type, string SourceCodeString)
 {
-    /// <inheritdoc />
     public override string ToString() => Type;
 }

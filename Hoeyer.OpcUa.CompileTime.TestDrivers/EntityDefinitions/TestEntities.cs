@@ -7,7 +7,7 @@ namespace Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
 
 public static class TestEntities
 {
-    private static readonly Regex Regex = new(@"class\s+([A-Za-z_][A-Za-z0-9_]*)\s*");
+    private static readonly Regex ClassNameRegex = new(@"class\s+([A-Za-z_][A-Za-z0-9_]*)\s*");
 
     private static readonly IEnumerable<string> ValidEntityClassDefinitions =
     [
@@ -66,7 +66,7 @@ public static class TestEntities
             OverHere,
             OnTheMoon
         }
-        
+
         [OpcUaEntity]
         public sealed class EnumSupport
         {
@@ -74,7 +74,7 @@ public static class TestEntities
         }
         """
     ];
-    
+
     private static readonly IEnumerable<string> UnsupportedEntityClassDefinitions =
     [
         """
@@ -99,7 +99,7 @@ public static class TestEntities
             OverHere,
             OnTheMoon
         }
-        
+
         [OpcUaEntity]
         public class DelegateType
         {
@@ -155,11 +155,11 @@ public static class TestEntities
 
 
     public static readonly ImmutableHashSet<EntitySourceCode> Valid = ValidEntityClassDefinitions
-        .Select(sourceCode => new EntitySourceCode(Regex.Match(sourceCode).Groups[1].Value, sourceCode))
+        .Select(sourceCode => new EntitySourceCode(ClassNameRegex.Match(sourceCode).Groups[1].Value, sourceCode))
         .ToImmutableHashSet();
-    
+
     public static readonly ImmutableHashSet<EntitySourceCode> UnsupportedTypes = UnsupportedEntityClassDefinitions
-        .Select(sourceCode => new EntitySourceCode(Regex.Match(sourceCode).Groups[1].Value, sourceCode))
+        .Select(sourceCode => new EntitySourceCode(ClassNameRegex.Match(sourceCode).Groups[1].Value, sourceCode))
         .ToImmutableHashSet();
 
     public static readonly ImmutableHashSet<EntitySourceCode> All = Valid.Union(UnsupportedTypes);

@@ -2,9 +2,10 @@
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures;
 
-public abstract class TypesWithEmptyCtorScanningGeneratorAttribute<T, TAssemblyToken> : DataSourceGeneratorAttribute<T>
+public class TypesWithEmptyCtorScanningGeneratorAttribute<T, TAssemblyToken> : DataSourceGeneratorAttribute<T>
 {
-    private static readonly IReadOnlyList<T> Generators = ScanAssemblyContaining<TAssemblyToken>.GetTypeWithEmptyConstructor<T>();
+    private static readonly IReadOnlyList<T> Generators =
+        ScanAssemblyContaining<TAssemblyToken>.GetTypeWithEmptyConstructor<T>();
 
     public sealed override IEnumerable<Func<T>> GenerateDataSources(DataGeneratorMetadata dataGeneratorMetadata)
     {
