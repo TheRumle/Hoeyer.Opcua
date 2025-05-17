@@ -12,7 +12,9 @@ namespace Hoeyer.OpcUa.Server.SourceGeneration.Generation.IncrementalProvider;
 public sealed record TypeContext<T>(SemanticModel SemanticModel, T Node)
     where T : TypeDeclarationSyntax
 {
-    private readonly IEqualityComparer<UsingDirectiveSyntax> UsingDirectiveComparer = new UsingComparer();
+    private readonly IEqualityComparer<UsingDirectiveSyntax>
+        UsingDirectiveComparer = new UsingDirectiveSyntaxComparer();
+
     private IEnumerable<UsingDirectiveSyntax>? _usingDirectives;
 
 
@@ -61,27 +63,27 @@ public sealed record TypeContext<T>(SemanticModel SemanticModel, T Node)
     {
         var usingDirectives = await GetImportsAndContainingNamespace(cancellationToken);
 
-        var usingStatements = additionalUsings == null
+        IEnumerable<UsingDirectiveSyntax> usingStatements = additionalUsings == null
             ? SyntaxFactory.List(usingDirectives.Union(Locations.Utilities))
             : SyntaxFactory.List(usingDirectives.Union(Locations.Utilities)).Union(additionalUsings);
 
+        IEnumerable<UsingDirectiveSyntax> distincts = usingStatements.Distinct(UsingDirectiveComparer);
+
         return SyntaxFactory.CompilationUnit()
-            .AddUsings(usingStatements.ToArray())
+            .AddUsings(distincts.ToArray())
             .AddMembers(Locations.GeneratedPlacement.AddMembers(classDeclarationSyntax));
     }
 
-    private sealed class UsingComparer : IEqualityComparer<UsingDirectiveSyntax>
+    private sealed class UsingDirectiveSyntaxComparer : IEqualityComparer<UsingDirectiveSyntax>
     {
-        /// <inheritdoc />
-        public bool Equals(UsingDirectiveSyntax x, UsingDirectiveSyntax y)
+        public bool Equals(UsingDirectiveSyntax? x, UsingDirectiveSyntax? y)
         {
-            return x.GetText().Equals(y.GetText());
+            if (x == null && y == null) return true;
+            if (x == null || y == null) return false;
+
+            return x.NormalizeWhitespace().ToFullString() == y.NormalizeWhitespace().ToFullString();
         }
 
-        /// <inheritdoc />
-        public int GetHashCode(UsingDirectiveSyntax obj)
-        {
-            return obj.GetHashCode();
-        }
+        public int GetHashCode(UsingDirectiveSyntax obj) => obj.NormalizeWhitespace().ToFullString().GetHashCode();
     }
 }

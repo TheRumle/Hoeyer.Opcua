@@ -11,7 +11,7 @@ public static class Locations
     public static readonly NamespaceDeclarationSyntax GeneratedPlacement =
         SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName("Hoeyer.OpcUa.Server.Generated"));
 
-    public static readonly ImmutableArray<UsingDirectiveSyntax> Utilities =
+    public static readonly ImmutableHashSet<UsingDirectiveSyntax> Utilities =
     [
         ..new List<string>
             {
