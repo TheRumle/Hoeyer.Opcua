@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
-using Hoeyer.OpcUa.Client.Api.Reading;
 using INodeBrowser = Hoeyer.OpcUa.Client.Api.Browsing.INodeBrowser;
 
 namespace Hoeyer.OpcUa.Client.Application.Browsing;

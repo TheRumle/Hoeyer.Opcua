@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Client.Api.Reading;
 using Opc.Ua;
 using Opc.Ua.Client;
 
@@ -14,7 +13,7 @@ public interface INodeReader
         IEnumerable<NodeId> ids,
         NodeClass filter = NodeClassFilters.Any,
         CancellationToken ct = default);
-    
+
     public Task<Node> ReadNodeAsync(
         ISession session,
         NodeId nodeId,

@@ -7,14 +7,16 @@ using System.Threading.Tasks;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Browsing.Exceptions;
 using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
-using Hoeyer.OpcUa.Client.Api.Reading;
 using Opc.Ua;
 using Opc.Ua.Client;
 using INodeBrowser = Hoeyer.OpcUa.Client.Api.Browsing.INodeBrowser;
 
 namespace Hoeyer.OpcUa.Client.Application.Browsing;
 
-public abstract class ConcurrentTreeTraversalStrategy(INodeBrowser browser, INodeReader reader, Func<IProducerConsumerCollection<ReferenceWithId>> orderedCollectionFactory) : INodeTreeTraverser
+public abstract class ConcurrentTreeTraversalStrategy(
+    INodeBrowser browser,
+    INodeReader reader,
+    Func<IProducerConsumerCollection<ReferenceWithId>> orderedCollectionFactory) : INodeTreeTraverser
 {
     public async IAsyncEnumerable<ReferenceWithId> TraverseFrom(NodeId id, ISession session,
         [EnumeratorCancellation] CancellationToken ct)
@@ -33,7 +35,7 @@ public abstract class ConcurrentTreeTraversalStrategy(INodeBrowser browser, INod
         _queue.TryAdd(rootRef);
         yield return rootRef;
 
-        
+
         await foreach (var a in new ConcurrentBrowse(browser, _queue).Browse(session, ct))
             yield return a;
     }

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Api;
 using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
-using Hoeyer.OpcUa.Client.Api.Reading;
 using Hoeyer.OpcUa.Core.Extensions.Opc;
 using Opc.Ua;
 using Opc.Ua.Client;
@@ -21,40 +20,9 @@ internal sealed class NodeReader : INodeReader
         CancellationToken ct = default)
     {
         var idList = ids.ToList();
-        var task =  CreateReadNodesTask(session, filter, ct, idList);
+        Task<ReadResult> task = CreateReadNodesTask(session, filter, ct, idList);
         task.ConfigureAwait(false);
         return task;
-    }
-
-    private static Task<ReadResult> CreateReadNodesTask(ISession session, NodeClass filter, CancellationToken ct, List<NodeId> idList)
-    {
-        return session
-            .ReadNodesAsync(idList, filter, ct: ct)
-            .ThenAsync(responseTuples =>
-            {
-                var zipped = responseTuples.Zip().ToList();
-                var variables = zipped
-                    .Where(readResponse => readResponse.second.IsGood())
-                    .Select(readResponse => readResponse.first)
-                    .OfType<VariableNode>()
-                    .ToList();
-
-                return session
-                    .ReadValuesAsync(variables.Select(e => e.NodeId).ToList(), ct)
-                    .ThenAsync(valueReadResponse =>
-                    {
-                        var (readValues, responseCodes) = valueReadResponse;
-                        for (int i = 0; i < readValues.Count; i++)
-                        {
-                            if (responseCodes[i].IsGood())
-                            {
-                                variables[i]!.Value = readValues[i].WrappedValue;
-                            }
-                        }
-
-                        return new ReadResult(zipped);
-                    });
-            }, ct);
     }
 
     /// <inheritdoc />
@@ -64,9 +32,38 @@ internal sealed class NodeReader : INodeReader
         {
             return await session.ReadNodeAsync(nodeId, ct);
         }
-        catch (ServiceResultException  e)
+        catch (ServiceResultException e)
         {
             throw new NodeReadException(nodeId, e);
         }
+    }
+
+    private static Task<ReadResult> CreateReadNodesTask(ISession session, NodeClass filter, CancellationToken ct,
+        List<NodeId> idList)
+    {
+        return session
+            .ReadNodesAsync(idList, filter, ct: ct)
+            .ThenAsync(responseTuples =>
+            {
+                List<(Node first, ServiceResult second)> zipped = responseTuples.Zip().ToList();
+                List<VariableNode> variables = zipped
+                    .Where(readResponse => readResponse.second.IsGood())
+                    .Select(readResponse => readResponse.first)
+                    .OfType<VariableNode>()
+                    .ToList();
+
+                return session
+                    .ReadValuesAsync(variables.Select(e => e.NodeId).ToList(), ct)
+                    .ThenAsync(valueReadResponse =>
+                    {
+                        (DataValueCollection? readValues, IList<ServiceResult>? responseCodes) = valueReadResponse;
+                        for (var i = 0; i < readValues.Count; i++)
+                        {
+                            if (responseCodes[i].IsGood()) variables[i]!.Value = readValues[i].WrappedValue;
+                        }
+
+                        return new ReadResult(zipped);
+                    });
+            }, ct);
     }
 }

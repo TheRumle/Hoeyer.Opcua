@@ -1,6 +1,6 @@
 ﻿using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Client.Application.Monitoring;
+namespace Hoeyer.OpcUa.Client.Api.Monitoring;
 
 internal interface IEntityChangeAggregatorStrategy<T>
 {

@@ -8,7 +8,6 @@ using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
-using Hoeyer.OpcUa.Client.Api.Reading;
 using Hoeyer.OpcUa.Client.Extensions;
 using Hoeyer.OpcUa.Client.MachineProxy;
 using Hoeyer.OpcUa.Core;
@@ -36,14 +35,17 @@ public sealed class EntityBrowser<TEntity>(
     IEntityNodeStructureFactory<TEntity> nodeStructureFactory,
     EntityDescriptionMatcher<TEntity>? identityMatcher = null) : IEntityBrowser<TEntity>
 {
-    private Node? _entityRoot;
     private static readonly string EntityName = typeof(TEntity).Name;
-    private readonly EntityDescriptionMatcher<TEntity> _identityMatcher 
+
+    private readonly EntityDescriptionMatcher<TEntity> _identityMatcher
         = identityMatcher ?? (n => EntityName.Equals(n.BrowseName.Name));
 
-    private readonly Lazy<ISession> _session = new(() => sessionFactory.CreateSession(typeof(TEntity).Name + "Browser"));
-    private ISession Session => _session.Value; 
-    
+    private readonly Lazy<ISession>
+        _session = new(() => sessionFactory.CreateSession(typeof(TEntity).Name + "Browser"));
+
+    private Node? _entityRoot;
+    private ISession Session => _session.Value;
+
     public (IEntityNode? node, DateTime timeLoaded)? LastState { get; private set; }
 
     /// <inheritdoc />
@@ -53,13 +55,14 @@ public sealed class EntityBrowser<TEntity>(
         return await ParseToEntity(Session, cancellationToken, values);
     }
 
-    private async Task<IEntityNode> ParseToEntity(ISession session, CancellationToken cancellationToken, ReadResult values)
+    private async Task<IEntityNode> ParseToEntity(ISession session, CancellationToken cancellationToken,
+        ReadResult values)
     {
         var variables = await reader
             .ReadNodesAsync(session, values.SuccesfulReads.Select(value => value!.NodeId),
                 ct: cancellationToken)
             .ThenAsync(result => result.SuccesfulReads.OfType<VariableNode>())
-            .ThenAsync( nodes => nodes.ToList());
+            .ThenAsync(nodes => nodes.ToList());
 
         var structure = AssignReadValues(variables);
         return structure;
@@ -71,10 +74,10 @@ public sealed class EntityBrowser<TEntity>(
         var structure = nodeStructureFactory.Create(index);
         foreach (var state in structure.PropertyStates)
         {
-            
             var match = variables.FirstOrDefault(n => n != null && n.NodeId.Equals(state.NodeId));
             if (match != null) state.Value = match.Value;
         }
+
         LastState = new ValueTuple<IEntityNode, DateTime>(structure, DateTime.Now);
         return structure;
     }
@@ -82,11 +85,13 @@ public sealed class EntityBrowser<TEntity>(
     private async Task<ReadResult> ReadEntity(CancellationToken cancellationToken)
     {
         _entityRoot ??= await FindEntityRoot(cancellationToken);
-        var descendants = await traversalStrategy.TraverseFrom(_entityRoot.NodeId, Session, cancellationToken).Collect();
-        var values = await reader.ReadNodesAsync(Session, descendants.Select(e=>e.NodeId), ct: cancellationToken);
+        IEnumerable<ReferenceWithId> descendants =
+            await traversalStrategy.TraverseFrom(_entityRoot.NodeId, Session, cancellationToken).Collect();
+        ReadResult values =
+            await reader.ReadNodesAsync(Session, descendants.Select(e => e.NodeId), ct: cancellationToken);
         return values;
     }
-    
+
     private async Task<Node> FindEntityRoot(CancellationToken cancellationToken = default)
     {
         return await logger.LogWithScopeAsync(new
