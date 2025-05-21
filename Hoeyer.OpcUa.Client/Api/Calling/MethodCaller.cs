@@ -11,10 +11,26 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Api.Calling;
 
-[OpcUaEntityService(typeof(IMethodCaller))]
-public class MethodCaller<TEntity>(IEntityBrowser<TEntity> browser, IEntitySessionFactory factory) : IMethodCaller
+[OpcUaEntityService(typeof(IMethodCaller<>))]
+public class MethodCaller<TEntity>(IEntityBrowser<TEntity> browser, IEntitySessionFactory factory)
+    : IMethodCaller<TEntity>
 {
-    public async Task<IList<object>> CallMethod(string methodName, CancellationToken token = default,
+    public async Task CallMethod(string methodName,
+        CancellationToken token = default,
+        params object[] args)
+    {
+        await CallNode(methodName, token, args);
+    }
+
+    /// <inheritdoc />
+    public async Task<T> CallMethod<T>(string methodName, CancellationToken token = default, params object[] args)
+    {
+        IList<object> res = await CallNode(methodName, token, args);
+        return (T)res[0];
+    }
+
+
+    private async Task<IList<object>> CallNode(string methodName, CancellationToken token = default,
         params object[] args)
     {
         IEntityNode entityNode = browser.LastState?.node ?? await browser.BrowseEntityNode(token);
