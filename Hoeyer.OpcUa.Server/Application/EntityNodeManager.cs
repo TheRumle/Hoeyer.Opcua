@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.OpcUa.Core.Extensions.Logging;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
@@ -7,7 +8,6 @@ using Opc.Ua;
 using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application;
-
 
 internal sealed class EntityNodeManager<T>(
     IManagedEntityNode managedEntity,
@@ -32,6 +32,7 @@ internal sealed class EntityNodeManager<T>(
                     references ??= new List<IReference>();
                     externalReferences[ObjectIds.ObjectsFolder] = references;
                 }
+
                 references.Add(new NodeStateReference(ReferenceTypeIds.Organizes, false, node.NodeId));
 
                 foreach (var method in ManagedEntity.Methods)
@@ -41,11 +42,11 @@ internal sealed class EntityNodeManager<T>(
                         logger.LogInformation("Session {@Session} invoked method {@Method}",
                             context.SessionId,
                             method.ToLoggingObject());
+                        if (method.DisplayName.Text.Equals("Position")) results.Add(new Random().Next(2));
+
                         return ServiceResult.Good;
                     };
-
                 }
-                
             }
         });
     }

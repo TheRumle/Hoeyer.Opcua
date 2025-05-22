@@ -15,7 +15,7 @@ internal static class WellKnown
             CoreTypeName("OpcUaEntityMethodsAttribute<T>");
 
 
-        private static readonly FullyQualifiedTypeName OpcUaEntityServiceAttribute =
+        public static readonly FullyQualifiedTypeName OpcUaEntityServiceAttribute =
             CoreTypeName("OpcUaEntityServiceAttribute");
 
         private static FullyQualifiedTypeName CoreTypeName(string className) => new("Hoeyer.OpcUa.Core." + className);
@@ -23,7 +23,7 @@ internal static class WellKnown
 
     public static class FullyQualifiedInterface
     {
-        private static readonly FullyQualifiedTypeName MethodCallerType =
+        public static readonly FullyQualifiedTypeName MethodCallerType =
             new("Hoeyer.OpcUa.Client.Api.Calling.IMethodCaller");
     }
 }
