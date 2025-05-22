@@ -1,80 +1,50 @@
 ﻿using System;
-using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Hoeyer.OpcUa.Core.Api;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Core.Services.OpcUaServices;
 
 public static class OpcUaEntityServicesLoader
 {
-    private readonly static FrozenSet<EntityServiceTypeContext> EntityServiceTypeContexts = GetEntityServiceContexts().ToFrozenSet();
-    
-    public static EntityServiceTypeContext ConstructEntityServiceContext(this IEntityServiceTypeInfo info)
+    internal static List<OpcUaEntityServiceConfigurationException> AddEntityServices(IServiceCollection services)
     {
-        return info switch
-        {
-            GenericEntityServiceTypeInfo generic => ConstructEntityServiceContext(generic),
-            InstantiatedEntityServiceTypeInfo instantiated => ConstructEntityServiceContext(instantiated),
-            _ => throw new ArgumentOutOfRangeException(nameof(info))
-        };
-    } 
-    
-    private static EntityServiceTypeContext ConstructEntityServiceContext(
-        this GenericEntityServiceTypeInfo genericEntityServiceTypeInfo,
-        Type entity)
-    {
-        var instantiatedServiceImpl = genericEntityServiceTypeInfo.ImplementationType.MakeGenericType(entity);
-        return new EntityServiceTypeContext(instantiatedServiceImpl, genericEntityServiceTypeInfo.ServiceType, entity, genericEntityServiceTypeInfo.ServiceLifetime);
-    }
+        ImmutableHashSet<EntityServiceInfo> genericServices = OpcUaEntityTypes.GenericServices
+            .Union(OpcUaEntityTypes.NonGenericServices)
+            .Union(OpcUaEntityTypes.BehaviourImplementations)
+            .Union(GetLoaderServiceContexts()) // loaders are 
+            .ToImmutableHashSet();
 
-    private static EntityServiceTypeContext ConstructEntityServiceContext(
-        this InstantiatedEntityServiceTypeInfo typeInfo)
-    {
-        return new EntityServiceTypeContext(typeInfo.ImplementationType, typeInfo.InstantiatedServiceType, typeInfo.Entity, typeInfo.ServiceLifetime);
-    }
-
-    
-    internal static IEnumerable<OpcUaEntityServiceConfigurationException> AddEntityServices(IServiceCollection services)
-    {
-        var missingServicesErrors = AssertAllEntitiesHaveAllServices(EntityServiceTypeContexts).ToList();
-        if (missingServicesErrors.Count > 0) return missingServicesErrors;
-        
-        foreach (var context in EntityServiceTypeContexts)
+        foreach (EntityServiceInfo? service in genericServices)
         {
-            context.AddToCollection(services);
+            service.AddToCollection(services);
         }
 
         return [];
     }
 
-    private static ImmutableHashSet<EntityServiceTypeContext> GetEntityServiceContexts()
+    private static IEnumerable<EntityServiceInfo> GetLoaderServiceContexts()
     {
-        return OpcUaEntityTypes.Entities
-            .SelectMany(entity => OpcUaEntityTypes
-                .GenericServices
-                .Select(service => service.ConstructEntityServiceContext(entity)))
-            .Union(OpcUaEntityTypes
-                .InstantiatedServices
-                .Select(ConstructEntityServiceContext))
-            .ToImmutableHashSet();
-    }
-    
-    private static IEnumerable<OpcUaEntityServiceConfigurationException> AssertAllEntitiesHaveAllServices(IEnumerable<EntityServiceTypeContext> serviceContexts)
-    {
-        var serviceContextGroups = from serviceContext in serviceContexts
-            group serviceContext by serviceContext.ServiceType
-            into grouping
-            select (ServiceType: grouping.Key, FoundServices: grouping.ToList());
-
-        foreach (var (key, servicesFor) in serviceContextGroups.ToList())
-        {
-            var entitiesWithoutService = OpcUaEntityTypes.Entities.Except(servicesFor.Select(e => e.Entity));
-            foreach (var entity in entitiesWithoutService)
+        Type loaderType = typeof(IEntityLoader<>);
+        return OpcUaEntityTypes
+            .TypesFromReferencingAssemblies
+            .Select(type =>
             {
-                yield return OpcUaEntityServiceConfigurationException.ServiceNotConfigured(entity, key);
-            }
-        }
+                Type? foundLoaderInterface = type
+                    .GetInterfaces()
+                    .FirstOrDefault(@interface => @interface.Namespace == loaderType.Namespace
+                                                  && @interface.IsConstructedGenericType &&
+                                                  @interface.GetGenericTypeDefinition() == loaderType);
+
+                if (foundLoaderInterface is null) return null!;
+
+                var lifetime = ServiceLifetime.Singleton;
+                Type instantiatedService = foundLoaderInterface;
+                Type? entity = foundLoaderInterface.GenericTypeArguments[0];
+                return new EntityServiceInfo(instantiatedService, type, entity, lifetime);
+            })
+            .Where(foundType => foundType is not null);
     }
 }

@@ -1,66 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.Common.Extensions;
 using Hoeyer.OpcUa.Core.Api;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Extensions.Logging;
 
-public class ArgumentInfo(string Name, object Value)
-{
-    public ArgumentInfo(Argument argument):this(argument.Name, argument.Value)
-    {}
-    public object Value { get; } = Value;
-    public string Name { get; } = Name;
-        
-    public static ArgumentInfo Of(Argument argument) => new(argument.Name, argument.Value);
-}
-
 public static class LoggingExtensions
 {
-
-    
-    public static object ToLoggingObjectWithArguments(this MethodState method)
-    {
-        var outArgs = method.OutputArguments?.Value?.Select(ArgumentInfo.Of).ToArray();
-        var inArgs = method.InputArguments?.Value?.Select(ArgumentInfo.Of).ToArray();
-        
-        if (outArgs != null && inArgs != null)
-        {
-            return new
-            {
-                Info = method.CoreInfoObject(),
-                Arguments = inArgs,
-                Result = outArgs
-            };
-        }
-
-        if (outArgs != null)
-        {
-            return new
-            {
-                Info = method.CoreInfoObject(),
-                Arguments = inArgs
-            };
-        }
-
-        if (inArgs != null)
-        {
-            return new
-            {
-                Info = method.CoreInfoObject(),
-                Arguments = inArgs
-            };
-        }
-
-        return new
-        {
-            Info = method.CoreInfoObject(),
-            method.AreEventsMonitored,
-        };
-    }
-
     public static object ToLoggingObject(this MethodState method)
     {
         return new
@@ -70,9 +17,9 @@ public static class LoggingExtensions
             Arguments = method?.InputArguments.Value.Select(ArgumentInfo.Of).ToArray()
         };
     }
-    
+
     public static object ToLoggingObject(this BaseObjectState node) => CoreInfoObject(node);
-    
+
     public static object ToLoggingObject(this IEntityNode node)
     {
         return new
@@ -93,7 +40,7 @@ public static class LoggingExtensions
             des.Handle
         });
     }
-    
+
 
     public static object ToLoggingObject(this ApplicationConfiguration configuration)
     {
@@ -114,7 +61,7 @@ public static class LoggingExtensions
             KnownDiscoveryUrls = configuration.ClientConfiguration?.WellKnownDiscoveryUrls?.Select(e => e).ToArray()
         };
     }
-    
+
     private static Object CoreInfoObject(this NodeState node)
     {
         return new
@@ -126,5 +73,4 @@ public static class LoggingExtensions
             Description = node.Description?.Text,
         };
     }
-    
 }

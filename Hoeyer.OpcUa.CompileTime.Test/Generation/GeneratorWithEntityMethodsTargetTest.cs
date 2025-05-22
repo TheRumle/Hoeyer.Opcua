@@ -12,7 +12,7 @@ public abstract class GeneratorWithEntityMethodsTargetTest<T> where T : IIncreme
 
     [Test]
     [EntityServiceInterfaceGenerator]
-    [DisplayName("Can generate valid syntax tree for $AllSourceCode")]
+    [DisplayName("Can generate valid syntax tree for $serviceInterface")]
     public async Task WhenGiven_CorrectSourceCodeInfo_ShouldGenerateValidSyntaxTrees(
         ServiceInterfaceSourceCode serviceInterface)
     {
@@ -22,7 +22,7 @@ public abstract class GeneratorWithEntityMethodsTargetTest<T> where T : IIncreme
 
     [Test]
     [EntityServiceInterfaceGenerator]
-    [DisplayName("Generates valid syntax tree for $AllSourceCode")]
+    [DisplayName("Generates valid syntax tree for $serviceInterface")]
     public async Task WhenGivenValidSourceCode_ProducesValidSyntaxTree(ServiceInterfaceSourceCode serviceInterface)
     {
         GeneratorResult generationResult = TestDriver.RunGeneratorOn(serviceInterface.AllSourceCode);

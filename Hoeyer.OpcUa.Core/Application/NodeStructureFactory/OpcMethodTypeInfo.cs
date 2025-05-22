@@ -18,7 +18,7 @@ internal sealed record OpcMethodTypeInfo : IOpcTypeInfo
     public OpcMethodTypeInfo(BaseObjectState parent, string methodName, Type? returnType,
         IEnumerable<(Type type, string name)> arguments)
     {
-        var opcMethodName = parent.BrowseName.Name + "." + methodName;
+        var opcMethodName = methodName;
         var method = new MethodState(parent)
         {
             NodeId = new NodeId(opcMethodName, parent.NodeId.NamespaceIndex),

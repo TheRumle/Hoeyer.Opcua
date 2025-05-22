@@ -10,7 +10,7 @@
         <IsPackable>false</IsPackable>
 
         <RootNamespace>Hoeyer.OpcUa.Client.SourceGeneration</RootNamespace>
-        <PackageId>Hoeyer.OpcUa.Core.SourceGeneration</PackageId>
+        <PackageId>Hoeyer.OpcUa.Client.SourceGeneration</PackageId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -21,10 +21,4 @@
         <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.12.0"/>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0"/>
     </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa.Client\Hoeyer.OpcUa.Client.csproj"/>
-    </ItemGroup>
-
 </Project>

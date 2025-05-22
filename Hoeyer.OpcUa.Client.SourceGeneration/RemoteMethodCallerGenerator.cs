@@ -1,9 +1,13 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Hoeyer.OpcUa.Client.SourceGeneration.Constants;
+using Hoeyer.OpcUa.Client.SourceGeneration.Generation;
 using Hoeyer.OpcUa.Client.SourceGeneration.Generation.IncrementalProvider;
+using Hoeyer.OpcUa.Client.SourceGeneration.Models;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Hoeyer.OpcUa.Client.SourceGeneration;
 
@@ -13,17 +17,113 @@ public class RemoteMethodCallerGenerator : IIncrementalGenerator
     /// <inheritdoc />
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        UnloadedIncrementalValuesProvider<string> decoratedRecordsProvider = context
+        var decoratedRecordsProvider = context
             .GetEntityMethodInterfaces()
-            .Select(async (typeContext, cancellationToken) =>
-                await CreateCompilationUnit(typeContext, cancellationToken))
-            .Select((e, _) => e.Result);
+            .Select(static (ctx, ct) => CreateRemoteMethodCallerModel(ctx.interfaceNode, ctx.model))
+            .Where(static model => model is not null)
+            .Select(static (model, _) => CreateClassImplementation(model!));
 
-        context.RegisterImplementationSourceOutput(decoratedRecordsProvider.Collect(),
-            (productionContext, compilations) => { });
+        context.RegisterSourceOutput(decoratedRecordsProvider.Collect(),
+            (sourceContext, dataModels) => { GenerateRemoteMethodCaller(sourceContext, dataModels); });
     }
 
-    private static async Task<string> CreateCompilationUnit(
-        TypeContext<InterfaceDeclarationSyntax> typeContext, CancellationToken cancellationToken) =>
-        throw new NotImplementedException();
+    private static void GenerateRemoteMethodCaller(SourceProductionContext sourceContext,
+        IEnumerable<(string identifier, string code)> dataModels)
+    {
+        foreach (var (identifier, code) in dataModels)
+        {
+            sourceContext.AddSource(identifier + ".g.cs", code);
+        }
+    }
+
+
+    private static RemoteMethodCallerModel? CreateRemoteMethodCallerModel(
+        InterfaceDeclarationSyntax interfaceDeclaration, SemanticModel model)
+    {
+        //for instance Task MyMethod(int a, int b, TypeFromNamespaceQ value) --> System.Threading.Task MyMethod(System.Int32 a, System.Int32 b, Q.TypeFromNamespaceQ value)
+        INamedTypeSymbol? entityParameter = GetEntityNameFromAttribute(interfaceDeclaration, model);
+        INamedTypeSymbol? declaredSymbol = model.GetDeclaredSymbol(interfaceDeclaration);
+        if (entityParameter is null || declaredSymbol is null) return null;
+
+        var rewriter = new FullyQualifyTypeNamesRewriter(model);
+        List<MemberDeclarationSyntax> methods = interfaceDeclaration.Members.OfType<MethodDeclarationSyntax>()
+            .Select(e => (MemberDeclarationSyntax)rewriter.Visit(e))
+            .ToList();
+
+        AttributeSyntax serviceAttribute =
+            OpcAttributeUsages.GetOpcUaServiceAttributeFor(entityParameter, OpcAttributeUsages.Scope.Singleton);
+        return new RemoteMethodCallerModel(declaredSymbol, entityParameter, serviceAttribute,
+            interfaceDeclaration.WithMembers(List(methods)));
+    }
+
+
+    private static (string Identifier, string SourceCode) CreateClassImplementation(RemoteMethodCallerModel model)
+    {
+        InterfaceDeclarationSyntax interfaceDeclaration = model.InterfaceSyntax;
+        var classIdentifier = (interfaceDeclaration.Identifier.Text.StartsWith("I")
+            ? interfaceDeclaration.Identifier.Text.Substring(1)
+            : interfaceDeclaration.Identifier.Text) + "RemoteCaller";
+
+        var builder = new SourceCodeWriter();
+        var @namespace = model.InterfaceSymbol.GetFullNamespace();
+        builder.WriteLine("namespace " + @namespace + ".Generated");
+        builder.WriteLine("{");
+
+        builder.Write("[").Write(WellKnown.FullyQualifiedAttribute.OpcUaEntityServiceAttribute.WithGlobalPrefix)
+            .Write("(typeof(").Write(model.InterfaceName.WithGlobalPrefix)
+            .Write("), global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped)]");
+        builder.WriteLine();
+        builder.WriteLine("public sealed class " + classIdentifier);
+        builder.Write(
+            $"({WellKnown.FullyQualifiedInterface.MethodCallerType.WithGlobalPrefix}<{model.RelatedEntityName.WithGlobalPrefix}> caller)");
+        builder.WriteLine(" : " + model.InterfaceName.WithGlobalPrefix);
+        builder.WriteLine("{");
+
+        //All members are tasks, always
+        foreach (IMethodSymbol? method in model.InterfaceSymbol.GetMembers().OfType<IMethodSymbol>())
+        {
+            var returnType = method.ReturnType.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
+            var genericArgs = method.ReturnType is INamedTypeSymbol { Arity: 1 } named
+                ? $"<{named.TypeArguments[0].ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix)}>"
+                : "";
+
+            var typeArgs = string.Join(",",
+                method.Parameters.Select(e => e.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix)));
+            var paramNames = string.Join(", ", method.Parameters.Select(e => e.Name));
+            builder.WriteLine($"public {returnType} {method.Name}({typeArgs})");
+            builder.WriteLine("{");
+            builder.Write($"return caller.CallMethod{genericArgs}(").Write($"nameof({method.Name}),");
+            builder.Write(" global::System.Threading.CancellationToken.None, ");
+            builder.Write(paramNames);
+            builder.Write(");");
+            builder.WriteLine();
+            builder.WriteLine("}");
+        }
+
+        builder.WriteLine("}");
+        builder.WriteLine("}");
+        return (Identifier: classIdentifier, SourceCode: builder.ToString());
+    }
+
+    private static INamedTypeSymbol? GetEntityNameFromAttribute(InterfaceDeclarationSyntax interfaceDeclaration,
+        SemanticModel model)
+    {
+        IEnumerable<AttributeSyntax> attributes =
+            interfaceDeclaration.AttributeLists.SelectMany(attrList => attrList.Attributes);
+        foreach (AttributeSyntax? attribute in attributes)
+        {
+            SymbolInfo symbolInfo = model.GetSymbolInfo(attribute);
+            if (symbolInfo.Symbol is not IMethodSymbol attributeConstructor)
+                continue;
+            INamedTypeSymbol? attributeType = attributeConstructor.ContainingType;
+            if (attributeType is INamedTypeSymbol { IsGenericType: true, Arity: 1 } namedType &&
+                (namedType.OriginalDefinition.ToDisplayString() == WellKnown.FullyQualifiedAttribute
+                     .GenericEntityBehaviourAttribute.WithoutGlobalPrefix
+                 || namedType.OriginalDefinition.ToDisplayString() == WellKnown.FullyQualifiedAttribute
+                     .GenericEntityBehaviourAttribute.WithGlobalPrefix))
+                return (namedType.TypeArguments[0] as INamedTypeSymbol)!;
+        }
+
+        return null;
+    }
 }

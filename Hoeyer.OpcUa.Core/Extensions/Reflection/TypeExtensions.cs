@@ -8,7 +8,7 @@ namespace Hoeyer.OpcUa.Core.Extensions.Reflection;
 
 public static class TypeExtensions
 {
-    public static (NodeId? typeId, int rank) GetOpcTypeInfo(this Type t)
+    public static (NodeId typeId, int rank) GetOpcTypeInfo(this Type t)
     {
         var valueRank = TypeInfo.GetValueRank(t);
         var collectionInterface = t.GetInterfaces().FirstOrDefault(i =>
@@ -23,7 +23,7 @@ public static class TypeExtensions
         if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Task<>))
             return GetOpcTypeInfo(t.GenericTypeArguments[0]);
 
-        if (t == typeof(Task)) return (null, valueRank);
+        if (t == typeof(Task)) return (null!, valueRank);
 
         return (TypeInfo.GetDataTypeId(t), valueRank);
     }

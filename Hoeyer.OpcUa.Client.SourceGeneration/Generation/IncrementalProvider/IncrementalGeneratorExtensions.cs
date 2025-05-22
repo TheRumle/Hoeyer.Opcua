@@ -1,22 +1,46 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Hoeyer.OpcUa.Client.SourceGeneration.Generation.IncrementalProvider;
 
 internal static class IncrementalGeneratorExtensions
 {
-    public static UnloadedIncrementalValuesProvider<TypeContext<InterfaceDeclarationSyntax>> GetEntityMethodInterfaces(
-        this IncrementalGeneratorInitializationContext context)
+    public static UnloadedIncrementalValuesProvider<(InterfaceDeclarationSyntax interfaceNode, SemanticModel model)>
+        GetEntityMethodInterfaces(
+            this IncrementalGeneratorInitializationContext context)
     {
-        IncrementalValuesProvider<TypeContext<InterfaceDeclarationSyntax>> valueProvider = context.SyntaxProvider
-            .ForAttributeWithMetadataName(
-                "Hoeyer.OpcUa.Core.OpcUaEntityMethodsAttribute",
-                (_, _) => true,
-                (attributeSyntaxContext, cancellationToken) => new TypeContext<InterfaceDeclarationSyntax>(
-                    attributeSyntaxContext.SemanticModel,
-                    (InterfaceDeclarationSyntax)attributeSyntaxContext.TargetNode))
-            .Select((e, c) => new TypeContext<InterfaceDeclarationSyntax>(e.SemanticModel, e.Node));
+        IncrementalValuesProvider<GeneratorSyntaxContext> interfaceDeclarations = context.SyntaxProvider
+            .CreateSyntaxProvider(
+                static (node, _) => node is InterfaceDeclarationSyntax { AttributeLists.Count: > 0 },
+                static (ctx, _) => ctx);
 
-        return new UnloadedIncrementalValuesProvider<TypeContext<InterfaceDeclarationSyntax>>(valueProvider);
+
+        var annotatedInterfaces = interfaceDeclarations
+            .Select((contextTuple, _) =>
+            {
+                (var interfaceNode, SemanticModel model) =
+                    ((InterfaceDeclarationSyntax)contextTuple.Node, contextTuple.SemanticModel);
+                ISymbol? symbol = model.GetDeclaredSymbol(interfaceNode);
+                if (symbol is null) return default;
+
+                foreach (INamedTypeSymbol? attributeClass in symbol.GetAttributes()
+                             .Select(attributeData => attributeData.AttributeClass))
+                {
+                    if (attributeClass is null) continue;
+
+
+                    if (attributeClass.Name == "OpcUaEntityMethodsAttribute" &&
+                        attributeClass.ContainingNamespace.ToDisplayString() == "Hoeyer.OpcUa.Core" &&
+                        attributeClass.IsGenericType)
+                        return (interfaceNode, model);
+                }
+
+                return default;
+            })
+            .Where(e => e != default);
+
+        return new UnloadedIncrementalValuesProvider<(InterfaceDeclarationSyntax interfaceNode, SemanticModel model)>(
+            annotatedInterfaces);
     }
 }
