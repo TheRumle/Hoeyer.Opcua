@@ -19,14 +19,15 @@ builder.Logging.AddJsonConsole(options =>
     };
     options.TimestampFormat = "yyyy-MM-dd HH:mm:ss";
 });
-builder.Services.AddHostedService<ExampleHost>();
+builder.Services.AddHostedService<ExampleHost>().AddHostedService<PositionChanger>();
 builder.Services.Configure<HostOptions>(options =>
 {
     options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
 });
 
 var opcUaConfig = builder.Configuration.GetSection("OpcUa").Get<OpcUaOptions>();
-if (opcUaConfig is null || opcUaConfig.Port == 0) throw new ConfigurationErrorsException("OpcUa configuration is missing");
+if (opcUaConfig is null || opcUaConfig.Port == 0)
+    throw new ConfigurationErrorsException("OpcUa configuration is missing");
 
 builder.Services.AddOpcUaServerConfiguration(conf => conf
         .WithServerId("MyServer")

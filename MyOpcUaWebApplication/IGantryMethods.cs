@@ -9,5 +9,5 @@ public interface IGantryMethods
 
     Task<int> Int(int q, int b, List<int> dict);
     Task<string> String(int q, int b, List<int> dict);
-    Task<Position> Position(string q, float b, List<int> dict);
+    Task<Position> GetRandomPosition(string q, float b, List<int> dict);
 }

@@ -34,7 +34,7 @@ public class ExampleHost(
 
             await writer.AssignEntityValues(CreateRandomGantry(), stoppingToken);
             await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
-            Console.WriteLine("Calling the method Position resulted in " + await methods.Position("q", 2f, []));
+
             await writer.AssignEntityValues(CreateRandomGantry(), stoppingToken);
         }
     }
