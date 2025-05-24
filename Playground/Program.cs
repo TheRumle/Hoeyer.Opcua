@@ -3,8 +3,8 @@ using System.Text.Json;
 using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Server.Services;
-using MyOpcUaWebApplication;
-using MyOpcUaWebApplication.Configuration;
+using Playground;
+using Playground.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 

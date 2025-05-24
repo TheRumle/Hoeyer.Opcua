@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core;
 
-namespace MyOpcUaWebApplication;
+namespace Playground;
 
 [OpcUaEntityMethods<Gantry>]
 public interface IGantryMethods

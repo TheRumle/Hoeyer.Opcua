@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Core", "Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj", "{83F13633-73EC-4FF5-83E3-96C660BB5A1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyOpcUaWebApplication", "MyOpcUaWebApplication\MyOpcUaWebApplication.csproj", "{6D779225-B797-4173-90B6-0CB428C2FA6F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "Playground\Playground.csproj", "{6D779225-B797-4173-90B6-0CB428C2FA6F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.Common", "Hoeyer.Common\Hoeyer.Common.csproj", "{870B9A54-BD11-469A-A8D4-7B727C0B5B43}"
 EndProject

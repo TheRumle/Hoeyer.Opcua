@@ -1,4 +1,4 @@
-﻿namespace MyOpcUaWebApplication;
+﻿namespace Playground;
 
 public enum Position
 {

@@ -5,7 +5,7 @@ using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Server.Api;
 using Opc.Ua;
 
-namespace MyOpcUaWebApplication;
+namespace Playground;
 
 public class ExampleHost(
     IEntityBrowser<Gantry> client,

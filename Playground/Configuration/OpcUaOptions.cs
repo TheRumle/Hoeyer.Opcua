@@ -1,4 +1,4 @@
-﻿namespace MyOpcUaWebApplication.Configuration;
+﻿namespace Playground.Configuration;
 
 public class OpcUaOptions
 {

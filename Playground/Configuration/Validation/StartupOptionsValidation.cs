@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 
-namespace MyOpcUaWebApplication.Configuration.Validation;
+namespace Playground.Configuration.Validation;
 
 public class StartupOptionsValidation<T> : IStartupFilter
 {

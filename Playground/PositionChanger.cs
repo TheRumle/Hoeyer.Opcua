@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.Server.Api;
 
-namespace MyOpcUaWebApplication;
+namespace Playground;
 
 public class PositionChanger(EntityServerStartedMarker marker, IGantryMethods methods) : BackgroundService
 {

@@ -1,7 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core.Api;
 
-
-namespace MyOpcUaWebApplication;
+namespace Playground;
 
 public class GantryLoaderNumberTwo : IEntityLoader<GantryNumberTwo>
 {
@@ -14,7 +13,7 @@ public class GantryLoaderNumberTwo : IEntityLoader<GantryNumberTwo>
             messages = ["Oh boy do I hate it", "I don't know why I write it down"],
             Moving = true,
             Position = Position.OverThere,
-            Speeds = [2231,1]
+            Speeds = [2231, 1]
         });
     }
 }
