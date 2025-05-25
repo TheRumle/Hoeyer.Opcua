@@ -8,6 +8,7 @@ using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
+using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Writing;
 
@@ -22,7 +23,7 @@ public sealed class EntityWriter<TEntity>(
 
     public async Task AssignEntityValues(TEntity entity, CancellationToken cancellationToken = default)
     {
-        var session = await factory.CreateSessionAsync("WRITER");
+        ISession session = await factory.CreateSessionAsync("WRITER", cancellationToken);
 
         //Only fetch the first time - then reuse the structure to write to the node
         ValuesToWrite ??= browser.LastState?.node ?? await browser.BrowseEntityNode(cancellationToken);

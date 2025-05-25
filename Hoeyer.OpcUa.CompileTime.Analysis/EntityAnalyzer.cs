@@ -14,7 +14,8 @@ public sealed class EntityAnalyzer() : ConcurrentAnalyzer([
     Rules.OpcUaEntityMemberNotSupported,
     Rules.MustBeSupportedOpcUaType,
     Rules.MustHavePublicSetter,
-    Rules.MustNotBeNullablePropertyDescriptor])
+    Rules.MustNotBeNullablePropertyDescriptor
+])
 {
     /// <inheritdoc />
     protected override void InitializeAnalyzer(AnalysisContext context)
@@ -22,7 +23,7 @@ public sealed class EntityAnalyzer() : ConcurrentAnalyzer([
         context.RegisterSyntaxNodeAction(AnalyzeSupportedMembers, SyntaxKind.ClassDeclaration);
         context.RegisterSyntaxNodeAction(AnalyzeSupportedMembers, SyntaxKind.RecordDeclaration);
     }
-    
+
     private static void AnalyzeSupportedMembers(SyntaxNodeAnalysisContext context)
     {
         if (context.Node is not TypeDeclarationSyntax typeSyntax ||
@@ -30,7 +31,7 @@ public sealed class EntityAnalyzer() : ConcurrentAnalyzer([
         {
             return;
         }
-        
+
         foreach (var diagnostic in FindViolations(typeSyntax, context).AsParallel())
         {
             context.ReportDiagnostic(diagnostic);
@@ -46,6 +47,8 @@ public sealed class EntityAnalyzer() : ConcurrentAnalyzer([
             {
                 PropertyDeclarationSyntax => true,
                 EnumDeclarationSyntax => true,
+                MethodDeclarationSyntax => true,
+                TypeDeclarationSyntax => true,
                 _ => false
             }).ToList();
 
@@ -64,7 +67,7 @@ public sealed class EntityAnalyzer() : ConcurrentAnalyzer([
             .Concat(GetAssessabilityViolations(supportedMembers))
             .Concat(NullabilityViolations(supportedMembers))
             .ToList();
-        
+
         return errors;
     }
 
@@ -90,15 +93,17 @@ public sealed class EntityAnalyzer() : ConcurrentAnalyzer([
                 (false, _) => false,
             };
         };
-        
+
         return supportedMembers.OfType<PropertyDeclarationSyntax>()
-            .Where(property =>!IsSupported.Invoke(property))
+            .Where(property => !IsSupported.Invoke(property))
             .Select(e => Diagnostic.Create(Rules.MustHavePublicSetter, e.GetLocation()));
     }
 
-    private static IEnumerable<Diagnostic> GetTypeViolations(SyntaxNodeAnalysisContext context, List<MemberDeclarationSyntax> supportedMembers)
+    private static IEnumerable<Diagnostic> GetTypeViolations(SyntaxNodeAnalysisContext context,
+        List<MemberDeclarationSyntax> supportedMembers)
     {
-        return supportedMembers.SelectMany(member => GetUnsupportedTypes(member, context.SemanticModel))
+        return supportedMembers.OfType<PropertyDeclarationSyntax>()
+            .SelectMany(member => GetUnsupportedTypes(member, context.SemanticModel))
             .Where(typeSupport => !typeSupport.IsSupported)
             .Select(typeSupport => Diagnostic.Create(
                 Rules.MustBeSupportedOpcUaType,
@@ -129,9 +134,9 @@ public sealed class EntityAnalyzer() : ConcurrentAnalyzer([
     {
         var unsupported = method.ParameterList.Parameters
             .Where(param => !SupportedTypes.IsSupported(param.Type!, model))
-            .Select( e => (Type: e.Type!, Location: e.GetLocation()))
+            .Select(e => (Type: e.Type!, Location: e.GetLocation()))
             .ToList();
-        
+
         if (!SupportedTypes.IsSupported(method.ReturnType, model))
         {
             unsupported.Add((Type: method.ReturnType, method.ReturnType.GetLocation()));
@@ -143,6 +148,7 @@ public sealed class EntityAnalyzer() : ConcurrentAnalyzer([
                 .Select(err => MemberTypeSupport.Failure(err.Location, err.Type))
                 .ToArray();
         }
+
         return [MemberTypeSupport.Success(method)];
     }
 }

@@ -7,7 +7,6 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-
 [OpcUaEntityService(typeof(IEntityNodeManagerFactory), ServiceLifetime.Singleton)]
 [OpcUaEntityService(typeof(IEntityNodeManagerFactory<>), ServiceLifetime.Singleton)]
 internal sealed class EntityNodeManagerSingletonFactory<T>(
@@ -15,14 +14,19 @@ internal sealed class EntityNodeManagerSingletonFactory<T>(
     IManagedEntityNodeSingletonFactory<T> nodeFactory,
     IEntityNodeAccessConfigurator configurator) : IEntityNodeManagerFactory<T>
 {
+    public IEntityNodeManager<T>? CreatedManager { get; private set; }
+
     public async Task<IEntityNodeManager> CreateEntityManager(IServerInternal server)
     {
-        if (CreatedManager != null) return CreatedManager;
-        var node = await nodeFactory.CreateManagedEntityNode(server.NamespaceUris.GetIndexOrAppend);
-        configurator.Configure(node);
-        var logger = factory.CreateLogger(node.BaseObject.BrowseName.Name+"Manager");
-        CreatedManager = new EntityNodeManager<T>(node, server, logger);
+        CreatedManager ??= await CreateManager(server);
         return CreatedManager;
     }
-    public IEntityNodeManager<T> CreatedManager { get; private set; }
+
+    private async Task<EntityNodeManager<T>> CreateManager(IServerInternal server)
+    {
+        var node = await nodeFactory.CreateManagedEntityNode(server.NamespaceUris.GetIndexOrAppend);
+        configurator.Configure(node);
+        ILogger logger = factory.CreateLogger(node.BaseObject.BrowseName.Name + "Manager");
+        return new EntityNodeManager<T>(node, server, logger);
+    }
 }

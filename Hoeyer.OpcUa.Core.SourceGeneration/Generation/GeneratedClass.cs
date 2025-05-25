@@ -3,10 +3,10 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Hoeyer.OpcUa.Core.SourceGeneration.Generation;
 
-public record struct GeneratedClass<T>(
+public record struct GeneratedClass(
     CompilationUnitSyntax? CompilationUnit,
     TypeDeclarationSyntax? TypeDeclaration,
-    T Origin) where T : SyntaxNode
+    TypeDeclarationSyntax Origin)
 {
     public bool IsSuccess => CompilationUnit is null || TypeDeclaration is not null;
     public bool IsFailure => !IsSuccess;

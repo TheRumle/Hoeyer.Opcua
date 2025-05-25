@@ -17,13 +17,7 @@ public static class DataValueParsers
     public static DefaultDataValueParser<ulong> NewULongParser => new(0);
     public static DefaultDataValueParser<string> NewStringParser => new(string.Empty);
 
-    public static CollectionDataValueParser<IList<T>, T> NewListValueParser<T>()
-    {
-        return new CollectionDataValueParser<IList<T>, T>(() => []);
-    }
+    public static CollectionDataValueParser<IList<T>, T> NewListValueParser<T>() => new(() => []);
 
-    public static CollectionDataValueParser<ISet<T>, T> NewSetValueParser<T>()
-    {
-        return new CollectionDataValueParser<ISet<T>, T>(() => new HashSet<T>());
-    }
+    public static CollectionDataValueParser<ISet<T>, T> NewSetValueParser<T>() => new(() => new HashSet<T>());
 }

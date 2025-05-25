@@ -2,8 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Core.Application.Translator;
 using Hoeyer.OpcUa.Core.SourceGeneration.Constants;
 using Hoeyer.OpcUa.Core.SourceGeneration.Generation.IncrementalProvider;
 using Microsoft.CodeAnalysis;
@@ -18,7 +16,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var decoratedRecordsProvider = context
-            .GetTypeContextForOpcEntities<ClassDeclarationSyntax>()
+            .GetTypeContextForOpcEntities()
             .Select(async (typeContext, cancellationToken) =>
                 await CreateCompilationUnit(typeContext, cancellationToken))
             .Select((e, _) => e.Result);
@@ -30,9 +28,8 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
             });
     }
 
-    private static async Task<GeneratedClass<T>> CreateCompilationUnit<T>(TypeContext<T> typeContext,
+    private static async Task<GeneratedClass> CreateCompilationUnit(TypeContext typeContext,
         CancellationToken cancellationToken)
-        where T : TypeDeclarationSyntax
     {
         var classString = GetClassDefinitionString(typeContext.Node.Identifier.Text,
             typeContext.Node.Members.OfType<PropertyDeclarationSyntax>().ToList(), typeContext.SemanticModel);
@@ -48,7 +45,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         var compilation = await typeContext.CreateCompilationUnitFor(classDcl, Locations.Utilities,
             cancellationToken);
 
-        return new GeneratedClass<T>(compilation, classDcl, typeContext.Node);
+        return new GeneratedClass(compilation, classDcl, typeContext.Node);
     }
 
     private static string GetClassDefinitionString(string entityName, List<PropertyDeclarationSyntax> properties,
@@ -60,26 +57,16 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         var fieldAssignments =
             string.Join("\n\n", properties.Select(e => $"{e.Identifier.Text} = {e.Identifier.Text},"));
 
-        var entityNode = nameof(IEntityNode);
         return $$"""
-                 [{{nameof(OpcUaEntityServiceAttribute)}}(typeof({{nameof(IEntityTranslator<object>)}}<>))]
-                 public sealed class {{entityName}}Translator : {{nameof(IEntityTranslator<object>)}}<{{entityName}}>
+                 [OpcUaEntityServiceAttribute(typeof(IEntityTranslator<>))]
+                 public sealed class {{entityName}}Translator :IEntityTranslator<{{entityName}}>
                  {
-                     public bool {{nameof(IEntityTranslator<int>.AssignToNode)}}({{entityName}} state, {{entityNode}} node)
+                     public void AssignToNode({{entityName}} state, IEntityNode node)
                      {
-                         try
-                         {
-                             {{assignments}}
-                             return true;
-                         }
-                         catch (Exception _)
-                         {
-                             return false;
-                         }
+                        {{assignments}}
                      }
                      
-                     /// <inheritdoc />
-                     public {{entityName}} {{nameof(IEntityTranslator<int>.Translate)}}({{entityNode}} state)
+                     public {{entityName}} Translate(IEntityNode state)
                      {
                          {{translateStatements}}
                          
@@ -97,19 +84,10 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         var propName = property.Identifier.Text;
 
         var toArrayExpr = model.GetTypeInfo(property.Type)!.Type is INamedTypeSymbol { Arity: 1, IsGenericType: true }
-            ? $".{nameof(Enumerable.ToArray)}()"
+            ? $".{nameof(Enumerable.ToList)}()"
             : "";
 
-        return $$"""
-                 if (node.{{nameof(IEntityNode.PropertyByBrowseName)}}.ContainsKey("{{propName}}"))
-                 {
-                     node.{{nameof(IEntityNode.PropertyByBrowseName)}}["{{propName}}"].Value = state.{{propName}}{{toArrayExpr}};
-                 }
-                 else
-                 {
-                     return default;
-                 }
-                 """;
+        return $$"""node.PropertyByBrowseName["{{propName}}"].Value = state.{{propName}}{{toArrayExpr}};""";
     }
 
     private static string TranslateCollection(PropertyDeclarationSyntax property, SemanticModel model)
@@ -118,21 +96,19 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         var propName = property.Identifier.Text;
         var typeSyntax = property.Type;
         var collectionType = namedTypeSymbol.TypeArguments.First();
-        var translationMethod = $"{nameof(DataTypeToTranslator)}" +
-                                $".{nameof(DataTypeToTranslator.TranslateToCollection)}<{typeSyntax.ToString()}, {collectionType}>(state, \"{propName}\")";
+        var translationMethod =
+            $"DataTypeToTranslator.TranslateToCollection<{typeSyntax.ToString()}, {collectionType}>(state, \"{propName}\")";
 
-        return $$"""
-                 {{typeSyntax.ToString()}} {{property.Identifier.Text}} = {{translationMethod}};
-                 """;
+        return $"{typeSyntax.ToString()} {property.Identifier.Text} = {translationMethod};";
     }
 
     private static string TranslateSingletonValue(PropertyDeclarationSyntax property)
     {
         var propName = property.Identifier.Text;
         var typeSyntax = property.Type;
-        return $$"""
-                 {{typeSyntax.ToString()}} {{property.Identifier.Text}} = {{nameof(DataTypeToTranslator)}}.{{nameof(DataTypeToTranslator.TranslateToSingle)}}<{{typeSyntax.ToString()}}>(state, "{{propName}}");
-                 """;
+        return $"""
+                {typeSyntax.ToString()} {property.Identifier.Text} = DataTypeToTranslator.TranslateToSingle<{typeSyntax.ToString()}>(state, "{propName}");
+                """;
     }
 
     private static IEnumerable<string> GetTranslationMethodCalls(

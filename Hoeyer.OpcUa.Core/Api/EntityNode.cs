@@ -4,18 +4,20 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Api;
 
-public sealed record EntityNode(
-    BaseObjectState BaseObject,
-    ISet<PropertyState> PropertyStates,
-    ISet<MethodState> Methods)
-    : IEntityNode
+public sealed record EntityNode : IEntityNode
 {
-    public BaseObjectState BaseObject { get; } = BaseObject;
-    public ISet<PropertyState> PropertyStates { get; } = PropertyStates;
-    public ISet<MethodState> Methods { get; } = Methods;
+    public EntityNode(BaseObjectState baseObject,
+        ISet<PropertyState> propertyStates,
+        ISet<MethodState> methods)
+    {
+        BaseObject = baseObject;
+        MethodsByName = methods.ToDictionary(e => e.BrowseName.Name, e => e);
+        PropertyByBrowseName = propertyStates.ToDictionary(e => e.BrowseName.Name);
+    }
 
-    public Dictionary<string, PropertyState> PropertyByBrowseName =>
-        PropertyStates.ToDictionary(e => e.BrowseName.Name);
-
-    public Dictionary<string, MethodState> MethodsByName => Methods.ToDictionary(e => e.BrowseName.Name);
+    public BaseObjectState BaseObject { get; }
+    public IEnumerable<PropertyState> PropertyStates => PropertyByBrowseName.Values;
+    public IEnumerable<MethodState> Methods => MethodsByName.Values;
+    public Dictionary<string, PropertyState> PropertyByBrowseName { get; }
+    public Dictionary<string, MethodState> MethodsByName { get; }
 }

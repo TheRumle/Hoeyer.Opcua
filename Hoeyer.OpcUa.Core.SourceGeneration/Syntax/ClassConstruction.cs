@@ -19,7 +19,7 @@ public static class ClassConstruction
     /// <returns>The class and its constructor</returns>
     public static (ClassDeclarationSyntax classDeclarationSyntax, ConstructorDeclarationSyntax constructor)
         CreateClassInheritingFromEntityGeneric<T>(
-            this TypeContext<T> typeContext,
+            this TypeContext typeContext,
             string className,
             string baseClassName) where T : TypeDeclarationSyntax
     {
@@ -43,7 +43,7 @@ public static class ClassConstruction
             .WithMembers([constructor]), constructor);
     }
 
-    public static ClassDeclarationSyntax CreateClassImplementingFromEntityGeneric<T>(this TypeContext<T> typeContext,
+    public static ClassDeclarationSyntax CreateClassImplementingFromEntityGeneric<T>(this TypeContext typeContext,
         SyntaxToken className,
         string @interface,
         MemberDeclarationSyntax[] members

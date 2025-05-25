@@ -9,8 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Hoeyer.OpcUa.Core.SourceGeneration.Generation.IncrementalProvider;
 
-public sealed record TypeContext<T>(SemanticModel SemanticModel, T Node)
-    where T : TypeDeclarationSyntax
+public sealed record TypeContext(SemanticModel SemanticModel, TypeDeclarationSyntax Node)
 {
     private readonly IEqualityComparer<UsingDirectiveSyntax>
         UsingDirectiveComparer = new UsingDirectiveSyntaxComparer();
@@ -19,7 +18,7 @@ public sealed record TypeContext<T>(SemanticModel SemanticModel, T Node)
 
 
     public SemanticModel SemanticModel { get; } = SemanticModel;
-    public T Node { get; } = Node;
+    public TypeDeclarationSyntax Node { get; } = Node;
     private INamespaceSymbol NameSpace => SemanticModel.GetDeclaredSymbol(Node)!.ContainingNamespace;
 
     /// <summary>

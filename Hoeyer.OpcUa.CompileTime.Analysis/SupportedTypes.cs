@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
+using Hoeyer.OpcUa.CompileTime.Analysis.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -15,9 +16,9 @@ public static class SupportedTypes
 
         ITypeSymbol? typeSymbol = model.GetTypeInfo(syntax).Type;
         if (typeSymbol is not INamedTypeSymbol namedTypeSymbol) return false;
-        
-        if (SymbolEqualityComparer.Default.Equals(namedTypeSymbol, taskType) ) return true;
-        
+
+        if (SymbolEqualityComparer.Default.Equals(namedTypeSymbol, taskType)) return true;
+
         if (!SymbolEqualityComparer.Default.Equals(namedTypeSymbol.OriginalDefinition, taskOfTType)) return false;
 
         ITypeSymbol typeArg = namedTypeSymbol.TypeArguments.First();
@@ -31,19 +32,20 @@ public static class SupportedTypes
         {
             return false;
         }
+
         if (symbol.NullableAnnotation == NullableAnnotation.Annotated)
         {
             var s = UnwrapNullable(symbol);
             return Simple.Supports(s) || Collection.Supports(s);
         }
-        
+
         return Simple.Supports(symbol) || Collection.Supports(symbol);
     }
 
 
     private static ITypeSymbol UnwrapNullable(ITypeSymbol typeSymbol)
     {
-        if (typeSymbol is INamedTypeSymbol { IsReferenceType: true} namedTypeSymbol)
+        if (typeSymbol is INamedTypeSymbol { IsReferenceType: true } namedTypeSymbol)
         {
             return namedTypeSymbol.TypeArguments[0];
         }
@@ -85,6 +87,11 @@ public static class SupportedTypes
 
             if (type.TypeKind == TypeKind.Enum) return true;
 
+            if (type is INamedTypeSymbol namedType &&
+                namedType.ContainingNamespace?.ToDisplayString() == "System" &&
+                namedType.Name == "Guid")
+                return true;
+
             return false;
         }
     }
@@ -96,20 +103,31 @@ public static class SupportedTypes
     {
         public static bool Supports(ITypeSymbol typeSymbol)
         {
-            var implementsICollection = typeSymbol
+            if (typeSymbol is not INamedTypeSymbol named) return false;
+
+
+            var implementsIList = named
                 .AllInterfaces
-                .Any(i => i.OriginalDefinition.SpecialType == SpecialType.System_Collections_Generic_IList_T);
+                .Where(i =>
+                {
+                    if (i.OriginalDefinition.SpecialType == SpecialType.System_Collections_Generic_IList_T) return true;
 
-            if (typeSymbol is INamedTypeSymbol { Arity: 1, IsGenericType: true } namedTypeSymbol)
-            {
-                return Simple.Supports(namedTypeSymbol.TypeArguments.First())
-                       && implementsICollection
-                       && namedTypeSymbol.Constructors.Any(c =>
-                           c.Parameters.Length == 0 && // Check for no parameters
-                           c.DeclaredAccessibility == Accessibility.Public);
-            }
+                    if (i.OriginalDefinition.GloballyQualifiedNonGeneric()
+                        .Equals("global::System.Collections.Generic.IList"))
+                        return true;
 
-            return false;
+                    return false;
+                })
+                .All(interfaceSymbol =>
+                {
+                    return interfaceSymbol.TypeArguments.All(Simple.Supports)
+                           && named.Constructors.Any(c =>
+                               c.Parameters.Length == 0 && // Check for no parameters
+                               c.DeclaredAccessibility == Accessibility.Public);
+                });
+
+
+            return implementsIList;
         }
     }
 }

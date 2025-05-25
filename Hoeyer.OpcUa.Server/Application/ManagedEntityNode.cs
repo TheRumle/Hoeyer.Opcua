@@ -21,8 +21,8 @@ internal sealed record ManagedEntityNode : IManagedEntityNode
     public string Namespace { get; }
     public ushort EntityNameSpaceIndex { get; }
     public BaseObjectState BaseObject { get; }
-    public ISet<PropertyState> PropertyStates { get; }
-    public ISet<MethodState> Methods { get; }
+    public IEnumerable<PropertyState> PropertyStates { get; }
+    public IEnumerable<MethodState> Methods { get; }
 
     public Dictionary<string, PropertyState> PropertyByBrowseName =>
         PropertyStates.ToDictionary(e => e.BrowseName.Name);

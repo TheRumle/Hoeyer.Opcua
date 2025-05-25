@@ -11,15 +11,4 @@ public static class ScanAssemblyContaining<TAssemblyToken>
             .Select(analyzerType => (T)Activator.CreateInstance(analyzerType)!)
             .ToList();
     }
-    public static List<Type> GetImplementationTypesOf<T>()
-    {
-        return typeof(TAssemblyToken).Assembly
-            .GetTypes()
-            .Where(t => typeof(T).IsAssignableFrom(t) && t is {IsAbstract: false, IsInterface: false} )
-            .ToHashSet()
-            .ToList();
-    }
-    
-    
-    
 }

@@ -48,6 +48,7 @@ public class ExampleHost(
             Names = ["to show how things work", "because moving will fluctuate between true and false randomly"],
             Moving = _random.Next() % 2 == 0,
             Position = _random.Next() % 2 == 0 ? Position.OnTheMoon : Position.OverHere,
+            CurrentId = Guid.CreateVersion7(),
             Speeds = Enumerable.Range(0, 10).Select(_ => _random.Next(9)).ToList()
         };
     }
