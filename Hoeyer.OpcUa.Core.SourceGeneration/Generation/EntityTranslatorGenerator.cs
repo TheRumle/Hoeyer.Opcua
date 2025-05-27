@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Hoeyer.OpcUa.Core.SourceGeneration.Constants;
 using Hoeyer.OpcUa.Core.SourceGeneration.Generation.IncrementalProvider;
 using Microsoft.CodeAnalysis;
@@ -17,115 +14,114 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
     {
         var decoratedRecordsProvider = context
             .GetTypeContextForOpcEntities()
-            .Select(async (typeContext, cancellationToken) =>
-                await CreateCompilationUnit(typeContext, cancellationToken))
-            .Select((e, _) => e.Result);
+            .Select(static (typeContext, cancellationToken) => CreateSourceCode(typeContext))
+            .Select((e, _) => e);
 
         context.RegisterImplementationSourceOutput(decoratedRecordsProvider.Collect(),
             (productionContext, compilations) =>
             {
-                foreach (var c in compilations) c.AddToContext(productionContext);
+                foreach ((SourceCodeWriter code, INamedTypeSymbol symbol) in compilations)
+                {
+                    productionContext.AddSource(symbol.Name + "Translator.g.cs", code.ToString());
+                }
             });
     }
 
-    private static async Task<GeneratedClass> CreateCompilationUnit(TypeContext typeContext,
-        CancellationToken cancellationToken)
+    private static (SourceCodeWriter writer, INamedTypeSymbol symbol) CreateSourceCode(TypeContext typeContext)
     {
-        var classString = GetClassDefinitionString(typeContext.Node.Identifier.Text,
-            typeContext.Node.Members.OfType<PropertyDeclarationSyntax>().ToList(), typeContext.SemanticModel);
+        INamedTypeSymbol symbol = typeContext.SemanticModel.GetDeclaredSymbol(typeContext.Node)!;
+        var entityName = symbol.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
 
-        var classDcl = (await CSharpSyntaxTree
-                .ParseText(classString)
-                .GetRootAsync(cancellationToken))
-            .DescendantNodes()
-            .OfType<ClassDeclarationSyntax>()
-            .FirstOrDefault()!;
+        var writer = new SourceCodeWriter();
+        writer.WriteLine("namespace " + WellKnown.CoreServiceName + ".Generated {");
+        writer.Write("[")
+            .Write(WellKnown.FullyQualifiedAttribute.OpcUaEntityServiceAttribute.WithGlobalPrefix)
+            .Write("(typeof(").Write(WellKnown.FullyQualifiedInterface.EntityTranslatorInterfaceOf().WithGlobalPrefix)
+            .Write("))").Write("]");
 
+        writer.WriteLine("public sealed class " + symbol.Name + "Translator" + " : " + WellKnown.FullyQualifiedInterface
+            .EntityTranslatorInterfaceOf(entityName).WithGlobalPrefix);
+        writer.WriteLine("{");
 
-        var compilation = await typeContext.CreateCompilationUnitFor(classDcl, Locations.Utilities,
-            cancellationToken);
+        writer.WriteLine("public void AssignToNode( " + entityName + " state, " +
+                         WellKnown.FullyQualifiedInterface.IEntityNode.WithGlobalPrefix + " node)");
 
-        return new GeneratedClass(compilation, classDcl, typeContext.Node);
-    }
+        writer.WriteLine("{");
+        WriteAssignments(writer, typeContext.Node, typeContext.SemanticModel);
+        writer.WriteLine("}");
 
-    private static string GetClassDefinitionString(string entityName, List<PropertyDeclarationSyntax> properties,
-        SemanticModel model)
-    {
-        var assignments = string.Join("\n\n", properties.Select(p => GetNodeAssignmentStatements(p, model)));
-        var translateStatements = string.Join("\n\n", GetTranslationMethodCalls(properties, model));
+        writer.WriteLine("public " + entityName + " Translate( " +
+                         WellKnown.FullyQualifiedInterface.IEntityNode.WithGlobalPrefix + " state)");
+        writer.WriteLine("{");
 
-        var fieldAssignments =
-            string.Join("\n\n", properties.Select(e => $"{e.Identifier.Text} = {e.Identifier.Text},"));
+        WriteTranslations(writer, typeContext.Node, typeContext.SemanticModel);
 
-        return $$"""
-                 [OpcUaEntityServiceAttribute(typeof(IEntityTranslator<>))]
-                 public sealed class {{entityName}}Translator :IEntityTranslator<{{entityName}}>
-                 {
-                     public void AssignToNode({{entityName}} state, IEntityNode node)
-                     {
-                        {{assignments}}
-                     }
-                     
-                     public {{entityName}} Translate(IEntityNode state)
-                     {
-                         {{translateStatements}}
-                         
-                         return new {{entityName}}()
-                         {
-                           {{fieldAssignments}}
-                         };
-                     }
-                 }
-                 """;
-    }
-
-    private static string GetNodeAssignmentStatements(PropertyDeclarationSyntax property, SemanticModel model)
-    {
-        var propName = property.Identifier.Text;
-
-        var toArrayExpr = model.GetTypeInfo(property.Type)!.Type is INamedTypeSymbol { Arity: 1, IsGenericType: true }
-            ? $".{nameof(Enumerable.ToList)}()"
-            : "";
-
-        return $$"""node.PropertyByBrowseName["{{propName}}"].Value = state.{{propName}}{{toArrayExpr}};""";
-    }
-
-    private static string TranslateCollection(PropertyDeclarationSyntax property, SemanticModel model)
-    {
-        var namedTypeSymbol = (model.GetTypeInfo(property.Type)!.Type as INamedTypeSymbol)!;
-        var propName = property.Identifier.Text;
-        var typeSyntax = property.Type;
-        var collectionType = namedTypeSymbol.TypeArguments.First();
-        var translationMethod =
-            $"DataTypeToTranslator.TranslateToCollection<{typeSyntax.ToString()}, {collectionType}>(state, \"{propName}\")";
-
-        return $"{typeSyntax.ToString()} {property.Identifier.Text} = {translationMethod};";
-    }
-
-    private static string TranslateSingletonValue(PropertyDeclarationSyntax property)
-    {
-        var propName = property.Identifier.Text;
-        var typeSyntax = property.Type;
-        return $"""
-                {typeSyntax.ToString()} {property.Identifier.Text} = DataTypeToTranslator.TranslateToSingle<{typeSyntax.ToString()}>(state, "{propName}");
-                """;
-    }
-
-    private static IEnumerable<string> GetTranslationMethodCalls(
-        List<PropertyDeclarationSyntax> properties,
-        SemanticModel model)
-    {
-        var collectionProperties = properties.Where(property =>
+        writer.WriteLine("return new " + entityName + "()");
+        writer.WriteLine("{");
+        foreach (var propertyName in typeContext.Node.Members.OfType<PropertyDeclarationSyntax>()
+                     .Select(prop => prop.Identifier.Text))
         {
-            var typeInfo = model.GetTypeInfo(property.Type).Type;
-            return typeInfo is INamedTypeSymbol
-            {
-                Arity: 1, IsGenericType: true
-            };
-        }).ToList();
+            writer.WriteLine(propertyName).Write(" = ").Write(propertyName).Write(",");
+        }
 
-        var singletonAssignments = properties.Except(collectionProperties).Select(TranslateSingletonValue);
-        var collectionAssignments = collectionProperties.Select(property => TranslateCollection(property, model));
-        return [..singletonAssignments, ..collectionAssignments];
+        writer.WriteLine("};");
+        writer.WriteLine("}");
+        writer.WriteLine("}");
+        writer.WriteLine("}");
+
+        return (writer, symbol);
+    }
+
+    private static void WriteTranslations(SourceCodeWriter writer, TypeDeclarationSyntax symbol,
+        SemanticModel semanticModel)
+    {
+        foreach (PropertyDeclarationSyntax? member in symbol.Members.OfType<PropertyDeclarationSyntax>())
+        {
+            var name = member.Identifier.Text;
+            IPropertySymbol propertySymbol = semanticModel.GetDeclaredSymbol(member)!;
+            var type = propertySymbol.Type.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
+
+
+            INamedTypeSymbol? listInterface = GetListInterface(propertySymbol, semanticModel);
+            writer.WriteLine(type + " " + name + " = " +
+                             WellKnown.FullyQualifiedInterface.DataTypeTranslator.WithGlobalPrefix + ".");
+            if (listInterface is not null)
+            {
+                var genericArg = listInterface.TypeArguments.First()!.Name;
+                writer.Write("TranslateToCollection<global::System.Collections.Generic.List<").Write(genericArg)
+                    .Write(">,  ").Write(genericArg).Write(">(").Write("state, ").Write("\"").Write(name).Write("\");");
+            }
+            else
+            {
+                writer.Write("TranslateToSingle<").Write(type).Write(">").Write("(state, ").Write("\"").Write(name)
+                    .Write("\");");
+            }
+
+            writer.WriteLine();
+        }
+    }
+
+
+    private static void WriteAssignments(SourceCodeWriter writer, TypeDeclarationSyntax syntax, SemanticModel model)
+    {
+        foreach (PropertyDeclarationSyntax? property in syntax.Members.OfType<PropertyDeclarationSyntax>())
+        {
+            var propName = property.Identifier.Text;
+            INamedTypeSymbol? listInterface = GetListInterface(model.GetDeclaredSymbol(property)!, model);
+
+            var toList = listInterface is not null
+                ? $".{nameof(Enumerable.ToList)}()"
+                : "";
+
+            writer.WriteLine("node.PropertyByBrowseName[\"" + propName + "\"].Value = state." + propName + toList +
+                             ";");
+        }
+    }
+
+    private static INamedTypeSymbol? GetListInterface(IPropertySymbol typeSymbol, SemanticModel model)
+    {
+        INamedTypeSymbol? ilistType = model.Compilation.GetTypeByMetadataName("System.Collections.Generic.IList`1");
+        return typeSymbol.Type.AllInterfaces
+            .FirstOrDefault(i => i.OriginalDefinition.Equals(ilistType, SymbolEqualityComparer.Default));
     }
 }
