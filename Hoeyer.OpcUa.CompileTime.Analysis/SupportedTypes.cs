@@ -106,7 +106,7 @@ public static class SupportedTypes
             if (typeSymbol is not INamedTypeSymbol named) return false;
 
 
-            var implementsIList = named
+            var iListImplementations = named
                 .AllInterfaces
                 .Where(i =>
                 {
@@ -114,20 +114,22 @@ public static class SupportedTypes
 
                     if (i.OriginalDefinition.GloballyQualifiedNonGeneric()
                         .Equals("global::System.Collections.Generic.IList"))
+                    {
                         return true;
+                    }
 
                     return false;
-                })
-                .All(interfaceSymbol =>
-                {
-                    return interfaceSymbol.TypeArguments.All(Simple.Supports)
-                           && named.Constructors.Any(c =>
-                               c.Parameters.Length == 0 && // Check for no parameters
-                               c.DeclaredAccessibility == Accessibility.Public);
-                });
+                }).ToList();
 
+            if (iListImplementations.Count == 0) return false;
 
-            return implementsIList;
+            return iListImplementations.Any(interfaceSymbol =>
+            {
+                return interfaceSymbol.TypeArguments.All(Simple.Supports)
+                       && named.Constructors.Any(c =>
+                           c.Parameters.Length == 0 && // Check for no parameters
+                           c.DeclaredAccessibility == Accessibility.Public);
+            });
         }
     }
 }
