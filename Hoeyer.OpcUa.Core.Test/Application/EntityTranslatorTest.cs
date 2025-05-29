@@ -5,7 +5,7 @@ using Hoeyer.OpcUa.Core.Test.Fixtures.Entities;
 using JetBrains.Annotations;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Test;
+namespace Hoeyer.OpcUa.Core.Test.Application;
 
 [GeneratedClassTest]
 [TestSubject(typeof(IEntityTranslator<>))]
@@ -89,8 +89,9 @@ public class EntityTranslatorTest
             await Assert.That((object)entity.Float).IsEqualTo(node.PropertyByBrowseName["Float"].Value);
             await Assert.That((object)entity.Bool).IsEqualTo(node.PropertyByBrowseName["Bool"].Value);
             await Assert.That(entity.IntList).IsEquivalentTo((List<int>)node.PropertyByBrowseName["IntList"].Value);
+
             await Assert.That(entity.CustomIListMember)
-                .IsEquivalentTo((CustomIList)node.PropertyByBrowseName["CustomIListMember"].Value);
+                .IsEquivalentTo((ICollection<int>)node.PropertyByBrowseName["CustomIListMember"].Value);
         }
     }
 }
