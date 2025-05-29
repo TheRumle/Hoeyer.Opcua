@@ -1,11 +1,10 @@
-﻿using Hoeyer.OpcUa.Client.Api.Browsing;
-using Hoeyer.OpcUa.Client.Api.Monitoring;
+﻿using Hoeyer.OpcUa.Client.Api.Monitoring;
+using Hoeyer.OpcUa.Client.Api.Writing;
 using Hoeyer.OpcUa.Client.Application.Monitoring;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.EndToEndTest.TestEntities;
-using Hoeyer.OpcUa.Server.Application;
 using JetBrains.Annotations;
-using Opc.Ua;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.EndToEndTest;
 
@@ -26,7 +25,7 @@ public sealed class ClientNotificationTest(ApplicationFixture fixture)
         await Assert.That(observer.Count).IsNotZero();
         await Assert.That(observer.Count).IsEqualTo(1);
     }
-    
+
     [Test]
     public async Task WhenPausingNotification_ObserverIsNotNotified()
     {
@@ -38,7 +37,7 @@ public sealed class ClientNotificationTest(ApplicationFixture fixture)
         await Assert.That(observer.Count).IsZero();
     }
 
-        
+
     [Test]
     public async Task WhenSubscriptionIsCancelled_ObserverIsNotNotified()
     {
@@ -52,25 +51,13 @@ public sealed class ClientNotificationTest(ApplicationFixture fixture)
 
     private async Task WriteNode()
     {
-        var session = await fixture.CreateSession(Guid.NewGuid().ToString());
-        var reader = fixture.GetService<IEntityBrowser<Gantry>>()!;
-        _ = fixture.GetService<ManagedEntityNodeSingletonFactory<Gantry>>()!;
-        var node = await reader.BrowseEntityNode(fixture.Token);
-        var childToWrite = node.PropertyByBrowseName[nameof(Gantry.IntValue)];
-
-        await session.WriteAsync(null, new WriteValueCollection
+        var writer = fixture.ServiceProvider.GetService<IEntityWriter<Gantry>>()!;
+        await writer.AssignEntityValues(new Gantry
         {
-            new WriteValue
-            {
-                NodeId = childToWrite.NodeId,
-                AttributeId = Attributes.Value,
-                Value = new DataValue
-                {
-                    Value = 73289743892
-                }
-            }
-        }, fixture.Token);
-        
+            AList = ["New Values", "Are good"],
+            IntValue = 231,
+            StringValue = "Helo there"
+        });
         Thread.Sleep(4);
     }
 }

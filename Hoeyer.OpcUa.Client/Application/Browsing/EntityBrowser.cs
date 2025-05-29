@@ -85,11 +85,16 @@ public sealed class EntityBrowser<TEntity>(
     private async Task<ReadResult> ReadEntity(CancellationToken cancellationToken)
     {
         _entityRoot ??= await FindEntityRoot(cancellationToken);
-        IEnumerable<ReferenceWithId> descendants =
-            await traversalStrategy.TraverseFrom(_entityRoot.NodeId, Session, cancellationToken).Collect();
-        ReadResult values =
-            await reader.ReadNodesAsync(Session, descendants.Select(e => e.NodeId), ct: cancellationToken);
-        return values;
+        return await logger.LogWithScopeAsync(new
+        {
+            Session = Session.ToLoggingObject(),
+            Entity = EntityName
+        }, async () =>
+        {
+            IEnumerable<ReferenceWithId> descendants =
+                await traversalStrategy.TraverseFrom(_entityRoot.NodeId, Session, cancellationToken).Collect();
+            return await reader.ReadNodesAsync(Session, descendants.Select(e => e.NodeId), ct: cancellationToken);
+        });
     }
 
     private async Task<Node> FindEntityRoot(CancellationToken cancellationToken = default)
