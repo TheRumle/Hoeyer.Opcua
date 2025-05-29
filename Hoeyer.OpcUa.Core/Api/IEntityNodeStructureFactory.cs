@@ -1,8 +1,6 @@
 ﻿namespace Hoeyer.OpcUa.Core.Api;
 
-public interface IEntityNodeStructureFactory
+public interface IEntityNodeStructureFactory<in T>
 {
     IEntityNode Create(ushort applicationNamespaceIndex);
 }
-
-public interface IEntityNodeStructureFactory<in T> : IEntityNodeStructureFactory;
