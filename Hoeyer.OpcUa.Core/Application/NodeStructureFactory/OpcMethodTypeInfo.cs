@@ -76,17 +76,14 @@ internal sealed record OpcMethodTypeInfo : IOpcTypeInfo
         var (typeId, valueRank) = returnType.GetOpcTypeInfo();
 
         Argument[] value =
-            typeId is null
-                ? []
-                :
-                [
-                    new Argument
-                    {
-                        Name = "Result",
-                        DataType = typeId,
-                        ValueRank = valueRank
-                    }
-                ];
+        [
+            new()
+            {
+                Name = "Result",
+                DataType = typeId,
+                ValueRank = valueRank
+            }
+        ];
 
         var outputArgument = new PropertyState<Argument[]>(method)
         {

@@ -10,8 +10,10 @@ using Opc.Ua;
 namespace Hoeyer.OpcUa.Core.Application.NodeStructureFactory;
 
 [OpcUaEntityService(typeof(IEntityNodeStructureFactory<>), ServiceLifetime.Singleton)]
-public class EntityStructureFactory<T> : IEntityNodeStructureFactory<T>
+public class ReflectionBasedEntityStructureFactory<T> : IEntityNodeStructureFactory<T>
 {
+    private readonly Type _type = typeof(T);
+
     /// <inheritdoc />
     public IEntityNode Create(ushort applicationNamespaceIndex)
     {
@@ -25,10 +27,14 @@ public class EntityStructureFactory<T> : IEntityNodeStructureFactory<T>
         };
         entity.AccessRestrictions = AccessRestrictionType.None;
 
-        IEnumerable<OpcPropertyTypeInfo> properties = CreateProperties(type, entity).ToList();
-        IEnumerable<OpcMethodTypeInfo> methods = CreateMethods(type, entity).ToList();
-        VerifyNoDuplicateMethodNames(methods);
-        AssignProperties(properties, entity);
+        List<OpcPropertyTypeInfo> properties = CreateProperties(type, entity).ToList();
+        List<OpcMethodTypeInfo> methods = CreateMethods(type, entity).ToList();
+        Exception[] errors = VerifyNoDuplicateMethodNames(methods)
+            .Union(VerifyProperties(properties))
+            .ToArray();
+
+        if (errors.Length != 0) throw new AggregateException(errors);
+        AssignReferences(properties, entity);
         AssignMethods(methods, entity);
 
         return new EntityNode(entity,
@@ -36,17 +42,23 @@ public class EntityStructureFactory<T> : IEntityNodeStructureFactory<T>
             new HashSet<MethodState>(methods.Select(e => e.Method)));
     }
 
-    private static void VerifyNoDuplicateMethodNames(IEnumerable<OpcMethodTypeInfo> methods)
+    private IEnumerable<Exception> VerifyProperties(IList<OpcPropertyTypeInfo> properties)
+    {
+        return properties
+            .Where(e => e.TypeId is null)
+            .Select(e =>
+                new InvalidEntityConfigurationException(_type.FullName!,
+                    $"The property {e.PropertyInfo.Name} is of type {e.PropertyInfo.PropertyType.FullName} and could not be translated to NodeId representing the type."));
+    }
+
+    private IEnumerable<Exception> VerifyNoDuplicateMethodNames(IList<OpcMethodTypeInfo> methods)
     {
         IEnumerable<string> methodNames = methods.Select(e => e.Method.BrowseName.Name);
         List<IGrouping<string, string>> duplicateNames = methodNames.GroupBy(x => x).Where(g => g.Count() > 1).ToList();
-
-        if (duplicateNames.Any())
-        {
-            Type type = typeof(T);
-            throw new InvalidEntityConfigurationException(type.FullName!,
-                $"{type.FullName} has the following methods duplicated: {string.Join(", ", duplicateNames)}");
-        }
+        return duplicateNames
+            .Select(name => new InvalidEntityConfigurationException(
+                _type.FullName!,
+                $"{_type.FullName} has multiple definitions of the following method: {name}"));
     }
 
     private static void AssignMethods(IEnumerable<IOpcTypeInfo> methods, BaseObjectState entity)
@@ -58,19 +70,23 @@ public class EntityStructureFactory<T> : IEntityNodeStructureFactory<T>
         }
     }
 
-    private static void AssignProperties(IEnumerable<IOpcTypeInfo> values, BaseObjectState entity)
+    private static void AssignReferences(IEnumerable<IOpcTypeInfo> values, BaseObjectState entity)
     {
+        var exceptions = new List<Exception>();
         foreach (var pr in values)
         {
             var referenceTypeid = pr switch
             {
                 OpcMethodTypeInfo => ReferenceTypeIds.HasComponent,
                 OpcPropertyTypeInfo => ReferenceTypeIds.HasProperty,
-                _ => throw new ArgumentOutOfRangeException(pr.GetType().Name + " is not supported!")
+                var _ => throw new ArgumentOutOfRangeException(pr.GetType().Name + " is not a handled case")
             };
+
             entity.AddChild(pr.InstanceState);
             entity.AddReference(referenceTypeid, false, pr.InstanceState.NodeId);
         }
+
+        if (exceptions.Any()) throw new AggregateException(exceptions);
     }
 
     private static IEnumerable<OpcMethodTypeInfo> CreateMethods(Type entityType, BaseObjectState entity)
