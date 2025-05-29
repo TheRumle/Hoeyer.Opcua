@@ -88,8 +88,8 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
             if (listInterface is not null)
             {
                 var genericArg = listInterface.TypeArguments.First()!.Name;
-                writer.Write("TranslateToCollection<global::System.Collections.Generic.List<").Write(genericArg)
-                    .Write(">,  ").Write(genericArg).Write(">(").Write("state, ").Write("\"").Write(name).Write("\");");
+                writer.Write("TranslateToCollection<").Write(type)
+                    .Write(", ").Write(genericArg).Write(">(").Write("state, ").Write("\"").Write(name).Write("\");");
             }
             else
             {
