@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Client.Api.Browsing;
@@ -18,11 +17,10 @@ public abstract class ConcurrentTreeTraversalStrategy(
     INodeReader reader,
     Func<IProducerConsumerCollection<ReferenceWithId>> orderedCollectionFactory) : INodeTreeTraverser
 {
-    public async IAsyncEnumerable<ReferenceWithId> TraverseFrom(NodeId id, ISession session,
-        [EnumeratorCancellation] CancellationToken ct)
+    public IAsyncEnumerable<ReferenceWithId> TraverseFrom(NodeId id, ISession session, CancellationToken ct)
     {
-        var _queue = orderedCollectionFactory.Invoke();
-        var node = await reader.ReadNodeAsync(session, id, ct);
+        IProducerConsumerCollection<ReferenceWithId>? queue = orderedCollectionFactory.Invoke();
+        Node? node = reader.ReadNodeAsync(session, id, ct).Result;
         if (node == null) throw new InvalidBrowseRootException(id);
         var rootRef = new ReferenceWithId(id, new ReferenceDescription
         {
@@ -32,12 +30,9 @@ public abstract class ConcurrentTreeTraversalStrategy(
             DisplayName = node.DisplayName,
             TypeDefinition = node.TypeDefinitionId,
         });
-        _queue.TryAdd(rootRef);
-        yield return rootRef;
+        queue.TryAdd(rootRef);
 
-
-        await foreach (var a in new ConcurrentBrowse(browser, _queue).Browse(session, ct))
-            yield return a;
+        return new ConcurrentBrowse(browser, queue).Browse(session, ct);
     }
 
     public async Task<ReferenceWithId> TraverseUntil(

@@ -15,50 +15,46 @@ namespace Hoeyer.OpcUa.Client.Application.Browsing;
 internal sealed class ConcurrentBrowse(INodeBrowser browser, IProducerConsumerCollection<ReferenceWithId> queue)
 {
     private readonly ConcurrentDictionary<NodeId, ReferenceWithId> _visited = new();
-    
+
     public async IAsyncEnumerable<ReferenceWithId> Browse(
         ISession session,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        
+        queue.TryTake(out ReferenceWithId root);
+        _visited.TryAdd(root.NodeId, root);
+        queue.TryAdd(root);
         while (!cancellationToken.IsCancellationRequested)
         {
-            var visiting = DequeueBatchOfSize(20).ToList();
-            foreach (var referenceDescription in visiting)
-                yield return referenceDescription;
-            
-            if (visiting.Count == 0) break;
-            var browseResult = await Browse(session, cancellationToken, visiting);
-            if (browseResult.Count == 0) break;
-
-            MarkVisited(visiting);
-
             if (cancellationToken.IsCancellationRequested) break;
-            foreach (var reference in browseResult)
+            List<ReferenceWithId> visiting = DequeueBatchOfSize(30).ToList();
+            if (visiting.Count == 0) break;
+            List<ReferenceWithId> neighbours = await FindNeighbours(session, cancellationToken, visiting);
+
+            foreach (ReferenceWithId? reference in neighbours)
             {
                 queue.TryAdd(reference);
-                yield return reference;
+            }
+
+            foreach (ReferenceWithId? visited in visiting)
+            {
+                yield return visited;
             }
         }
     }
-    
-    private void MarkVisited(IEnumerable<ReferenceWithId> nodesToBrowse)
-    {
-        foreach (var browsed in nodesToBrowse) _visited[browsed.NodeId] = browsed;
-    }
-    
-    private async Task<List<ReferenceWithId>> Browse(ISession session, CancellationToken cancellationToken,
+
+
+    private async Task<List<ReferenceWithId>> FindNeighbours(ISession session, CancellationToken cancellationToken,
         List<ReferenceWithId> visiting)
     {
-        return await browser.BrowseById(session, visiting.Select(e=>e.NodeId), ct: cancellationToken)
-            .ThenAsync(browseResults => Enumerable
-                .SelectMany<BrowseResult, ReferenceDescription>(browseResults
-                    .Results, browseResult => browseResult.References)
+        return await browser.BrowseById(session, visiting.Select(e => e.NodeId), ct: cancellationToken)
+            .ThenAsync(browseResults => browseResults
+                .Results
+                .SelectMany<BrowseResult, ReferenceDescription>(browseResult => browseResult.References)
                 .Select(reference => new ReferenceWithId(session, reference))
-                .Where(e => !_visited.ContainsKey(e.NodeId))
+                .Where(e => _visited.TryAdd(e.NodeId, e))
                 .ToList());
     }
-    
+
     private IEnumerable<ReferenceWithId> DequeueBatchOfSize(int size)
     {
         var i = size;

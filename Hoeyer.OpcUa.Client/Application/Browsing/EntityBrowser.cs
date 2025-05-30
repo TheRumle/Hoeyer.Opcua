@@ -47,6 +47,7 @@ public sealed class EntityBrowser<TEntity>(
     private ISession Session => _session.Value;
 
     public (IEntityNode node, DateTime timeLoaded)? LastState { get; private set; }
+    public EntityNodeStructure? CurrentStructure => LastState?.node.ToStructureOnly() ?? null;
 
     /// <inheritdoc />
     public async Task<IEntityNode> BrowseEntityNode(CancellationToken cancellationToken = default)
@@ -79,6 +80,7 @@ public sealed class EntityBrowser<TEntity>(
         }
 
         LastState = new ValueTuple<IEntityNode, DateTime>(structure, DateTime.Now);
+
         return structure;
     }
 
@@ -91,8 +93,9 @@ public sealed class EntityBrowser<TEntity>(
             Entity = EntityName
         }, async () =>
         {
-            IEnumerable<ReferenceWithId> descendants =
-                await traversalStrategy.TraverseFrom(_entityRoot.NodeId, Session, cancellationToken).Collect();
+            IEnumerable<ReferenceWithId> descendants = await traversalStrategy
+                .TraverseFrom(_entityRoot.NodeId, Session, cancellationToken)
+                .Collect();
             return await reader.ReadNodesAsync(Session, descendants.Select(e => e.NodeId), ct: cancellationToken);
         });
     }

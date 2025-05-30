@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Hoeyer.Common.Extensions.Async;
+using Hoeyer.Common.Extensions.Types;
 using Hoeyer.Opc.Ua.Test.TUnit.Extensions;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
@@ -9,7 +11,7 @@ using EntityBrowseException = Hoeyer.OpcUa.Client.Api.Browsing.Exceptions.Entity
 namespace Hoeyer.OpcUa.EndToEndTest;
 
 [TestSubject(typeof(INodeTreeTraverser))]
-public abstract class NodeTreeTraverserTest<T>(ApplicationFixture<T> fixture)  where T : INodeTreeTraverser
+public abstract class NodeTreeTraverserTest<T>(ApplicationFixture<T> fixture) where T : INodeTreeTraverser
 {
     /// <inheritdoc />
     public override string ToString()
@@ -24,46 +26,73 @@ public abstract class NodeTreeTraverserTest<T>(ApplicationFixture<T> fixture)  w
             ObjectIds.Dictionaries, ObjectIds.Aliases, ObjectIds.Locations, ObjectIds.Quantities, ObjectIds.Resources
         ];
         return ids.SelectFunc();
-    } 
-    
+    }
+
     [Test]
-    public async Task WhenTraversingWithNoMatch_ThrowsEntityBrowseException()
+    [Timeout(10_0000)]
+    public async Task WhenTraversingWithNoMatch_ThrowsEntityBrowseException(CancellationToken token)
     {
         await Assert.ThrowsAsync<EntityBrowseException>(
-            fixture.ExecuteWithSessionAsync((session, strategy) => strategy.TraverseUntil(session, ObjectIds.RootFolder, e => false)));
+            fixture.ExecuteWithSessionAsync((session, strategy)
+                => strategy.TraverseUntil(session, ObjectIds.RootFolder, e => false, token)));
     }
-    
+
     [Test]
-    [NotInParallel("WithMatch")]
+    [NotInParallel(nameof(WhenTraversingWithMatch_DoesNotThrowNotFound))]
     [MethodDataSource<SelectedNodeIds>(nameof(PresentObjects))]
-    public async Task WhenTraversingWithMatch_DoesNotThrowNotFound(NodeId id)
+    [Timeout(10_0000)]
+    public async Task WhenTraversingWithMatch_DoesNotThrowNotFound(NodeId id, CancellationToken token)
     {
         var result = await fixture.ExecuteWithSessionAsync((session, strategy) =>
-            strategy.TraverseUntil(session, ObjectIds.RootFolder, e => e.NodeId.Equals(id)));
+            strategy.TraverseUntil(session, ObjectIds.RootFolder, e => e.NodeId.Equals(id), token));
 
         await Assert.That(result).IsNotDefault();
-
     }
-    
+
+    [Test]
+    [NotInParallel(nameof(WhenTraversing_DoesNotGiveDuplicateNodes))]
+    [Timeout(10_0000)]
+    public async Task WhenTraversing_DoesNotGiveDuplicateNodes(CancellationToken token)
+    {
+        Task<IEnumerable<ReferenceWithId>> traversalResult = fixture.ExecuteWithSessionAsync((session, strategy)
+            => strategy.TraverseFrom(ObjectIds.RootFolder, session, token).Collect());
+
+        IEnumerable<NodeId> ids =
+            await traversalResult.ThenAsync(nodeReferences => nodeReferences.Select(n => n.NodeId));
+
+        List<IGrouping<NodeId, NodeId>> duplicates = ids.GroupBy(x => x).Where(g => g.Count() > 1).ToList();
+        using (Assert.Multiple())
+        {
+            foreach (IGrouping<NodeId, NodeId> duplicate in duplicates)
+            {
+                await Assert.That(duplicate.Count()).IsLessThan(2).Because(duplicate.Key +
+                                                                           " should only be returned once but was returned " +
+                                                                           duplicates.Count + " times");
+            }
+        }
+    }
+
     [Test]
     [MethodDataSource<SelectedNodeIds>(nameof(PresentObjects))]
-    [NotInParallel("SelfLookup")]
-    public async Task WhenLookingForSelf_DoesNotThrowNotFound(NodeId id)
+    [NotInParallel(nameof(WhenLookingForSelf_DoesNotThrowNotFound))]
+    [Timeout(10_0000)]
+    public async Task WhenLookingForSelf_DoesNotThrowNotFound(NodeId id, CancellationToken token)
     {
         var result = await fixture.ExecuteWithSessionAsync((session, strategy) =>
-            strategy.TraverseUntil(session, id, e => e.NodeId.Equals(id)));
+            strategy.TraverseUntil(session, id, e => e.NodeId.Equals(id), token));
 
         await Assert.That(result).IsNotDefault();
-
     }
-    
+
     [Test]
     [SuppressMessage("Maintainability", "S108", Justification = "The test must consume the traversal results")]
-    public async Task WhenTraversingFromRoot_DoesNotLoopForever()
+    [Timeout(10_0000)]
+    public async Task WhenTraversingFromRoot_DoesNotLoopForever(CancellationToken ct)
     {
         var value = fixture.TestedService;
         var session = await fixture.CreateSession();
-        await foreach (var a in value.TraverseFrom(ObjectIds.RootFolder, session, CancellationToken.None))
-        {}
+        await foreach (ReferenceWithId a in value.TraverseFrom(ObjectIds.RootFolder, session, ct))
+        {
+        }
     }
 }
