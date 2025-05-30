@@ -3,6 +3,7 @@ using Hoeyer.Common.Extensions.Async;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.Opc.Ua.Test.TUnit.Extensions;
 using Hoeyer.OpcUa.Client.Api.Browsing;
+using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using JetBrains.Annotations;
 using Opc.Ua;
@@ -11,6 +12,7 @@ using EntityBrowseException = Hoeyer.OpcUa.Client.Api.Browsing.Exceptions.Entity
 namespace Hoeyer.OpcUa.EndToEndTest;
 
 [TestSubject(typeof(INodeTreeTraverser))]
+[TestSubject(typeof(ConcurrentBrowse))]
 public abstract class NodeTreeTraverserTest<T>(ApplicationFixture<T> fixture) where T : INodeTreeTraverser
 {
     /// <inheritdoc />
@@ -91,7 +93,7 @@ public abstract class NodeTreeTraverserTest<T>(ApplicationFixture<T> fixture) wh
     {
         var value = fixture.TestedService;
         var session = await fixture.CreateSession();
-        await foreach (ReferenceWithId a in value.TraverseFrom(ObjectIds.RootFolder, session, ct))
+        await foreach (ReferenceWithId _ in value.TraverseFrom(ObjectIds.RootFolder, session, ct))
         {
         }
     }
