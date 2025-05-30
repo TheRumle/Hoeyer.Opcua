@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Client.Api.Browsing;
@@ -15,6 +16,8 @@ namespace Hoeyer.OpcUa.Client.Api.Calling;
 public class MethodCaller<TEntity>(IEntityBrowser<TEntity> browser, IEntitySessionFactory factory)
     : IMethodCaller<TEntity>
 {
+    private readonly Guid _sessionId = Guid.NewGuid();
+
     public async Task CallMethod(string methodName,
         CancellationToken token = default,
         params object[] args)
@@ -39,7 +42,7 @@ public class MethodCaller<TEntity>(IEntityBrowser<TEntity> browser, IEntitySessi
                                    ?? throw new NoSuchEntityMethodException(entityNode.BaseObject.BrowseName.Name,
                                        methodName);
 
-        ISession session = await factory.CreateSessionAsync("MySession", token);
+        ISession session = await factory.CreateSessionAsync(_sessionId.ToString(), token);
         return await session.CallAsync(entityNode.BaseObject.NodeId, methodToCall.NodeId, token, args);
     }
 }
