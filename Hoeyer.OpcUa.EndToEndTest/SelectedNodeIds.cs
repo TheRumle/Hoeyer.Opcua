@@ -3,7 +3,7 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.EndToEndTest;
 
-internal static sealed class SelectedNodeIds
+internal static class SelectedNodeIds
 {
     public static IEnumerable<Func<NodeId>> PresentObjects()
     {
