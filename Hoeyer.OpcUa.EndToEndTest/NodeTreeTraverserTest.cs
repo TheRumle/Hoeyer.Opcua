@@ -41,7 +41,7 @@ public abstract class NodeTreeTraverserTest<T>(ApplicationFixture<T> fixture) wh
 
     [Test]
     [NotInParallel(nameof(WhenTraversingWithMatch_DoesNotThrowNotFound))]
-    [MethodDataSource<SelectedNodeIds>(nameof(PresentObjects))]
+    [MethodDataSource(typeof(SelectedNodeIds), nameof(SelectedNodeIds.PresentObjects))]
     [Timeout(10_0000)]
     public async Task WhenTraversingWithMatch_DoesNotThrowNotFound(NodeId id, CancellationToken token)
     {
@@ -75,7 +75,7 @@ public abstract class NodeTreeTraverserTest<T>(ApplicationFixture<T> fixture) wh
     }
 
     [Test]
-    [MethodDataSource<SelectedNodeIds>(nameof(PresentObjects))]
+    [MethodDataSource(typeof(SelectedNodeIds), nameof(SelectedNodeIds.PresentObjects))]
     [NotInParallel(nameof(WhenLookingForSelf_DoesNotThrowNotFound))]
     [Timeout(10_0000)]
     public async Task WhenLookingForSelf_DoesNotThrowNotFound(NodeId id, CancellationToken token)
