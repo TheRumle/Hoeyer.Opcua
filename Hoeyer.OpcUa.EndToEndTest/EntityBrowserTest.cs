@@ -34,10 +34,10 @@ public sealed class EntityBrowserTest
 
         using (Assert.Multiple())
         {
-            foreach (var property in propertyValue.Keys)
+            foreach (var key in propertyValue.Keys)
             {
-                await Assert.That(propertyValue[property]).IsNotNull()
-                    .Because(property + " should never be assigned a null value");
+                Assert.Fail(
+                    $"{entity.BaseObject.BrowseName.Name}.{key} was null and no browsed property should be null");
             }
         }
     }

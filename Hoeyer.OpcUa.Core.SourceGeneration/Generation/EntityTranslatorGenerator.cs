@@ -83,7 +83,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
 
 
             INamedTypeSymbol? listInterface = GetListInterface(propertySymbol, semanticModel);
-            writer.WriteLine(type + " " + name + " = " +
+            writer.WriteLine("var " + name + " = " +
                              WellKnown.FullyQualifiedInterface.DataTypeTranslator.WithGlobalPrefix + ".");
             if (listInterface is not null)
             {
@@ -110,7 +110,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
             INamedTypeSymbol? listInterface = GetListInterface(model.GetDeclaredSymbol(property)!, model);
 
             var toList = listInterface is not null
-                ? $".{nameof(Enumerable.ToList)}()"
+                ? $".{nameof(Enumerable.ToArray)}()"
                 : "";
 
             writer.WriteLine("node.PropertyByBrowseName[\"" + propName + "\"].Value = state." + propName + toList +

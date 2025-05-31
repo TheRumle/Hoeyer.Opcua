@@ -1,16 +1,15 @@
 ﻿using Hoeyer.Opc.Ua.Test.TUnit;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Services;
+using Hoeyer.OpcUa.Server.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Hoeyer.OpcUa.Core.Test.Fixtures;
+namespace Hoeyer.OpcUa.Server.IntegrationTest.Fixture;
 
-public class OpcUaCoreServicesFixture
+public sealed class OpcUaServerServiceFixture
 {
-    public readonly OnGoingOpcEntityServiceRegistration OnGoingOpcEntityServiceRegistration;
-
-    public OpcUaCoreServicesFixture()
+    public OpcUaServerServiceFixture()
     {
         ReservedPort reservedPort = new();
         var services = new ServiceCollection();
@@ -21,8 +20,9 @@ public class OpcUaCoreServicesFixture
                 .WithHttpsHost("localhost", reservedPort.Port)
                 .WithEndpoints([$"opc.tcp://localhost:{reservedPort.Port}"])
                 .Build())
-            .WithEntityServices();
+            .WithEntityServices()
+            .WithOpcUaServer();
     }
 
-    public IServiceCollection ServiceCollection => OnGoingOpcEntityServiceRegistration.Collection;
+    public OnGoingOpcEntityServiceRegistration OnGoingOpcEntityServiceRegistration { get; set; }
 }

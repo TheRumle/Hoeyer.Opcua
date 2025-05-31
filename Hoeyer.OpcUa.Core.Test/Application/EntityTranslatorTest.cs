@@ -1,4 +1,5 @@
 ﻿using Hoeyer.Opc.Ua.Test.TUnit;
+using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Test.Fixtures;
 using Hoeyer.opcUa.TestEntities;
@@ -39,6 +40,31 @@ public class EntityTranslatorTest
         translator.AssignToNode(entity, node);
         IEnumerable<PropertyState> after = node.PropertyStates;
         await Assert.That(before.SetEquals(after)).IsTrue();
+    }
+
+    [Test]
+    [ServiceCollectionDataSource]
+    [RegressionTest(
+        "Translating Entities' List<string> properties to Lists<string> instead of string[] results in errors when trying to fetch the value from the server. The OpcUa framework cannot convert List<string> to a meaningful result when reading the node.",
+        typeof(IEntityBrowser))]
+    public async Task WhenTranslating_ToEntityNode_ListValuesAreTranslatedTo_Arrays(
+        IEntityTranslator<Gantry> translator,
+        IEntityNodeStructureFactory<Gantry> structure)
+    {
+        IEntityNode node = structure.Create(2);
+        translator.AssignToNode(new Gantry
+        {
+            AAginList = ["stneriao", "tnserio"],
+            AList = ["These", " values failed before"],
+            IntValue = 21,
+            StringValue = "hello"
+        }, node);
+
+        Func<string, Type> typeofProperty = (string name) => node.PropertyByBrowseName[name].Value.GetType();
+
+        using IDisposable assertion = Assert.Multiple();
+        await Assert.That(typeofProperty(nameof(Gantry.AAginList))).IsTypeOf<string[]>();
+        await Assert.That(typeofProperty(nameof(Gantry.AList))).IsTypeOf<string[]>();
     }
 
 
@@ -88,7 +114,7 @@ public class EntityTranslatorTest
             await Assert.That((object)entity.Double).IsEqualTo(node.PropertyByBrowseName["Double"].Value);
             await Assert.That((object)entity.Float).IsEqualTo(node.PropertyByBrowseName["Float"].Value);
             await Assert.That((object)entity.Bool).IsEqualTo(node.PropertyByBrowseName["Bool"].Value);
-            await Assert.That(entity.IntList).IsEquivalentTo((List<int>)node.PropertyByBrowseName["IntList"].Value);
+            await Assert.That(entity.IntList).IsEquivalentTo((int[])node.PropertyByBrowseName["IntList"].Value);
 
             await Assert.That(entity.CustomIListMember)
                 .IsEquivalentTo((ICollection<int>)node.PropertyByBrowseName["CustomIListMember"].Value);

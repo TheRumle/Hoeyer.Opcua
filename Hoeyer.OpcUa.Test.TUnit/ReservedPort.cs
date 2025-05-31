@@ -1,9 +1,9 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 
-namespace Hoeyer.OpcUa.Core.Test.Fixtures;
+namespace Hoeyer.Opc.Ua.Test.TUnit;
 
-internal sealed record ReservedPort : IDisposable
+public sealed record ReservedPort : IDisposable
 {
     private readonly TcpListener _listener = new(IPAddress.Loopback, 0);
 
