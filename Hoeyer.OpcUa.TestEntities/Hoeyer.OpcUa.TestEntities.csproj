@@ -5,23 +5,12 @@
         <LangVersion>latestmajor</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>Hoeyer.OpcUa.Core.Test</RootNamespace>
+        <RootNamespace>Hoeyer.opcUa.TestEntities</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.5"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.OpcUa.Test.TUnit\Hoeyer.OpcUa.Test.TUnit.csproj"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa.TestEntities\Hoeyer.OpcUa.TestEntities.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj" />
+        <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.Analysis\Hoeyer.OpcUa.CompileTime.Analysis.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core.SourceGeneration\Hoeyer.OpcUa.Core.SourceGeneration.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
-    
 </Project>

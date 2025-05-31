@@ -1,5 +1,4 @@
-﻿using Hoeyer.OpcUa.Core.Services;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Core.Test.Fixtures;
 
@@ -16,12 +15,7 @@ public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourc
 
     private static IServiceCollection CreateServiceCollection()
     {
-        return new ServiceCollection()
-            .AddOpcUaServerConfiguration(c => c.WithServerId("nstreioa")
-                .WithServerName("MyServer")
-                .WithHttpsHost("localhost", 1212)
-                .WithEndpoints([$"opc.tcp://localhost:{1212}"])
-                .Build())
-            .WithEntityServices().Collection;
+        OpcUaCoreServicesFixture fixture = new();
+        return fixture.ServiceCollection;
     }
 }

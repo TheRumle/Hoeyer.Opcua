@@ -8,11 +8,19 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.13.0"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.13.0"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="4.13.0"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing" Version="1.1.2"/>
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.Client.SourceGeneration\Hoeyer.OpcUa.Client.SourceGeneration.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.Analysis\Hoeyer.OpcUa.CompileTime.Analysis.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core.SourceGeneration\Hoeyer.OpcUa.Core.SourceGeneration.csproj"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.TestDrivers\Hoeyer.OpcUa.CompileTime.TestDrivers.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Test.TUnit\Hoeyer.OpcUa.Test.TUnit.csproj"/>
+        <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj"/>
     </ItemGroup>
 
 

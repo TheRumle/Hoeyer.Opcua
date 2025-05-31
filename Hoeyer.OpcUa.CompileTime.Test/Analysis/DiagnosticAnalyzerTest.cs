@@ -1,6 +1,6 @@
-﻿using Hoeyer.OpcUa.Entity.CompileTime.Testing.Drivers;
-using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
-using Hoeyer.OpcUa.Entity.CompileTime.Testing.Generators;
+﻿using Hoeyer.OpcUa.CompileTime.Test.Drivers;
+using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
+using Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;

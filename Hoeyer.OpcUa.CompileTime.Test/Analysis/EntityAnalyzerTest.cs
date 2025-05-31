@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.CompileTime.Analysis;
-using Hoeyer.OpcUa.Entity.CompileTime.Testing.EntityDefinitions;
-using Hoeyer.OpcUa.Entity.CompileTime.Testing.Generators;
+using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
+using Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;
 using JetBrains.Annotations;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
@@ -9,7 +9,6 @@ namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
 [InheritsTests]
 public sealed class EntityAnalyzerTest : DiagnosticAnalyzerTest<EntityAnalyzer>
 {
-        
     [Test]
     [UnsupportedTypesSourceCodeGenerator]
     [DisplayName("Reports error for $entitySourceCode")]
@@ -21,5 +20,4 @@ public sealed class EntityAnalyzerTest : DiagnosticAnalyzerTest<EntityAnalyzer>
         await Assert.That(diagnosticsReportedByAnalyzer).IsNotEmpty()
             .Because("If the field is not supported, a diagnostic should be reported.");
     }
-
 }
