@@ -7,6 +7,8 @@ namespace Hoeyer.OpcUa.Core.Test.Fixtures;
 
 public class OpcUaCoreServicesFixture
 {
+    public readonly OnGoingOpcEntityServiceRegistration OnGoingOpcEntityServiceRegistration;
+
     public OpcUaCoreServicesFixture()
     {
         ReservedPort reservedPort = new();
@@ -21,6 +23,5 @@ public class OpcUaCoreServicesFixture
             .WithEntityServices();
     }
 
-    protected OnGoingOpcEntityServiceRegistration OnGoingOpcEntityServiceRegistration { get; private set; }
     public IServiceCollection ServiceCollection => OnGoingOpcEntityServiceRegistration.Collection;
 }

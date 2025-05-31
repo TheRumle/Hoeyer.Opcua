@@ -1,9 +1,9 @@
 ﻿using Hoeyer.OpcUa.Core.Test.Fixtures;
 using Hoeyer.OpcUa.Server.Services;
 
-namespace Hoeyer.OpcUa.EndToEndTest.Fixtures;
+namespace Hoeyer.OpcUa.Server.IntegrationTest.Fixture;
 
-public class OpcUaServerServiceFixture : OpcUaCoreServicesFixture
+public sealed class OpcUaServerServiceFixture : OpcUaCoreServicesFixture
 {
     public OpcUaServerServiceFixture()
     {

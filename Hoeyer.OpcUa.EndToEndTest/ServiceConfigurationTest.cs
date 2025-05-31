@@ -5,6 +5,7 @@ using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
+using Hoeyer.opcUa.TestEntities.Methods;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -39,9 +40,9 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
 
 
     [Test]
-    [ClassDataSource<OpcFullSetupWithBackgroundServerFixture>]
+    [ServiceCollectionDataSource]
     [TestSubject(typeof(IEntitySubscriptionManager<>))]
-    public async Task EntityMonitor_IsOnlyRegisteredAsSingleton(List<ServiceDescriptor> descriptors)
+    public async Task EntityMonitor_IsOnlyRegisteredAsSingleton(IServiceCollection descriptors)
     {
         IEnumerable<ServiceDescriptor> services =
             await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IEntitySubscriptionManager<>));
@@ -49,9 +50,9 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     }
 
     [Test]
-    [ClassDataSource<OpcFullSetupWithBackgroundServerFixture>]
+    [ServiceCollectionDataSource]
     [TestSubject(typeof(IEntityNodeManagerFactory<>))]
-    public async Task EntityNodeManagerFactory_Generic_AreSingleton(List<ServiceDescriptor> descriptors)
+    public async Task EntityNodeManagerFactory_Generic_AreSingleton(IServiceCollection descriptors)
     {
         IEnumerable<ServiceDescriptor> services =
             await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IEntityNodeManagerFactory<>));
@@ -61,23 +62,29 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     [Test]
     [TestSubject(typeof(IEntityNodeManagerFactory))]
     [DisplayName("Node manager factory (non-generic) - number of singletons")]
-    [ClassDataSource<OpcFullSetupWithBackgroundServerFixture>]
-    public async Task EntityNodeManagerFactory_NonGeneric_AreSingleton(List<ServiceDescriptor> descriptors)
+    [ServiceCollectionDataSource]
+    public async Task EntityNodeManagerFactory_NonGeneric_AreSingleton(IServiceCollection descriptors)
     {
         var services = await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IEntityNodeManagerFactory));
         await Assert.That(services.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
     }
 
     [Test]
-    [ClassDataSource<OpcFullSetupWithBackgroundServerFixture>]
+    [ServiceCollectionDataSource]
     [TestSubject(typeof(IEntityChangedBroadcaster<>))]
-    public async Task EntityChangedMessenger_IsOnlyRegisteredAsSingleton(
-        List<ServiceDescriptor> descriptors)
+    public async Task EntityChangedMessenger_IsOnlyRegisteredAsSingleton(IServiceCollection descriptors)
     {
         IEnumerable<ServiceDescriptor> services =
             await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IEntityChangedBroadcaster<>));
         await Assert.That(services.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
     }
+
+
+    [Test]
+    [ServiceCollectionDataSource]
+    [TestSubject(typeof(IGantryMethods))]
+    public async Task GantryMethodsInterface_ShouldBeRegistered(IGantryMethods methodInterface)
+        => await Assert.That(methodInterface).IsNotNull().Because(" the interface definition should be wired.");
 
 
     private static async Task<IEnumerable<ServiceDescriptor>> AssertNumberEntitiesMatchesNumberServices(

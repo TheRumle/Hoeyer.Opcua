@@ -10,6 +10,7 @@ public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
 {
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private readonly IServiceCollection _collection;
+    private bool _isInitialized;
 
     public ApplicationFixture(IServiceCollection collection)
     {
@@ -35,17 +36,24 @@ public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
 
     public async Task InitializeAsync()
     {
+        if (_isInitialized) return;
         ServiceProvider = _collection.BuildServiceProvider();
         Scope = ServiceProvider.CreateAsyncScope();
         await Scope.ServiceProvider.GetRequiredService<IStartableEntityServer>().StartAsync();
         var serverStarted = Scope.ServiceProvider.GetService<EntityServerStartedMarker>()!;
         await serverStarted;
+        _isInitialized = true;
     }
 
-    public T GetService<T>() where T : notnull => Scope.ServiceProvider.GetService<T>()!;
+    public T GetService<T>() where T : notnull
+    {
+        InitializeAsync().Wait(Token);
+        return Scope.ServiceProvider.GetService<T>()!;
+    }
 
     public T GetService<T>(Type t) where T : notnull
     {
+        InitializeAsync().Wait(Token);
         var s = ServiceProvider.GetService<T>();
         if (!Equals(s, default(T))) return s;
         return (T)Scope.ServiceProvider.GetService(t)!;
@@ -53,7 +61,8 @@ public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
 
     public async Task<ISession> CreateSession(string sessionId)
     {
-        return await Scope.ServiceProvider.GetService<IEntitySessionFactory>()!.CreateSessionAsync(sessionId);
+        await InitializeAsync();
+        return await Scope.ServiceProvider.GetService<IEntitySessionFactory>()!.CreateSessionAsync(sessionId, Token);
     }
 
     public async Task<ISession> CreateSession() => await CreateSession(Guid.NewGuid().ToString());
@@ -82,7 +91,7 @@ public sealed class ApplicationFixture<T> : ApplicationFixture where T : notnull
         _valueDescriptor = descriptor;
     }
 
-    public T TestedService => (T)ServiceProvider.GetService(_valueDescriptor.ImplementationType!);
+    public T TestedService => GetService<T>(_valueDescriptor.ImplementationType!);
 
     /// <inheritdoc />
     public override string ToString() => typeof(T).Name + "Fixture";
@@ -99,8 +108,5 @@ public sealed class ApplicationFixture<T> : ApplicationFixture where T : notnull
         return await execute(session, TestedService);
     }
 
-    public async Task<TOut> ExecuteAsync<TOut>(Func<T, Task<TOut>> execute)
-    {
-        return await execute.Invoke(TestedService);
-    }
+    public async Task<TOut> ExecuteAsync<TOut>(Func<T, Task<TOut>> execute) => await execute.Invoke(TestedService);
 }

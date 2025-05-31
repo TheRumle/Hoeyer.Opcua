@@ -16,19 +16,15 @@ public sealed class ApplicationFixtureGeneratorAttribute<T> : DataSourceGenerato
             .DistinctBy(e => e.ImplementationType)
             .ToList();
         if (serviceMatches.Count == 0) throw new ArgumentException("There were no services to test!");
-        return ApplicationFixtureIterator(dataGeneratorMetadata, serviceMatches);
+        return ApplicationFixtureIterator(serviceMatches);
     }
 
     private static IEnumerable<Func<ApplicationFixture<T>>> ApplicationFixtureIterator(
-        DataGeneratorMetadata dataGeneratorMetadata, List<ServiceDescriptor> serviceMatches)
+        List<ServiceDescriptor> serviceMatches)
     {
         foreach (var service in serviceMatches)
         {
             var f = new ApplicationFixture<T>(service, new OpcFullSetupWithBackgroundServerFixture().ServiceCollection);
-            dataGeneratorMetadata.TestBuilderContext.Current.Events.OnTestRegistered += async (_, _) =>
-            {
-                await f.InitializeAsync();
-            };
             yield return () => f;
         }
     }
