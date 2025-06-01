@@ -9,9 +9,9 @@ public sealed class ReadResult
 {
     public readonly bool AllSuccess;
 
-    public ReadResult(IEnumerable<(Node? node, ServiceResult result)> unknown)
+    public ReadResult(IEnumerable<(Node? node, ServiceResult result)> values)
     {
-        List<(Node? node, ServiceResult result)> nodes = unknown.ToList();
+        List<(Node? node, ServiceResult result)> nodes = values.ToList();
         SuccesfulReads = nodes.Where(e => e.result.IsGood()).Select(e => e.node).ToList();
         FailedReads = nodes.Where(e => e.result.IsNotGood()).Select(e => e.node).ToList();
         AllSuccess = !FailedReads.Any();
