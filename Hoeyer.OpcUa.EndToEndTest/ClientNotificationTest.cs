@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Hoeyer.OpcUa.EndToEndTest;
 
 [TestSubject(typeof(EntitySubscriptionManager<>))]
-[TestSubject(typeof(EntityChangeChannel<>))]
+[TestSubject(typeof(CurrentEntityStateChannel<>))]
 [ClassDataSource<ApplicationFixture>]
 public sealed class ClientNotificationTest(ApplicationFixture fixture)
 {
@@ -26,7 +26,7 @@ public sealed class ClientNotificationTest(ApplicationFixture fixture)
     public async Task WhenWritingNode_ObserverIsNotified(CancellationToken token)
     {
         var monitor = fixture.GetService<IEntitySubscriptionManager<Gantry>>();
-        var channel = fixture.GetService<IEntityChangeChannel<Gantry>>();
+        var channel = fixture.GetService<ICurrentEntityStateChannel<Gantry>>();
         _ = await monitor.SubscribeToChange(channel, token);
         await WriteNode();
         await channel.Reader.WaitToReadAsync(token);
