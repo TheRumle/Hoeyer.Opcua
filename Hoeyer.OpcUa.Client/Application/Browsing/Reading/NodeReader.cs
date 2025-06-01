@@ -43,7 +43,7 @@ internal sealed class NodeReader : INodeReader
     {
         return session
             .ReadNodesAsync(idList, filter, ct: ct)
-            .ThenAsync(responseTuples =>
+            .ThenAsync(async responseTuples =>
             {
                 List<(Node first, ServiceResult second)> zipped = responseTuples.Zip().ToList();
                 List<VariableNode> variables = zipped
@@ -52,18 +52,15 @@ internal sealed class NodeReader : INodeReader
                     .OfType<VariableNode>()
                     .ToList();
 
-                return session
-                    .ReadValuesAsync(variables.Select(e => e.NodeId).ToList(), ct)
-                    .ThenAsync(valueReadResponse =>
-                    {
-                        (DataValueCollection? readValues, IList<ServiceResult>? responseCodes) = valueReadResponse;
-                        for (var i = 0; i < readValues.Count; i++)
-                        {
-                            if (responseCodes[i].IsGood()) variables[i]!.Value = readValues[i].WrappedValue;
-                        }
+                (DataValueCollection? readValues, IList<ServiceResult>? responseCodes) =
+                    await session.ReadValuesAsync(variables.Select(e => e.NodeId).ToList(), ct);
 
-                        return new ReadResult(zipped);
-                    });
+                for (var i = 0; i < readValues.Count; i++)
+                {
+                    if (responseCodes[i].IsGood()) variables[i]!.Value = readValues[i].WrappedValue;
+                }
+
+                return new ReadResult(zipped!);
             }, ct);
     }
 }
