@@ -12,6 +12,7 @@ namespace Hoeyer.OpcUa.Server.Application;
 internal sealed class EntityNodeManagerSingletonFactory<T>(
     ILoggerFactory factory,
     IManagedEntityNodeSingletonFactory<T> nodeFactory,
+    MaybeInitializedEntityManager<T> loadableManager,
     IEntityNodeAccessConfigurator configurator) : IEntityNodeManagerFactory<T>
 {
     public IEntityNodeManager<T>? CreatedManager { get; private set; }
@@ -27,6 +28,9 @@ internal sealed class EntityNodeManagerSingletonFactory<T>(
         var node = await nodeFactory.CreateManagedEntityNode(server.NamespaceUris.GetIndexOrAppend);
         configurator.Configure(node);
         ILogger logger = factory.CreateLogger(node.BaseObject.BrowseName.Name + "Manager");
-        return new EntityNodeManager<T>(node, server, logger);
+        var createdManager = new EntityNodeManager<T>(node, server, logger);
+
+        loadableManager.Manager = createdManager;
+        return createdManager;
     }
 }

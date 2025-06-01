@@ -12,7 +12,7 @@ internal sealed class NoAccessRestrictionsConfigurator : IEntityNodeAccessConfig
         {
             managedEntityPropertyState.UserAccessLevel = AccessLevels.CurrentRead | AccessLevels.CurrentWrite;
             managedEntityPropertyState.AccessLevel = AccessLevels.CurrentRead | AccessLevels.CurrentWrite;
-            managedEntityPropertyState.MinimumSamplingInterval = 0;
+            managedEntityPropertyState.MinimumSamplingInterval = 500;
         }
     }
 }

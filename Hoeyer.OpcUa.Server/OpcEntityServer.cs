@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Extensions.Logging;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
@@ -12,19 +13,21 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server;
 
-
 internal sealed class OpcEntityServer(
     IOpcUaEntityServerInfo applicationProductDetails,
-    IDomainMasterManagerFactory managerFactory,
+    IEnumerable<IEntityNodeManagerFactory> entityManagerFactories,
     ILogger<OpcEntityServer> logger)
-    : StandardServer 
+    : StandardServer
 {
+    private static readonly DateTime buildDate = DateTime.UtcNow;
     public readonly IEnumerable<Uri> EndPoints = [..applicationProductDetails.Endpoints];
     public readonly IOpcUaEntityServerInfo ServerInfo = applicationProductDetails;
 
     private bool _disposed;
+
+    public int a;
     public DomainMasterNodeManager DomainManager { get; } = null!;
-    
+
     /// <inheritdoc />
     protected override void OnServerStarted(IServerInternal server)
     {
@@ -36,8 +39,17 @@ internal sealed class OpcEntityServer(
         ApplicationConfiguration configuration)
     {
         logger.BeginScope("Creating master manager");
-        var managerCreated = managerFactory.ConstructMasterManager(server, configuration);
-        return managerCreated;
+        Task<IEntityNodeManager>[] managerCreationTasks = entityManagerFactories
+            .Select(async factory => await factory.CreateEntityManager(server))
+            .ToArray();
+
+        Task.WhenAll(managerCreationTasks).Wait();
+        List<AggregateException> exceptions =
+            managerCreationTasks.Select(e => e.Exception).Where(e => e != null).ToList();
+
+        if (exceptions.Any()) throw new AggregateException(exceptions);
+
+        return new DomainMasterNodeManager(server, configuration, managerCreationTasks.Select(e => e.Result).ToArray());
     }
 
 
@@ -57,7 +69,7 @@ internal sealed class OpcEntityServer(
                        RequestHeader = requestHeader.ToLoggingObject(),
                    }))
             {
-                var header =  base.ActivateSession(requestHeader, clientSignature, clientSoftwareCertificates, localeIds,
+                var header = base.ActivateSession(requestHeader, clientSignature, clientSoftwareCertificates, localeIds,
                     userIdentityToken, userTokenSignature, out serverNonce, out results, out diagnosticInfos);
                 return LogResponseHeader(header, diagnosticInfos)!;
             }
@@ -100,15 +112,14 @@ internal sealed class OpcEntityServer(
         }
     }
 
-    public int a;
     /// <inheritdoc />
     protected override void StartApplication(ApplicationConfiguration configuration)
     {
-        logger.LogInformation("Starting application with configuration {@Configuration}", configuration.ToLoggingObject());
+        logger.LogInformation("Starting application with configuration {@Configuration}",
+            configuration.ToLoggingObject());
         base.StartApplication(configuration);
     }
 
-    static readonly DateTime buildDate = DateTime.UtcNow;
     /// <inheritdoc />
     protected override ServerProperties LoadServerProperties()
     {
@@ -134,11 +145,14 @@ internal sealed class OpcEntityServer(
     }
 
     /// <inheritdoc />
-    public override ResponseHeader Read(RequestHeader requestHeader, double maxAge, TimestampsToReturn timestampsToReturn,
-        ReadValueIdCollection nodesToRead, out DataValueCollection results, out DiagnosticInfoCollection diagnosticInfos)
+    public override ResponseHeader Read(RequestHeader requestHeader, double maxAge,
+        TimestampsToReturn timestampsToReturn,
+        ReadValueIdCollection nodesToRead, out DataValueCollection results,
+        out DiagnosticInfoCollection diagnosticInfos)
     {
         using var scope = logger.BeginScope("Read: {@Header}", requestHeader.ToLoggingObject());
-        var responseHeader = base.Read(requestHeader, maxAge, timestampsToReturn, nodesToRead, out results, out diagnosticInfos);
+        ResponseHeader? responseHeader = base.Read(requestHeader, maxAge, timestampsToReturn, nodesToRead, out results,
+            out diagnosticInfos);
         return LogResponseHeader(responseHeader, diagnosticInfos)!;
     }
 
@@ -152,15 +166,14 @@ internal sealed class OpcEntityServer(
     }
 
     /// <inheritdoc />
-    public override ResponseHeader Write(RequestHeader requestHeader, WriteValueCollection nodesToWrite, out StatusCodeCollection results,
+    public override ResponseHeader Write(RequestHeader requestHeader, WriteValueCollection nodesToWrite,
+        out StatusCodeCollection results,
         out DiagnosticInfoCollection diagnosticInfos)
     {
         using var scope = logger.BeginScope("Write: {@Header}", requestHeader.ToLoggingObject());
         var responseHeader = base.Write(requestHeader, nodesToWrite, out results, out diagnosticInfos);
         return LogResponseHeader(responseHeader, diagnosticInfos)!;
     }
-    
-    
 
 
     /// <inheritdoc />
@@ -180,19 +193,20 @@ internal sealed class OpcEntityServer(
         base.Dispose(disposing);
         _disposed = true;
     }
-    
-    private ResponseHeader? LogResponseHeader(ResponseHeader? responseHeader, DiagnosticInfoCollection? diagnosticInfos = null)
+
+    private ResponseHeader? LogResponseHeader(ResponseHeader? responseHeader,
+        DiagnosticInfoCollection? diagnosticInfos = null)
     {
         if (diagnosticInfos is { Count: > 0 })
         {
-            logger.LogError("Diagnostics: {@Diagnostics}", diagnosticInfos.Select(e=> new
+            logger.LogError("Diagnostics: {@Diagnostics}", diagnosticInfos.Select(e => new
             {
                 e.AdditionalInfo,
                 e.InnerStatusCode,
                 Message = e.ToString()
             }).ToArray());
         }
-        
+
         if (responseHeader == null)
         {
             logger.LogError("Response header is null!");
@@ -200,9 +214,10 @@ internal sealed class OpcEntityServer(
         else if (StatusCode.IsBad(responseHeader.ServiceResult))
         {
             logger.LogError("Header status code is bad: {Code}\n" +
-                            "{@Header}", StatusCodes.GetBrowseName(responseHeader.ServiceResult.Code), responseHeader.ToLoggingObject());
+                            "{@Header}", StatusCodes.GetBrowseName(responseHeader.ServiceResult.Code),
+                responseHeader.ToLoggingObject());
         }
+
         return responseHeader;
     }
-
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.OpcUa.Core.Extensions.Logging;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
@@ -19,7 +20,7 @@ internal sealed class EntityNodeManager<T>(
 
     public override void CreateAddressSpace(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
-        logger.BeginScope(ManagedEntity.ToLoggingObject());
+        using IDisposable? scope = logger.BeginScope(ManagedEntity.ToLoggingObject());
         logger.Log(LogLevel.Information, "Creating address space");
         logger.TryAndReThrow(() =>
         {
@@ -41,13 +42,49 @@ internal sealed class EntityNodeManager<T>(
                     {
                         logger.LogInformation("Session {@Session} invoked method {@Method}",
                             context.SessionId,
-                            method.ToLoggingObject());
-                        if (method.DisplayName.Text.Equals("Position")) results.Add(new Random().Next(2));
+                            method.ToLoggingObject(arguments));
 
                         return ServiceResult.Good;
                     };
                 }
             }
         });
+    }
+
+    /// <inheritdoc />
+    public override void Browse(OperationContext context, ref ContinuationPoint continuationPoint,
+        IList<ReferenceDescription> references)
+    {
+        using (IDisposable? scope = logger.BeginScope(new
+               {
+                   context.AuditEntryId,
+                   context.SessionId,
+                   context.RequestId,
+                   User = new
+                   {
+                       context.UserIdentity.DisplayName,
+                       Roles = string.Join(", ",
+                           context.UserIdentity.GrantedRoleIds.Select(e => e.Identifier.ToString()))
+                   }
+               }))
+        {
+            logger.LogInformation("Browsing node");
+            base.Browse(context, ref continuationPoint, references);
+        }
+    }
+
+
+    /// <inheritdoc />
+    public override void Read(OperationContext context, double maxAge, IList<ReadValueId> nodesToRead,
+        IList<DataValue> values, IList<ServiceResult> errors)
+    {
+        base.Read(context, maxAge, nodesToRead, values, errors);
+    }
+
+    protected override void Read(ServerSystemContext context, IList<ReadValueId> nodesToRead, IList<DataValue> values,
+        IList<ServiceResult> errors, List<NodeHandle> nodesToValidate,
+        IDictionary<NodeId, NodeState> cache)
+    {
+        base.Read(context, nodesToRead, values, errors, nodesToValidate, cache);
     }
 }

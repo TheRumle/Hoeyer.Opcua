@@ -6,6 +6,7 @@ namespace Hoeyer.OpcUa.Server.Api;
 public sealed class EntityServerStartedMarker
 {
     private readonly Task _task = new(() => { });
+    public bool IsServerStarted => _task.IsCompleted;
 
     internal void MarkCompleted() => _task.Start();
 
@@ -13,7 +14,7 @@ public sealed class EntityServerStartedMarker
     {
         return _task.GetAwaiter();
     }
-    
+
     public Task ServerRunning()
     {
         return _task;

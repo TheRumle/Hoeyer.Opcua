@@ -3,13 +3,9 @@ using Hoeyer.OpcUa.Core.Api;
 
 namespace Hoeyer.OpcUa.Server.Api;
 
-public interface IEntityChangedBroadcaster
+public interface IEntityChangedBroadcaster<T>
 {
+    ISubscriptionManager<T> EntitySubscriptionManager { get; }
+    ISubscriptionManager<IEntityNode> NodeSubscriptionManager { get; }
     void BeginObserve(IEntityNode entityNode);
-    ISubscriptionManager<IEntityNode> NodeSubscriptionManager { get; } 
-}
-
-public interface IEntityChangedBroadcaster<T> : IEntityChangedBroadcaster
-{
-    ISubscriptionManager<T> EntitySubscriptionManager { get; } 
 }

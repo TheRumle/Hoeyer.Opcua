@@ -4,7 +4,7 @@ namespace Hoeyer.OpcUa.Server.Api.NodeManagement;
 
 internal interface IEntityNodeManager<T> : IEntityNodeManager;
 
-internal interface IEntityNodeManager : INodeManager2
+public interface IEntityNodeManager : INodeManager2
 {
     public IManagedEntityNode ManagedEntity { get; }
 }
