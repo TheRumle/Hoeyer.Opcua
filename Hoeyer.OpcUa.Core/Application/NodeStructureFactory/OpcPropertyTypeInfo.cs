@@ -18,7 +18,7 @@ internal sealed record OpcPropertyTypeInfo : IOpcTypeInfo
         var propertyName = PropertyInfo.Name;
         OpcProperty = new PropertyState(parent)
         {
-            NodeId = new NodeId(PropertyInfo.Name + "." + parent.BrowseName.Name, parent.NodeId.NamespaceIndex),
+            NodeId = new NodeId(parent.BrowseName.Name + "." + PropertyInfo.Name, parent.NodeId.NamespaceIndex),
             BrowseName = propertyName,
             DataType = TypeId,
             ValueRank = ValueRank,

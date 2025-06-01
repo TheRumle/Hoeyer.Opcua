@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>netstandard2.1</TargetFramework>
         <Nullable>enable</Nullable>
         <LangVersion>latestMajor</LangVersion>
     </PropertyGroup>
@@ -13,6 +13,7 @@
         <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0"/>
         <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.5.374.158"/>
         <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0"/>
+        <PackageReference Include="System.Threading.Channels" Version="9.0.5"/>
     </ItemGroup>
 
     <ItemGroup>

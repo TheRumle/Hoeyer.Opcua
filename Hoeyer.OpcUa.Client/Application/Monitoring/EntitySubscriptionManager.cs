@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.Common.Messaging.Api;
 using Hoeyer.Common.Messaging.Subscriptions;
+using Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Connection;
 using Hoeyer.OpcUa.Client.Api.Monitoring;
@@ -20,25 +22,28 @@ internal sealed class EntitySubscriptionManager<T>(
     IEntitySessionFactory sessionFactory,
     IEntityBrowser<T> browser,
     IMonitorItemsFactory<T> monitorFactory,
+    IEntityTranslator<T> translator,
     IReconnectionStrategy? reconnectionStrategy = null)
     : IEntitySubscriptionManager<T>
 {
     private readonly IReconnectionStrategy _reconnectionStrategy =
         reconnectionStrategy ?? new DefaultReconnectStrategy();
 
-    private readonly SubscriptionManager<T> _subscriptionManager = new();
+    private readonly SubscriptionManager<T> _subscriptionManager = new(new ChannelSubscriptionFactory<T>());
     public ISession? Session { get; private set; }
-    public IEnumerable<MonitoredItem>? MonitoredItems { get; private set; }
+    public IEnumerable<MonitoredItem> MonitoredItems { get; private set; } = [];
+    private IEntityNode? CurrentNodeState { get; set; }
     public Subscription? Subscription { get; private set; }
+
 
     public async Task<IMessageSubscription> SubscribeToChange(
         IMessageConsumer<T> consumer, CancellationToken cancellationToken = default)
     {
-        Session ??= await sessionFactory.CreateSessionAsync("EntityMonitor");
+        Session ??= await sessionFactory.CreateSessionAsync("EntityMonitor", cancellationToken);
         Session = await _reconnectionStrategy.ReconnectIfNotConnected(Session, cancellationToken);
-        IEntityNode node = browser.LastState?.node ?? await browser.BrowseEntityNode(cancellationToken);
+        CurrentNodeState ??= await browser.BrowseEntityNode(cancellationToken);
 
-        (Subscription, MonitoredItems) = monitorFactory.GetOrCreate(Session, node);
+        (Subscription, MonitoredItems) = monitorFactory.GetOrCreate(Session, CurrentNodeState);
         await Subscription.CreateAsync(cancellationToken);
         await Subscription.ApplyChangesAsync(cancellationToken);
 
@@ -52,6 +57,15 @@ internal sealed class EntitySubscriptionManager<T>(
     private void HandleChange(MonitoredItem monitoredItem, MonitoredItemNotificationEventArgs e)
     {
         if (monitoredItem == null!) return;
-        _subscriptionManager.Publish(default!);
+
+        Dictionary<string, PropertyState> properties = CurrentNodeState!.PropertyByBrowseName!;
+        if (!properties.TryGetValue(monitoredItem.DisplayName, out PropertyState? property)) return;
+
+        foreach (var newValue in monitoredItem.DequeueValues().Select(e => e.Value))
+        {
+            if (property.Value.Equals(newValue)) continue;
+            property.Value = newValue;
+            _subscriptionManager.Publish(translator.Translate(CurrentNodeState));
+        }
     }
 }

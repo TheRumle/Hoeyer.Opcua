@@ -60,11 +60,10 @@ public class EntityTranslatorTest
             StringValue = "hello"
         }, node);
 
-        Func<string, Type> typeofProperty = (string name) => node.PropertyByBrowseName[name].Value.GetType();
-
+        Func<string, object> propertyFor = (string name) => node.PropertyByBrowseName[name].Value;
         using IDisposable assertion = Assert.Multiple();
-        await Assert.That(typeofProperty(nameof(Gantry.AAginList))).IsTypeOf<string[]>();
-        await Assert.That(typeofProperty(nameof(Gantry.AList))).IsTypeOf<string[]>();
+        await Assert.That(propertyFor(nameof(Gantry.AAginList))).IsTypeOf<string[]>();
+        await Assert.That(propertyFor(nameof(Gantry.AList))).IsTypeOf<string[]>();
     }
 
 

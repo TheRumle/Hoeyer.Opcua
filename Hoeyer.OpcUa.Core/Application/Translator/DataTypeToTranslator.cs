@@ -2,6 +2,7 @@
 using System.Linq;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Application.Translator.Parsers;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Application.Translator;
 
@@ -41,5 +42,21 @@ public static class DataTypeToTranslator
             current.Add(element);
             return current;
         });
+    }
+
+    public static T[] TranslateToArray<T>(IEntityNode node, string name)
+    {
+        PropertyState? p = node.PropertyByBrowseName.TryGetValue(name, out PropertyState? value) ? value : null;
+        if (p == null) return [];
+
+        T[]? res = new PropertyValueCollectionParser<T>().Parse(p);
+
+        if (res == null) return [];
+
+        return res.Aggregate(new List<T>(), (current, element) =>
+        {
+            current.Add(element);
+            return current;
+        }).ToArray();
     }
 }

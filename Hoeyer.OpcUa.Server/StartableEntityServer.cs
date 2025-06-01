@@ -7,7 +7,10 @@ using Opc.Ua.Configuration;
 
 namespace Hoeyer.OpcUa.Server;
 
-internal sealed class StartableEntityServer(ApplicationInstance applicationInstance, OpcEntityServer entityServer, EntityServerStartedMarker marker)
+internal sealed class StartableEntityServer(
+    ApplicationInstance applicationInstance,
+    OpcEntityServer entityServer,
+    EntityServerStartedMarker marker)
     : IStartableEntityServer, IStartedEntityServer
 {
     private readonly ApplicationInstance _applicationInstance =
@@ -25,6 +28,7 @@ internal sealed class StartableEntityServer(ApplicationInstance applicationInsta
             throw new ObjectDisposedException(nameof(StartableEntityServer));
         }
 
+        if (marker.IsServerStarted) return this;
         try
         {
             await _applicationInstance.Start(_entityServer);
@@ -35,6 +39,7 @@ internal sealed class StartableEntityServer(ApplicationInstance applicationInsta
             Console.WriteLine(e);
             throw;
         }
+
         return this;
     }
 

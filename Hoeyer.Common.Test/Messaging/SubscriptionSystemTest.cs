@@ -4,25 +4,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Hoeyer.Common.Messaging;
+using Hoeyer.Common.Extensions.Async;
 using Hoeyer.Common.Messaging.Api;
+using Hoeyer.Common.Messaging.Subscriptions;
+using Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 using JetBrains.Annotations;
 
 namespace Hoeyer.Common.Test.Messaging;
 
-[TestSubject(typeof(MessagePublisher<>))]
-public class MessagePublisherTest
+[TestSubject(typeof(SubscriptionManager<>))]
+[TestSubject(typeof(ISubscriptionManager<>))]
+[TestSubject(typeof(IMessageSubscription<>))]
+public abstract class SubscriptionSystemTest(IMessageSubscriptionFactory<int> factory)
 {
-    private readonly MessagePublisher<int> publisher = new();
-    private readonly TestSubscriber _subscriber = new();
+    private const int TimeoutMillis = 5000;
     private readonly Random _rand = new(46378919);
-    private sealed class TestSubscriber : IMessageConsumer<int>
-    {
-        public int Count; 
-        public IMessageSubscription MessageSubscription { get; set; }
-        public void Consume(IMessage<int> message) => Count += 1;
-    }
-    
+
+    private readonly SubscriptionManager<int> publisher = new(factory);
+
     public static IEnumerable<Func<(int consumers, int messages)>> IncreasingLoad()
     {
         for (int i = 1; i < 13; i++)
@@ -37,34 +36,41 @@ public class MessagePublisherTest
     [Test]
     public async Task WhenSubscriptionPaused_DoesNotCallSubscriber()
     {
-        IMessageSubscription messageSubscription = publisher.Subscribe(_subscriber);
+        var _subscriber = new TestSubscriber(0, CancellationToken.None);
+        var messageSubscription = (ChannelBasedSubscription<int>)publisher.Subscribe(_subscriber);
         messageSubscription.Pause();
         publisher.Publish(_rand.Next());
         await Assert.That(_subscriber.Count).IsEqualTo(0);
     }
-    
+
     [Test]
-    public async Task WhenSubscriberActive_SubscriberIsCalled()
+    [Timeout(TimeoutMillis)]
+    public async Task WhenSubscriberActive_SubscriberIsCalled(CancellationToken token)
     {
-        _ = publisher.Subscribe(_subscriber);
+        var subscriber = new TestSubscriber(1, token);
+        _ = publisher.Subscribe(subscriber);
         publisher.Publish(_rand.Next());
-        await Assert.That(_subscriber.Count).IsEqualTo(1);
+        await subscriber.HasWantedCalls;
     }
-    
+
     [Test]
-    public async Task WhenUnsubscribing_NumberOfSubscriptions_Decreases()
+    [Timeout(TimeoutMillis)]
+    public async Task WhenUnsubscribing_NumberOfSubscriptions_Decreases(CancellationToken token)
     {
-        var subscription = publisher.Subscribe(_subscriber);
-        var before = publisher.NumberOfSubscriptions;
+        var subscriber = new TestSubscriber(1, token);
+        IMessageSubscription<int> subscription = publisher.Subscribe(subscriber);
+        var before = publisher.Collection.NumberOfSubscriptions;
         subscription.Dispose();
-        await Assert.That(publisher.NumberOfSubscriptions).IsLessThan(before);
+        await Assert.That(publisher.Collection.NumberOfSubscriptions).IsLessThan(before);
     }
 
     [Test]
     public async Task WhenUnsubscribing_DoesNotCallSubscriber()
     {
+        var _subscriber = new TestSubscriber(1, CancellationToken.None);
         var subscription = publisher.Subscribe(_subscriber);
         subscription.Dispose();
+        publisher.Publish(_rand.Next());
         await Assert.That(_subscriber.Count).IsEqualTo(0);
     }
 
@@ -76,7 +82,7 @@ public class MessagePublisherTest
         List<TestSubscriber> subscribers = new();
         for (int i = 0; i < consumers; i++)
         {
-            var s = new TestSubscriber();
+            var s = new TestSubscriber(10, CancellationToken.None);
             subscribers.Add(s);
             var sub = publisher.Subscribe(s);
             s.MessageSubscription = sub;
@@ -90,32 +96,33 @@ public class MessagePublisherTest
                 subscribers[value].MessageSubscription.Pause();
             }
             else
-            { 
+            {
                 subscribers[value].MessageSubscription.Unpause();
             }
+
             publisher.Publish(value);
         }
     }
-    
-   
+
+
     [Test]
-    public void CanHandleConcurrent_AddingAndRemoving()
+    [Timeout(TimeoutMillis * 2)]
+    public async Task CanHandleConcurrent_AddingAndRemoving(CancellationToken _)
     {
         var cts = new CancellationTokenSource();
-        var (addThread, publish) = CreateSimulationThreads(cts);
-
+        (Thread addThread, Thread publish) = CreateSimulationThreads(cts.Token);
+        cts.CancelAfter(2000);
         addThread.Start();
         publish.Start();
-        Thread.Sleep(1500);
-        cts.Cancel();
+        await cts.Token.WaitForCancellationAsync();
         addThread.Join();
         publish.Join();
+        cts.Dispose();
     }
 
-    private (Thread add,Thread publish) CreateSimulationThreads(CancellationTokenSource cts)
+    private (Thread add, Thread publish) CreateSimulationThreads(CancellationToken token)
     {
         var subscriptions = new ConcurrentBag<IMessageSubscription>();
-
         Action<IMessageSubscription> pauseUnpause = sub =>
         {
             var action = _rand.Next(3);
@@ -132,25 +139,39 @@ public class MessagePublisherTest
                     break;
             }
         };
-        
+
         var addThread = new Thread(() =>
         {
-            while (!cts.IsCancellationRequested)
+            while (!token.IsCancellationRequested)
             {
-                var sub = publisher.Subscribe(new TestSubscriber());
+                IMessageSubscription<int> sub = publisher.Subscribe(new TestSubscriber(1, token));
                 subscriptions.Add(sub);
                 Thread.Sleep(TimeSpan.FromMilliseconds(60));
-                pauseUnpause.Invoke(subscriptions.Skip(_rand.Next(0,subscriptions.Count)).First() );
+                pauseUnpause.Invoke(subscriptions.Skip(_rand.Next(0, subscriptions.Count)).First());
             }
         });
 
         var publishThread = new Thread(() =>
         {
-            while (!cts.Token.IsCancellationRequested)
+            while (!token.IsCancellationRequested)
             {
                 publisher.Publish(_rand.Next());
             }
         });
         return (addThread, publishThread);
+    }
+
+    private sealed class TestSubscriber(int wantedCalls, CancellationToken token) : IMessageConsumer<int>
+    {
+        private readonly TaskCompletionSource<bool> _tcs = new(token);
+        public int Count { get; private set; }
+        public IMessageSubscription MessageSubscription { get; set; }
+        public Task HasWantedCalls => _tcs.Task;
+
+        public void Consume(IMessage<int> message)
+        {
+            Count += 1;
+            if (Count >= wantedCalls) _tcs.TrySetResult(true);
+        }
     }
 }
