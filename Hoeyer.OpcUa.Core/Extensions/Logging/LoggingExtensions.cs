@@ -8,11 +8,19 @@ namespace Hoeyer.OpcUa.Core.Extensions.Logging;
 
 public static class LoggingExtensions
 {
+    public static object ToLoggingObject(this MethodState method, IList<object> inputArguments) =>
+        new
+        {
+            method.BrowseName.Name,
+            Details = method.CoreInfoObject(),
+            Arguments = inputArguments
+        };
+
     public static object ToLoggingObject(this MethodState method)
     {
         return new
         {
-            Name = method.BrowseName.Name,
+            method.BrowseName.Name,
             Details = method.CoreInfoObject(),
             Arguments = method?.InputArguments.Value.Select(ArgumentInfo.Of).ToArray()
         };
