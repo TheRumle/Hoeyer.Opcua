@@ -7,7 +7,7 @@ using Hoeyer.Common.Messaging.Api;
 
 namespace Hoeyer.Common.Messaging.Subscriptions;
 
-public sealed class SubscriptionCollection<T, TSubscription> : ISubscriptionCollection<T> 
+public sealed class SubscriptionCollection<T, TSubscription> : ISubscriptionCollection<T>
     where TSubscription : IMessageSubscription<T>
 {
     private readonly Func<IMessageConsumer<T>, TSubscription> _subscriptionFactory;
@@ -30,8 +30,8 @@ public sealed class SubscriptionCollection<T, TSubscription> : ISubscriptionColl
     /// <inheritdoc />
     public int NumberOfSubscriptions => _subscriptions.Count;
 
-    /// <inheritdoc />
-    public IEnumerable<IMessageSubscription<T>> Subscriptions => _subscriptions.Values.Select(e=>e as IMessageSubscription<T>);
+    public IEnumerable<IMessageSubscription<T>> Subscriptions =>
+        _subscriptions.Values.Select(e => e as IMessageSubscription<T>);
 
     [Pure]
     public IMessageSubscription<T> Subscribe(IMessageConsumer<T> subscriber)
@@ -40,7 +40,7 @@ public sealed class SubscriptionCollection<T, TSubscription> : ISubscriptionColl
         _subscriptions.TryAdd(subscription.SubscriptionId, subscription);
         return subscription;
     }
-    
+
     public void Remove(Guid messageSubscription)
     {
         _subscriptions.TryRemove(messageSubscription, out _);

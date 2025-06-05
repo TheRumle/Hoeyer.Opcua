@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Hoeyer.Common.Messaging.Api;
 
 namespace Hoeyer.Common.Messaging.Subscriptions;
@@ -46,9 +45,12 @@ public sealed class SubscriptionManager<T, TSubscription> : ISubscriptionManager
 {
     private bool _isPaused;
 
-    public SubscriptionManager(Func<IMessageConsumer<T>, IMessageUnsubscribable, TSubscription> subscriptionFactory)
+    public SubscriptionManager(IMessageSubscriptionFactory<T, TSubscription> factory)
     {
-        Collection = new SubscriptionCollection<T, TSubscription>((a) => subscriptionFactory(a, this));
+        Collection = Collection = new SubscriptionCollection<T, IMessageSubscription<T>>(consumer =>
+        {
+            return factory.CreateSubscription(this, consumer);
+        });
     }
 
     public ISubscriptionCollection<T> Collection { get; }

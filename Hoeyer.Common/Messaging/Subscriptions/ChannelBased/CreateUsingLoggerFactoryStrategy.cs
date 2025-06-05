@@ -8,7 +8,7 @@ namespace Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 public sealed class CreateUsingLoggerFactoryStrategy<TContent>(ILoggerFactory factory)
     : IChannelSubscriptionCreationStrategy<TContent>
 {
-    public IMessageSubscription<TContent> Create(
+    public ChannelBasedSubscription<TContent> Create(
         IMessageUnsubscribable creator,
         IMessageConsumer<TContent> consumer,
         UnboundedChannelOptions unboundedChannelOptions)

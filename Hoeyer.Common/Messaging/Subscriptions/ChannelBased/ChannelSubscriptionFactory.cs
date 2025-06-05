@@ -6,7 +6,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 
-public sealed class ChannelSubscriptionFactory<T> : IMessageSubscriptionFactory<T>
+public sealed class ChannelSubscriptionFactory<T> : IMessageSubscriptionFactory<T, ChannelBasedSubscription<T>>,
+    IMessageSubscriptionFactory<T>
 {
     private readonly ILogger _logger;
     private readonly IChannelSubscriptionCreationStrategy<T> _strategy;
@@ -29,7 +30,7 @@ public sealed class ChannelSubscriptionFactory<T> : IMessageSubscriptionFactory<
         _strategy = new CreateUsingLoggerFactoryStrategy<T>(loggerFactory);
     }
 
-    public IMessageSubscription<T> CreateSubscription(
+    public ChannelBasedSubscription<T> CreateSubscription(
         IMessageUnsubscribable creator,
         IMessageConsumer<T> consumer)
     {
@@ -44,4 +45,8 @@ public sealed class ChannelSubscriptionFactory<T> : IMessageSubscriptionFactory<
         };
         return _strategy.Create(creator, consumer, unboundedChannelOptions);
     }
+
+    IMessageSubscription<T> IMessageSubscriptionFactory<T, IMessageSubscription<T>>
+        .CreateSubscription(IMessageUnsubscribable creator, IMessageConsumer<T> consumer) =>
+        CreateSubscription(creator, consumer);
 }

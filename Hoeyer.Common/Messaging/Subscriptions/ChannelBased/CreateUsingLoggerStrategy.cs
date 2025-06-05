@@ -7,7 +7,7 @@ namespace Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 
 public sealed class CreateUsingLoggerStrategy<TContent>(ILogger logger) : IChannelSubscriptionCreationStrategy<TContent>
 {
-    public IMessageSubscription<TContent> Create(
+    public ChannelBasedSubscription<TContent> Create(
         IMessageUnsubscribable creator,
         IMessageConsumer<TContent> consumer,
         UnboundedChannelOptions unboundedChannelOptions)
