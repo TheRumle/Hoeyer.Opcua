@@ -36,13 +36,12 @@ public class MethodCaller<TEntity>(IEntityBrowser<TEntity> browser, IEntitySessi
     private async Task<IList<object>> CallNode(string methodName, CancellationToken token = default,
         params object[] args)
     {
-        IEntityNode entityNode = browser.LastState?.node ?? await browser.BrowseEntityNode(token);
-        Dictionary<string, MethodState> methodNodesByName = entityNode.MethodsByName;
-        MethodState methodToCall = methodNodesByName[methodName]
-                                   ?? throw new NoSuchEntityMethodException(entityNode.BaseObject.BrowseName.Name,
-                                       methodName);
+        EntityNodeStructure entityNode = await browser.GetNodeStructure(token);
+        IReadOnlyDictionary<string, NodeId> methodNodesByName = entityNode.Methods;
+        NodeId methodToCall = methodNodesByName[methodName] ??
+                              throw new NoSuchEntityMethodException(entityNode.EntityName, methodName);
 
         ISession session = await factory.CreateSessionAsync(_sessionId.ToString(), token);
-        return await session.CallAsync(entityNode.BaseObject.NodeId, methodToCall.NodeId, token, args);
+        return await session.CallAsync(entityNode.NodeId, methodToCall, token, args);
     }
 }
