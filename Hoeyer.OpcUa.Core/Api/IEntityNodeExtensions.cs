@@ -3,5 +3,5 @@
 public static class IEntityNodeExtensions
 {
     public static EntityNodeStructure ToStructureOnly(this IEntityNode node) =>
-        new(node.BaseObject.BrowseName.Name, node.PropertyByBrowseName);
+        new(node);
 }
