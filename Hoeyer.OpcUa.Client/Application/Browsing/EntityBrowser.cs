@@ -47,7 +47,6 @@ public sealed class EntityBrowser<TEntity>(
     private ISession Session => _session.Value;
 
     public (IEntityNode node, DateTime timeLoaded)? LastState { get; private set; }
-    public EntityNodeStructure? CurrentStructure => LastState?.node.ToStructureOnly() ?? null;
 
     /// <inheritdoc />
     public async Task<IEntityNode> BrowseEntityNode(CancellationToken cancellationToken = default)
@@ -55,6 +54,11 @@ public sealed class EntityBrowser<TEntity>(
         var values = await ReadEntity(cancellationToken);
         return await ParseToEntity(Session, cancellationToken, values);
     }
+
+    public async ValueTask<EntityNodeStructure> GetNodeStructure(CancellationToken token = default) =>
+        LastState.HasValue
+            ? LastState.Value.node.ToStructureOnly()
+            : await BrowseEntityNode(token).ThenAsync(e => e.ToStructureOnly());
 
     private async Task<IEntityNode> ParseToEntity(ISession session, CancellationToken cancellationToken,
         ReadResult values)

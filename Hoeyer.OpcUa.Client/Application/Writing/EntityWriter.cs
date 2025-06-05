@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Client.Api.Browsing;
@@ -19,17 +21,43 @@ public sealed class EntityWriter<TEntity>(
     IEntitySessionFactory factory,
     IEntityBrowser<TEntity> browser) : IEntityWriter<TEntity>
 {
-    private IEntityNode? ValuesToWrite { get; set; }
+    public static readonly string SessionName = typeof(TEntity).Name + "Writer";
 
     public async Task AssignEntityValues(TEntity entity, CancellationToken cancellationToken = default)
     {
-        ISession session = await factory.CreateSessionAsync("WRITER", cancellationToken);
+        EntityNodeStructure valuesToWrite = await browser.GetNodeStructure(cancellationToken);
+        translator.AssignToStructure(entity, (name, value) => valuesToWrite.Properties[name].Value = value);
+        IEnumerable<WriteValue> values = valuesToWrite.Properties.Values.Select(CreateWriteValue);
+        await WriteValues(cancellationToken, values);
+    }
 
-        //Only fetch the first time - then reuse the structure to write to the node
-        ValuesToWrite ??= browser.LastState?.node ?? await browser.BrowseEntityNode(cancellationToken);
-        translator.AssignToNode(entity, ValuesToWrite);
+    /// <inheritdoc />
+    public async Task AssignEntityProperties(IEnumerable<(string propertyName, object propertyValue)> entityState,
+        CancellationToken cancellationToken = default)
+    {
+        EntityNodeStructure structure = await browser.GetNodeStructure(cancellationToken);
+        foreach (var (key, value) in entityState)
+        {
+            structure.Properties[key].Value = value;
+        }
 
-        var values = ValuesToWrite.PropertyStates.Select(e => new WriteValue
+        IEnumerable<WriteValue> values = structure.PropertyStates.Select(CreateWriteValue);
+        await WriteValues(cancellationToken, values);
+    }
+
+    private async Task WriteValues(CancellationToken cancellationToken,
+        IEnumerable<WriteValue> valuesToWrite)
+    {
+        ISession session = await factory.CreateSessionAsync(Guid.NewGuid().ToString(), cancellationToken);
+        WriteResponse? res = await session.WriteAsync(null, new WriteValueCollection(valuesToWrite), cancellationToken);
+        foreach (DiagnosticInfo? s in res.DiagnosticInfos.Where(e => !e.IsNullDiagnosticInfo))
+        {
+            logger.LogInformation(s.ToString());
+        }
+    }
+
+    private static WriteValue CreateWriteValue(ValueProperty e) =>
+        new()
         {
             AttributeId = Attributes.Value,
             Handle = e.Handle,
@@ -38,11 +66,5 @@ public sealed class EntityWriter<TEntity>(
             {
                 Value = e.Value,
             }
-        });
-        var res = await session.WriteAsync(null, new WriteValueCollection(values), cancellationToken);
-        foreach (DiagnosticInfo? s in res.DiagnosticInfos.Where(e => !e.IsNullDiagnosticInfo))
-        {
-            logger.LogInformation(s.ToString());
-        }
-    }
+        };
 }

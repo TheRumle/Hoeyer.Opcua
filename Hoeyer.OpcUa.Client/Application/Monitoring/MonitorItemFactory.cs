@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Hoeyer.Common.Extensions;
 using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Core;
@@ -12,18 +14,32 @@ using Opc.Ua.Client;
 namespace Hoeyer.OpcUa.Client.Application.Monitoring;
 
 [OpcUaEntityService(typeof(IMonitorItemsFactory<>))]
-public sealed class MonitorItemFactory<T>(ILogger<MonitorItemFactory<T>> logger,
+public sealed class MonitorItemFactory<T>(
+    ILogger<MonitorItemFactory<T>> logger,
     EntityMonitoringConfiguration entityMonitoringConfiguration) : IMonitorItemsFactory<T>
 {
-    private Subscription? Subscription { get; set; }
+    private readonly Random _guids = new(231687);
+    private bool _created = false;
+    private Subscription Subscription { get; set; } = null!;
     private IEnumerable<MonitoredItem> MonitoredItems { get; set; } = [];
-    private readonly Random _guids = new Random(231687);
 
-    
-    public (Subscription subscription, IEnumerable<MonitoredItem> variableMonitoring)
-        GetOrCreate(ISession session, IEntityNode node)
+
+    public async ValueTask<(Subscription subscription, IEnumerable<MonitoredItem> variableMonitoring)> GetOrCreate(
+        ISession session, IEntityNode node, CancellationToken cancel)
     {
-        Subscription ??= new Subscription(session!.DefaultSubscription)
+        if (_created) return (Subscription, MonitoredItems);
+
+        (Subscription, MonitoredItems) = Create(session, node);
+        await Subscription.CreateAsync(cancel);
+        await Subscription.ApplyChangesAsync(cancel);
+        return (Subscription, MonitoredItems);
+    }
+
+    public (Subscription Subscription, List<MonitoredItem> items) Create(ISession session, IEntityNode node)
+    {
+        logger.LogInformation("Creating subscription and monitored items");
+
+        var subscription = new Subscription(session!.DefaultSubscription)
         {
             PublishingInterval = entityMonitoringConfiguration!.ServerPublishingInterval.Milliseconds,
             SequentialPublishing = true,
@@ -31,34 +47,28 @@ public sealed class MonitorItemFactory<T>(ILogger<MonitorItemFactory<T>> logger,
             DisplayName = node.BaseObject.BrowseName.Name + "Subscription",
             TransferId = _guids.GetUInt(),
         };
-        return Create(session, node);
-    }
 
-    public (Subscription Subscription, List<MonitoredItem> items) Create(ISession session, IEntityNode node)
-    {
-        logger.LogInformation("Creating subscription and monitored items");
         var items = node
             .PropertyStates
             .Where(e => !MonitoredItems
                 .Select(item => item.StartNodeId)
                 .Contains(e.NodeId))
-            .Select(e => CreateMonitoredItem(e.NodeId, e.BrowseName.Name))
-            .Concat([CreateMonitoredItem(node.BaseObject.NodeId, node.BaseObject.BrowseName.Name)])
+            .Select(e => CreateMonitoredItem(subscription, e.NodeId, e.BrowseName.Name))
+            .Concat([CreateMonitoredItem(subscription, node.BaseObject.NodeId, node.BaseObject.BrowseName.Name)])
             .ToList();
-        
-        Subscription!.AddItems(items);
-        
-        if (session.Subscriptions.All(e => e.Id != Subscription.Id))
+
+        subscription.AddItems(items);
+        if (session.Subscriptions.All(e => e.Id != subscription.Id))
         {
-            session.AddSubscription(Subscription);
+            session.AddSubscription(subscription);
         }
-        
-        return (Subscription, items);
+
+        _created = true;
+        return (subscription, items);
     }
 
-    private MonitoredItem CreateMonitoredItem(NodeId nodeId, string name)
-    {
-        return new MonitoredItem(Subscription!.DefaultItem)
+    private static MonitoredItem CreateMonitoredItem(Subscription subscription, NodeId nodeId, string name) =>
+        new(subscription!.DefaultItem)
         {
             DisplayName = name,
             StartNodeId = nodeId,
@@ -67,5 +77,4 @@ public sealed class MonitorItemFactory<T>(ILogger<MonitorItemFactory<T>> logger,
             QueueSize = 10,
             DiscardOldest = true
         };
-    }
 }

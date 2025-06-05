@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,7 +31,9 @@ internal sealed class EntitySubscriptionManager<T>(
     private readonly IReconnectionStrategy _reconnectionStrategy =
         reconnectionStrategy ?? new DefaultReconnectStrategy();
 
-    private readonly SubscriptionManager<T> _subscriptionManager = new(new ChannelSubscriptionFactory<T>());
+    private readonly SubscriptionManager<T, ChannelBasedSubscription<T>> _subscriptionManager =
+        new(new ChannelSubscriptionFactory<T>());
+
     public ISession? Session { get; private set; }
     public IEnumerable<MonitoredItem> MonitoredItems { get; private set; } = [];
     private IEntityNode? CurrentNodeState { get; set; }
@@ -43,10 +47,7 @@ internal sealed class EntitySubscriptionManager<T>(
         Session = await _reconnectionStrategy.ReconnectIfNotConnected(Session, cancellationToken);
         CurrentNodeState ??= await browser.BrowseEntityNode(cancellationToken);
 
-        (Subscription, MonitoredItems) = monitorFactory.GetOrCreate(Session, CurrentNodeState);
-        await Subscription.CreateAsync(cancellationToken);
-        await Subscription.ApplyChangesAsync(cancellationToken);
-
+        (Subscription, MonitoredItems) = await monitorFactory.GetOrCreate(Session, CurrentNodeState, cancellationToken);
         foreach (var items in MonitoredItems) items.Notification += HandleChange;
 
         await Session.PublishAsync(null, new SubscriptionAcknowledgementCollection(), cancellationToken);
@@ -57,15 +58,40 @@ internal sealed class EntitySubscriptionManager<T>(
     private void HandleChange(MonitoredItem monitoredItem, MonitoredItemNotificationEventArgs e)
     {
         if (monitoredItem == null!) return;
-
-        Dictionary<string, PropertyState> properties = CurrentNodeState!.PropertyByBrowseName!;
-        if (!properties.TryGetValue(monitoredItem.DisplayName, out PropertyState? property)) return;
-
-        foreach (var newValue in monitoredItem.DequeueValues().Select(e => e.Value))
+        try
         {
-            if (property.Value.Equals(newValue)) continue;
-            property.Value = newValue;
-            _subscriptionManager.Publish(translator.Translate(CurrentNodeState));
+            Dictionary<string, PropertyState> properties = CurrentNodeState!.PropertyByBrowseName!;
+            if (!properties.TryGetValue(monitoredItem.DisplayName, out PropertyState? property)) return;
+
+            var currentValue = property.WrappedValue.Value;
+            IEnumerable<object> newValues = monitoredItem.DequeueValues().Select(e => e.Value);
+
+            foreach (var newValue in newValues.Where(newVal => !IsSameValue(currentValue, newVal)))
+            {
+                property.Value = newValue;
+                _subscriptionManager.Publish(translator.Translate(CurrentNodeState));
+            }
         }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception);
+            throw;
+        }
+    }
+
+    private static bool IsSameValue(object currentValue, object newValue)
+    {
+        if (currentValue.Equals(newValue)) return true;
+
+        if (currentValue is IEnumerable currentEnumerable &&
+            newValue is IEnumerable newEnumerable)
+        {
+            HashSet<object> currentSet = currentEnumerable.Cast<object>().ToHashSet();
+            HashSet<object> newSet = newEnumerable.Cast<object>().ToHashSet();
+
+            if (currentSet.SetEquals(newSet)) return true;
+        }
+
+        return false;
     }
 }
