@@ -16,7 +16,7 @@ public sealed class OpcUaEntityServerObservation(ApplicationFixture fixture)
     {
         var session = await fixture.CreateSession(Guid.NewGuid().ToString());
         IEntityChangedBroadcaster<Gantry> publisher = fixture.GetService<IEntityChangedBroadcaster<Gantry>>();
-        var observer = new TestSubscriber<Gantry>();
+        var observer = new CountingConsumer<Gantry>();
         _ = publisher.EntitySubscriptionManager.Subscribe(observer);
 
         await WriteNode(session);
