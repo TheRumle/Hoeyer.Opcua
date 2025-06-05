@@ -50,6 +50,14 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         WriteAssignments(writer, typeContext.Node, typeContext.SemanticModel);
         writer.WriteLine("}");
 
+        writer.WriteLine("public void AssignToStructure(" + entityName + " state, ");
+        writer.WriteLine("global::System.Action<string, object> assignmentAction");
+        writer.WriteLine(")");
+        writer.WriteLine("{");
+        WriteStateAssignment(writer, typeContext.Node, typeContext.SemanticModel);
+        writer.WriteLine("}");
+
+
         writer.WriteLine("public " + entityName + " Translate( " +
                          WellKnown.FullyQualifiedInterface.IEntityNode.WithGlobalPrefix + " state)");
         writer.WriteLine("{");
@@ -117,6 +125,23 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
                              ";");
         }
     }
+
+    private static void WriteStateAssignment(SourceCodeWriter writer,
+        TypeDeclarationSyntax syntax, SemanticModel model)
+    {
+        foreach (PropertyDeclarationSyntax? property in syntax.Members.OfType<PropertyDeclarationSyntax>())
+        {
+            var propName = property.Identifier.Text;
+            INamedTypeSymbol? listInterface = GetListInterface(model.GetDeclaredSymbol(property)!, model);
+
+            var toList = listInterface is not null
+                ? $".{nameof(Enumerable.ToArray)}()"
+                : "";
+
+            writer.WriteLine("assignmentAction(\"" + propName + "\", state." + propName + toList + ");");
+        }
+    }
+
 
     private static INamedTypeSymbol? GetListInterface(IPropertySymbol typeSymbol, SemanticModel model)
     {
