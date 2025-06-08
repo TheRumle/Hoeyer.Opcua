@@ -64,6 +64,19 @@ public sealed class EntityBrowserTest
             .Because(" after reading the node and translating it, there should not be null values");
     }
 
+    [ApplicationFixtureGenerator<IEntityBrowser>]
+    [Test]
+    public void CanBrowseOnSimultaneousThreads(ApplicationFixture<IEntityBrowser> fixture)
+    {
+        IEntityBrowser browser = fixture.TestedService;
+        var first = new Thread(() => browser.BrowseEntityNode(CancellationToken.None).GetAwaiter().GetResult());
+        var second = new Thread(() => browser.BrowseEntityNode(CancellationToken.None).GetAwaiter().GetResult());
+        first.Start();
+        second.Start();
+        first.Join();
+        second.Join();
+    }
+
     private static Dictionary<string, object?> GetNullPropertyValues(IEntityNode entity)
     {
         return entity.PropertyStates
