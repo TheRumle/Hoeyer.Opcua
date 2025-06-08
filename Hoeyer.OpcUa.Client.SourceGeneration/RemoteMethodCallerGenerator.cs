@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.OpcUa.Client.SourceGeneration.Constants;
+using Hoeyer.OpcUa.Client.SourceGeneration.Extensions;
 using Hoeyer.OpcUa.Client.SourceGeneration.Generation;
 using Hoeyer.OpcUa.Client.SourceGeneration.Generation.IncrementalProvider;
 using Hoeyer.OpcUa.Client.SourceGeneration.Models;
@@ -12,7 +13,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 namespace Hoeyer.OpcUa.Client.SourceGeneration;
 
 [Generator]
-public class RemoteMethodCallerGenerator : IIncrementalGenerator
+public sealed class RemoteMethodCallerGenerator : IIncrementalGenerator
 {
     /// <inheritdoc />
     public void Initialize(IncrementalGeneratorInitializationContext context)
@@ -20,14 +21,18 @@ public class RemoteMethodCallerGenerator : IIncrementalGenerator
         var decoratedRecordsProvider = context
             .GetEntityMethodInterfaces()
             .Select(static (ctx, ct) => CreateRemoteMethodCallerModel(ctx.interfaceNode, ctx.model))
-            .Where(static model => model is not null)
-            .Select(static (model, _) => CreateClassImplementation(model!));
+            .Where(static model => model.HasValue);
 
-        context.RegisterSourceOutput(decoratedRecordsProvider.Collect(),
-            (sourceContext, dataModels) => { GenerateRemoteMethodCaller(sourceContext, dataModels); });
+
+        UnloadedIncrementalValuesProvider<(string Identifier, string SourceCode)> methodCallerImpls =
+            decoratedRecordsProvider.Select(static (model, _) => CreateClassImplementation(model!.Value));
+
+        context.RegisterSourceOutput(methodCallerImpls.Collect(),
+            (sourceContext, dataModels) => { GenerateSourceCode(sourceContext, dataModels); });
     }
 
-    private static void GenerateRemoteMethodCaller(SourceProductionContext sourceContext,
+
+    private static void GenerateSourceCode(SourceProductionContext sourceContext,
         IEnumerable<(string identifier, string code)> dataModels)
     {
         foreach (var (identifier, code) in dataModels)
@@ -41,25 +46,30 @@ public class RemoteMethodCallerGenerator : IIncrementalGenerator
         InterfaceDeclarationSyntax interfaceDeclaration, SemanticModel model)
     {
         //for instance Task MyMethod(int a, int b, TypeFromNamespaceQ value) --> System.Threading.Task MyMethod(System.Int32 a, System.Int32 b, Q.TypeFromNamespaceQ value)
-        INamedTypeSymbol? entityParameter = GetEntityNameFromAttribute(interfaceDeclaration, model);
+        INamedTypeSymbol? entityParameter = GetEntityFromGenericArgument(interfaceDeclaration, model);
         INamedTypeSymbol? declaredSymbol = model.GetDeclaredSymbol(interfaceDeclaration);
         if (entityParameter is null || declaredSymbol is null) return null;
+        List<MethodDeclarationSyntax> methods = interfaceDeclaration.Members.OfType<MethodDeclarationSyntax>().ToList();
+
+        List<IMethodSymbol> methodSymbols = methods.Select(method => model.GetDeclaredSymbol(method))
+            .OfType<IMethodSymbol>()
+            .ToList();
+
 
         var rewriter = new FullyQualifyTypeNamesRewriter(model);
-        List<MemberDeclarationSyntax> methods = interfaceDeclaration.Members.OfType<MethodDeclarationSyntax>()
+        List<MemberDeclarationSyntax> rewrittenMethods = methods
             .Select(e => (MemberDeclarationSyntax)rewriter.Visit(e))
             .ToList();
 
-        AttributeSyntax serviceAttribute =
-            OpcAttributeUsages.GetOpcUaServiceAttributeFor(entityParameter, OpcAttributeUsages.Scope.Singleton);
-        return new RemoteMethodCallerModel(declaredSymbol, entityParameter, serviceAttribute,
-            interfaceDeclaration.WithMembers(List(methods)));
+
+        return new RemoteMethodCallerModel(declaredSymbol, entityParameter,
+            interfaceDeclaration.WithMembers(List(rewrittenMethods)));
     }
 
 
     private static (string Identifier, string SourceCode) CreateClassImplementation(RemoteMethodCallerModel model)
     {
-        InterfaceDeclarationSyntax interfaceDeclaration = model.InterfaceSyntax;
+        InterfaceDeclarationSyntax interfaceDeclaration = model.GlobalizedMethodCaller;
         var classIdentifier = (interfaceDeclaration.Identifier.Text.StartsWith("I")
             ? interfaceDeclaration.Identifier.Text.Substring(1)
             : interfaceDeclaration.Identifier.Text) + "RemoteCaller";
@@ -105,25 +115,13 @@ public class RemoteMethodCallerGenerator : IIncrementalGenerator
         return (Identifier: classIdentifier, SourceCode: builder.ToString());
     }
 
-    private static INamedTypeSymbol? GetEntityNameFromAttribute(InterfaceDeclarationSyntax interfaceDeclaration,
+    private static INamedTypeSymbol? GetEntityFromGenericArgument(InterfaceDeclarationSyntax interfaceDeclaration,
         SemanticModel model)
     {
         IEnumerable<AttributeSyntax> attributes =
             interfaceDeclaration.AttributeLists.SelectMany(attrList => attrList.Attributes);
-        foreach (AttributeSyntax? attribute in attributes)
-        {
-            SymbolInfo symbolInfo = model.GetSymbolInfo(attribute);
-            if (symbolInfo.Symbol is not IMethodSymbol attributeConstructor)
-                continue;
-            INamedTypeSymbol? attributeType = attributeConstructor.ContainingType;
-            if (attributeType is INamedTypeSymbol { IsGenericType: true, Arity: 1 } namedType &&
-                (namedType.OriginalDefinition.ToDisplayString() == WellKnown.FullyQualifiedAttribute
-                     .GenericEntityBehaviourAttribute.WithoutGlobalPrefix
-                 || namedType.OriginalDefinition.ToDisplayString() == WellKnown.FullyQualifiedAttribute
-                     .GenericEntityBehaviourAttribute.WithGlobalPrefix))
-                return (namedType.TypeArguments[0] as INamedTypeSymbol)!;
-        }
-
-        return null;
+        return attributes
+            .Select(attr => attr.GetEntityFromGenericArgument(model))
+            .FirstOrDefault(a => a is not null);
     }
 }

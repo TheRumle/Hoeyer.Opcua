@@ -3,25 +3,21 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Hoeyer.OpcUa.Client.SourceGeneration.Models;
 
-public sealed record RemoteMethodCallerModel
+public record struct RemoteMethodCallerModel
 {
-    public readonly AttributeSyntax Attribute;
+    public readonly InterfaceDeclarationSyntax GlobalizedMethodCaller;
     public readonly FullyQualifiedTypeName InterfaceName;
-    public readonly InterfaceDeclarationSyntax InterfaceSyntax;
+    public readonly INamedTypeSymbol InterfaceSymbol;
     public readonly FullyQualifiedTypeName RelatedEntityName;
 
     public RemoteMethodCallerModel(
         INamedTypeSymbol interfaceSymbol,
         INamedTypeSymbol relatedEntity,
-        AttributeSyntax attribute,
-        InterfaceDeclarationSyntax InterfaceSyntax)
+        InterfaceDeclarationSyntax globalizedMethodCaller)
     {
         InterfaceSymbol = interfaceSymbol;
-        Attribute = attribute;
-        this.InterfaceSyntax = InterfaceSyntax;
+        GlobalizedMethodCaller = globalizedMethodCaller;
         RelatedEntityName = new FullyQualifiedTypeName(relatedEntity);
         InterfaceName = new FullyQualifiedTypeName(interfaceSymbol);
     }
-
-    public INamedTypeSymbol InterfaceSymbol { get; }
 }

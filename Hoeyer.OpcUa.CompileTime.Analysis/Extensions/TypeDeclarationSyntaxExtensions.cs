@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Hoeyer.OpcUa.CompileTime.Analysis.CodeDomain;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Hoeyer.OpcUa.CompileTime.Analysis.Extensions;
 
@@ -18,7 +16,7 @@ public static class TypeDeclarationSyntaxExtensions
 
         return isAnnotated != null && isAnnotated.Value;
     }
-    
+
     public static bool IsAnnotatedAsOpcUaEntity(this ISymbol? symbol)
     {
         var isAnnotated = symbol?
@@ -27,9 +25,10 @@ public static class TypeDeclarationSyntaxExtensions
 
         return isAnnotated != null && isAnnotated.Value;
     }
-    
-    
-    public static bool IsAnnotatedAsOpcUaEntityBehaviour(this TypeDeclarationSyntax typeSyntax, SemanticModel semanticModel)
+
+
+    public static bool IsAnnotatedAsOpcUaEntityBehaviour(this TypeDeclarationSyntax typeSyntax,
+        SemanticModel semanticModel)
     {
         var symbol = semanticModel.GetDeclaredSymbol(typeSyntax);
         var isAnnotated = symbol?
@@ -38,8 +37,9 @@ public static class TypeDeclarationSyntaxExtensions
 
         return isAnnotated != null && isAnnotated.Value;
     }
-    
-    public static AttributeData? GetOpcUaEntityBehaviourAttribute(this TypeDeclarationSyntax typeSyntax, SemanticModel semanticModel) =>
+
+    public static AttributeData? GetOpcUaEntityBehaviourAttribute(this TypeDeclarationSyntax typeSyntax,
+        SemanticModel semanticModel) =>
         semanticModel
             .GetDeclaredSymbol(typeSyntax)
             ?.GetAttributes()
@@ -47,8 +47,7 @@ public static class TypeDeclarationSyntaxExtensions
 
 
     private static bool IsOpcEntityBehaviourAttributeSymbol(AttributeData x) =>
-        WellKnown
-            .FullyQualifiedAttribute
+        WellKnown.FullyQualifiedAttribute
             .EntityBehaviourAttribute
             .WithGlobalPrefix.Equals(x.AttributeClass?.GloballyQualifiedNonGeneric());
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 
-namespace Hoeyer.OpcUa.Core.SourceGeneration.Syntax;
+namespace Hoeyer.OpcUa.Simulation.SourceGeneration;
 
 public static class SymbolExtensions
 {
