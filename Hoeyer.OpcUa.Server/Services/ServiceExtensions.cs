@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Server.Application;
@@ -27,6 +30,7 @@ public static class ServiceExtensions
             return new OpcUaEntityServerSetup(standardConfig, additionalConfiguration ?? (value => { }));
         });
 
+
         serviceRegistration.Collection.AddSingleton<IEntityNodeAccessConfigurator, NoAccessRestrictionsConfigurator>();
         serviceRegistration.Collection.AddSingleton<EntityServerStartedMarker>();
         serviceRegistration.Collection.AddSingleton<OpcUaEntityServerFactory>();
@@ -36,6 +40,8 @@ public static class ServiceExtensions
             var factory = p.GetRequiredService<OpcUaEntityServerFactory>();
             return factory.CreateServer();
         });
+        AddLoaders(serviceRegistration.Collection);
+
 
         return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
     }
@@ -53,5 +59,29 @@ public static class ServiceExtensions
         Action<ServerConfiguration> additionalConfiguration)
     {
         return new OpcUaEntityServerSetup(setup, additionalConfiguration);
+    }
+
+    private static void AddLoaders(IServiceCollection collection)
+    {
+        Type loaderType = typeof(IEntityLoader<>);
+        IEnumerable<(Type Service, Type Implementation)> loaders = OpcUaEntityTypes
+            .TypesFromReferencingAssemblies
+            .Select(type =>
+            {
+                Type? foundLoaderInterface = type
+                    .GetInterfaces()
+                    .FirstOrDefault(@interface => @interface.Namespace == loaderType.Namespace
+                                                  && @interface.IsConstructedGenericType &&
+                                                  @interface.GetGenericTypeDefinition() == loaderType);
+
+                if (foundLoaderInterface is null) return default;
+                return (Service: foundLoaderInterface, Implementation: type);
+            })
+            .Where(result => result.Service is not null);
+
+        foreach ((Type service, Type implementation) in loaders)
+        {
+            collection.AddSingleton(service, implementation);
+        }
     }
 }
