@@ -1,6 +1,6 @@
 ﻿using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Extensions.Opc;
+namespace Hoeyer.OpcUa.Client.Extensions;
 
 public static class StatusCodeExtensions
 {

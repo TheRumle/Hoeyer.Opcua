@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.Common.Extensions;
 using Opc.Ua;
-using static Hoeyer.OpcUa.Core.Extensions.Opc.StatusCodeExtensions;
+using static Hoeyer.OpcUa.Client.Extensions.StatusCodeExtensions;
 
 namespace Hoeyer.OpcUa.Client.Api.Browsing.Reading;
 

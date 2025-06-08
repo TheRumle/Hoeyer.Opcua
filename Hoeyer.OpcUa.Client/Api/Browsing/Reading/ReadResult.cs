@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.OpcUa.Core.Extensions.Opc;
+using Hoeyer.OpcUa.Client.Extensions;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Client.Api.Browsing.Reading;
