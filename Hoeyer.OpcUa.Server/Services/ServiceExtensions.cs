@@ -18,7 +18,9 @@ public static class ServiceExtensions
         this OnGoingOpcEntityServiceRegistration serviceRegistration,
         Action<ServerConfiguration>? additionalConfiguration = null)
     {
-        serviceRegistration.Collection.AddSingleton<OpcUaEntityServerSetup>(p =>
+        IServiceCollection collection = serviceRegistration.Collection;
+
+        collection.AddSingleton<OpcUaEntityServerSetup>(p =>
         {
             var standardConfig = p.GetService<IOpcUaEntityServerInfo>();
             if (standardConfig == null)
@@ -31,11 +33,11 @@ public static class ServiceExtensions
         });
 
 
-        serviceRegistration.Collection.AddSingleton<IEntityNodeAccessConfigurator, NoAccessRestrictionsConfigurator>();
-        serviceRegistration.Collection.AddSingleton<EntityServerStartedMarker>();
-        serviceRegistration.Collection.AddSingleton<OpcUaEntityServerFactory>();
-        serviceRegistration.Collection.AddSingleton<OpcEntityServer>();
-        serviceRegistration.Collection.AddSingleton<IStartableEntityServer>(p =>
+        collection.AddSingleton<IEntityNodeAccessConfigurator, NoAccessRestrictionsConfigurator>();
+        collection.AddSingleton<EntityServerStartedMarker>();
+        collection.AddSingleton<OpcUaEntityServerFactory>();
+        collection.AddSingleton<OpcEntityServer>();
+        collection.AddSingleton<IStartableEntityServer>(p =>
         {
             var factory = p.GetRequiredService<OpcUaEntityServerFactory>();
             return factory.CreateServer();
