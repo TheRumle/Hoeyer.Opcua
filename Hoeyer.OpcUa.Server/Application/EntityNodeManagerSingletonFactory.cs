@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +15,8 @@ internal sealed class EntityNodeManagerSingletonFactory<T>(
     ILoggerFactory factory,
     IManagedEntityNodeSingletonFactory<T> nodeFactory,
     MaybeInitializedEntityManager<T> loadableManager,
-    IEntityNodeAccessConfigurator configurator) : IEntityNodeManagerFactory<T>
+    IEnumerable<IPreinitializedNodeConfigurator<T>> preinitializedNodeConfigurators,
+    IEntityNodeAccessConfigurator accessConfigurator) : IEntityNodeManagerFactory<T>
 {
     public IEntityNodeManager<T>? CreatedManager { get; private set; }
 
@@ -26,11 +29,33 @@ internal sealed class EntityNodeManagerSingletonFactory<T>(
     private async Task<EntityNodeManager<T>> CreateManager(IServerInternal server)
     {
         var node = await nodeFactory.CreateManagedEntityNode(server.NamespaceUris.GetIndexOrAppend);
-        configurator.Configure(node);
+        List<Exception> configurationExceptions = ConfigurePreInitialization(node);
+        if (configurationExceptions.Count > 0) throw new AggregateException(configurationExceptions);
+
+
         ILogger logger = factory.CreateLogger(node.BaseObject.BrowseName.Name + "Manager");
         var createdManager = new EntityNodeManager<T>(node, server, logger);
+        loadableManager.Manager = createdManager; //mark the manager being loaded
 
-        loadableManager.Manager = createdManager;
         return createdManager;
+    }
+
+    private List<Exception> ConfigurePreInitialization(IManagedEntityNode node)
+    {
+        var exceptions = new List<Exception>();
+        accessConfigurator.Configure(node);
+        foreach (IPreinitializedNodeConfigurator<T>? configurator in preinitializedNodeConfigurators)
+        {
+            try
+            {
+                configurator.Configure(node);
+            }
+            catch (Exception e)
+            {
+                exceptions.Add(e);
+            }
+        }
+
+        return exceptions;
     }
 }

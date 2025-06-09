@@ -5,6 +5,7 @@ using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
+using Hoeyer.opcUa.TestEntities;
 using Hoeyer.opcUa.TestEntities.Methods;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -77,6 +78,26 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
         IEnumerable<ServiceDescriptor> services =
             await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IEntityChangedBroadcaster<>));
         await Assert.That(services.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
+    }
+
+    [Test]
+    [ClassDataSource<ApplicationFixture>]
+    public async Task When_EntityServerStarted_CanGetEntityProvider(ApplicationFixture fixture)
+    {
+        await fixture.GetService<EntityServerStartedMarker>();
+        var gantry = fixture.GetService<IEntityNodeProvider<Gantry>>();
+        await Assert.That(gantry).IsNotNull();
+    }
+
+    [Test]
+    [ClassDataSource<ApplicationFixture>]
+    public async Task When_ManagedNodeSingletonHasBeenCalled_NodeIsRegisteredAsSingleton(ApplicationFixture fixture)
+    {
+        await fixture.GetService<EntityServerStartedMarker>();
+        var factory = fixture.GetService<IManagedEntityNodeSingletonFactory<Gantry>>();
+        await factory.CreateManagedEntityNode((_) => 2);
+        var gantry = fixture.GetService<IManagedEntityNode<Gantry>>();
+        await Assert.That(gantry).IsNotNull();
     }
 
 

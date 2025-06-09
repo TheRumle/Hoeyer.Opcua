@@ -7,7 +7,7 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-internal sealed record ManagedEntityNode : IManagedEntityNode
+internal sealed record ManagedEntityNode<T> : IManagedEntityNode<T>
 {
     public ManagedEntityNode(IEntityNode node, string entityNamespace, ushort entityNamespaceIndex)
     {

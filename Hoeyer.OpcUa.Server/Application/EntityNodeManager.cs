@@ -11,7 +11,7 @@ using Opc.Ua.Server;
 namespace Hoeyer.OpcUa.Server.Application;
 
 internal sealed class EntityNodeManager<T>(
-    IManagedEntityNode managedEntity,
+    IManagedEntityNode<T> managedEntity,
     IServerInternal server,
     ILogger logger)
     : CustomNodeManager(server, managedEntity.Namespace), IEntityNodeManager<T>
@@ -71,20 +71,5 @@ internal sealed class EntityNodeManager<T>(
             logger.LogInformation("Browsing node");
             base.Browse(context, ref continuationPoint, references);
         }
-    }
-
-
-    /// <inheritdoc />
-    public override void Read(OperationContext context, double maxAge, IList<ReadValueId> nodesToRead,
-        IList<DataValue> values, IList<ServiceResult> errors)
-    {
-        base.Read(context, maxAge, nodesToRead, values, errors);
-    }
-
-    protected override void Read(ServerSystemContext context, IList<ReadValueId> nodesToRead, IList<DataValue> values,
-        IList<ServiceResult> errors, List<NodeHandle> nodesToValidate,
-        IDictionary<NodeId, NodeState> cache)
-    {
-        base.Read(context, nodesToRead, values, errors, nodesToValidate, cache);
     }
 }

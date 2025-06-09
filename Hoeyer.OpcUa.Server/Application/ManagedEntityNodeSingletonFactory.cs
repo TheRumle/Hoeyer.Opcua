@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Hoeyer.OpcUa.Server.Application;
 
 [OpcUaEntityService(typeof(IManagedEntityNodeSingletonFactory<>), ServiceLifetime.Singleton)]
+[OpcUaEntityService(typeof(IEntityNodeProvider<>), ServiceLifetime.Singleton)]
 internal sealed class ManagedEntityNodeSingletonFactory<T>(
     IOpcUaEntityServerInfo info,
     IEntityLoader<T> value,
@@ -17,11 +18,12 @@ internal sealed class ManagedEntityNodeSingletonFactory<T>(
     IEntityNodeStructureFactory<T> structureFactory,
     IEntityChangedBroadcaster<T> broadcaster) : IManagedEntityNodeSingletonFactory<T>
 {
-    public IManagedEntityNode? Node { get; private set; }
+    private IManagedEntityNode<T>? _node;
+    public IManagedEntityNode? Node => _node;
 
-    public async Task<IManagedEntityNode> CreateManagedEntityNode(Func<string, ushort> namespaceToIndex)
+    public async Task<IManagedEntityNode<T>> CreateManagedEntityNode(Func<string, ushort> namespaceToIndex)
     {
-        if (Node != null) return Node;
+        if (_node != null) return _node;
 
         var @namespace = info.Host + $"/{typeof(T).Name}";
         var namespaceIndex = namespaceToIndex.Invoke(@namespace);
@@ -29,8 +31,20 @@ internal sealed class ManagedEntityNodeSingletonFactory<T>(
         var entity = await value.LoadCurrentState();
         var nodeRepresentation = structureFactory.Create(namespaceIndex);
         translator.AssignToNode(entity, nodeRepresentation);
-        Node = new ManagedEntityNode(nodeRepresentation, @namespace, namespaceIndex);
-        broadcaster.BeginObserve(Node);
-        return Node;
+        _node = new ManagedEntityNode<T>(nodeRepresentation, @namespace, namespaceIndex);
+        broadcaster.BeginObserve(_node);
+        return _node;
+    }
+
+    /// <inheritdoc />
+    public IManagedEntityNode<T> GetEntityNode()
+    {
+        if (_node == null)
+        {
+            throw new EntityNodeProviderException(typeof(T),
+                $"The node factory has not yet been provided with an namespace index used to construct the node. Have you awaited the {nameof(EntityServerStartedMarker)}?");
+        }
+
+        return _node;
     }
 }
