@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Microsoft.Extensions.DependencyInjection;
@@ -100,7 +101,9 @@ public class ReflectionBasedEntityStructureFactory<T> : IEntityNodeStructureFact
             .Select(method => new OpcMethodTypeInfo(
                 methodName: method.Name,
                 parent: entity,
-                returnType: method.ReturnType,
+                returnType: method.ReturnType == typeof(Task) && !method.ReturnType.IsGenericType
+                    ? null
+                    : method.ReturnType,
                 arguments: method.GetParameters()
             ));
     }
