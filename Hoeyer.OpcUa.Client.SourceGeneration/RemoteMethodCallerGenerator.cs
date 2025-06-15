@@ -51,11 +51,6 @@ public sealed class RemoteMethodCallerGenerator : IIncrementalGenerator
         if (entityParameter is null || declaredSymbol is null) return null;
         List<MethodDeclarationSyntax> methods = interfaceDeclaration.Members.OfType<MethodDeclarationSyntax>().ToList();
 
-        List<IMethodSymbol> methodSymbols = methods.Select(method => model.GetDeclaredSymbol(method))
-            .OfType<IMethodSymbol>()
-            .ToList();
-
-
         var rewriter = new FullyQualifyTypeNamesRewriter(model);
         List<MemberDeclarationSyntax> rewrittenMethods = methods
             .Select(e => (MemberDeclarationSyntax)rewriter.Visit(e))
