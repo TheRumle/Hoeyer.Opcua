@@ -10,6 +10,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.Client\Hoeyer.OpcUa.Client.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Server.Simulation\Hoeyer.OpcUa.Server.Simulation.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core.Test\Hoeyer.OpcUa.Core.Test.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.TestEntities\Hoeyer.OpcUa.TestEntities.csproj"/>

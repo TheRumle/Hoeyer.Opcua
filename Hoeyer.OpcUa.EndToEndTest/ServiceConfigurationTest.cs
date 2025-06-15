@@ -5,8 +5,10 @@ using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
+using Hoeyer.OpcUa.Server.Simulation.Api;
 using Hoeyer.opcUa.TestEntities;
 using Hoeyer.opcUa.TestEntities.Methods;
+using Hoeyer.opcUa.TestEntities.Methods.Generated;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -85,19 +87,27 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     public async Task When_EntityServerStarted_CanGetEntityProvider(ApplicationFixture fixture)
     {
         await fixture.GetService<EntityServerStartedMarker>();
-        var gantry = fixture.GetService<IEntityNodeProvider<Gantry>>();
-        await Assert.That(gantry).IsNotNull();
+        var gantryProvider = fixture.GetService<IEntityNodeProvider<Gantry>>();
+        await Assert.That(gantryProvider).IsNotNull();
+        await Assert.That(gantryProvider.GetEntityNode()).IsNotNull();
     }
 
     [Test]
     [ClassDataSource<ApplicationFixture>]
-    public async Task When_ManagedNodeSingletonHasBeenCalled_NodeIsRegisteredAsSingleton(ApplicationFixture fixture)
+    public async Task When_SimulatorIsImplemented_ItIsRegistered(ApplicationFixture fixture)
     {
         await fixture.GetService<EntityServerStartedMarker>();
-        var factory = fixture.GetService<IManagedEntityNodeSingletonFactory<Gantry>>();
-        await factory.CreateManagedEntityNode((_) => 2);
-        var gantry = fixture.GetService<IManagedEntityNode<Gantry>>();
-        await Assert.That(gantry).IsNotNull();
+        var simulator = fixture.GetService<IActionSimulationConfigurator<Gantry, IntegerInputArgs>>();
+        await Assert.That(simulator).IsNotNull();
+    }
+
+    [Test]
+    [ServiceCollectionDataSource]
+    public async Task When_SimulatorIsImplemented_ItIsRegistered(IServiceCollection fixture)
+    {
+        IEnumerable<ServiceDescriptor> simulators = fixture.Where(e =>
+            e.ServiceType == typeof(IActionSimulationConfigurator<Gantry, IntegerInputArgs>));
+        await Assert.That(simulators).All().Satisfy(e => e.IsNotNull());
     }
 
 

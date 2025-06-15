@@ -10,10 +10,11 @@ namespace Hoeyer.OpcUa.EndToEndTest;
 public class MethodCallingTest(ApplicationFixture<IGantryMethods> appFixture)
 {
     [Test]
-    public async Task WhenCallingVoidTask_DoesNotThrow() => await appFixture.TestedService.A(2);
+    public async Task WhenCallingVoidTask_DoesNotThrow() => await appFixture.TestedService.IntegerInput(2);
 
     [Test]
-    public async Task WhenArgMethods_DoesNotThrow() => await appFixture.TestedService.LetsGoInt(2, 21.0f, [1, 23, 3]);
+    public async Task WhenArgMethods_DoesNotThrow() =>
+        await appFixture.TestedService.MultiInputIntReturn(2, 21.0f, [1, 23, 3]);
 
     [Test]
     public async Task WhenArgMethods_DoesNotThrow_More()

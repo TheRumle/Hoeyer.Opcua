@@ -1,6 +1,7 @@
 ﻿using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Core.Test.Fixtures;
 using Hoeyer.OpcUa.Server.Services;
+using Hoeyer.OpcUa.Server.Simulation.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.EndToEndTest.Fixtures;
@@ -20,7 +21,8 @@ public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourc
     private static IServiceCollection CreateServiceCollection()
     {
         OpcUaCoreServicesFixture fixture = new();
-        fixture.OnGoingOpcEntityServiceRegistration.WithOpcUaClientServices().WithOpcUaServer();
+        fixture.OnGoingOpcEntityServiceRegistration.WithOpcUaClientServices().WithOpcUaServer()
+            .WithOpcUaServerSimulation();
         fixture.ServiceCollection.AddSingleton(fixture.ServiceCollection);
         return fixture.ServiceCollection;
     }
