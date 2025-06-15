@@ -11,6 +11,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Client\Hoeyer.OpcUa.Client.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Server.Simulation\Hoeyer.OpcUa.Server.Simulation.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj"/>
     </ItemGroup>
 
@@ -18,5 +19,6 @@
         <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.Analysis\Hoeyer.OpcUa.CompileTime.Analysis.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core.SourceGeneration\Hoeyer.OpcUa.Core.SourceGeneration.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Client.SourceGeneration\Hoeyer.OpcUa.Client.SourceGeneration.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Compiletime\Hoeyer.OpcUa.Simulation.Compiletime.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
 </Project>
