@@ -6,9 +6,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
-    </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Api\"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj"/>
     </ItemGroup>
 
 
