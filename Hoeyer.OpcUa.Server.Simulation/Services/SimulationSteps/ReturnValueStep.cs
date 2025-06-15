@@ -10,12 +10,12 @@ public sealed class ReturnValueStep<TEntity, TArgs, TReturn>(
 
     public void Execute(TArgs args)
     {
-        if (Equals(arguments, default(TArgs)))
+        if (Equals(args, default(TArgs)))
         {
             throw new SimulationFailureException(
                 $"The arguments of type '{typeof(TArgs).Name}' has not been assigned to the actionStep");
         }
 
-        Result = resultAction.Invoke(arguments!);
+        Result = resultAction.Invoke(args!);
     }
 }
