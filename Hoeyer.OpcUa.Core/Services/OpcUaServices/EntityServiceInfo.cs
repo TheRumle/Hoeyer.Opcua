@@ -22,7 +22,8 @@ internal sealed record EntityServiceInfo
         this.Entity = Entity;
 
         if (Entity.GetCustomAttribute<OpcUaEntityAttribute>() is null)
-            throw new ArgumentException($"Entity must be annotated with {nameof(OpcUaEntityAttribute)}");
+            throw new ArgumentException(
+                $"The type '{ImplementationType.Name}' is being registered as '{serviceType.Name}' but '{Entity.Name}' must be annotated with {nameof(OpcUaEntityAttribute)} to be considered an Entity.");
     }
 
     public ServiceLifetime ServiceLifetime { get; }
