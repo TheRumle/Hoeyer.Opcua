@@ -28,28 +28,35 @@ public static class Rules
         true,
         "OpcUa entity properties must not be annotated as nullable.");
 
-    public static Diagnostic MustNotBeNullableProperty(PropertyDeclarationSyntax property) => Diagnostic.Create(MustNotBeNullablePropertyDescriptor, property.GetLocation(), property.Identifier);
-
 
     public static readonly DiagnosticDescriptor OpcUaEntityMemberNotSupported = CreateErrorDescriptor(
         "HOEYERUA0004",
         DesignCategory,
         "The member is not supported for OpcUa entity definitions");
-    
-    public static readonly DiagnosticDescriptor OpcUaEntityBehaviourMemberNotSupported = CreateErrorDescriptor("HOEYERUA0005",
+
+    public static readonly DiagnosticDescriptor OpcUaEntityBehaviourMemberNotSupported = CreateErrorDescriptor(
+        "HOEYERUA0005",
         DesignCategory,
         "The member is not supported for OpcUa entity behaviour definitions.");
 
-    
+
     public static readonly DiagnosticDescriptor MustBeOpcEntityArgument = CreateErrorDescriptor(
         "HOEYERUA0006",
         DesignCategory,
         $"The argument must be a type annotated with '{WellKnown.FullyQualifiedAttribute.EntityAttribute.WithoutGlobalPrefix}'.");
-    
+
     public static readonly DiagnosticDescriptor ReturnTypeMustBeTask = CreateErrorDescriptor(
         "HOEYERUA0007",
         DesignCategory,
         "The return of entity methods must be of type Task or Task<T> and T must be either a native OpcUa type or an IList of such type with a default constructor.");
+
+    public static readonly DiagnosticDescriptor MethodNameMustBeUnique = CreateErrorDescriptor(
+        "HOEYERUA0008",
+        DesignCategory,
+        "Entity methods must be uniquely identified by their name.");
+
+    public static Diagnostic MustNotBeNullableProperty(PropertyDeclarationSyntax property) =>
+        Diagnostic.Create(MustNotBeNullablePropertyDescriptor, property.GetLocation(), property.Identifier);
 
     private static DiagnosticDescriptor CreateDescriptor(
         string diagnosticId,
