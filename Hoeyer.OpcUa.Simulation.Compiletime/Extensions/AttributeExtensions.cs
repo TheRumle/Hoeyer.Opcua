@@ -15,7 +15,7 @@ public static class AttributeExtensions
         INamedTypeSymbol? attributeType = attributeConstructor.ContainingType;
 
 
-        if (attributeType is not INamedTypeSymbol { IsGenericType: true, Arity: 1 } namedType) return null;
+        if (attributeType is not INamedTypeSymbol { IsGenericType: true, Arity: >= 1 } namedType) return null;
 
         if (namedType.OriginalDefinition.ToDisplayString() == WellKnown.FullyQualifiedAttribute
                 .GenericEntityBehaviourAttribute.WithoutGlobalPrefix ||

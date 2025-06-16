@@ -7,6 +7,7 @@
         <IsRoslynComponent>true</IsRoslynComponent>
         <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
         <IsPackable>false</IsPackable>
+        <RootNamespace>Hoeyer.OpcUa.Simulation.SourceGeneration</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

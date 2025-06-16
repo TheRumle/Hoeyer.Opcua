@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Hoeyer.OpcUa.Simulation.SourceGeneration.Constants;
 using Hoeyer.OpcUa.Simulation.SourceGeneration.Extensions;
 using Hoeyer.OpcUa.Simulation.SourceGeneration.Generation;
@@ -21,7 +20,7 @@ public sealed class MethodArgumentsStructureGenerator : IIncrementalGenerator
     {
         UnloadedIncrementalValuesProvider<(string identifier, string code)> argumentStructures = context
             .GetEntityMethodInterfaces()
-            .Select(static (ctx, ct) => CreateMethodArgumentStructures(ctx, ct))
+            .Select(static (ctx, ct) => CreateMethodArgumentStructures(ctx))
             .Where(static e => e != null)
             .SelectMany(static (ctx, cs) => CreateSourceCode(ctx!.Value));
 
@@ -35,7 +34,7 @@ public sealed class MethodArgumentsStructureGenerator : IIncrementalGenerator
     }
 
     private static MethodArgumentsStructureModel? CreateMethodArgumentStructures(
-        (InterfaceDeclarationSyntax interfaceNode, SemanticModel model) ctx, CancellationToken _)
+        (InterfaceDeclarationSyntax interfaceNode, SemanticModel model) ctx)
     {
         (InterfaceDeclarationSyntax? interfaceDeclaration, SemanticModel? model) = ctx;
 
@@ -71,36 +70,34 @@ public sealed class MethodArgumentsStructureGenerator : IIncrementalGenerator
             var builder = new SourceCodeWriter();
 
             var className = methodSymbol.Name + "Args";
-            List<(string Type, string Name)> paramList = methodSymbol
-                .Parameters
-                .Select(param => (
-                    Type: param.Type.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix),
-                    Name: param.Name))
-                .ToList();
 
             Func<string, string> firstLetterToUpper = (string s) => char.ToUpper(s[0]) + s.Substring(1);
-            List<(string Type, string UpperName, string LowerName)> propertyReferences = paramList
-                .Select(e => (e.Type,
-                    UpperName: firstLetterToUpper.Invoke(e.Name),
-                    LowerName: e.Name)).ToList();
+            var paramList = methodSymbol
+                .Parameters
+                .Select((param, index) => (
+                    Type: param.Type.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix),
+                    UpperName: firstLetterToUpper.Invoke(param.Name),
+                    LowerName: param.Name,
+                    Index: index))
+                .ToList();
 
             builder.WriteLine("namespace " + @namespace + ".Generated");
             builder.WriteLine("{");
 
             //method arg attribute
             var attrName = WellKnown.FullyQualifiedAttribute.OpcMethodArgumentsAttribute.WithGlobalPrefix;
-            builder.WriteLine($"[{attrName}(typeof({entity}), typeof({@interface}), \"{methodSymbol.Name}\")]");
+            builder.WriteLine($"[{attrName}<{entity}, {@interface}>(\"{methodSymbol.Name}\")]");
             builder.WriteLine($"public sealed record {className}");
             builder.WriteLine("{");
-            foreach (var (type, upperName, _) in propertyReferences)
+            foreach (var (type, upperName, _, _) in paramList)
             {
                 builder.WriteLine($"public {type} {upperName} {{ get; }}");
             }
 
             builder.WriteLine(
-                $"public {className}({string.Join(", ", propertyReferences.Select(e => e.Type + " " + e.LowerName))})"); //ctor begin
+                $"public {className}({string.Join(", ", paramList.Select(e => e.Type + " " + e.LowerName))})"); //ctor begin
             builder.WriteLine("{");
-            foreach (var (_, upperName, lowerName) in propertyReferences) //property assignments
+            foreach (var (_, upperName, lowerName, _) in paramList) //property assignments
             {
                 builder.WriteLine($"this.{upperName} = {lowerName};");
             }
@@ -110,8 +107,41 @@ public sealed class MethodArgumentsStructureGenerator : IIncrementalGenerator
             builder.WriteLine("}"); // namespace end
 
             results.Add((className, builder.ToString()));
+            results.Add(CreateTranslator(className, @namespace, paramList));
         }
 
         return results;
+    }
+
+
+    public static (string identifier, string definition) CreateTranslator(string className, string @namespace,
+        List<(string Type, string UpperName, string LowerName, int Index)> paramList)
+    {
+        var translatorInterface = WellKnown.FullyQualifiedInterface.IObjectArgsToTypedArgs(className).WithGlobalPrefix;
+        var toArgsStructure = string.Join(",\n ", paramList.Select(e => $"({e.Type})args[{e.Index}]"));
+        var toObjectArray = string.Join(",\n ", paramList.Select(e => $"args.{e.UpperName}"));
+
+        var converterIdentifier = className + "Translator";
+        var converterInterface = $$"""
+                                   namespace {{@namespace}}.Generated
+                                   {
+                                       public sealed class {{converterIdentifier}} : {{translatorInterface}}
+                                       {
+                                         public {{className}} Map(IList<object> args)
+                                         {
+                                             return new {{className}}({{toArgsStructure}});   
+                                         }
+                                         public object[] Map({{className}} args)
+                                         {
+                                             return new  object[]
+                                             {
+                                                 {{toObjectArray}}
+                                             };
+                                         }
+                                       }
+                                   }
+                                   """;
+
+        return (converterIdentifier, converterInterface);
     }
 }
