@@ -6,9 +6,9 @@ using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Server.Simulation.Api;
-using Hoeyer.opcUa.TestEntities;
-using Hoeyer.opcUa.TestEntities.Methods;
-using Hoeyer.opcUa.TestEntities.Methods.Generated;
+using Hoeyer.OpcUa.TestEntities;
+using Hoeyer.OpcUa.TestEntities.Methods;
+using Hoeyer.OpcUa.TestEntities.Methods.Generated;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -80,16 +80,6 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
         IEnumerable<ServiceDescriptor> services =
             await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IEntityChangedBroadcaster<>));
         await Assert.That(services.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
-    }
-
-    [Test]
-    [ClassDataSource<ApplicationFixture>]
-    public async Task When_EntityServerStarted_CanGetEntityProvider(ApplicationFixture fixture)
-    {
-        await fixture.GetService<EntityServerStartedMarker>();
-        var gantryProvider = fixture.GetService<IEntityNodeProvider<Gantry>>();
-        await Assert.That(gantryProvider).IsNotNull();
-        await Assert.That(gantryProvider.GetEntityNode()).IsNotNull();
     }
 
     [Test]

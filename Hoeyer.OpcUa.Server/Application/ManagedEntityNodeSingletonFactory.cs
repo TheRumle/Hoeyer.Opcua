@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Hoeyer.OpcUa.Server.Application;
 
 [OpcUaEntityService(typeof(IManagedEntityNodeSingletonFactory<>), ServiceLifetime.Singleton)]
-[OpcUaEntityService(typeof(IEntityNodeProvider<>), ServiceLifetime.Singleton)]
 internal sealed class ManagedEntityNodeSingletonFactory<T>(
     IOpcUaEntityServerInfo info,
     IEntityLoader<T> value,
