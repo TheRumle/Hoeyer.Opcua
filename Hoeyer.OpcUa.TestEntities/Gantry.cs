@@ -1,14 +1,16 @@
 ﻿using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.TestEntities.Methods;
 
 namespace Hoeyer.OpcUa.TestEntities;
 
 [OpcUaEntity]
 public sealed class Gantry
 {
-    public int IntValue { get; set; }
-    public Guid HeldContainer { get; set; }
-    public bool Occupied { get; set; }
-    public string StringValue { get; set; }
-    public List<string> AList { get; set; }
-    public List<string> AAginList { get; set; }
+    public required Position Position { get; set; }
+    public required int IntValue { get; set; }
+    public required Guid HeldContainer { get; set; }
+    public required bool Occupied { get; set; }
+    public required string StringValue { get; set; }
+    public required List<string> AList { get; set; }
+    public required List<string> AAginList { get; set; }
 }
