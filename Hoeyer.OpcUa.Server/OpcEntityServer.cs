@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Extensions.Logging;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
@@ -38,18 +39,21 @@ internal sealed class OpcEntityServer(
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server,
         ApplicationConfiguration configuration)
     {
-        logger.BeginScope("Creating master manager");
-        Task<IEntityNodeManager>[] managerCreationTasks = entityManagerFactories
-            .Select(async factory => await factory.CreateEntityManager(server))
-            .ToArray();
+        return logger.Try(() =>
+        {
+            Task<IEntityNodeManager>[] managerCreationTasks = entityManagerFactories
+                .Select(async factory => await factory.CreateEntityManager(server))
+                .ToArray();
 
-        Task.WhenAll(managerCreationTasks).Wait();
-        List<AggregateException> exceptions =
-            managerCreationTasks.Select(e => e.Exception).Where(e => e != null).ToList();
+            Task.WhenAll(managerCreationTasks).Wait();
+            List<AggregateException> exceptions =
+                managerCreationTasks.Select(e => e.Exception).Where(e => e != null).ToList();
 
-        if (exceptions.Any()) throw new AggregateException(exceptions);
+            if (exceptions.Any()) throw new AggregateException(exceptions);
 
-        return new DomainMasterNodeManager(server, configuration, managerCreationTasks.Select(e => e.Result).ToArray());
+            return new DomainMasterNodeManager(server, configuration,
+                managerCreationTasks.Select(e => e.Result).ToArray());
+        })!;
     }
 
 
