@@ -42,7 +42,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.TestEntities",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Server.Simulation", "Hoeyer.OpcUa.Server.Simulation\Hoeyer.OpcUa.Server.Simulation.csproj", "{89ED9BD7-A94C-43CF-92C1-D470EFF9AD91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Simulation.SourceGeneration", "Hoeyer.OpcUa.Simulation.SourceGeneration\Hoeyer.OpcUa.Simulation.SourceGeneration.csproj", "{809988AB-7F2A-4E8D-8A0E-16E3DCA76B04}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Simulation.Compiletime", "Hoeyer.OpcUa.Simulation.Compiletime\Hoeyer.OpcUa.Simulation.Compiletime.csproj", "{809988AB-7F2A-4E8D-8A0E-16E3DCA76B04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
