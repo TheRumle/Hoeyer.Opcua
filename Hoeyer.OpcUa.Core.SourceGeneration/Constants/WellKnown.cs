@@ -30,7 +30,7 @@ internal static class WellKnown
             CoreApiTypeName("IEntityNode");
 
         public static FullyQualifiedTypeName DataTypeTranslator =>
-            CoreTypeName("Application.Translator.DataTypeToTypeTranslator");
+            CoreTypeName("Application.OpcTypeMappers.DataTypeToTypeTranslator");
 
         public static FullyQualifiedTypeName EntityTranslatorInterfaceOf(string T) =>
             CoreApiTypeName($"IEntityTranslator<{T}>");
