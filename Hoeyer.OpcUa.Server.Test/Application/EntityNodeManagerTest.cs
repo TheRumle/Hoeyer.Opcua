@@ -3,7 +3,7 @@ using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.IntegrationTest.Fixture;
-using Hoeyer.opcUa.TestEntities;
+using Hoeyer.OpcUa.TestEntities;
 using JetBrains.Annotations;
 using Opc.Ua;
 using Opc.Ua.Server;
