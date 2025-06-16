@@ -17,7 +17,8 @@ namespace Hoeyer.OpcUa.Server.Simulation.Services;
 
 public static class ServiceCollectionExtension
 {
-    public static IServiceCollection WithOpcUaServerSimulation(this OnGoingOpcEntityServiceRegistration registration)
+    public static OnGoingOpcEntityServiceRegistration WithOpcUaServerSimulation(
+        this OnGoingOpcEntityServiceRegistration registration)
     {
         IServiceCollection serviceCollection = registration.Collection;
         serviceCollection.AddTransient<ITimeScaler, IdentityTimeScaler>();
@@ -41,7 +42,7 @@ public static class ServiceCollectionExtension
         AddActionSimulation(typeReferences.AsParallel(), serviceCollection);
         AddFunctionSimulation(typeReferences.AsParallel(), serviceCollection);
 
-        return serviceCollection;
+        return registration;
     }
 
     private static void AddFunctionSimulation(ParallelQuery<Type> typeReferences, IServiceCollection serviceCollection)
