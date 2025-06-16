@@ -36,7 +36,7 @@ internal static class WellKnown
             ServerSimulationName($"Api.IActionSimulationConfigurator`2");
 
         public static FullyQualifiedTypeName IFunctionSimulationConfigurator =>
-            ServerSimulationName($"Api.FunctionSimulationConfigurator`2");
+            ServerSimulationName($"Api.IFunctionSimulationConfigurator`2");
 
         public static FullyQualifiedTypeName IObjectArgsToTypedArgs(string attributeClassName) =>
             ServerSimulationName($"Api.IEntityMethodArgTranslator<{attributeClassName}>");

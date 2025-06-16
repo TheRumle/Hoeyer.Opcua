@@ -3,6 +3,7 @@ using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Test.Fixtures;
 using Hoeyer.OpcUa.TestEntities;
+using Hoeyer.OpcUa.TestEntities.Methods;
 using JetBrains.Annotations;
 using Opc.Ua;
 
@@ -54,13 +55,24 @@ public class EntityTranslatorTest
         IEntityNode node = structure.Create(2);
         translator.AssignToNode(new Gantry
         {
-            AAginList = ["stneriao", "tnserio"],
-            AList = ["These", " values failed before"],
+            AAginList =
+            [
+                "stneriao",
+                "tnserio"
+            ],
+            AList =
+            [
+                "These",
+                " values failed before"
+            ],
             IntValue = 21,
-            StringValue = "hello"
+            StringValue = "hello",
+            Position = Position.OverThere,
+            HeldContainer = Guid.Empty,
+            Occupied = false
         }, node);
 
-        Func<string, object> propertyFor = (string name) => node.PropertyByBrowseName[name].Value;
+        Func<string, object> propertyFor = name => node.PropertyByBrowseName[name].Value;
         using IDisposable assertion = Assert.Multiple();
         await Assert.That(propertyFor(nameof(Gantry.AAginList))).IsTypeOf<string[]>();
         await Assert.That(propertyFor(nameof(Gantry.AList))).IsTypeOf<string[]>();

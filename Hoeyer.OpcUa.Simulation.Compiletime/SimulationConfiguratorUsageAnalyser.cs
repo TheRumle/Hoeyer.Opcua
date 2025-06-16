@@ -79,8 +79,11 @@ public sealed class SimulationConfiguratorUsageAnalyser : DiagnosticAnalyzer
         TypedConstant methodName = argsAttrData.ConstructorArguments[0];
         IMethodSymbol? simulatedMethod = simulatedInterface.GetMembers().OfType<IMethodSymbol>().FirstOrDefault(m =>
             string.Equals(m.Name, (string)methodName.Value!, StringComparison.Ordinal));
+
         if (simulatedMethod!.ReturnType is INamedTypeSymbol { Arity: 1 })
+        {
             context.ReportDiagnostic(Diagnostic.Create(SimulationRules.MustBeFunctionSimulation, location));
+        }
     }
 
     private static void AnalyzeFunctionSimulationConfigurationUsage(
@@ -94,17 +97,23 @@ public sealed class SimulationConfiguratorUsageAnalyser : DiagnosticAnalyzer
 
         if (actionConfigType is null) return;
 
-        (Location? location, AttributeData? argsAttrData) = AnalyseSimulationInterfaceUsage(simulationImplementor,
-            actionConfigType, context,
+        (Location? location, AttributeData? argsAttrData) = AnalyseSimulationInterfaceUsage(
+            simulationImplementor,
+            actionConfigType,
+            context,
             onMultipleInterfaceImplementations);
+
         if (argsAttrData == null) return;
 
         ITypeSymbol simulatedInterface = argsAttrData.AttributeClass!.TypeArguments[1];
         TypedConstant methodName = argsAttrData.ConstructorArguments[0];
-        IMethodSymbol? simulatedMethod = simulatedInterface.GetMembers().OfType<IMethodSymbol>().FirstOrDefault(m =>
-            string.Equals(m.Name, (string)methodName.Value!, StringComparison.Ordinal));
-        if (simulatedMethod!.ReturnType is INamedTypeSymbol { Arity: 1 })
-            context.ReportDiagnostic(Diagnostic.Create(SimulationRules.MustBeFunctionSimulation, location));
+        IMethodSymbol? simulatedMethod = simulatedInterface
+            .GetMembers()
+            .OfType<IMethodSymbol>()
+            .FirstOrDefault(m => string.Equals(m.Name, (string)methodName.Value!, StringComparison.Ordinal));
+
+        if (simulatedMethod!.ReturnType is not INamedTypeSymbol { Arity: 1 })
+            context.ReportDiagnostic(Diagnostic.Create(SimulationRules.MustBeActionSimulation, location));
     }
 
 
@@ -149,8 +158,10 @@ public sealed class SimulationConfiguratorUsageAnalyser : DiagnosticAnalyzer
         }
 
         ITypeSymbol tEntity = simulatorInterface.TypeArguments[0];
-        if (tEntity is not INamedTypeSymbol entitySymbol || !entitySymbol.IsAnnotatedAsOpcUaEntity()) // use non generic
+        if (tEntity is not INamedTypeSymbol entitySymbol || !entitySymbol.IsAnnotatedAsOpcUaEntity())
+        {
             context.ReportDiagnostic(Diagnostic.Create(SimulationRules.TEntityMustBeAnEntity, location));
+        }
 
         return (location, argsAttrData);
     }

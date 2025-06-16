@@ -17,7 +17,7 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
                                                      using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
                                                      using Hoeyer.OpcUa.Server.Simulation;
 
-                                                     namespace Hoeyer.opcUa.EntityDefinitions;
+                                                     namespace Hoeyer.OpcUa.EntityDefinitions;
 
                                                      [OpcUaEntity]
                                                      public sealed class Gantry
@@ -70,8 +70,8 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
                                                       }
                                                       """;
 
-    private const string ActionSimulatorForNonvoidTask = """
-                                                         public sealed class IntegerInputArgsActionSimulator : IActionSimulationConfigurator<Gantry, MultiInputIntReturnArgs>
+    private const string ActionSimulatorForNonVoidTask = """
+                                                         public sealed class MultiInputIntReturnArgsActionSimulator : IActionSimulationConfigurator<Gantry, MultiInputIntReturnArgs>
                                                          {
                                                              public IEnumerable<ISimulationStep> ConfigureSimulation(IActionSimulationBuilder<Gantry, MultiInputIntReturnArgs> actionSimulationConfiguration) => [];
                                                          }
@@ -88,9 +88,9 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
                                                        """;
 
     private const string FuncSimulatorForVoidTask = """
-                                                    public sealed class MultiInputIntReturnFuncSimulator : IActionSimulationConfigurator<Gantry, MultiInputIntReturnArgs>
+                                                    public sealed class IntegerInputFuncSimulator : IFunctionSimulationConfigurator<Gantry, IntegerInputArgs>
                                                     {
-                                                        public IEnumerable<ISimulationStep> ConfigureSimulation(IActionSimulationBuilder<Gantry, MultiInputIntReturnArgs> actionSimulationConfiguration) => [];
+                                                        public IEnumerable<ISimulationStep> ConfigureSimulation(IFunctionSimulationBuilder<Gantry, IntegerInputArgs> actionSimulationConfiguration) => [];
                                                     }
                                                     """;
 
@@ -111,9 +111,10 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
     [Test]
     public async Task WhenAnalysing_ActionSimulatorForNonVoidTask_ShouldProduceDiagnostics()
     {
-        var sourceCode = EntityWithGeneratorClasses + ActionSimulatorForNonvoidTask;
+        var sourceCode = EntityWithGeneratorClasses + ActionSimulatorForNonVoidTask;
         AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
-        await Assert.That(result.Diagnostics).IsNotEmpty();
+        await Assert.That(result.Diagnostics)
+            .Contains(d => d.Descriptor.Equals(SimulationRules.MustBeFunctionSimulation));
     }
 
     [Test]
@@ -129,6 +130,7 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
     {
         var sourceCode = EntityWithGeneratorClasses + FuncSimulatorForVoidTask;
         AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
-        await Assert.That(result.Diagnostics).IsNotEmpty();
+        await Assert.That(result.Diagnostics)
+            .Contains(d => d.Descriptor.Equals(SimulationRules.MustBeActionSimulation));
     }
 }
