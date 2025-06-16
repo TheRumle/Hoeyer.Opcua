@@ -1,10 +1,9 @@
 ﻿using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Server.Simulation.Api;
-using Hoeyer.OpcUa.Server.Simulation.Services.Action;
 using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
-using Hoeyer.opcUa.TestEntities.Methods.Generated;
+using Hoeyer.OpcUa.TestEntities.Methods.Generated;
 
-namespace Hoeyer.opcUa.TestEntities;
+namespace Hoeyer.OpcUa.TestEntities;
 
 [OpcUaEntity]
 public sealed class Gantry

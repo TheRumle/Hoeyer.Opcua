@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core;
 
-namespace Hoeyer.opcUa.TestEntities.Methods;
+namespace Hoeyer.OpcUa.TestEntities.Methods;
 
 [OpcUaEntityMethods<Gantry>]
 public interface IGantryMethods

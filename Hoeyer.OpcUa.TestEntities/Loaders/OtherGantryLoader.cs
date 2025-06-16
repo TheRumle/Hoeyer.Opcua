@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.Server.Api;
 
-namespace Hoeyer.opcUa.TestEntities.Loaders;
+namespace Hoeyer.OpcUa.TestEntities.Loaders;
 
 public class OtherGantryLoader : IEntityLoader<OtherGantry>
 {

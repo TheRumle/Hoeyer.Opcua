@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Hoeyer.opcUa.TestEntities.Subtypes;
+namespace Hoeyer.OpcUa.TestEntities.Subtypes;
 
 public sealed class CustomIList : IList<int>
 {

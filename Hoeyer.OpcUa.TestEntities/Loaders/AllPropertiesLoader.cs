@@ -1,7 +1,7 @@
 ﻿using Hoeyer.OpcUa.Server.Api;
-using Hoeyer.opcUa.TestEntities.Subtypes;
+using Hoeyer.OpcUa.TestEntities.Subtypes;
 
-namespace Hoeyer.opcUa.TestEntities.Loaders;
+namespace Hoeyer.OpcUa.TestEntities.Loaders;
 
 public class AllPropertiesLoader : IEntityLoader<AllPropertyTypesEntity>
 {

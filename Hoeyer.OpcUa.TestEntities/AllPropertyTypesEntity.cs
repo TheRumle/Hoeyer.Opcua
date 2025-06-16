@@ -1,7 +1,7 @@
 ﻿using Hoeyer.OpcUa.Core;
-using Hoeyer.opcUa.TestEntities.Subtypes;
+using Hoeyer.OpcUa.TestEntities.Subtypes;
 
-namespace Hoeyer.opcUa.TestEntities;
+namespace Hoeyer.OpcUa.TestEntities;
 
 [OpcUaEntity]
 public sealed record AllPropertyTypesEntity
