@@ -30,7 +30,8 @@ public class MethodCaller<TEntity>(IEntityBrowser<TEntity> browser, IEntitySessi
     public async Task<T> CallMethod<T>(string methodName, CancellationToken token = default, params object[] args)
     {
         IList<object> res = await CallNode(methodName, token, args);
-        return (T)OpcToCSharpValueParser.ParseOpcValue(res[0]);
+        var returnValue = res[0];
+        return returnValue == null ? default! : (T)OpcToCSharpValueParser.ParseOpcValue(returnValue)!;
     }
 
 

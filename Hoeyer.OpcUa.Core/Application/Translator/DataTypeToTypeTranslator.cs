@@ -17,8 +17,7 @@ public static class DataTypeToTypeTranslator
             return default;
         }
 
-        var parser = new PropertyValueParser<T>();
-        return parser.Parse(p);
+        return (T)OpcToCSharpValueParser.ParseOpcValue(p.WrappedValue)!;
     }
 
     public static TCollection? TranslateToCollection<TCollection, T>(IEntityNode node, string name)
@@ -31,7 +30,6 @@ public static class DataTypeToTypeTranslator
         }
 
         var res = new PropertyValueCollectionParser<T>().Parse(p);
-
         if (res == null)
         {
             return [];
