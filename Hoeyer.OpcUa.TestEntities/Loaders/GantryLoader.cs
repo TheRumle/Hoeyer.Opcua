@@ -1,4 +1,5 @@
 ﻿using Hoeyer.OpcUa.Server.Api;
+using Hoeyer.OpcUa.TestEntities.Methods;
 
 namespace Hoeyer.OpcUa.TestEntities.Loaders;
 
@@ -9,6 +10,9 @@ public class GantryLoader : IEntityLoader<Gantry>
     {
         return new ValueTask<Gantry>(new Gantry
         {
+            Occupied = false,
+            HeldContainer = Guid.Empty,
+            Position = Position.OnTheMoon,
             AList = ["stnrei", "tsneriaotnsreiotnrsaeitsra"],
             IntValue = 231,
             StringValue = "ntserioa",
