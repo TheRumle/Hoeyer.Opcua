@@ -7,7 +7,7 @@ using Hoeyer.OpcUa.Client.Api.Calling.Exception;
 using Hoeyer.OpcUa.Client.Api.Connection;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Core.Application.Translator;
+using Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 using Opc.Ua;
 using Opc.Ua.Client;
 

@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Core.Application.Translator.Parsers;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Application.Translator;
+namespace Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 
 public static class DataTypeToTypeTranslator
 {
@@ -29,32 +29,18 @@ public static class DataTypeToTypeTranslator
             return [];
         }
 
-        var res = new PropertyValueCollectionParser<T>().Parse(p);
-        if (res == null)
+        var collectionValues = p.Value switch
         {
-            return [];
-        }
+            Variant v => OpcToCSharpValueParser.ParseToArray<T>(v),
+            T singleton => [singleton],
+            IEnumerable<T> enumerable => enumerable.ToArray(),
+            var _ => throw new ArgumentException($"The specified value type '{p.Value.GetType()}' is not supported:")
+        };
 
-        return res.Aggregate(new TCollection(), (current, element) =>
+        return collectionValues.Aggregate(new TCollection(), (current, element) =>
         {
             current.Add(element);
             return current;
         });
-    }
-
-    public static T[] TranslateToArray<T>(IEntityNode node, string name)
-    {
-        PropertyState? p = node.PropertyByBrowseName.TryGetValue(name, out PropertyState? value) ? value : null;
-        if (p == null) return [];
-
-        T[]? res = new PropertyValueCollectionParser<T>().Parse(p);
-
-        if (res == null) return [];
-
-        return res.Aggregate(new List<T>(), (current, element) =>
-        {
-            current.Add(element);
-            return current;
-        }).ToArray();
     }
 }
