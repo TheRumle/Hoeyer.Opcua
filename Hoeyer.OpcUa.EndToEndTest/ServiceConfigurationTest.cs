@@ -84,7 +84,7 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
 
     [Test]
     [ClassDataSource<ApplicationFixture>]
-    public async Task When_SimulatorIsImplemented_ItIsRegistered(ApplicationFixture fixture)
+    public async Task When_ActionSimulatorIsImplemented_ItIsRegistered(ApplicationFixture fixture)
     {
         await fixture.GetService<EntityServerStartedMarker>();
         var simulator = fixture.GetService<IActionSimulationConfigurator<Gantry, PickUpContainerArgs>>();
@@ -92,12 +92,12 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     }
 
     [Test]
-    [ServiceCollectionDataSource]
-    public async Task When_SimulatorIsImplemented_ItIsRegistered(IServiceCollection fixture)
+    [ClassDataSource<ApplicationFixture>]
+    public async Task When_FunctionSimulatorIsImplemented_ItIsRegistered(ApplicationFixture fixture)
     {
-        IEnumerable<ServiceDescriptor> simulators = fixture.Where(e =>
-            e.ServiceType == typeof(IActionSimulationConfigurator<Gantry, PickUpContainerArgs>));
-        await Assert.That(simulators).All().Satisfy(e => e.IsNotNull());
+        await fixture.GetService<EntityServerStartedMarker>();
+        var simulator = fixture.GetService<IFunctionSimulationConfigurator<Gantry, GetDateArgs>>();
+        await Assert.That(simulator).IsNotNull();
     }
 
 

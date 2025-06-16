@@ -1,4 +1,7 @@
 ﻿using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Server.Simulation.Api;
+using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
+using Hoeyer.OpcUa.TestEntities.Methods.Generated;
 
 namespace Hoeyer.OpcUa.TestEntities.Methods;
 
@@ -6,9 +9,31 @@ namespace Hoeyer.OpcUa.TestEntities.Methods;
 public interface IGantryMethods
 {
     Task ChangePosition(Position position);
-    Task<int> PlaceContainer(Position position);
+    Task PlaceContainer(Position position);
     Task PickUpContainer(Position position);
     Task<Guid> GetContainerId();
     Task<DateTime> GetDate();
     Task<List<DateTime>> GetDates();
+}
+
+public sealed class GetDateSimulator :
+    IFunctionSimulationConfigurator<Gantry, GetDateArgs>,
+    IActionSimulationConfigurator<Gantry, PickUpContainerArgs>
+{
+    /// <inheritdoc />
+    public IEnumerable<ISimulationStep> ConfigureSimulation(
+        IActionSimulationBuilder<Gantry, PickUpContainerArgs> actionSimulationConfiguration)
+    {
+        return actionSimulationConfiguration.ChangeState(g =>
+        {
+            Gantry gantry = g.State;
+            gantry.HeldContainer = Guid.NewGuid();
+            gantry.Occupied = true;
+        }).Build();
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<ISimulationStep> ConfigureSimulation(
+        IFunctionSimulationBuilder<Gantry, GetDateArgs> functionConfig) =>
+        functionConfig.WithReturnValue(e => DateTime.Now);
 }

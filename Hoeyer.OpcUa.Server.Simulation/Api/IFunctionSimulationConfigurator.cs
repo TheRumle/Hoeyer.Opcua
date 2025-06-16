@@ -6,5 +6,5 @@ namespace Hoeyer.OpcUa.Server.Simulation.Api;
 public interface IFunctionSimulationConfigurator<TEntity, TArgs>
 {
     public IEnumerable<ISimulationStep> ConfigureSimulation(
-        IFunctionSimulationBuilder<TEntity, TArgs> actionSimulationConfiguration);
+        IFunctionSimulationBuilder<TEntity, TArgs> functionConfig);
 }

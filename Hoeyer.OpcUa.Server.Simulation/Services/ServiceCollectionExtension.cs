@@ -26,7 +26,7 @@ public static class ServiceCollectionExtension
             typeof(IEntityMethodArgTranslator<>).GetTypesFromConsumingAssemblies().ToImmutableHashSet();
 
 
-        ParallelQuery<(Type Implementor, Type? Interface, Type ArgType)> translatorInfoTuple = typeReferences
+        var translatorInfoTuple = typeReferences
             .Select(e => (Implementor: e,
                 translatorInterface: e.GetImplementedVersionOfGeneric(typeof(IEntityMethodArgTranslator<>))))
             .Where(e => e.translatorInterface is not null)
@@ -47,92 +47,69 @@ public static class ServiceCollectionExtension
 
     private static void AddFunctionSimulation(ParallelQuery<Type> typeReferences, IServiceCollection serviceCollection)
     {
-        Type? functionSimulatorInterface = typeof(IFunctionSimulationConfigurator<int, int>).GetGenericTypeDefinition();
-        ParallelQuery<SimulationPatternTypeDetails> functionSimulators = typeReferences
-            .Select(type => (implementor: type,
-                simulatorInterface: type.GetImplementedVersionOfGeneric(functionSimulatorInterface)))
-            .Where(configurator => configurator.simulatorInterface is not null)
-            .Select(t => CreateConfiguratorInfoTuple(t.implementor, t.simulatorInterface!));
+        Type functionSimulatorInterface = typeof(IFunctionSimulationConfigurator<,>).GetGenericTypeDefinition();
 
+        ParallelQuery<SimulationPatternTypeDetails> functionSimulators =
+            GetSimulatorDetails(typeReferences, functionSimulatorInterface);
 
-        foreach ((Type implementor, Type instantiatedSimulatorInterface, Type methodArgType, MethodInfo? method,
-                     Type entity) in functionSimulators)
+        foreach ((Type implementor, Type simulatorInterface, Type methodArgType, MethodInfo? method, Type entity) in
+                 functionSimulators)
         {
-            //There was not a matching method on the interface - likely due to generation failure
-            if (method is null)
-            {
+            if (method is null || method.ReturnType.GetGenericTypeDefinition() != typeof(Task<>))
                 continue;
-                //throw exception   
-            }
 
-            //When working with an IActionSimulator the return type for the client method that is being simulated must be Task (aka remote void)
-            //If it is not, then IMethodSimulator should be implemented instead
-            if (method.ReturnType.GetGenericTypeDefinition() != typeof(Task<>))
-            {
-                //aggregate some exceptions
-            }
+            Type returnType = method.ReturnType.GetGenericArguments()[0];
 
-            Type simulationRetType = method.ReturnType.GetGenericArguments()[0];
-            serviceCollection.AddSingleton(instantiatedSimulatorInterface, implementor);
+            serviceCollection.AddSingleton(simulatorInterface, implementor);
 
-            Type actionConfigurator = typeof(FunctionSimulationSetup<int, int, int>).GetGenericTypeDefinition()
-                .MakeGenericType(entity, methodArgType, simulationRetType);
-            Type configurator = typeof(IPreinitializedNodeConfigurator<int>).GetGenericTypeDefinition()
-                .MakeGenericType(entity);
-            serviceCollection.AddSingleton(configurator, actionConfigurator);
+            Type functionConfigurator =
+                typeof(FunctionSimulationSetup<,,>).MakeGenericType(entity, methodArgType, returnType);
+            Type configurator = typeof(IPreinitializedNodeConfigurator<>).MakeGenericType(entity);
+            Type executor = typeof(FunctionSimulationExecutor<,,>).MakeGenericType(entity, methodArgType, returnType);
+            Type executorInterface = typeof(IFunctionSimulationExecutor<,>).MakeGenericType(methodArgType, returnType);
 
-            Type wantedExecutor = typeof(FunctionSimulationExecutor<int, int, int>).GetGenericTypeDefinition()
-                .MakeGenericType(methodArgType);
-            Type executorService = typeof(IActionSimulationExecutor<int>).GetGenericTypeDefinition()
-                .MakeGenericType(methodArgType);
-            serviceCollection.AddSingleton(executorService, wantedExecutor);
+            serviceCollection.AddSingleton(configurator, functionConfigurator);
+            serviceCollection.AddSingleton(executorInterface, executor);
         }
     }
 
     private static void AddActionSimulation(ParallelQuery<Type> typeReferences, IServiceCollection serviceCollection)
     {
-        Type? actionSimulatorInterface = typeof(IActionSimulationConfigurator<int, int>).GetGenericTypeDefinition();
-        ParallelQuery<SimulationPatternTypeDetails> actionSimulators = typeReferences
-            .Select(type => (implementor: type,
-                simulatorInterface: type.GetImplementedVersionOfGeneric(actionSimulatorInterface)))
-            .Where(configurator => configurator.simulatorInterface is not null)
-            .Select(t => CreateConfiguratorInfoTuple(t.implementor, t.simulatorInterface!));
+        Type actionSimulatorInterface = typeof(IActionSimulationConfigurator<,>).GetGenericTypeDefinition();
 
-        foreach ((Type implementor, Type instantiatedSimulatorInterface, Type methodArgType, MethodInfo? method,
-                     Type entity) in actionSimulators)
+        ParallelQuery<SimulationPatternTypeDetails> actionSimulators =
+            GetSimulatorDetails(typeReferences, actionSimulatorInterface);
+
+        foreach ((Type implementor, Type simulatorInterface, Type methodArgType, MethodInfo? method, Type entity) in
+                 actionSimulators)
         {
-            //There was not a matching method on the interface - likely due to generation failure
-            if (method is null)
-            {
+            if (method is null || method.ReturnType != typeof(Task))
                 continue;
-                //throw exception   
-            }
 
-            //When working with an IActionSimulator the return type for the client method that is being simulated must be Task (aka remote void)
-            //If it is not, then IMethodSimulator should be implemented instead
-            if (method.ReturnType != typeof(Task))
-            {
-                //aggregate some exceptions
-            }
+            serviceCollection.AddSingleton(simulatorInterface, implementor);
 
-            serviceCollection.AddSingleton(instantiatedSimulatorInterface, implementor);
+            Type actionConfigurator = typeof(ActionSimulationSetup<,>).MakeGenericType(entity, methodArgType);
+            Type configurator = typeof(IPreinitializedNodeConfigurator<>).MakeGenericType(entity);
+            Type executor = typeof(ActionSimulationExecutor<>).MakeGenericType(methodArgType);
+            Type executorInterface = typeof(IActionSimulationExecutor<>).MakeGenericType(methodArgType);
 
-            Type actionConfigurator = typeof(ActionsSimulationSetup<int, int>).GetGenericTypeDefinition()
-                .MakeGenericType(entity, methodArgType);
-            Type configurator = typeof(IPreinitializedNodeConfigurator<int>).GetGenericTypeDefinition()
-                .MakeGenericType(entity);
             serviceCollection.AddSingleton(configurator, actionConfigurator);
-
-
-            Type wantedExecutor = typeof(ActionSimulationExecutor<int>).GetGenericTypeDefinition()
-                .MakeGenericType(methodArgType);
-            Type executorService = typeof(IActionSimulationExecutor<int>).GetGenericTypeDefinition()
-                .MakeGenericType(methodArgType);
-            serviceCollection.AddSingleton(executorService, wantedExecutor);
+            serviceCollection.AddSingleton(executorInterface, executor);
         }
     }
 
-    internal static SimulationPatternTypeDetails CreateConfiguratorInfoTuple(Type implementor, Type simulatorInterface)
+    private static ParallelQuery<SimulationPatternTypeDetails> GetSimulatorDetails(ParallelQuery<Type> typeReferences,
+        Type genericSimulatorInterface)
+    {
+        return typeReferences
+            .Select(type => (implementor: type,
+                simulatorInterface: type.GetImplementedVersionOfGeneric(genericSimulatorInterface)))
+            .Where(t => t.simulatorInterface != null)
+            .Select(t => CreateConfiguratorInfoTuple(t.implementor, t.simulatorInterface!));
+    }
+
+
+    private static SimulationPatternTypeDetails CreateConfiguratorInfoTuple(Type implementor, Type simulatorInterface)
     {
         Type? args = simulatorInterface!.GenericTypeArguments[1];
         IOpcMethodArgumentsAttribute? argumentAttribute =
@@ -144,7 +121,7 @@ public static class ServiceCollectionExtension
             simulatorInterface!.GenericTypeArguments[0]);
     }
 
-    internal record struct SimulationPatternTypeDetails(
+    private record struct SimulationPatternTypeDetails(
         Type Implementor,
         Type InstantiatedSimulatorInterface,
         Type MethodArgType,

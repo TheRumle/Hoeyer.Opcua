@@ -13,7 +13,7 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Simulation.ServerAdapter;
 
-internal sealed class ActionsSimulationSetup<TEntity, TMethodArgs>(
+internal sealed class ActionSimulationSetup<TEntity, TMethodArgs>(
     IActionSimulationExecutor<TMethodArgs> executor,
     IEnumerable<IActionSimulationConfigurator<TEntity, TMethodArgs>> simulators,
     IEntityMethodArgTranslator<TMethodArgs> argsMapper,

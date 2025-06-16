@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
+using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Server.Simulation.Api;
 using Hoeyer.OpcUa.Server.Simulation.Builder;
 using Hoeyer.OpcUa.Server.Simulation.Services.Function;
@@ -17,7 +18,7 @@ internal sealed class FunctionSimulationSetup<TEntity, TMethodArgs, TReturnType>
     IFunctionSimulationExecutor<TMethodArgs, TReturnType> executor,
     IEnumerable<IFunctionSimulationConfigurator<TEntity, TMethodArgs>> simulators,
     IEntityMethodArgTranslator<TMethodArgs> argsMapper,
-    IEntityTranslator<TEntity> entityMapper)
+    IEntityTranslator<TEntity> entityMapper) : IPreinitializedNodeConfigurator<TEntity>
 {
     public void Configure(IEntityNode node)
     {

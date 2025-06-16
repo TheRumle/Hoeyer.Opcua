@@ -14,7 +14,7 @@ public class MethodCallingTest(ApplicationFixture<IGantryMethods> appFixture)
         => await appFixture.TestedService.ChangePosition(Position.OnTheMoon);
 
     [Test]
-    public async Task<int> WhenCalling_NonVoidTask_DoesNotThrow() =>
+    public async Task WhenCalling_NonVoidTask_DoesNotThrow() =>
         await appFixture.TestedService.PlaceContainer(Position.OnTheMoon);
 
     [Test]
