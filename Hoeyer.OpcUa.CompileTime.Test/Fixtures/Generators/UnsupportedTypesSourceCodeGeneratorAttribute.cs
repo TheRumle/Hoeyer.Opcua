@@ -9,6 +9,6 @@ public sealed class UnsupportedTypesSourceCodeGeneratorAttribute : DataSourceGen
     /// <inheritdoc />
     public override IEnumerable<Func<EntitySourceCode>> GenerateDataSources(DataGeneratorMetadata dataGeneratorMetadata)
     {
-        return TestEntities.UnsupportedTypes.Select(source => (Func<EntitySourceCode>)(() => source));
+        return EntitySourceCodeDefinitions.UnsupportedTypes.Select(source => (Func<EntitySourceCode>)(() => source));
     }
 }

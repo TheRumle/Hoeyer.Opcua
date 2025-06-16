@@ -8,5 +8,6 @@ public sealed class EntityServiceInterfaceGeneratorAttribute : DataSourceGenerat
     /// <inheritdoc />
     public override IEnumerable<Func<ServiceInterfaceSourceCode>> GenerateDataSources(
         DataGeneratorMetadata dataGeneratorMetadata)
-        => TestEntities.Valid.SelectMany(TestBehaviours.GetServiceInterfaceSourceCodeFor).SelectFunc();
+        => EntitySourceCodeDefinitions.ValidEntities.SelectMany(TestBehaviours.GetServiceInterfaceSourceCodeFor)
+            .SelectFunc();
 }

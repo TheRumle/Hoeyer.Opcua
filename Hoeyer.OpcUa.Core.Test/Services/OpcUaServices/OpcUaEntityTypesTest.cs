@@ -1,7 +1,7 @@
 ﻿using Hoeyer.Opc.Ua.Test.TUnit;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
-using Hoeyer.opcUa.TestEntities.Methods;
-using Hoeyer.opcUa.TestEntities.Methods.Generated;
+using Hoeyer.OpcUa.TestEntities.Methods;
+using Hoeyer.OpcUa.TestEntities.Methods.Generated;
 
 namespace Hoeyer.OpcUa.Core.Test.Services.OpcUaServices;
 

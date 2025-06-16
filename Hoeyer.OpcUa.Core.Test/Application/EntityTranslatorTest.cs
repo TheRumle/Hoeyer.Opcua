@@ -2,7 +2,7 @@
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Test.Fixtures;
-using Hoeyer.opcUa.TestEntities;
+using Hoeyer.OpcUa.TestEntities;
 using JetBrains.Annotations;
 using Opc.Ua;
 

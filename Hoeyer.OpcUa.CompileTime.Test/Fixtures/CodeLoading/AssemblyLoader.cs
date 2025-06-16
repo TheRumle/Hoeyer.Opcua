@@ -1,4 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Server.Api;
+using Hoeyer.OpcUa.Server.Simulation.Api;
 using Microsoft.CodeAnalysis;
 using Assembly = System.Reflection.Assembly;
 
@@ -14,6 +16,8 @@ public static class AssemblyLoader
         Assembly.Load("System.Runtime"), // ✅ This is critical
         typeof(OpcUaEntityAttribute).Assembly,
         typeof(OpcUaEntityMethodsAttribute<>).Assembly,
+        typeof(EntityServerStartedMarker).Assembly,
+        typeof(IActionSimulationConfigurator<,>).Assembly
     ];
 
     public static readonly IReadOnlySet<MetadataReference> CoreMetadataReferences = CoreAssemblies

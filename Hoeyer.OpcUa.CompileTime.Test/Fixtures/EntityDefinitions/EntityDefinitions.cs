@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
 
-public static class TestEntities
+public static class EntitySourceCodeDefinitions
 {
     private static readonly Regex ClassNameRegex = new(@"class\s+([A-Za-z_][A-Za-z0-9_]*)\s*");
 
@@ -152,7 +152,7 @@ public static class TestEntities
     ];
 
 
-    public static readonly ImmutableHashSet<EntitySourceCode> Valid = ValidEntityClassDefinitions
+    public static readonly ImmutableHashSet<EntitySourceCode> ValidEntities = ValidEntityClassDefinitions
         .Select(sourceCode => new EntitySourceCode(ClassNameRegex.Match(sourceCode).Groups[1].Value, sourceCode))
         .ToImmutableHashSet();
 
@@ -160,5 +160,5 @@ public static class TestEntities
         .Select(sourceCode => new EntitySourceCode(ClassNameRegex.Match(sourceCode).Groups[1].Value, sourceCode))
         .ToImmutableHashSet();
 
-    public static readonly ImmutableHashSet<EntitySourceCode> All = Valid.Union(UnsupportedTypes);
+    public static readonly ImmutableHashSet<EntitySourceCode> All = ValidEntities.Union(UnsupportedTypes);
 }

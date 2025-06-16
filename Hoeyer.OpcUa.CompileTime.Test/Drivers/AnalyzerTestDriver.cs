@@ -18,6 +18,12 @@ public sealed class AnalyzerTestDriver<T>(T analyzer, Action<string>? logger = n
         cancellationToken
     );
 
+    public Task<AnalyzerResult> RunAnalyzerOn(string sourceCode,
+        CancellationToken cancellationToken = default) => CreateAnalyzerResultTask(
+        [CSharpSyntaxTree.ParseText(sourceCode)],
+        cancellationToken
+    );
+
     public Task<AnalyzerResult> RunAnalyzerOn(
         EntityAndServiceSourceCode sourceCode,
         CancellationToken cancellationToken = default)
