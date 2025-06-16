@@ -1,7 +1,7 @@
 ﻿using Hoeyer.Opc.Ua.Test.TUnit.Extensions;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.EndToEndTest;
+namespace Hoeyer.OpcUa.EndToEndTest.Fixtures;
 
 internal static class SelectedNodeIds
 {
