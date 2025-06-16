@@ -1,7 +1,7 @@
 ﻿using Hoeyer.Opc.Ua.Test.TUnit;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.EndToEndTest.Generators;
-using Hoeyer.opcUa.TestEntities.Methods;
+using Hoeyer.OpcUa.TestEntities.Methods;
 
 namespace Hoeyer.OpcUa.EndToEndTest;
 

@@ -2,7 +2,7 @@
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.Server.Api;
-using Hoeyer.opcUa.TestEntities;
+using Hoeyer.OpcUa.TestEntities;
 using Opc.Ua;
 using Opc.Ua.Client;
 
