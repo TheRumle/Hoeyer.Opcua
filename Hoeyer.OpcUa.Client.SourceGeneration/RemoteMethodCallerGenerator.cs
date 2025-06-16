@@ -92,14 +92,16 @@ public sealed class RemoteMethodCallerGenerator : IIncrementalGenerator
                 ? $"<{named.TypeArguments[0].ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix)}>"
                 : "";
 
-            var typeArgs = string.Join(",",
-                method.Parameters.Select(e => e.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix)));
+            List<string> paramStrings = method.Parameters.Select(e =>
+                e.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix)).ToList();
+            var typeArgs = string.Join(",", paramStrings);
             var paramNames = string.Join(", ", method.Parameters.Select(e => e.Name));
             builder.WriteLine($"public {returnType} {method.Name}({typeArgs})");
             builder.WriteLine("{");
             builder.Write($"return caller.CallMethod{genericArgs}(").Write($"nameof({method.Name}),");
-            builder.Write(" global::System.Threading.CancellationToken.None, ");
-            builder.Write(paramNames);
+            builder.Write(" global::System.Threading.CancellationToken.None");
+            if (paramStrings.Count > 0) builder.Write(", " + paramNames);
+
             builder.Write(");");
             builder.WriteLine();
             builder.WriteLine("}");

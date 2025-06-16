@@ -1,10 +1,6 @@
 ﻿using Hoeyer.Common.Extensions;
 using Hoeyer.OpcUa.CompileTime.Test.Drivers;
-using Hoeyer.OpcUa.Server.Simulation.Api;
-using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
 using Hoeyer.OpcUa.Simulation.SourceGeneration;
-using Hoeyer.OpcUa.TestEntities;
-using Hoeyer.OpcUa.TestEntities.Methods.Generated;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
@@ -135,38 +131,4 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
         AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
         await Assert.That(result.Diagnostics).IsNotEmpty();
     }
-}
-
-public sealed class IntegerInputArgsActionSimulator : IActionSimulationConfigurator<Gantry, IntegerInputArgs>
-{
-    public IEnumerable<ISimulationStep> ConfigureSimulation(
-        IActionSimulationBuilder<Gantry, IntegerInputArgs> actionSimulationConfiguration) =>
-        MakeSimulation(actionSimulationConfiguration);
-
-    private static IEnumerable<ISimulationStep> MakeSimulation(
-        IActionSimulationBuilder<Gantry, IntegerInputArgs> actionSimulationConfiguration)
-    {
-        return actionSimulationConfiguration
-            .ChangeState(currentState => { currentState.State.IntValue = new Random(2).Next(); })
-            .Wait(TimeSpan.FromSeconds(3))
-            .ChangeState(currentState =>
-            {
-                currentState.State.StringValue = (currentState.Arguments.Q + currentState.Arguments.Q).ToString();
-            })
-            .Build();
-    }
-}
-
-public sealed class
-    MultiInputIntReturnArgsFuncSimulator : IFunctionSimulationConfigurator<Gantry, MultiInputIntReturnArgs>
-{
-    public IEnumerable<ISimulationStep> ConfigureSimulation(
-        IFunctionSimulationBuilder<Gantry, MultiInputIntReturnArgs> actionSimulationConfiguration) =>
-        actionSimulationConfiguration.WithReturnValue((_) => 2);
-}
-
-public sealed class IntegerInputArgsFuncSimulator : IActionSimulationConfigurator<Gantry, MultiInputIntReturnArgs>
-{
-    public IEnumerable<ISimulationStep> ConfigureSimulation(
-        IActionSimulationBuilder<Gantry, MultiInputIntReturnArgs> actionSimulationConfiguration) => [];
 }

@@ -7,6 +7,7 @@ using Hoeyer.OpcUa.Client.Api.Calling.Exception;
 using Hoeyer.OpcUa.Client.Api.Connection;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
+using Hoeyer.OpcUa.Core.Application.Translator;
 using Opc.Ua;
 using Opc.Ua.Client;
 
@@ -29,7 +30,7 @@ public class MethodCaller<TEntity>(IEntityBrowser<TEntity> browser, IEntitySessi
     public async Task<T> CallMethod<T>(string methodName, CancellationToken token = default, params object[] args)
     {
         IList<object> res = await CallNode(methodName, token, args);
-        return (T)res[0];
+        return (T)OpcToCSharpValueParser.ParseOpcValue(res[0]);
     }
 
 

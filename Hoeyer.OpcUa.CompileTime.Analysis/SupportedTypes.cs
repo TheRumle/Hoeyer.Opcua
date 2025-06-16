@@ -13,8 +13,8 @@ public static class SupportedTypes
     {
         var taskType = model.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
         var taskOfTType = model.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task`1");
-
-        ITypeSymbol? typeSymbol = model.GetTypeInfo(syntax).Type;
+        TypeInfo modelType = model.GetTypeInfo(syntax);
+        ITypeSymbol? typeSymbol = modelType.Type;
         if (typeSymbol is not INamedTypeSymbol namedTypeSymbol) return false;
 
         if (SymbolEqualityComparer.Default.Equals(namedTypeSymbol, taskType)) return true;
@@ -22,7 +22,7 @@ public static class SupportedTypes
         if (!SymbolEqualityComparer.Default.Equals(namedTypeSymbol.OriginalDefinition, taskOfTType)) return false;
 
         ITypeSymbol typeArg = namedTypeSymbol.TypeArguments.First();
-        return Simple.Supports(typeArg);
+        return Simple.Supports(typeArg) || Collection.Supports(typeArg);
     }
 
     public static bool IsSupported(TypeSyntax syntax, SemanticModel model)

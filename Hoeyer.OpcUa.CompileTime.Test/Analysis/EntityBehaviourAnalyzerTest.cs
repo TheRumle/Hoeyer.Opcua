@@ -35,6 +35,7 @@ public class EntityBehaviourAnalyzerTest
           [{{nameof(OpcUaEntityMethodsAttribute<object>)}}<{{entityName}}>]
           public interface FuncReferencingSelf
           {
+              public Task<List<int>> ListMethod(bool a, int b, int c);
               public Task<int> function(int a, int b, int c);
               public Task<int> function1(int a, int b, int c);
               public Task<int> function2(int a, int b, int c);

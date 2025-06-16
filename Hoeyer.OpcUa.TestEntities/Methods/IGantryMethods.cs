@@ -5,7 +5,10 @@ namespace Hoeyer.OpcUa.TestEntities.Methods;
 [OpcUaEntityMethods<Gantry>]
 public interface IGantryMethods
 {
-    public Task IntegerInput(int q);
-    public Task<int> MultiInputIntReturn(int a, float b, List<int> i);
-    public Task<int> MoreMethods(int a, float b, float c, List<int> i);
+    Task ChangePosition(Position position);
+    Task<int> PlaceContainer(Position position);
+    Task PickUpContainer(Position position);
+    Task<Guid> GetContainerId();
+    Task<DateTime> GetDate();
+    Task<List<DateTime>> GetDates();
 }

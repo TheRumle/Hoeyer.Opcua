@@ -6,7 +6,7 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Application.Translator;
 
-public static class DataTypeToTranslator
+public static class DataTypeToTypeTranslator
 {
     public static T? TranslateToSingle<T>(
         IEntityNode node, string name)

@@ -10,15 +10,26 @@ namespace Hoeyer.OpcUa.EndToEndTest;
 public class MethodCallingTest(ApplicationFixture<IGantryMethods> appFixture)
 {
     [Test]
-    public async Task WhenCallingVoidTask_DoesNotThrow() => await appFixture.TestedService.IntegerInput(2);
+    public async Task WhenCallingVoidTask_DoesNotThrow()
+        => await appFixture.TestedService.ChangePosition(Position.OnTheMoon);
 
     [Test]
-    public async Task WhenArgMethods_DoesNotThrow() =>
-        await appFixture.TestedService.MultiInputIntReturn(2, 21.0f, [1, 23, 3]);
+    public async Task<int> WhenCalling_NonVoidTask_DoesNotThrow() =>
+        await appFixture.TestedService.PlaceContainer(Position.OnTheMoon);
 
     [Test]
-    public async Task WhenArgMethods_DoesNotThrow_More()
-    {
-        await appFixture.TestedService.MoreMethods(2, 21.0f, 2f, []);
-    }
+    public async Task<Guid> WhenCalling_TaskWithNoArgs_DoesNotThrow() =>
+        await appFixture.TestedService.GetContainerId();
+
+    [Test]
+    public async Task<Guid> WhenCalling_TaskWithGuidReturn_DoesNotThrow() =>
+        await appFixture.TestedService.GetContainerId();
+
+    [Test]
+    public async Task<DateTime> WhenCalling_TaskWithDateTimeReturn_DoesNotThrow() =>
+        await appFixture.TestedService.GetDate();
+
+    [Test]
+    public async Task<List<DateTime>> WhenCalling_TaskWithListDatetimeReturn_DoesNotThrow() =>
+        await appFixture.TestedService.GetDates();
 }
