@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hoeyer.OpcUa.Server.Simulation.Api;
 using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
 
-namespace Hoeyer.OpcUa.Server.Simulation.Services.Action;
+namespace Hoeyer.OpcUa.Server.Simulation.Api;
 
 public interface IActionSimulationBuilder<TEntity, TArguments>
 {
