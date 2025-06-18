@@ -22,7 +22,7 @@ internal sealed class EntityNodeManager<T>(
     {
         using IDisposable? scope = logger.BeginScope(ManagedEntity.ToLoggingObject());
         logger.Log(LogLevel.Information, "Creating address space");
-        logger.TryAndReThrow(() =>
+        throw logger.TryOrGetError(() =>
         {
             lock (Lock)
             {

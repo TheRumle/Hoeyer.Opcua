@@ -1,8 +1,12 @@
-﻿using Hoeyer.OpcUa.Server.Application;
+﻿using System.Diagnostics.CodeAnalysis;
+using Hoeyer.OpcUa.Server.Application;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Server.IntegrationTest.Fixture;
 
+[SuppressMessage(
+    "Design", "S3993",
+    Justification = "TUnits' attributeusage must not and cannot be overwritten.")]
 public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourceAttribute<IServiceScope>
 {
     private static readonly IServiceProvider ServiceProvider = CreateSharedServiceProvider();
