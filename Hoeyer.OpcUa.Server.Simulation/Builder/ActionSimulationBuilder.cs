@@ -1,26 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Core.Api;
+using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Server.Simulation.Api;
 using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
 
 namespace Hoeyer.OpcUa.Server.Simulation.Builder;
 
-internal sealed class ActionSimulationBuilder<TEntity, TArguments>(
-    IEntityNode node,
-    ISimulationStepFactory<TEntity, TArguments> stepFactory)
-    : IActionSimulationBuilder<TEntity, TArguments>
+internal sealed class ActionSimulationBuilder<TEntity, TArguments> : IActionSimulationBuilder<TEntity, TArguments>
 {
-    private readonly object _lock = new();
-    private Queue<ISimulationStep> SimulationSteps { get; } = new();
-    private IEntityNode CurrentState => node;
+    private readonly CommonSimulationOperations<TEntity, TArguments> _commonOperations;
+    private readonly Queue<ISimulationStep> _simulationSteps;
+
+    public ActionSimulationBuilder(IManagedEntityNode node,
+        ISimulationStepFactory<TEntity, TArguments> stepFactory)
+    {
+        _simulationSteps = new Queue<ISimulationStep>();
+        _commonOperations = new CommonSimulationOperations<TEntity, TArguments>(node, _simulationSteps, stepFactory);
+    }
+
 
     public IActionSimulationBuilder<TEntity, TArguments> ChangeState(
         Action<SimulationStepContext<TEntity, TArguments>> stateChange)
     {
-        ActionStep<TEntity, TArguments> step = stepFactory.CreateActionStep(CurrentState, stateChange, _lock);
-        SimulationSteps.Enqueue(step);
+        _commonOperations.ChangeState(stateChange);
         return this;
     }
 
@@ -28,24 +31,22 @@ internal sealed class ActionSimulationBuilder<TEntity, TArguments>(
     public IActionSimulationBuilder<TEntity, TArguments> ChangeStateAsync(
         Func<SimulationStepContext<TEntity, TArguments>, ValueTask> stateChange)
     {
-        AsyncActionStep<TEntity, TArguments> action = stepFactory.CreateAsyncActionStep(CurrentState, stateChange);
-        SimulationSteps.Enqueue(action);
+        _commonOperations.ChangeStateAsync(stateChange);
         return this;
     }
 
     public IActionSimulationBuilder<TEntity, TArguments> SideEffect(Action<TArguments> sideEffect)
     {
-        SimulationSteps.Enqueue(new SideEffectActionStep<TArguments>(sideEffect));
+        _commonOperations.SideEffect(sideEffect);
         return this;
     }
 
 
     public IActionSimulationBuilder<TEntity, TArguments> Wait(TimeSpan timeSpan)
     {
-        TimeStep<TEntity> step = stepFactory.CreateTimeStep(CurrentState, timeSpan, _lock);
-        SimulationSteps.Enqueue(step);
+        _commonOperations.Wait(timeSpan);
         return this;
     }
 
-    public IEnumerable<ISimulationStep> Build() => SimulationSteps.ToArray();
+    public IEnumerable<ISimulationStep> Build() => _simulationSteps.ToArray();
 }

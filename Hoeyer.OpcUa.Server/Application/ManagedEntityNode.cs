@@ -18,6 +18,7 @@ internal sealed record ManagedEntityNode<T> : IManagedEntityNode<T>
         this.Methods = node.Methods;
     }
 
+    public object Lock { get; } = new();
     public string Namespace { get; }
     public ushort EntityNameSpaceIndex { get; }
     public BaseObjectState BaseObject { get; }

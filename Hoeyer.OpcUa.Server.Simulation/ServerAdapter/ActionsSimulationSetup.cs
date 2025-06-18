@@ -20,7 +20,7 @@ internal sealed class ActionSimulationSetup<TEntity, TMethodArgs>(
     IEntityTranslator<TEntity> entityTranslator)
     : IPreinitializedNodeConfigurator<TEntity>
 {
-    public void Configure(IEntityNode node)
+    public void Configure(IManagedEntityNode node)
     {
         IOpcMethodArgumentsAttribute? annotation =
             typeof(TMethodArgs).GetCustomAttributes().OfType<IOpcMethodArgumentsAttribute>().First();
@@ -57,7 +57,7 @@ internal sealed class ActionSimulationSetup<TEntity, TMethodArgs>(
         };
     }
 
-    private IEnumerable<ISimulationStep> ConfigureSimulation(IEntityNode node)
+    private IEnumerable<ISimulationStep> ConfigureSimulation(IManagedEntityNode node)
     {
         try
         {

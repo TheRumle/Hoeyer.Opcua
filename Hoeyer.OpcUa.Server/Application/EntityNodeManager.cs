@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.OpcUa.Core.Extensions.Logging;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Microsoft.Extensions.Logging;
@@ -22,33 +21,14 @@ internal sealed class EntityNodeManager<T>(
     {
         using IDisposable? scope = logger.BeginScope(ManagedEntity.ToLoggingObject());
         logger.Log(LogLevel.Information, "Creating address space");
-        throw logger.TryOrGetError(() =>
+        try
         {
-            lock (Lock)
-            {
-                var node = ManagedEntity.BaseObject;
-                AddPredefinedNode(SystemContext, ManagedEntity.BaseObject);
-                if (!externalReferences.TryGetValue(ObjectIds.ObjectsFolder, value: out var references))
-                {
-                    references ??= new List<IReference>();
-                    externalReferences[ObjectIds.ObjectsFolder] = references;
-                }
-
-                references.Add(new NodeStateReference(ReferenceTypeIds.Organizes, false, node.NodeId));
-
-                foreach (var method in ManagedEntity.Methods)
-                {
-                    method.OnCallMethod += (context, method, arguments, results) =>
-                    {
-                        logger.LogInformation("Session {@Session} invoked method {@Method}",
-                            context.SessionId,
-                            method.ToLoggingObject(arguments));
-
-                        return ServiceResult.Good;
-                    };
-                }
-            }
-        });
+            InitializeNode(externalReferences);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to create address space for entity");
+        }
     }
 
     /// <inheritdoc />
@@ -70,6 +50,34 @@ internal sealed class EntityNodeManager<T>(
         {
             logger.LogInformation("Browsing node");
             base.Browse(context, ref continuationPoint, references);
+        }
+    }
+
+    private void InitializeNode(IDictionary<NodeId, IList<IReference>> externalReferences)
+    {
+        lock (Lock)
+        {
+            BaseObjectState node = ManagedEntity.BaseObject;
+            AddPredefinedNode(SystemContext, ManagedEntity.BaseObject);
+            if (!externalReferences.TryGetValue(ObjectIds.ObjectsFolder, out IList<IReference>? references))
+            {
+                references ??= new List<IReference>();
+                externalReferences[ObjectIds.ObjectsFolder] = references;
+            }
+
+            references.Add(new NodeStateReference(ReferenceTypeIds.Organizes, false, node.NodeId));
+
+            foreach (MethodState? method in ManagedEntity.Methods)
+            {
+                method.OnCallMethod += (context, method, arguments, results) =>
+                {
+                    logger.LogInformation("Session {@Session} invoked method {@Method}",
+                        context.SessionId,
+                        method.ToLoggingObject(arguments));
+
+                    return ServiceResult.Good;
+                };
+            }
         }
     }
 }

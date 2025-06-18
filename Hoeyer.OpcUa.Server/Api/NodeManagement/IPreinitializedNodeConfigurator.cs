@@ -1,10 +1,8 @@
-﻿using Hoeyer.OpcUa.Core.Api;
-
-namespace Hoeyer.OpcUa.Server.Api.NodeManagement;
+﻿namespace Hoeyer.OpcUa.Server.Api.NodeManagement;
 
 public interface IPreinitializedNodeConfigurator
 {
-    public void Configure(IEntityNode node);
+    public void Configure(IManagedEntityNode node);
 }
 
 public interface IPreinitializedNodeConfigurator<T> : IPreinitializedNodeConfigurator;

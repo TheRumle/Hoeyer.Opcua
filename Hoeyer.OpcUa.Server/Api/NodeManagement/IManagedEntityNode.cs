@@ -7,6 +7,7 @@ namespace Hoeyer.OpcUa.Server.Api.NodeManagement;
 /// </summary>
 public interface IManagedEntityNode : IEntityNode
 {
+    public object Lock { get; }
     string Namespace { get; }
     ushort EntityNameSpaceIndex { get; }
 }

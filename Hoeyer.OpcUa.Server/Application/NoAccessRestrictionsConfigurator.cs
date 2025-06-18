@@ -1,12 +1,11 @@
-﻿using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Server.Api.NodeManagement;
+﻿using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
 internal sealed class NoAccessRestrictionsConfigurator : IEntityNodeAccessConfigurator
 {
-    public void Configure(IEntityNode node)
+    public void Configure(IManagedEntityNode node)
     {
         foreach (var managedEntityPropertyState in node.PropertyStates)
         {

@@ -20,7 +20,7 @@ internal sealed class FunctionSimulationSetup<TEntity, TMethodArgs, TReturnType>
     IEntityMethodArgTranslator<TMethodArgs> argsMapper,
     ISimulationStepFactory<TEntity, TMethodArgs> simulationStepFactory) : IPreinitializedNodeConfigurator<TEntity>
 {
-    public void Configure(IEntityNode node)
+    public void Configure(IManagedEntityNode node)
     {
         IOpcMethodArgumentsAttribute? annotation =
             typeof(TMethodArgs).GetCustomAttributes().OfType<IOpcMethodArgumentsAttribute>().First();
