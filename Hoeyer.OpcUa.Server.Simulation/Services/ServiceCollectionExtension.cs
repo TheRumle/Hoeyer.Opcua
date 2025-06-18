@@ -7,6 +7,7 @@ using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Server.Simulation.Api;
+using Hoeyer.OpcUa.Server.Simulation.Builder;
 using Hoeyer.OpcUa.Server.Simulation.ServerAdapter;
 using Hoeyer.OpcUa.Server.Simulation.Services.Action;
 using Hoeyer.OpcUa.Server.Simulation.Services.Function;
@@ -46,7 +47,7 @@ public static class ServiceCollectionExtension
 
     private static void AddFunctionSimulation(ParallelQuery<Type> typeReferences, IServiceCollection serviceCollection)
     {
-        Type functionSimulatorInterface = typeof(IFunctionSimulationConfigurator<,>).GetGenericTypeDefinition();
+        Type functionSimulatorInterface = typeof(IFunctionSimulationConfigurator<,,>).GetGenericTypeDefinition();
 
         ParallelQuery<SimulationPatternTypeDetails> functionSimulators =
             GetSimulatorDetails(typeReferences, functionSimulatorInterface);
@@ -55,6 +56,11 @@ public static class ServiceCollectionExtension
                  functionSimulators)
         {
             Type returnType = method!.ReturnType.GetGenericArguments()[0];
+
+            Type simulationStepFactoryTypeService =
+                typeof(ISimulationStepFactory<,>).MakeGenericType(entity, methodArgType);
+            Type simulationStepFactoryType = typeof(SimulationStepFactory<,>).MakeGenericType(entity, methodArgType);
+            serviceCollection.AddTransient(simulationStepFactoryTypeService, simulationStepFactoryType);
 
             serviceCollection.AddSingleton(simulatorInterface, implementor);
 
@@ -77,7 +83,7 @@ public static class ServiceCollectionExtension
         ParallelQuery<SimulationPatternTypeDetails> actionSimulators =
             GetSimulatorDetails(typeReferences, actionSimulatorInterface);
 
-        foreach ((Type implementor, Type simulatorInterface, Type methodArgType, MethodInfo? method, Type entity) in
+        foreach ((Type implementor, Type simulatorInterface, Type methodArgType, MethodInfo? _, Type entity) in
                  actionSimulators)
         {
             serviceCollection.AddSingleton(simulatorInterface, implementor);

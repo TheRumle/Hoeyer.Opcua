@@ -15,7 +15,7 @@ internal sealed class FunctionSimulationExecutor<TEntity, TArgs, TReturnValue>(I
     {
         List<ISimulationStep> executionSteps = steps.ToList();
         AssertSimulationSteps(executionSteps);
-        await base.ExecuteSimulation(executionSteps, args);
+        await base.ExecuteSimulation(executionSteps.SkipLast(1), args);
         var returnStep = executionSteps[^1] as ReturnValueStep<TEntity, TArgs, TReturnValue>;
         returnStep!.Execute(args);
         return returnStep.Result!.ReturnValue;

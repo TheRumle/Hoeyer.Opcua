@@ -16,9 +16,9 @@ namespace Hoeyer.OpcUa.Server.Simulation.ServerAdapter;
 
 internal sealed class FunctionSimulationSetup<TEntity, TMethodArgs, TReturnType>(
     IFunctionSimulationExecutor<TMethodArgs, TReturnType> executor,
-    IEnumerable<IFunctionSimulationConfigurator<TEntity, TMethodArgs>> simulators,
+    IFunctionSimulationConfigurator<TEntity, TMethodArgs, TReturnType> configurator,
     IEntityMethodArgTranslator<TMethodArgs> argsMapper,
-    IEntityTranslator<TEntity> entityMapper) : IPreinitializedNodeConfigurator<TEntity>
+    ISimulationStepFactory<TEntity, TMethodArgs> simulationStepFactory) : IPreinitializedNodeConfigurator<TEntity>
 {
     public void Configure(IEntityNode node)
     {
@@ -26,12 +26,10 @@ internal sealed class FunctionSimulationSetup<TEntity, TMethodArgs, TReturnType>
             typeof(TMethodArgs).GetCustomAttributes().OfType<IOpcMethodArgumentsAttribute>().First();
         AssertConfigurators(node, annotation);
 
-        IFunctionSimulationConfigurator<TEntity, TMethodArgs> simulator = simulators.First();
-        var builder = new FunctionSimulationBuilder<TEntity, TMethodArgs>(node,
-            new SimulationStepFactory<TEntity, TMethodArgs>(entityMapper));
-        MethodState method = node.Methods.First(e => e.BrowseName.Name.Equals(annotation.MethodName));
-        IEnumerable<ISimulationStep> simultationSteps = simulator.ConfigureSimulation(builder);
+        var builder = new FunctionSimulationBuilder<TEntity, TMethodArgs, TReturnType>(node, simulationStepFactory);
+        IEnumerable<ISimulationStep> simulationSteps = configurator.ConfigureSimulation(builder);
 
+        MethodState method = node.Methods.First(e => e.BrowseName.Name.Equals(annotation.MethodName));
         method.OnCallMethod += (context,
             methodState,
             inputArguments,
@@ -48,7 +46,7 @@ internal sealed class FunctionSimulationSetup<TEntity, TMethodArgs, TReturnType>
                 }
 
                 ValueTask<TReturnType> executionResult =
-                    executor.ExecuteSimulation(simultationSteps, argumentStructure!);
+                    executor.ExecuteSimulation(simulationSteps, argumentStructure!);
                 outputArguments[0] = executionResult!.Result;
                 return StatusCodes.Good;
             }
@@ -65,18 +63,12 @@ internal sealed class FunctionSimulationSetup<TEntity, TMethodArgs, TReturnType>
         };
     }
 
-    private void AssertConfigurators(IEntityNode node, IOpcMethodArgumentsAttribute annotation)
+    private static void AssertConfigurators(IEntityNode node, IOpcMethodArgumentsAttribute annotation)
     {
         if (annotation is null)
         {
             throw new SimulationConfigurationException(
                 $"The type '{typeof(TMethodArgs).FullName}' must be annotated with {nameof(IOpcMethodArgumentsAttribute)}. If you are creating a simulation for a method from an interface annotated with {nameof(OpcUaEntityMethodsAttribute<object>)}, then use the generated method args: XXXArgs.");
-        }
-
-        if (simulators.Count() > 1)
-        {
-            throw new SimulationConfigurationException(
-                $"Multiple simulators where found for {annotation.Interface.FullName}.{annotation.MethodName}");
         }
 
         MethodState[] methods = node.Methods.Where(e => e.BrowseName.Name == annotation.MethodName).ToArray();

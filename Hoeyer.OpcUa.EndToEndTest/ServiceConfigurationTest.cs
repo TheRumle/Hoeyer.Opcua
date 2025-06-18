@@ -96,7 +96,7 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     public async Task When_FunctionSimulatorIsImplemented_ItIsRegistered(ApplicationFixture fixture)
     {
         await fixture.GetService<EntityServerStartedMarker>();
-        var simulator = fixture.GetService<IFunctionSimulationConfigurator<Gantry, GetDateArgs>>();
+        var simulator = fixture.GetService<IFunctionSimulationConfigurator<Gantry, GetCurrentContainerIdArgs, Guid>>();
         await Assert.That(simulator).IsNotNull();
     }
 

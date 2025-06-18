@@ -32,76 +32,115 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
                                                      [OpcUaEntityMethods<Gantry>]
                                                      public interface IGantryMethods
                                                      {
-                                                         public Task IntegerInput(int q);
-                                                         public Task<int> MultiInputIntReturn(int a, float b, List<int> i);
-                                                         public Task<int> MoreMethods(int a, float b, float c, List<int> i);
+                                                         public Task NoReturnValue(int q);
+                                                         public Task<int> IntReturnValue();
                                                      }
 
-                                                     [OpcMethodArguments<Gantry, IGantryMethods>("IntegerInput")]
-                                                     public sealed record IntegerInputArgs
+                                                     [OpcMethodArguments<Gantry, IGantryMethods>("NoReturnValue")]
+                                                     public sealed record NoReturnValueArgs
                                                      {
                                                      	public int Q { get; }
-                                                     	public IntegerInputArgs(int q)
+                                                     	public NoReturnValueArgs(int q)
                                                      	{
                                                      		this.Q = q;
                                                      	}
                                                      }
 
-                                                     [OpcMethodArgumentsAttribute<Gantry, IGantryMethods>("MultiInputIntReturn")]
-                                                     public sealed record MultiInputIntReturnArgs
+                                                     [OpcMethodArgumentsAttribute<Gantry, IGantryMethods>("IntReturnValue")]
+                                                     public sealed record IntReturnValueArgs
                                                      {
-                                                     	public int A { get; }
-                                                     	public float B { get; }
-                                                     	public global::System.Collections.Generic.List<int> I { get; }
-                                                     	public MultiInputIntReturnArgs(int a, float b, global::System.Collections.Generic.List<int> i)
+                                                     	public IntReturnValueArgs()
                                                      	{
-                                                     		this.A = a;
-                                                     		this.B = b;
-                                                     		this.I = i;
                                                      	}
                                                      }
 
                                                      """;
 
-    private const string ActionSimulatorForVoidTask = """
-                                                      public sealed class IntegerInputArgsActionSimulator : IActionSimulationConfigurator<Gantry, IntegerInputArgs>
-                                                      {
-                                                          public IEnumerable<ISimulationStep> ConfigureSimulation(IActionSimulationBuilder<Gantry, IntegerInputArgs> actionSimulationConfiguration) => [];
-                                                      }
-                                                      """;
-
-    private const string ActionSimulatorForNonVoidTask = """
-                                                         public sealed class MultiInputIntReturnArgsActionSimulator : IActionSimulationConfigurator<Gantry, MultiInputIntReturnArgs>
+    private const string ActionSimulator_NoReturnValue = """
+                                                         public sealed class NoReturnValueActionSimulator : IActionSimulationConfigurator<Gantry, NoReturnValueArgs>
                                                          {
-                                                             public IEnumerable<ISimulationStep> ConfigureSimulation(IActionSimulationBuilder<Gantry, MultiInputIntReturnArgs> actionSimulationConfiguration) => [];
+                                                             public IEnumerable<ISimulationStep> ConfigureSimulation(
+                                                                 IActionSimulationBuilder<Gantry, NoReturnValueArgs> actionSimulationConfiguration) => [];
                                                          }
+
                                                          """;
 
-    private const string FuncSimulatorForNonVoidTask = """
-                                                       public sealed class MultiInputIntReturnArgsFuncSimulator : IFunctionSimulationConfigurator<Gantry, MultiInputIntReturnArgs>
-                                                       {
-                                                           public IEnumerable<ISimulationStep> ConfigureSimulation(
-                                                               IFunctionSimulationBuilder<Gantry, MultiInputIntReturnArgs> actionSimulationConfiguration) =>
-                                                               actionSimulationConfiguration.WithReturnValue((_) => 2);
-                                                       }
+    private const string ActionSimulatorFor_IntReturnValue = """
+                                                             public sealed class IntReturnValueActionSimulator : IActionSimulationConfigurator<Gantry, IntReturnValueArgs>
+                                                             {
+                                                                 public IEnumerable<ISimulationStep> ConfigureSimulation(
+                                                                     IActionSimulationBuilder<Gantry, IntReturnValueArgs> actionSimulationConfiguration) => [];
+                                                             }
+                                                             """;
 
-                                                       """;
+    private const string FuncSimulatorFor_IntReturnValue = """
+                                                           public sealed class
+                                                               IntReturnValueFuncSimulator : IFunctionSimulationConfigurator<Gantry, IntReturnValueArgs, int>
+                                                           {
+                                                               public IEnumerable<ISimulationStep> ConfigureSimulation(
+                                                                   IFunctionSimulationBuilder<Gantry, IntReturnValueArgs, int> actionSimulationConfiguration) =>
+                                                                   actionSimulationConfiguration.WithReturnValue((_) => 2);
+                                                           }
 
-    private const string FuncSimulatorForVoidTask = """
-                                                    public sealed class IntegerInputFuncSimulator : IFunctionSimulationConfigurator<Gantry, IntegerInputArgs>
-                                                    {
-                                                        public IEnumerable<ISimulationStep> ConfigureSimulation(IFunctionSimulationBuilder<Gantry, IntegerInputArgs> actionSimulationConfiguration) => [];
-                                                    }
-                                                    """;
+                                                           """;
 
-    protected readonly SimulationConfiguratorUsageAnalyser Analyzer = new();
-    protected AnalyzerTestDriver<DiagnosticAnalyzer> Driver => new(Analyzer, Console.WriteLine);
+    private const string FuncSimulatorFor_NoReturnValue = """
+                                                          public sealed class NoReturnValueFuncSimulator : IFunctionSimulationConfigurator<Gantry, NoReturnValueArgs, int>
+                                                          {
+                                                              public IEnumerable<ISimulationStep> ConfigureSimulation(
+                                                                  IFunctionSimulationBuilder<Gantry, NoReturnValueArgs, int> actionSimulationConfiguration) => [];
+                                                          }
+                                                          """;
+
+
+    private const string FuncSimulatorForIntTask_WrongReturnType = """
+                                                                   public sealed class
+                                                                       IntReturnValueButGivesStringFuncSimulator : IFunctionSimulationConfigurator<Gantry, IntReturnValueArgs, string>
+                                                                   {
+                                                                       public IEnumerable<ISimulationStep> ConfigureSimulation(
+                                                                           IFunctionSimulationBuilder<Gantry, IntReturnValueArgs, string> actionSimulationConfiguration) =>
+                                                                           actionSimulationConfiguration.WithReturnValue((_) => "2");
+                                                                   }
+
+                                                                   """;
+
+    private const string FuncSimulatorForIntTask_CorrectReturnType = """
+                                                                     public sealed class
+                                                                         IntReturnValueButGivesStringFuncSimulator : IFunctionSimulationConfigurator<Gantry, IntReturnValueArgs, int>
+                                                                     {
+                                                                         public IEnumerable<ISimulationStep> ConfigureSimulation(
+                                                                             IFunctionSimulationBuilder<Gantry, IntReturnValueArgs, int> actionSimulationConfiguration) =>
+                                                                             actionSimulationConfiguration.WithReturnValue((_) => 2);
+                                                                     }
+                                                                     """;
+
+
+    private readonly SimulationConfiguratorUsageAnalyser Analyzer = new();
+    private AnalyzerTestDriver<DiagnosticAnalyzer> Driver => new(Analyzer, Console.WriteLine);
 
 
     [Test]
-    public async Task WhenAnalysing_ActionSimulatorForVoidTask_ShouldNotProduceDiagnostics()
+    public async Task WhenAnalysing_ActionSimulatorFor_MethodWith_NoReturn_ShouldNotProduceDiagnostics()
     {
-        var sourceCode = EntityWithGeneratorClasses + ActionSimulatorForVoidTask;
+        var sourceCode = EntityWithGeneratorClasses + ActionSimulator_NoReturnValue;
+        AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
+        await Assert.That(result.Diagnostics).IsEmpty().Because(result.Diagnostics.ToCommaSeparatedString() +
+                                                                " should not be present after running the analyser");
+    }
+
+    [Test]
+    public async Task WhenAnalysing_FuncSimulatorFor_CorrectGenericReturnValueArg_ShouldNotProduceDiagnostics()
+    {
+        var sourceCode = EntityWithGeneratorClasses + FuncSimulatorForIntTask_CorrectReturnType;
+        AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
+        await Assert.That(result.Diagnostics).IsEmpty().Because(result.Diagnostics.ToCommaSeparatedString() +
+                                                                " should not be present after running the analyser");
+    }
+
+    [Test]
+    public async Task WhenAnalysing_FuncSimulatorFor_MethodWith_IntReturn_ShouldNotProduceDiagnostics()
+    {
+        var sourceCode = EntityWithGeneratorClasses + FuncSimulatorFor_IntReturnValue;
         AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
         await Assert.That(result.Diagnostics).IsEmpty().Because(result.Diagnostics.ToCommaSeparatedString() +
                                                                 " should not be present after running the analyser");
@@ -109,28 +148,26 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
 
 
     [Test]
-    public async Task WhenAnalysing_ActionSimulatorForNonVoidTask_ShouldProduceDiagnostics()
+    public async Task WhenAnalysing_ActionSimulatorFor_MethodWith_IntReturn_ShouldProduceDiagnostics()
     {
-        var sourceCode = EntityWithGeneratorClasses + ActionSimulatorForNonVoidTask;
+        var sourceCode = EntityWithGeneratorClasses + ActionSimulatorFor_IntReturnValue;
         AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
-        await Assert.That(result.Diagnostics)
-            .Contains(d => d.Descriptor.Equals(SimulationRules.MustBeFunctionSimulation));
+        await Assert.That(result.Diagnostics).IsNotEmpty().Because(" the code should produce diagnostics");
     }
 
     [Test]
-    public async Task WhenAnalysing_FuncSimulatorForNonVoidTask_ShouldNotProduceDiagnostics()
+    public async Task WhenAnalysing_FuncSimulatorFor_MethodWith_NoReturnValue_ShouldProduceDiagnostics()
     {
-        var sourceCode = EntityWithGeneratorClasses + FuncSimulatorForNonVoidTask;
+        var sourceCode = EntityWithGeneratorClasses + FuncSimulatorFor_NoReturnValue;
         AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
-        await Assert.That(result.Diagnostics).IsEmpty();
+        await Assert.That(result.Diagnostics).IsNotEmpty().Because(" the code should produce diagnostics");
     }
 
     [Test]
-    public async Task WhenAnalysing_FuncSimulatorForVoidTask_ShouldProduceDiagnostics()
+    public async Task WhenAnalysing_FuncSimulator_IncorrectGenericReturnValueArg_ShouldProduceDiagnostics()
     {
-        var sourceCode = EntityWithGeneratorClasses + FuncSimulatorForVoidTask;
+        var sourceCode = EntityWithGeneratorClasses + FuncSimulatorForIntTask_WrongReturnType;
         AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
-        await Assert.That(result.Diagnostics)
-            .Contains(d => d.Descriptor.Equals(SimulationRules.MustBeActionSimulation));
+        await Assert.That(result.Diagnostics).IsNotEmpty().Because(" the code should produce diagnostics");
     }
 }

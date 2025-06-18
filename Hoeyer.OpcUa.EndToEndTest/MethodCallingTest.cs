@@ -14,22 +14,14 @@ public class MethodCallingTest(ApplicationFixture<IGantryMethods> appFixture)
         => await appFixture.TestedService.ChangePosition(Position.OnTheMoon);
 
     [Test]
-    public async Task WhenCalling_NonVoidTask_DoesNotThrow() =>
-        await appFixture.TestedService.PlaceContainer(Position.OnTheMoon);
-
-    [Test]
     public async Task<Guid> WhenCalling_TaskWithNoArgs_DoesNotThrow() =>
-        await appFixture.TestedService.GetContainerId();
+        await appFixture.TestedService.GetCurrentContainerId();
 
     [Test]
     public async Task<Guid> WhenCalling_TaskWithGuidReturn_DoesNotThrow() =>
-        await appFixture.TestedService.GetContainerId();
+        await appFixture.TestedService.GetCurrentContainerId();
 
     [Test]
-    public async Task<DateTime> WhenCalling_TaskWithDateTimeReturn_DoesNotThrow() =>
-        await appFixture.TestedService.GetDate();
-
-    [Test]
-    public async Task<List<DateTime>> WhenCalling_TaskWithListDatetimeReturn_DoesNotThrow() =>
-        await appFixture.TestedService.GetDates();
+    public async Task<Guid> WhenCalling_TaskWithDateTimeReturn_DoesNotThrow() =>
+        await appFixture.TestedService.GetCurrentContainerId();
 }

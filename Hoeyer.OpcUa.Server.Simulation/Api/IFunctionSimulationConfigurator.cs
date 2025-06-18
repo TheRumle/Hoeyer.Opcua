@@ -3,8 +3,8 @@ using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
 
 namespace Hoeyer.OpcUa.Server.Simulation.Api;
 
-public interface IFunctionSimulationConfigurator<TEntity, TArgs>
+public interface IFunctionSimulationConfigurator<TEntity, TArgs, out TReturn>
 {
     public IEnumerable<ISimulationStep> ConfigureSimulation(
-        IFunctionSimulationBuilder<TEntity, TArgs> functionConfig);
+        IFunctionSimulationBuilder<TEntity, TArgs, TReturn> functionConfig);
 }

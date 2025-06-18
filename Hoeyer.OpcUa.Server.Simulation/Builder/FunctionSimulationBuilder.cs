@@ -2,22 +2,31 @@
 using System.Collections.Generic;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Server.Simulation.Api;
-using Hoeyer.OpcUa.Server.Simulation.Services.Function;
 using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
 
 namespace Hoeyer.OpcUa.Server.Simulation.Builder;
 
-internal sealed class FunctionSimulationBuilder<TEntity, TArguments>(
+internal sealed class FunctionSimulationBuilder<TEntity, TArguments, TReturn>(
     IEntityNode node,
-    ISimulationStepFactory<TEntity, TArguments> stepFactory) : IFunctionSimulationBuilder<TEntity, TArguments>
+    ISimulationStepFactory<TEntity, TArguments> stepFactory)
+    : IFunctionSimulationBuilder<TEntity, TArguments, TReturn>
 {
     private readonly object _lock = new();
     private Queue<ISimulationStep> SimulationSteps { get; } = new();
     private IEntityNode CurrentState => node;
 
-
     /// <inheritdoc />
-    public IFunctionSimulationBuilder<TEntity, TArguments> ChangeState(
+    public IEnumerable<ISimulationStep> WithReturnValue(
+        Func<SimulationStepContext<TEntity, TArguments>, TReturn> returnValueFactory)
+    {
+        ReturnValueStep<TEntity, TArguments, TReturn> step =
+            stepFactory.CreateReturnValueStep(CurrentState, returnValueFactory, _lock);
+        SimulationSteps.Enqueue(step);
+        return SimulationSteps.ToArray();
+    }
+
+
+    public IFunctionSimulationBuilder<TEntity, TArguments, TReturn> ChangeState(
         Action<SimulationStepContext<TEntity, TArguments>> stateChange)
     {
         ActionStep<TEntity, TArguments> step = stepFactory.CreateActionStep(CurrentState, stateChange, _lock);
@@ -25,20 +34,10 @@ internal sealed class FunctionSimulationBuilder<TEntity, TArguments>(
         return this;
     }
 
-    public IFunctionSimulationBuilder<TEntity, TArguments> Wait(TimeSpan timeSpan)
+    public IFunctionSimulationBuilder<TEntity, TArguments, TReturn> Wait(TimeSpan timeSpan)
     {
         TimeStep<TEntity> step = stepFactory.CreateTimeStep(CurrentState, timeSpan, _lock);
         SimulationSteps.Enqueue(step);
         return this;
-    }
-
-    /// <inheritdoc />
-    public IEnumerable<ISimulationStep> WithReturnValue<TReturn>(
-        Func<SimulationStepContext<TEntity, TArguments>, TReturn> returnValueFactory)
-    {
-        ReturnValueStep<TEntity, TArguments, TReturn> step =
-            stepFactory.CreateReturnValueStep(CurrentState, returnValueFactory, _lock);
-        SimulationSteps.Enqueue(step);
-        return SimulationSteps.ToArray();
     }
 }
