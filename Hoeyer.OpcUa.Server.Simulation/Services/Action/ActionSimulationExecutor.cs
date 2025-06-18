@@ -6,7 +6,7 @@ using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
 
 namespace Hoeyer.OpcUa.Server.Simulation.Services.Action;
 
-internal class ActionSimulationExecutor<TArgs>(ITimeScaler scaler) : IActionSimulationExecutor<TArgs>
+internal class ActionSimulationExecutor<TEntity, TArgs>(ITimeScaler scaler) : IActionSimulationExecutor<TArgs>
 {
     /// <inheritdoc />
     public virtual async ValueTask ExecuteSimulation(IEnumerable<ISimulationStep> steps, TArgs args)
@@ -15,11 +15,17 @@ internal class ActionSimulationExecutor<TArgs>(ITimeScaler scaler) : IActionSimu
         {
             switch (step)
             {
-                case IActionStep<TArgs> actionStep:
+                case ActionStep<TEntity, TArgs> actionStep:
                     actionStep.Execute(args);
                     break;
-                case ITimeStep timeStep:
+                case TimeStep<TEntity> timeStep:
                     await Sleep(timeStep);
+                    break;
+                case SideEffectActionStep<TArgs> sideEffectStep:
+                    sideEffectStep.Execute(args);
+                    break;
+                case AsyncActionStep<TEntity, TArgs> asyncActionStep:
+                    await asyncActionStep.Execute(args);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(step.GetType().Name +

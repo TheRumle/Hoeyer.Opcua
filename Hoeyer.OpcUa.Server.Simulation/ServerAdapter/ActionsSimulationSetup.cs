@@ -26,11 +26,9 @@ internal sealed class ActionSimulationSetup<TEntity, TMethodArgs>(
             typeof(TMethodArgs).GetCustomAttributes().OfType<IOpcMethodArgumentsAttribute>().First();
         AssertConfigurators(node, annotation);
 
-        IActionSimulationConfigurator<TEntity, TMethodArgs> simulator = simulators.First();
-        var builder = new ActionSimulationBuilder<TEntity, TMethodArgs>(node,
-            new SimulationStepFactory<TEntity, TMethodArgs>(entityTranslator));
         MethodState method = node.Methods.First(e => e.BrowseName.Name.Equals(annotation.MethodName));
-        IEnumerable<ISimulationStep> simultationSteps = simulator.ConfigureSimulation(builder);
+        IEnumerable<ISimulationStep> simultationSteps = ConfigureSimulation(node);
+
 
         method.OnCallMethod += (context,
             methodState,
@@ -57,6 +55,22 @@ internal sealed class ActionSimulationSetup<TEntity, TMethodArgs>(
 
             return StatusCodes.Good;
         };
+    }
+
+    private IEnumerable<ISimulationStep> ConfigureSimulation(IEntityNode node)
+    {
+        try
+        {
+            IActionSimulationConfigurator<TEntity, TMethodArgs> simulator = simulators.First();
+            var builder = new ActionSimulationBuilder<TEntity, TMethodArgs>(node,
+                new SimulationStepFactory<TEntity, TMethodArgs>(entityTranslator));
+            IEnumerable<ISimulationStep> simultationSteps = simulator.ConfigureSimulation(builder);
+            return simultationSteps;
+        }
+        catch (Exception e)
+        {
+            throw new SimulationConfigurationException(e.Message);
+        }
     }
 
     private void AssertConfigurators(IEntityNode node, IOpcMethodArgumentsAttribute annotation)

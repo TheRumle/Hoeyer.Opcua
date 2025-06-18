@@ -2,7 +2,6 @@
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Core.Configuration;
@@ -55,16 +54,14 @@ public static class ServiceCollectionExtension
         foreach ((Type implementor, Type simulatorInterface, Type methodArgType, MethodInfo? method, Type entity) in
                  functionSimulators)
         {
-            if (method is null || method.ReturnType.GetGenericTypeDefinition() != typeof(Task<>))
-                continue;
-
-            Type returnType = method.ReturnType.GetGenericArguments()[0];
+            Type returnType = method!.ReturnType.GetGenericArguments()[0];
 
             serviceCollection.AddSingleton(simulatorInterface, implementor);
 
             Type functionConfigurator =
                 typeof(FunctionSimulationSetup<,,>).MakeGenericType(entity, methodArgType, returnType);
             Type configurator = typeof(IPreinitializedNodeConfigurator<>).MakeGenericType(entity);
+
             Type executor = typeof(FunctionSimulationExecutor<,,>).MakeGenericType(entity, methodArgType, returnType);
             Type executorInterface = typeof(IFunctionSimulationExecutor<,>).MakeGenericType(methodArgType, returnType);
 
@@ -83,14 +80,12 @@ public static class ServiceCollectionExtension
         foreach ((Type implementor, Type simulatorInterface, Type methodArgType, MethodInfo? method, Type entity) in
                  actionSimulators)
         {
-            if (method is null || method.ReturnType != typeof(Task))
-                continue;
-
             serviceCollection.AddSingleton(simulatorInterface, implementor);
 
             Type actionConfigurator = typeof(ActionSimulationSetup<,>).MakeGenericType(entity, methodArgType);
             Type configurator = typeof(IPreinitializedNodeConfigurator<>).MakeGenericType(entity);
-            Type executor = typeof(ActionSimulationExecutor<>).MakeGenericType(methodArgType);
+
+            Type executor = typeof(ActionSimulationExecutor<,>).MakeGenericType(entity, methodArgType);
             Type executorInterface = typeof(IActionSimulationExecutor<>).MakeGenericType(methodArgType);
 
             serviceCollection.AddSingleton(configurator, actionConfigurator);
@@ -103,9 +98,10 @@ public static class ServiceCollectionExtension
     {
         return typeReferences
             .Select(type => (implementor: type,
-                simulatorInterface: type.GetImplementedVersionOfGeneric(genericSimulatorInterface)))
-            .Where(t => t.simulatorInterface != null)
-            .Select(t => CreateConfiguratorInfoTuple(t.implementor, t.simulatorInterface!));
+                simulatorInterfaces: type.GetAllImplementedVersionsOfGeneric(genericSimulatorInterface)))
+            .Where(t => t.simulatorInterfaces.Any())
+            .SelectMany(t => t.simulatorInterfaces
+                .Select(@interface => CreateConfiguratorInfoTuple(t.implementor, @interface)));
     }
 
 

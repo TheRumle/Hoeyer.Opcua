@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
@@ -8,6 +9,10 @@ using Microsoft.Extensions.Logging;
 using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application;
+
+public sealed class NodeSetupException(string err) : Exception(err)
+{
+}
 
 [OpcUaEntityService(typeof(IEntityNodeManagerFactory), ServiceLifetime.Singleton)]
 [OpcUaEntityService(typeof(IEntityNodeManagerFactory<>), ServiceLifetime.Singleton)]
@@ -30,7 +35,8 @@ internal sealed class EntityNodeManagerSingletonFactory<T>(
     {
         var node = await nodeFactory.CreateManagedEntityNode(server.NamespaceUris.GetIndexOrAppend);
         List<Exception> configurationExceptions = ConfigurePreInitialization(node);
-        if (configurationExceptions.Count > 0) throw new AggregateException(configurationExceptions);
+        if (configurationExceptions.Count > 0)
+            throw new NodeSetupException(string.Join("\n", configurationExceptions.Select(e => e.Message)));
 
 
         ILogger logger = factory.CreateLogger(node.BaseObject.BrowseName.Name + "Manager");

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Server.Simulation.Api;
 using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
@@ -48,6 +49,22 @@ internal sealed class SimulationStepFactory<TEntity, TArguments>(IEntityTranslat
 
 
         return new ReturnValueStep<TEntity, TArguments, TReturn>(action);
+    }
+
+    public AsyncActionStep<TEntity, TArguments> CreateAsyncActionStep(
+        IEntityNode currentState,
+        Func<SimulationStepContext<TEntity, TArguments>, ValueTask> stateChange)
+    {
+        Func<TArguments, Task<ActionStepResult<TEntity>>> action = async (TArguments args) =>
+        {
+            TEntity previousState = translator.Translate(currentState); //global reference for the current State
+            TEntity clonedPrev = translator.Translate(currentState);
+            var state = new SimulationStepContext<TEntity, TArguments>(previousState, args);
+            await stateChange.Invoke(state);
+            return new ActionStepResult<TEntity>(clonedPrev, state.State, DateTime.Now);
+        };
+
+        return new AsyncActionStep<TEntity, TArguments>(action);
     }
 
 

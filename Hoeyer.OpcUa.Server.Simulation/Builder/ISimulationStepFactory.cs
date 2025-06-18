@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Server.Simulation.Api;
 using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
@@ -20,4 +21,8 @@ internal interface ISimulationStepFactory<TEntity, TArguments>
     public ReturnValueStep<TEntity, TArguments, TReturn> CreateReturnValueStep<TReturn>(IEntityNode currentState,
         Func<SimulationStepContext<TEntity, TArguments>, TReturn> returnValueProvider,
         object executionLock);
+
+    public AsyncActionStep<TEntity, TArguments> CreateAsyncActionStep(
+        IEntityNode currentState,
+        Func<SimulationStepContext<TEntity, TArguments>, ValueTask> stateChange);
 }

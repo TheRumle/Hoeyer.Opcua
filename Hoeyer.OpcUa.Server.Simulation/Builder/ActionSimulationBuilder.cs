@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Server.Simulation.Api;
-using Hoeyer.OpcUa.Server.Simulation.Services.Action;
 using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
 
 namespace Hoeyer.OpcUa.Server.Simulation.Builder;
@@ -23,6 +23,22 @@ internal sealed class ActionSimulationBuilder<TEntity, TArguments>(
         SimulationSteps.Enqueue(step);
         return this;
     }
+
+    /// <inheritdoc />
+    public IActionSimulationBuilder<TEntity, TArguments> ChangeStateAsync(
+        Func<SimulationStepContext<TEntity, TArguments>, ValueTask> stateChange)
+    {
+        AsyncActionStep<TEntity, TArguments> action = stepFactory.CreateAsyncActionStep(CurrentState, stateChange);
+        SimulationSteps.Enqueue(action);
+        return this;
+    }
+
+    public IActionSimulationBuilder<TEntity, TArguments> SideEffect(Action<TArguments> sideEffect)
+    {
+        SimulationSteps.Enqueue(new SideEffectActionStep<TArguments>(sideEffect));
+        return this;
+    }
+
 
     public IActionSimulationBuilder<TEntity, TArguments> Wait(TimeSpan timeSpan)
     {

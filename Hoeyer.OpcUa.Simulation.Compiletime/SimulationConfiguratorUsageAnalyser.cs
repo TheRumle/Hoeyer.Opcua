@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Hoeyer.OpcUa.Simulation.SourceGeneration.Constants;
+using Hoeyer.OpcUa.Simulation.SourceGeneration.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -46,71 +47,60 @@ public sealed class SimulationConfiguratorUsageAnalyser : DiagnosticAnalyzer
 
         AnalyzeActionSimulationConfigurationUsage(
             simulationImplementor,
-            context,
-            l =>
-                Diagnostic.Create(SimulationRules.TypeHierarchyMustContainOnlyOneActionSimulator, l)
+            WellKnown.FullyQualifiedInterface.IActionSimulationConfigurator,
+            context
         );
 
         AnalyzeFunctionSimulationConfigurationUsage(
             simulationImplementor,
-            context,
-            l =>
-                Diagnostic.Create(SimulationRules.TypeHierarchyMustContainOnlyOneFunctionSimulator, l)
+            WellKnown.FullyQualifiedInterface.IFunctionSimulationConfigurator,
+            context
         );
     }
 
     private static void AnalyzeActionSimulationConfigurationUsage(
         INamedTypeSymbol simulationImplementor,
-        SyntaxNodeAnalysisContext context,
-        Func<Location, Diagnostic> onMultipleInterfaceImplementations)
+        FullyQualifiedTypeName wanted,
+        SyntaxNodeAnalysisContext context)
     {
-        INamedTypeSymbol? actionConfigType = context.Compilation.GetTypeByMetadataName(WellKnown.FullyQualifiedInterface
-            .IActionSimulationConfigurator
-            .WithoutGlobalPrefix);
+        (Location location, IMethodSymbol method)? wantedMethodAndLocation =
+            GetSimulatedMethod(context, simulationImplementor, wanted);
+        if (wantedMethodAndLocation == null) return;
+        (Location? location, IMethodSymbol? simulatedMethod) = wantedMethodAndLocation.Value;
 
-        if (actionConfigType is null) return;
+        if (simulatedMethod!.ReturnType is INamedTypeSymbol { Arity: 1 })
+            context.ReportDiagnostic(Diagnostic.Create(SimulationRules.MustBeFunctionSimulation, location));
+    }
+
+    private static (Location location, IMethodSymbol method)? GetSimulatedMethod(SyntaxNodeAnalysisContext context,
+        INamedTypeSymbol simulationImplementor, FullyQualifiedTypeName wanted)
+    {
+        INamedTypeSymbol? simulationInterface = context.Compilation.GetTypeByMetadataName(wanted.WithoutGlobalPrefix);
+
+        if (simulationInterface is null) return null;
 
         (Location? location, AttributeData? argsAttrData) = AnalyseSimulationInterfaceUsage(simulationImplementor,
-            actionConfigType, context,
-            onMultipleInterfaceImplementations);
-        if (argsAttrData == null) return;
+            simulationInterface, context);
+        if (argsAttrData == null || location == null) return null;
 
         ITypeSymbol simulatedInterface = argsAttrData.AttributeClass!.TypeArguments[1];
         TypedConstant methodName = argsAttrData.ConstructorArguments[0];
         IMethodSymbol? simulatedMethod = simulatedInterface.GetMembers().OfType<IMethodSymbol>().FirstOrDefault(m =>
             string.Equals(m.Name, (string)methodName.Value!, StringComparison.Ordinal));
 
-        if (simulatedMethod!.ReturnType is INamedTypeSymbol { Arity: 1 })
-        {
-            context.ReportDiagnostic(Diagnostic.Create(SimulationRules.MustBeFunctionSimulation, location));
-        }
+        return (location, simulatedMethod);
     }
 
     private static void AnalyzeFunctionSimulationConfigurationUsage(
         INamedTypeSymbol simulationImplementor,
-        SyntaxNodeAnalysisContext context,
-        Func<Location, Diagnostic> onMultipleInterfaceImplementations)
+        FullyQualifiedTypeName wanted,
+        SyntaxNodeAnalysisContext context)
     {
-        INamedTypeSymbol? actionConfigType = context.Compilation.GetTypeByMetadataName(WellKnown.FullyQualifiedInterface
-            .IFunctionSimulationConfigurator
-            .WithoutGlobalPrefix);
+        (Location location, IMethodSymbol method)? wantedMethodAndLocation =
+            GetSimulatedMethod(context, simulationImplementor, wanted);
+        if (wantedMethodAndLocation == null) return;
+        (Location? location, IMethodSymbol? simulatedMethod) = wantedMethodAndLocation.Value;
 
-        if (actionConfigType is null) return;
-
-        (Location? location, AttributeData? argsAttrData) = AnalyseSimulationInterfaceUsage(
-            simulationImplementor,
-            actionConfigType,
-            context,
-            onMultipleInterfaceImplementations);
-
-        if (argsAttrData == null) return;
-
-        ITypeSymbol simulatedInterface = argsAttrData.AttributeClass!.TypeArguments[1];
-        TypedConstant methodName = argsAttrData.ConstructorArguments[0];
-        IMethodSymbol? simulatedMethod = simulatedInterface
-            .GetMembers()
-            .OfType<IMethodSymbol>()
-            .FirstOrDefault(m => string.Equals(m.Name, (string)methodName.Value!, StringComparison.Ordinal));
 
         if (simulatedMethod!.ReturnType is not INamedTypeSymbol { Arity: 1 })
             context.ReportDiagnostic(Diagnostic.Create(SimulationRules.MustBeActionSimulation, location));
@@ -120,8 +110,7 @@ public sealed class SimulationConfiguratorUsageAnalyser : DiagnosticAnalyzer
     private static (Location? location, AttributeData? argsAttrData) AnalyseSimulationInterfaceUsage(
         INamedTypeSymbol simulationImplementor,
         INamedTypeSymbol simulationInterface,
-        SyntaxNodeAnalysisContext context,
-        Func<Location, Diagnostic> onMultipleInterfaceImplementations)
+        SyntaxNodeAnalysisContext context)
     {
         List<INamedTypeSymbol> actionInterfaces = simulationImplementor.AllInterfaces
             .Where(iface =>
@@ -146,7 +135,8 @@ public sealed class SimulationConfiguratorUsageAnalyser : DiagnosticAnalyzer
                        SymbolEqualityComparer.Default.Equals(named.OriginalDefinition, simulationInterface);
             }).GetLocation();
 
-        if (actionInterfaces.Count > 1) context.ReportDiagnostic(onMultipleInterfaceImplementations.Invoke(location));
+        if (actionInterfaces.Count > 1)
+            Diagnostic.Create(SimulationRules.TypeHierarchyMustContainOnlyOneActionSimulator, location);
 
         INamedTypeSymbol simulatorInterface = actionInterfaces[0];
         ITypeSymbol argsType = simulatorInterface.TypeArguments[1];

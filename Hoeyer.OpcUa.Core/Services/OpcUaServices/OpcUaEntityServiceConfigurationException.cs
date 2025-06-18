@@ -9,13 +9,20 @@ public class OpcUaEntityServiceConfigurationException(string message) : Exceptio
     public OpcUaEntityServiceConfigurationException(
         IEnumerable<OpcUaEntityServiceConfigurationException> configurationExceptions) :
         this(
-            string.Join("\n", configurationExceptions))
+            string.Join("\n", configurationExceptions.Select(e => e.Message)))
     {
     }
 
     public OpcUaEntityServiceConfigurationException(
+        IEnumerable<Exception> configurationExceptions) :
+        this(string.Join("\n", configurationExceptions.Select(e => e.Message)))
+    {
+    }
+
+
+    public OpcUaEntityServiceConfigurationException(
         params OpcUaEntityServiceConfigurationException[] configurationExceptions) :
-        this(string.Join("\n", configurationExceptions.ToList()))
+        this(string.Join("\n", configurationExceptions.Select(e => e.Message)))
     {
     }
 
@@ -24,11 +31,5 @@ public class OpcUaEntityServiceConfigurationException(string message) : Exceptio
         var missingService = service.IsGenericType ? service.GetGenericTypeDefinition().Name : service.Name;
         return new OpcUaEntityServiceConfigurationException(
             $"The Entity {entity.Name} does not have any {missingService} configured!");
-    }
-
-    public static OpcUaEntityServiceConfigurationException NoCustomImplementation(Type entity, string service)
-    {
-        return new OpcUaEntityServiceConfigurationException(
-            $"Could not find any implementation of service '{service}' for Entity {entity.Name}. Consider creating a public implementation of the service and it will be configured automatically");
     }
 }

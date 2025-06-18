@@ -9,7 +9,7 @@ using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
 namespace Hoeyer.OpcUa.Server.Simulation.Services.Function;
 
 internal sealed class FunctionSimulationExecutor<TEntity, TArgs, TReturnValue>(ITimeScaler scaler)
-    : ActionSimulationExecutor<TArgs>(scaler), IFunctionSimulationExecutor<TArgs, TReturnValue>
+    : ActionSimulationExecutor<TEntity, TArgs>(scaler), IFunctionSimulationExecutor<TArgs, TReturnValue>
 {
     public new async ValueTask<TReturnValue> ExecuteSimulation(IEnumerable<ISimulationStep> steps, TArgs args)
     {

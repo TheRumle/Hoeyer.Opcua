@@ -2,6 +2,7 @@
 using Hoeyer.OpcUa.Server.Simulation.Api;
 using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
 using Hoeyer.OpcUa.TestEntities.Methods.Generated;
+using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.OpcUa.TestEntities.Methods;
 
@@ -16,22 +17,38 @@ public interface IGantryMethods
     Task<List<DateTime>> GetDates();
 }
 
-public sealed class GetDateSimulator :
-    IFunctionSimulationConfigurator<Gantry, GetDateArgs>,
-    IActionSimulationConfigurator<Gantry, PickUpContainerArgs>
+public sealed class PlacementSimulator(ILogger<PlacementSimulator> logger)
+    : IActionSimulationConfigurator<Gantry, PlaceContainerArgs>,
+        IActionSimulationConfigurator<Gantry, PickUpContainerArgs>
 {
-    /// <inheritdoc />
     public IEnumerable<ISimulationStep> ConfigureSimulation(
         IActionSimulationBuilder<Gantry, PickUpContainerArgs> actionSimulationConfiguration)
     {
-        return actionSimulationConfiguration.ChangeState(g =>
-        {
-            Gantry gantry = g.State;
-            gantry.HeldContainer = Guid.NewGuid();
-            gantry.Occupied = true;
-        }).Build();
+        return actionSimulationConfiguration
+            .Wait(TimeSpan.FromSeconds(2))
+            .ChangeState(e =>
+            {
+                e.State.Position = e.Arguments.Position;
+                e.State.Occupied = true;
+                e.State.HeldContainer = Guid.NewGuid();
+            })
+            .Build();
     }
 
+    /// <inheritdoc />
+    public IEnumerable<ISimulationStep> ConfigureSimulation(
+        IActionSimulationBuilder<Gantry, PlaceContainerArgs> actionSimulationConfiguration)
+    {
+        return actionSimulationConfiguration
+            .Wait(TimeSpan.FromSeconds(2))
+            .ChangeStateAsync(async e => { await Task.CompletedTask; })
+            .Build();
+    }
+}
+
+public sealed class GetDateSimulator :
+    IFunctionSimulationConfigurator<Gantry, GetDateArgs>
+{
     /// <inheritdoc />
     public IEnumerable<ISimulationStep> ConfigureSimulation(
         IFunctionSimulationBuilder<Gantry, GetDateArgs> functionConfig) =>

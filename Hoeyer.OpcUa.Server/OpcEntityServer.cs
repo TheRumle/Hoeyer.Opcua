@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Extensions.Logging;
+using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Extensions;
@@ -119,9 +120,17 @@ internal sealed class OpcEntityServer(
     /// <inheritdoc />
     protected override void StartApplication(ApplicationConfiguration configuration)
     {
-        logger.LogInformation("Starting application with configuration {@Configuration}",
-            configuration.ToLoggingObject());
-        base.StartApplication(configuration);
+        try
+        {
+            logger.LogInformation("Starting application with configuration {@Configuration}",
+                configuration.ToLoggingObject());
+            base.StartApplication(configuration);
+        }
+        catch (Exception e)
+        {
+            logger.LogCritical(e, " A critical error occured when trying to start the OpcEntityServer.");
+            throw new OpcUaEntityServiceConfigurationException([e]);
+        }
     }
 
     /// <inheritdoc />
