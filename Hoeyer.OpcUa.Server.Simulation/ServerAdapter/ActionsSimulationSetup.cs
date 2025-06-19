@@ -83,8 +83,10 @@ internal sealed class ActionSimulationSetup<TEntity, TMethodArgs>(
 
         if (simulators.Count() > 1)
         {
-            throw new SimulationConfigurationException(
-                $"Multiple simulators where found for {annotation.Interface.FullName}.{annotation.MethodName}");
+            var message =
+                $"Multiple simulators where found for {annotation.Interface.FullName}.{annotation.MethodName}: \n"
+                + string.Join(", ", simulators.Select(e => e.GetType().Name));
+            throw new SimulationConfigurationException(message);
         }
 
         MethodState[] methods = node.Methods.Where(e => e.BrowseName.Name == annotation.MethodName).ToArray();

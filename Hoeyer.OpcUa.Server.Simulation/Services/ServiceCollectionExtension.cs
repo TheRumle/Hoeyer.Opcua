@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
@@ -23,7 +24,7 @@ public static class ServiceCollectionExtension
         IServiceCollection serviceCollection = registration.Collection;
         serviceCollection.AddTransient<ITimeScaler, IdentityTimeScaler>();
         ImmutableHashSet<Type> typeReferences =
-            typeof(IEntityMethodArgTranslator<>).GetTypesFromConsumingAssemblies().ToImmutableHashSet();
+            typeof(IEntityMethodArgTranslator<>).GetTypesFromConsumingAssemblies().AsParallel().ToImmutableHashSet();
 
 
         var translatorInfoTuple = typeReferences
@@ -39,21 +40,38 @@ public static class ServiceCollectionExtension
             serviceCollection.AddTransient(translatorInfo.Interface!, translatorInfo.Implementor);
         }
 
-        AddActionSimulation(typeReferences.AsParallel(), serviceCollection);
-        AddFunctionSimulation(typeReferences.AsParallel(), serviceCollection);
+        Type actionSimulatorInterface = typeof(IActionSimulationConfigurator<,>).GetGenericTypeDefinition();
+        List<SimulationPatternTypeDetails> actionSimulators =
+            GetSimulatorDetails(typeReferences, actionSimulatorInterface).ToList();
+
+        Type functionSimulatorInterface = typeof(IFunctionSimulationConfigurator<,,>).GetGenericTypeDefinition();
+        List<SimulationPatternTypeDetails> functionSimulators =
+            GetSimulatorDetails(typeReferences, functionSimulatorInterface).ToList();
+
+        List<DuplicateSimulatorConfigurationException> duplicateDefinitions = actionSimulators.Union(functionSimulators)
+            .GroupBy(e => e.InstantiatedSimulatorInterface).Where(g => g.Count() > 1).Select(group =>
+            {
+                var message =
+                    $"Multiple implementations of '{group.Key.GetFriendlyTypeName()}' were found. The framework allows only for one implementation per method to simulate. Remove one of the simulation configurators: [\n\t{string.Join(",\n\t", group.Select(e => e.Implementor.GetFriendlyTypeName()))}\n]";
+                return new DuplicateSimulatorConfigurationException(message);
+            }).ToList();
+
+        if (duplicateDefinitions.Any())
+        {
+            throw new SimulationConfigurationException(duplicateDefinitions);
+        }
+
+        AddActionSimulation(actionSimulators, serviceCollection);
+        AddFunctionSimulation(functionSimulators, serviceCollection);
 
         return registration;
     }
 
-    private static void AddFunctionSimulation(ParallelQuery<Type> typeReferences, IServiceCollection serviceCollection)
+    private static void AddFunctionSimulation(List<SimulationPatternTypeDetails> typeReferences,
+        IServiceCollection serviceCollection)
     {
-        Type functionSimulatorInterface = typeof(IFunctionSimulationConfigurator<,,>).GetGenericTypeDefinition();
-
-        ParallelQuery<SimulationPatternTypeDetails> functionSimulators =
-            GetSimulatorDetails(typeReferences, functionSimulatorInterface);
-
-        foreach ((Type implementor, Type simulatorInterface, Type methodArgType, MethodInfo? method, Type entity) in
-                 functionSimulators)
+        foreach ((Type implementor, Type simulatorInterface, Type methodArgType, MethodInfo? method,
+                     Type entity) in typeReferences)
         {
             Type returnType = method!.ReturnType.GetGenericArguments()[0];
 
@@ -76,15 +94,11 @@ public static class ServiceCollectionExtension
         }
     }
 
-    private static void AddActionSimulation(ParallelQuery<Type> typeReferences, IServiceCollection serviceCollection)
+    private static void AddActionSimulation(List<SimulationPatternTypeDetails> typeReferences,
+        IServiceCollection serviceCollection)
     {
-        Type actionSimulatorInterface = typeof(IActionSimulationConfigurator<,>).GetGenericTypeDefinition();
-
-        ParallelQuery<SimulationPatternTypeDetails> actionSimulators =
-            GetSimulatorDetails(typeReferences, actionSimulatorInterface);
-
         foreach ((Type implementor, Type simulatorInterface, Type methodArgType, MethodInfo? _, Type entity) in
-                 actionSimulators)
+                 typeReferences)
         {
             serviceCollection.AddSingleton(simulatorInterface, implementor);
 
@@ -99,7 +113,7 @@ public static class ServiceCollectionExtension
         }
     }
 
-    private static ParallelQuery<SimulationPatternTypeDetails> GetSimulatorDetails(ParallelQuery<Type> typeReferences,
+    private static IEnumerable<SimulationPatternTypeDetails> GetSimulatorDetails(IEnumerable<Type> typeReferences,
         Type genericSimulatorInterface)
     {
         return typeReferences
