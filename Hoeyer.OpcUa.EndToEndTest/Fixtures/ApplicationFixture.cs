@@ -70,14 +70,14 @@ public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
     public async Task<TOut> ExecuteWithSession<T, TOut>(Func<ISession, T, TOut> execute)
     {
         var fixture = ServiceProvider.GetService<T>()!;
-        ISession session = await CreateSession(Guid.NewGuid().ToString());
+        using ISession session = await CreateSession(Guid.NewGuid().ToString());
         return execute(session, fixture);
     }
 
     public async Task<TOut> ExecuteWithSessionAsync<T, TOut>(Func<ISession, T, Task<TOut>> execute)
     {
         var fixture = ServiceProvider.GetService<T>()!;
-        ISession session = await CreateSession(Guid.NewGuid().ToString());
+        using ISession session = await CreateSession(Guid.NewGuid().ToString());
         return await execute(session, fixture);
     }
 }
@@ -98,13 +98,13 @@ public sealed class ApplicationFixture<T> : ApplicationFixture where T : notnull
 
     public async Task<TOut> ExecuteWithSession<TOut>(Func<ISession, T, TOut> execute)
     {
-        ISession session = await CreateSession(Guid.NewGuid().ToString());
+        using ISession session = await CreateSession(Guid.NewGuid().ToString());
         return execute(session, TestedService);
     }
 
     public async Task<TOut> ExecuteWithSessionAsync<TOut>(Func<ISession, T, Task<TOut>> execute)
     {
-        ISession session = await CreateSession(Guid.NewGuid().ToString());
+        using ISession session = await CreateSession(Guid.NewGuid().ToString());
         return await execute(session, TestedService);
     }
 

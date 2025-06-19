@@ -21,8 +21,6 @@ public sealed class EntityWriter<TEntity>(
     IEntitySessionFactory factory,
     IEntityBrowser<TEntity> browser) : IEntityWriter<TEntity>
 {
-    public static readonly string SessionName = typeof(TEntity).Name + "Writer";
-
     public async Task AssignEntityValues(TEntity entity, CancellationToken cancellationToken = default)
     {
         EntityNodeStructure valuesToWrite = await browser.GetNodeStructure(cancellationToken);
@@ -48,7 +46,7 @@ public sealed class EntityWriter<TEntity>(
     private async Task WriteValues(CancellationToken cancellationToken,
         IEnumerable<WriteValue> valuesToWrite)
     {
-        ISession session = await factory.CreateSessionAsync(Guid.NewGuid().ToString(), cancellationToken);
+        using ISession session = await factory.CreateSessionAsync(Guid.NewGuid().ToString(), cancellationToken);
         WriteResponse? res = await session.WriteAsync(null, new WriteValueCollection(valuesToWrite), cancellationToken);
         foreach (DiagnosticInfo? s in res.DiagnosticInfos.Where(e => !e.IsNullDiagnosticInfo))
         {

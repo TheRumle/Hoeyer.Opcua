@@ -51,7 +51,6 @@ internal sealed class EntitySubscriptionManager<T>(
         foreach (var items in MonitoredItems) items.Notification += HandleChange;
 
         await Session.PublishAsync(null, new SubscriptionAcknowledgementCollection(), cancellationToken);
-
         return _subscriptionManager.Subscribe(consumer);
     }
 
