@@ -21,14 +21,18 @@ public abstract class ConcurrentTreeTraversalStrategy(
     {
         IProducerConsumerCollection<ReferenceWithId>? queue = orderedCollectionFactory.Invoke();
         Node? node = reader.ReadNodeAsync(session, id, ct).Result;
-        if (node == null) throw new InvalidBrowseRootException(id);
+        if (node == null)
+        {
+            throw new InvalidBrowseRootException(id);
+        }
+
         var rootRef = new ReferenceWithId(id, new ReferenceDescription
         {
             NodeId = id,
             NodeClass = node.NodeClass,
             BrowseName = node.BrowseName,
             DisplayName = node.DisplayName,
-            TypeDefinition = node.TypeDefinitionId,
+            TypeDefinition = node.TypeDefinitionId
         });
         queue.TryAdd(rootRef);
 
@@ -43,7 +47,7 @@ public abstract class ConcurrentTreeTraversalStrategy(
     {
         using var whenFoundCancel = new CancellationTokenSource();
         using var combinedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token, whenFoundCancel.Token);
-        await foreach (var referenceDescription in TraverseFrom(root, session, combinedTokenSource.Token))
+        await foreach (ReferenceWithId? referenceDescription in TraverseFrom(root, session, combinedTokenSource.Token))
         {
             if (!predicate(referenceDescription.Description))
             {

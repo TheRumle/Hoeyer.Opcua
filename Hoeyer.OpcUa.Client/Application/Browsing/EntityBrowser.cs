@@ -19,12 +19,13 @@ using Opc.Ua.Client;
 namespace Hoeyer.OpcUa.Client.Application.Browsing;
 
 /// <summary>
-/// A client for browsing an entity - traverses the node tree from root using the <paramref name="traversalStrategy"/> and until a match is found using <paramref name="identityMatcher"/> - the match is deemed to be the entity node.
-/// If the node has already been found previously, the tree is not traversed again.
+///     A client for browsing an entity - traverses the node tree from root using the <paramref name="traversalStrategy" />
+///     and until a match is found using <paramref name="identityMatcher" /> - the match is deemed to be the entity node.
+///     If the node has already been found previously, the tree is not traversed again.
 /// </summary>
 /// <param name="logger">A logger to log browse exceptions and diagnostics</param>
 /// <param name="traversalStrategy">A strategy for traversing the node tree</param>
-/// <param name="identityMatcher">True if the provided <see cref="ReferenceDescription"/> is a description for the entity</param>
+/// <param name="identityMatcher">True if the provided <see cref="ReferenceDescription" /> is a description for the entity</param>
 /// <typeparam name="TEntity">The entity the EntityBrowser is assigned to</typeparam>
 [OpcUaEntityService(typeof(IEntityBrowser<>))]
 public sealed class EntityBrowser<TEntity>(
@@ -41,7 +42,7 @@ public sealed class EntityBrowser<TEntity>(
         = identityMatcher ?? (n => EntityName.Equals(n.BrowseName.Name));
 
     private readonly Lazy<ISession>
-        _session = new(() => sessionFactory.CreateSession(typeof(TEntity).Name + "Browser"));
+        _session = new(() => sessionFactory.GetSessionFor(typeof(TEntity).Name + "Browser").Session);
 
     private Node? _entityRoot;
     private ISession Session => _session.Value;
@@ -51,7 +52,7 @@ public sealed class EntityBrowser<TEntity>(
     /// <inheritdoc />
     public async Task<IEntityNode> BrowseEntityNode(CancellationToken cancellationToken = default)
     {
-        var values = await ReadEntity(cancellationToken);
+        ReadResult values = await ReadEntity(cancellationToken);
         return await ParseToEntity(Session, cancellationToken, values);
     }
 
@@ -63,24 +64,27 @@ public sealed class EntityBrowser<TEntity>(
     private async Task<IEntityNode> ParseToEntity(ISession session, CancellationToken cancellationToken,
         ReadResult values)
     {
-        var variables = await reader
+        List<VariableNode> variables = await reader
             .ReadNodesAsync(session, values.SuccesfulReads.Select(value => value!.NodeId),
                 ct: cancellationToken)
             .ThenAsync(result => result.SuccesfulReads.OfType<VariableNode>())
             .ThenAsync(nodes => nodes.ToList());
 
-        var structure = AssignReadValues(variables);
+        IEntityNode structure = AssignReadValues(variables);
         return structure;
     }
 
     private IEntityNode AssignReadValues(List<VariableNode> variables)
     {
         var index = _entityRoot!.NodeId.NamespaceIndex;
-        var structure = nodeStructureFactory.Create(index);
-        foreach (var state in structure.PropertyStates)
+        IEntityNode structure = nodeStructureFactory.Create(index);
+        foreach (PropertyState? state in structure.PropertyStates)
         {
-            var match = variables.FirstOrDefault(n => n != null && n.NodeId.Equals(state.NodeId));
-            if (match != null) state.Value = match.Value;
+            VariableNode? match = variables.FirstOrDefault(n => n != null && n.NodeId.Equals(state.NodeId));
+            if (match != null)
+            {
+                state.Value = match.Value;
+            }
         }
 
         LastState = new ValueTuple<IEntityNode, DateTime>(structure, DateTime.Now);
@@ -109,14 +113,14 @@ public sealed class EntityBrowser<TEntity>(
         return await logger.LogWithScopeAsync(new
         {
             Session = Session.ToLoggingObject(),
-            Entity = EntityName,
+            Entity = EntityName
         }, async () =>
         {
-            var r = await traversalStrategy
+            ReferenceWithId r = await traversalStrategy
                 .TraverseUntil(Session,
                     ObjectIds.RootFolder,
-                    predicate: _identityMatcher.Invoke,
-                    token: cancellationToken);
+                    _identityMatcher.Invoke,
+                    cancellationToken);
 
             return await reader.ReadNodeAsync(Session, r.NodeId, cancellationToken);
         });

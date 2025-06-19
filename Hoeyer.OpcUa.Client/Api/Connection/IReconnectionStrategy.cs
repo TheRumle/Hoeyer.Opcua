@@ -7,4 +7,6 @@ namespace Hoeyer.OpcUa.Client.Api.Connection;
 public interface IReconnectionStrategy
 {
     public Task<ISession> ReconnectIfNotConnected(ISession session, CancellationToken cancellationToken = default);
+
+    public Task<bool> TryReconnect(ISession session, CancellationToken cancellationToken = default);
 }

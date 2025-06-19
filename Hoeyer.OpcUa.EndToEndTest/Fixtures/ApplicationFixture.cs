@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.Client.Api.Connection;
+﻿using Hoeyer.Common.Extensions.Types;
+using Hoeyer.OpcUa.Client.Api.Connection;
 using Hoeyer.OpcUa.Server.Api;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua.Client;
@@ -62,7 +63,8 @@ public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
     public async Task<ISession> CreateSession(string sessionId)
     {
         await InitializeAsync();
-        return await Scope.ServiceProvider.GetService<IEntitySessionFactory>()!.CreateSessionAsync(sessionId, Token);
+        return await Scope.ServiceProvider.GetService<IEntitySessionFactory>()!.GetSessionForAsync(sessionId, Token)
+            .ThenAsync(e => e.Session);
     }
 
     public async Task<ISession> CreateSession() => await CreateSession(Guid.NewGuid().ToString());
@@ -70,14 +72,14 @@ public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
     public async Task<TOut> ExecuteWithSession<T, TOut>(Func<ISession, T, TOut> execute)
     {
         var fixture = ServiceProvider.GetService<T>()!;
-        using ISession session = await CreateSession(Guid.NewGuid().ToString());
+        ISession session = await CreateSession(Guid.NewGuid().ToString());
         return execute(session, fixture);
     }
 
     public async Task<TOut> ExecuteWithSessionAsync<T, TOut>(Func<ISession, T, Task<TOut>> execute)
     {
         var fixture = ServiceProvider.GetService<T>()!;
-        using ISession session = await CreateSession(Guid.NewGuid().ToString());
+        ISession session = await CreateSession(Guid.NewGuid().ToString());
         return await execute(session, fixture);
     }
 }
@@ -98,13 +100,13 @@ public sealed class ApplicationFixture<T> : ApplicationFixture where T : notnull
 
     public async Task<TOut> ExecuteWithSession<TOut>(Func<ISession, T, TOut> execute)
     {
-        using ISession session = await CreateSession(Guid.NewGuid().ToString());
+        ISession session = await CreateSession(Guid.NewGuid().ToString());
         return execute(session, TestedService);
     }
 
     public async Task<TOut> ExecuteWithSessionAsync<TOut>(Func<ISession, T, Task<TOut>> execute)
     {
-        using ISession session = await CreateSession(Guid.NewGuid().ToString());
+        ISession session = await CreateSession(Guid.NewGuid().ToString());
         return await execute(session, TestedService);
     }
 

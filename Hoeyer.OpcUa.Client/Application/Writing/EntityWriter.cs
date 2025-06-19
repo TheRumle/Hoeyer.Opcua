@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +9,6 @@ using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
-using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Writing;
 
@@ -21,6 +19,9 @@ public sealed class EntityWriter<TEntity>(
     IEntitySessionFactory factory,
     IEntityBrowser<TEntity> browser) : IEntityWriter<TEntity>
 {
+    private static string SessionId = typeof(TEntity).Name + "Writer";
+
+
     public async Task AssignEntityValues(TEntity entity, CancellationToken cancellationToken = default)
     {
         EntityNodeStructure valuesToWrite = await browser.GetNodeStructure(cancellationToken);
@@ -46,8 +47,9 @@ public sealed class EntityWriter<TEntity>(
     private async Task WriteValues(CancellationToken cancellationToken,
         IEnumerable<WriteValue> valuesToWrite)
     {
-        using ISession session = await factory.CreateSessionAsync(Guid.NewGuid().ToString(), cancellationToken);
-        WriteResponse? res = await session.WriteAsync(null, new WriteValueCollection(valuesToWrite), cancellationToken);
+        IEntitySession session = await factory.GetSessionForAsync(SessionId, cancellationToken);
+        WriteResponse? res =
+            await session.Session.WriteAsync(null, new WriteValueCollection(valuesToWrite), cancellationToken);
         foreach (DiagnosticInfo? s in res.DiagnosticInfos.Where(e => !e.IsNullDiagnosticInfo))
         {
             logger.LogInformation(s.ToString());
@@ -62,7 +64,7 @@ public sealed class EntityWriter<TEntity>(
             NodeId = e.NodeId,
             Value = new DataValue
             {
-                Value = e.Value,
+                Value = e.Value
             }
         };
 }

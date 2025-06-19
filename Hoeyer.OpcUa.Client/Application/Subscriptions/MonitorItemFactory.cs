@@ -4,14 +4,16 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.Common.Extensions;
+using Hoeyer.OpcUa.Client.Api.Connection;
 using Hoeyer.OpcUa.Client.Api.Monitoring;
+using Hoeyer.OpcUa.Client.Application.Connection;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Client;
 
-namespace Hoeyer.OpcUa.Client.Application.Monitoring;
+namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
 
 [OpcUaEntityService(typeof(IMonitorItemsFactory<>))]
 public sealed class MonitorItemFactory<T>(
@@ -19,15 +21,18 @@ public sealed class MonitorItemFactory<T>(
     EntityMonitoringConfiguration entityMonitoringConfiguration) : IMonitorItemsFactory<T>
 {
     private readonly Random _guids = new(231687);
-    private bool _created = false;
-    private Subscription Subscription { get; set; } = null!;
+    private bool _created;
+    private EntitySubscription Subscription { get; set; } = null!;
     private IEnumerable<MonitoredItem> MonitoredItems { get; set; } = [];
 
 
-    public async ValueTask<(Subscription subscription, IEnumerable<MonitoredItem> variableMonitoring)> GetOrCreate(
-        ISession session, IEntityNode node, CancellationToken cancel)
+    public async ValueTask<(EntitySubscription subscription, IEnumerable<MonitoredItem> variableMonitoring)>
+        GetOrCreate(IEntitySession session, IEntityNode node, CancellationToken cancel)
     {
-        if (_created) return (Subscription, MonitoredItems);
+        if (_created)
+        {
+            return (Subscription, MonitoredItems);
+        }
 
         (Subscription, MonitoredItems) = Create(session, node);
         await Subscription.CreateAsync(cancel);
@@ -35,17 +40,18 @@ public sealed class MonitorItemFactory<T>(
         return (Subscription, MonitoredItems);
     }
 
-    public (Subscription Subscription, List<MonitoredItem> items) Create(ISession session, IEntityNode node)
+    public (EntitySubscription Subscription, List<MonitoredEntityItem> items) Create(IEntitySession session,
+        IEntityNode node)
     {
         logger.LogInformation("Creating subscription and monitored items");
 
-        var subscription = new Subscription(session!.DefaultSubscription)
+        var subscription = new EntitySubscription(session)
         {
             PublishingInterval = entityMonitoringConfiguration!.ServerPublishingInterval.Milliseconds,
             SequentialPublishing = true,
             Priority = 0,
             DisplayName = node.BaseObject.BrowseName.Name + "Subscription",
-            TransferId = _guids.GetUInt(),
+            TransferId = _guids.GetUInt()
         };
 
         var items = node
@@ -58,16 +64,17 @@ public sealed class MonitorItemFactory<T>(
             .ToList();
 
         subscription.AddItems(items);
-        if (session.Subscriptions.All(e => e.Id != subscription.Id))
+        if (session.EntitySubscriptions.All(e => e.Id != subscription.Id))
         {
-            session.AddSubscription(subscription);
+            session.Session.AddSubscription(subscription);
         }
 
         _created = true;
         return (subscription, items);
     }
 
-    private static MonitoredItem CreateMonitoredItem(Subscription subscription, NodeId nodeId, string name) =>
+    private static MonitoredEntityItem CreateMonitoredItem(EntitySubscription subscription, NodeId nodeId,
+        string name) =>
         new(subscription!.DefaultItem)
         {
             DisplayName = name,

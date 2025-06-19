@@ -25,9 +25,17 @@ internal sealed class ConcurrentBrowse(INodeBrowser browser, IProducerConsumerCo
         queue.TryAdd(root);
         while (!cancellationToken.IsCancellationRequested)
         {
-            if (cancellationToken.IsCancellationRequested) break;
+            if (cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+
             List<ReferenceWithId> visiting = DequeueBatchOfSize(30).ToList();
-            if (visiting.Count == 0) break;
+            if (visiting.Count == 0)
+            {
+                break;
+            }
+
             List<ReferenceWithId> neighbours = await FindNeighbours(session, cancellationToken, visiting);
 
             foreach (ReferenceWithId? reference in neighbours)
@@ -58,7 +66,7 @@ internal sealed class ConcurrentBrowse(INodeBrowser browser, IProducerConsumerCo
     private IEnumerable<ReferenceWithId> DequeueBatchOfSize(int size)
     {
         var i = size;
-        while (i > 0 && queue.TryTake(out var res))
+        while (i > 0 && queue.TryTake(out ReferenceWithId? res))
         {
             yield return res;
             i--;

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Channels;
 using Hoeyer.Common.Messaging.Api;
 
-namespace Hoeyer.OpcUa.Client.Application.Monitoring;
+namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
 
 public interface ICurrentEntityStateChannel<T> : IMessageConsumer<T>
 {

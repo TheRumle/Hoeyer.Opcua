@@ -19,7 +19,7 @@ internal sealed class NodeReader : INodeReader
         NodeClass filter = NodeClassFilters.Any,
         CancellationToken ct = default)
     {
-        var idList = ids.ToList();
+        List<NodeId> idList = ids.ToList();
         Task<ReadResult> task = CreateReadNodesTask(session, filter, ct, idList);
         task.ConfigureAwait(false);
         return task;
@@ -57,7 +57,10 @@ internal sealed class NodeReader : INodeReader
 
                 for (var i = 0; i < readValues.Count; i++)
                 {
-                    if (responseCodes[i].IsGood()) variables[i]!.Value = readValues[i].WrappedValue;
+                    if (responseCodes[i].IsGood())
+                    {
+                        variables[i]!.Value = readValues[i].WrappedValue;
+                    }
                 }
 
                 return new ReadResult(zipped!);

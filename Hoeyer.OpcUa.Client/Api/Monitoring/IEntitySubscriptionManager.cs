@@ -8,7 +8,7 @@ namespace Hoeyer.OpcUa.Client.Api.Monitoring;
 public interface IEntitySubscriptionManager<out T>
 {
     public Subscription? Subscription { get; }
-    
+
     Task<IMessageSubscription> SubscribeToChange(
         IMessageConsumer<T> consumer,
         CancellationToken cancellationToken = default);

@@ -1,5 +1,4 @@
 ﻿using System;
-using Hoeyer.OpcUa.Core.Extensions;
 using Opc.Ua;
 using Opc.Ua.Client;
 
@@ -11,7 +10,7 @@ public sealed class ReferenceWithId(NodeId nodeId, ReferenceDescription descript
     public readonly NodeId NodeId = nodeId;
 
     public ReferenceWithId(ISession session, ReferenceDescription description)
-        : this(ExpandedNodeId.ToNodeId( description.NodeId, session.NamespaceUris),
+        : this(ExpandedNodeId.ToNodeId(description.NodeId, session.NamespaceUris),
             description)
     {
     }
@@ -19,10 +18,7 @@ public sealed class ReferenceWithId(NodeId nodeId, ReferenceDescription descript
     public bool Equals(ReferenceWithId other) => NodeId.ToString()
         .Equals(other.NodeId.ToString());
 
-    public override bool Equals(object? obj)
-    {
-        return obj is ReferenceWithId other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is ReferenceWithId other && Equals(other);
 
     public override int GetHashCode() => NodeId.GetHashCode();
 }

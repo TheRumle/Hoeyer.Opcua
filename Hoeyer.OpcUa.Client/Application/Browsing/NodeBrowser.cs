@@ -11,16 +11,17 @@ namespace Hoeyer.OpcUa.Client.Application.Browsing;
 
 public class NodeBrowser : INodeBrowser
 {
-    public Task<BrowseResponse> BrowseById(ISession session, IEnumerable<NodeId> ids, NodeClass filter = NodeClassFilters.Any, CancellationToken ct = default)
+    public Task<BrowseResponse> BrowseById(ISession session, IEnumerable<NodeId> ids,
+        NodeClass filter = NodeClassFilters.Any, CancellationToken ct = default)
     {
-        var toBrowse = ids.Select(e => new BrowseDescription
+        List<BrowseDescription> toBrowse = ids.Select(e => new BrowseDescription
         {
             BrowseDirection = BrowseDirection.Forward,
             NodeId = e,
             ResultMask = (uint)BrowseResultMask.All,
-            NodeClassMask = (uint)filter,
+            NodeClassMask = (uint)filter
         }).ToList();
-        
+
         return session.BrowseAsync(
             null,
             null,
@@ -30,9 +31,8 @@ public class NodeBrowser : INodeBrowser
     }
 
     /// <inheritdoc />
-    public Task<BrowseResponse> BrowseById(ISession session, NodeId id, CancellationToken ct = default)
-    {
-        return session.BrowseAsync(
+    public Task<BrowseResponse> BrowseById(ISession session, NodeId id, CancellationToken ct = default) =>
+        session.BrowseAsync(
             null,
             null,
             250u,
@@ -42,7 +42,7 @@ public class NodeBrowser : INodeBrowser
                     BrowseDirection = BrowseDirection.Forward,
                     NodeId = id,
                     ResultMask = (uint)BrowseResultMask.All,
-                    NodeClassMask = (uint)NodeClassFilters.Any,
-                }]), ct);
-    }
+                    NodeClassMask = (uint)NodeClassFilters.Any
+                }
+            ]), ct);
 }

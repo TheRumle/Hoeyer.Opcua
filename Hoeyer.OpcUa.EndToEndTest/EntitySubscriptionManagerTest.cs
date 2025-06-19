@@ -1,7 +1,7 @@
 ﻿using Hoeyer.Common.Messaging.Api;
 using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Client.Api.Writing;
-using Hoeyer.OpcUa.Client.Application.Monitoring;
+using Hoeyer.OpcUa.Client.Application.Subscriptions;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.TestEntities;
 using JetBrains.Annotations;

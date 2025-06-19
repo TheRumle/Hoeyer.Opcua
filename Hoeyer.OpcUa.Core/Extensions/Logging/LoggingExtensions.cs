@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Hoeyer.OpcUa.Core.Api;
@@ -8,20 +9,37 @@ namespace Hoeyer.OpcUa.Core.Extensions.Logging;
 
 public static class LoggingExtensions
 {
-    public static object ToLoggingObject(this MethodState method, IList<object> inputArguments) =>
-        new
+    public static object ToLoggingObject(this MethodState method, IList<object> inputArguments)
+    {
+        Func<object?, string> objToString = (object? value) =>
+        {
+            if (value is null)
+            {
+                return "'null'";
+            }
+
+            return value is IEnumerable c and not string
+                ? $"[\n" + string.Join(",\n ", c)
+                : value.ToString();
+        };
+
+
+        var args = $"[\n" +
+                   string.Join(",\n", inputArguments.Select(objToString).Select(e => e.ToString()).ToArray())
+                   + "\n]";
+        return new
         {
             method.BrowseName.Name,
             Details = method.CoreInfoObject(),
-            Arguments = inputArguments
+            Arguments = args
         };
+    }
 
     public static object ToLoggingObject(this MethodState method)
     {
         return new
         {
             method.BrowseName.Name,
-            Details = method.CoreInfoObject(),
             Arguments = method?.InputArguments.Value.Select(ArgumentInfo.Of).ToArray()
         };
     }

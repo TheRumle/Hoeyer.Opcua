@@ -2,7 +2,7 @@
 using Hoeyer.Common.Messaging.Api;
 using Hoeyer.OpcUa.Core;
 
-namespace Hoeyer.OpcUa.Client.Application.Monitoring;
+namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
 
 [OpcUaEntityService(typeof(ICurrentEntityStateChannel<>))]
 public sealed class CurrentEntityStateChannel<T> : ICurrentEntityStateChannel<T>
