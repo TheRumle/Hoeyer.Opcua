@@ -127,7 +127,7 @@ internal static class ServerApplicationConfigurationFactory
         serverConfiguration.MinRequestThreadCount = 5;
         serverConfiguration.MaxRequestThreadCount = 100;
         serverConfiguration.MaxQueuedRequestCount = 200;
-        serverConfiguration.MaxSessionCount = 75;
+        serverConfiguration.MaxSessionCount = 30;
         serverConfiguration.MinSessionTimeout = 10000;
         serverConfiguration.MaxSessionTimeout = 3600000;
         serverConfiguration.MaxBrowseContinuationPoints = 10;

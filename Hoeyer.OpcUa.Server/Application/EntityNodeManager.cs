@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Hoeyer.OpcUa.Core.Extensions.Logging;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Microsoft.Extensions.Logging;
@@ -31,28 +30,6 @@ internal sealed class EntityNodeManager<T>(
         }
     }
 
-    /// <inheritdoc />
-    public override void Browse(OperationContext context, ref ContinuationPoint continuationPoint,
-        IList<ReferenceDescription> references)
-    {
-        using (IDisposable? scope = logger.BeginScope(new
-               {
-                   context.AuditEntryId,
-                   context.SessionId,
-                   context.RequestId,
-                   User = new
-                   {
-                       context.UserIdentity.DisplayName,
-                       Roles = string.Join(", ",
-                           context.UserIdentity.GrantedRoleIds.Select(e => e.Identifier.ToString()))
-                   }
-               }))
-        {
-            logger.LogInformation("Browsing node");
-            base.Browse(context, ref continuationPoint, references);
-        }
-    }
-
     private void InitializeNode(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
         lock (Lock)
@@ -66,18 +43,6 @@ internal sealed class EntityNodeManager<T>(
             }
 
             references.Add(new NodeStateReference(ReferenceTypeIds.Organizes, false, node.NodeId));
-
-            foreach (MethodState? method in ManagedEntity.Methods)
-            {
-                method.OnCallMethod += (context, method, arguments, results) =>
-                {
-                    logger.LogInformation("Session {@Session} invoked method {@Method}",
-                        context.SessionId,
-                        method.ToLoggingObject(arguments));
-
-                    return ServiceResult.Good;
-                };
-            }
         }
     }
 }
