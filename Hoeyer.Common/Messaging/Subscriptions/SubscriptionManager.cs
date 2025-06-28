@@ -43,17 +43,16 @@ public sealed class SubscriptionManager<T> : ISubscriptionManager<T>
 public sealed class SubscriptionManager<T, TSubscription> : ISubscriptionManager<T>
     where TSubscription : IMessageSubscription<T>
 {
+    private readonly SubscriptionCollection<T, TSubscription> _subscriptionCollection;
     private bool _isPaused;
 
     public SubscriptionManager(IMessageSubscriptionFactory<T, TSubscription> factory)
     {
-        Collection = Collection = new SubscriptionCollection<T, IMessageSubscription<T>>(consumer =>
-        {
-            return factory.CreateSubscription(this, consumer);
-        });
+        _subscriptionCollection =
+            new SubscriptionCollection<T, TSubscription>(consumer => factory.CreateSubscription(this, consumer));
     }
 
-    public ISubscriptionCollection<T> Collection { get; }
+    public ISubscriptionCollection<T> Collection => _subscriptionCollection;
 
     public void Publish(T message)
     {
@@ -76,4 +75,7 @@ public sealed class SubscriptionManager<T, TSubscription> : ISubscriptionManager
         Collection.Remove(messageSubscription.SubscriptionId);
 
     public IMessageSubscription<T> Subscribe(IMessageConsumer<T> subscriber) => Collection.Subscribe(subscriber);
+
+    public TSubscription GetConcreteSubscription(IMessageConsumer<T> subscriber) =>
+        _subscriptionCollection.CreateSubscriptionFor(subscriber);
 }

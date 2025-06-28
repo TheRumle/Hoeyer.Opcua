@@ -5,13 +5,16 @@ namespace Hoeyer.OpcUa.Server.Application;
 
 internal sealed class NoAccessRestrictionsConfigurator : IEntityNodeAccessConfigurator
 {
-    public void Configure(IManagedEntityNode node)
+    public void Configure(IManagedEntityNode managed)
     {
-        foreach (var managedEntityPropertyState in node.PropertyStates)
+        managed.ChangeState(entityNode =>
         {
-            managedEntityPropertyState.UserAccessLevel = AccessLevels.CurrentRead | AccessLevels.CurrentWrite;
-            managedEntityPropertyState.AccessLevel = AccessLevels.CurrentRead | AccessLevels.CurrentWrite;
-            managedEntityPropertyState.MinimumSamplingInterval = 500;
-        }
+            foreach (var managedEntityPropertyState in entityNode.PropertyStates)
+            {
+                managedEntityPropertyState.UserAccessLevel = AccessLevels.CurrentRead | AccessLevels.CurrentWrite;
+                managedEntityPropertyState.AccessLevel = AccessLevels.CurrentRead | AccessLevels.CurrentWrite;
+                managedEntityPropertyState.MinimumSamplingInterval = 500;
+            }
+        });
     }
 }

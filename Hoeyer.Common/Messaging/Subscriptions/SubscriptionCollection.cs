@@ -45,4 +45,12 @@ public sealed class SubscriptionCollection<T, TSubscription> : ISubscriptionColl
     {
         _subscriptions.TryRemove(messageSubscription, out _);
     }
+
+    [Pure]
+    public TSubscription CreateSubscriptionFor(IMessageConsumer<T> subscriber)
+    {
+        var subscription = _subscriptionFactory.Invoke(subscriber);
+        _subscriptions.TryAdd(subscription.SubscriptionId, subscription);
+        return subscription;
+    }
 }

@@ -4,66 +4,61 @@ using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Server.Simulation.Api;
 using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Simulation.Builder;
 
 internal sealed class SimulationStepFactory<TEntity, TArguments>(IEntityTranslator<TEntity> translator)
     : ISimulationStepFactory<TEntity, TArguments>
 {
-    /// <inheritdoc/>
     public ActionStep<TEntity, TArguments> CreateActionStep(
         IManagedEntityNode currentState,
-        Action<SimulationStepContext<TEntity, TArguments>> stateChange)
-    {
-        Func<TArguments, ActionStepResult<TEntity>> action = args =>
-        {
-            TEntity previousState = translator.Translate(currentState); //global reference for the current State
-            TEntity clonedPrev = translator.Translate(currentState);
-            var state = new SimulationStepContext<TEntity, TArguments>(previousState, args);
-            stateChange.Invoke(state);
-            return new ActionStepResult<TEntity>(clonedPrev, state.State, DateTime.Now);
-        };
-
-
-        return new ActionStep<TEntity, TArguments>(action);
-    }
+        Action<SimulationStepContext<TEntity, TArguments>> stateChange) =>
+        new(currentState, stateChange, CopyStateTwice, ChangeState);
 
     public ReturnValueStep<TEntity, TArguments, TReturn> CreateReturnValueStep<TReturn>(IManagedEntityNode currentState,
-        Func<SimulationStepContext<TEntity, TArguments>, TReturn> returnValueProvider)
-    {
-        Func<TArguments, ReturnValueStepResult<TEntity, TReturn>> action = args =>
-        {
-            TEntity previousState = translator.Translate(currentState); //global reference for the current State
-            TEntity clonedPrev = translator.Translate(currentState);
-            var state = new SimulationStepContext<TEntity, TArguments>(previousState, args);
-            TReturn? value = returnValueProvider.Invoke(state);
-            return new ReturnValueStepResult<TEntity, TReturn>(clonedPrev, state.State, value, DateTime.Now);
-        };
-
-
-        return new ReturnValueStep<TEntity, TArguments, TReturn>(action);
-    }
+        Func<SimulationStepContext<TEntity, TArguments>, TReturn> returnValueProvider) =>
+        new(currentState, returnValueProvider, CopyStateTwice, ChangeState);
 
     public AsyncActionStep<TEntity, TArguments> CreateAsyncActionStep(
         IManagedEntityNode currentState,
-        Func<SimulationStepContext<TEntity, TArguments>, ValueTask> stateChange)
-    {
-        Func<TArguments, Task<ActionStepResult<TEntity>>> action = async args =>
-        {
-            TEntity previousState = translator.Translate(currentState); //global reference for the current State
-            TEntity clonedPrev = translator.Translate(currentState);
-            var state = new SimulationStepContext<TEntity, TArguments>(previousState, args);
-            await stateChange.Invoke(state);
-            return new ActionStepResult<TEntity>(clonedPrev, state.State, DateTime.Now);
-        };
+        Func<SimulationStepContext<TEntity, TArguments>, ValueTask> simulation) =>
+        new(currentState, simulation, CopyStateTwice, ChangeState);
 
-        return new AsyncActionStep<TEntity, TArguments>(action);
+    /// <inheritdoc />
+    public SideEffectActionStep<TEntity, TArguments> CreateSideEffectStep(
+        IManagedEntityNode currentState,
+        Action<SimulationStepContext<TEntity, TArguments>> sideEffect)
+    {
+        var copy = currentState.Select(translator.Translate);
+        var simulationContextProvider = (TArguments args) => new SimulationStepContext<TEntity, TArguments>(copy, args);
+        return new SideEffectActionStep<TEntity, TArguments>(simulationContextProvider, sideEffect);
+    }
+
+    public AsyncSideEffectActionStep<TEntity, TArguments> CreateAsyncSideEffectStep(IManagedEntityNode currentState,
+        Func<SimulationStepContext<TEntity, TArguments>, ValueTask> sideEffect)
+    {
+        var copy = currentState.Select(translator.Translate);
+        var simulationContextProvider = (TArguments args) => new SimulationStepContext<TEntity, TArguments>(copy, args);
+        return new AsyncSideEffectActionStep<TEntity, TArguments>(simulationContextProvider, sideEffect);
     }
 
 
-    public TimeStep<TEntity> CreateTimeStep(IManagedEntityNode node, TimeSpan span)
+    public TimeStep<TEntity> CreateTimeStep(IManagedEntityNode node, TimeSpan span) => new(node.Select(translator.Translate), span, DateTime.Now);
+
+    private void ChangeState(IManagedEntityNode currentState, TEntity state, ISystemContext context)
     {
-        TEntity state = translator.Translate(node);
-        return new TimeStep<TEntity>(state, span, node.Lock);
+        currentState.ChangeState(node =>
+        {
+            node.BaseObject.UpdateChangeMasks(NodeStateChangeMasks.Children | NodeStateChangeMasks.Value);
+            translator.AssignToNode(state, node);
+            node.BaseObject.ClearChangeMasks(context, true);
+        });
+    }
+    
+    private (TEntity toMutate, TEntity safekeep) CopyStateTwice(IManagedEntityNode currentState)
+    {
+        return currentState
+            .Select(node => (translator.Translate(node), translator.Translate(node)));
     }
 }

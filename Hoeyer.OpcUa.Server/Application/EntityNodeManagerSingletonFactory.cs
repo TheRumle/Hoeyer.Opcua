@@ -33,13 +33,15 @@ internal sealed class EntityNodeManagerSingletonFactory<T>(
 
     private async Task<EntityNodeManager<T>> CreateManager(IServerInternal server)
     {
-        var node = await nodeFactory.CreateManagedEntityNode(server.NamespaceUris.GetIndexOrAppend);
+        IManagedEntityNode<T> node = await nodeFactory.CreateManagedEntityNode(server.NamespaceUris.GetIndexOrAppend);
         List<Exception> configurationExceptions = ConfigurePreInitialization(node);
         if (configurationExceptions.Count > 0)
+        {
             throw new NodeSetupException(string.Join("\n", configurationExceptions.Select(e => e.Message)));
+        }
 
 
-        ILogger logger = factory.CreateLogger(node.BaseObject.BrowseName.Name + "Manager");
+        ILogger logger = factory.CreateLogger(node.Select(e => e.BaseObject.BrowseName.Name + "Manager"));
         var createdManager = new EntityNodeManager<T>(node, server, logger);
         loadableManager.Manager = createdManager; //mark the manager being loaded
 

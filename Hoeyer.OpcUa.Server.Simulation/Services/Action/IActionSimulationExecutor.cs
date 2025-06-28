@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Simulation.Services.Action;
 
-internal interface IActionSimulationExecutor<in TArgs>
+internal interface IActionSimulationExecutor<TEntity, in TArgs>
 {
-    ValueTask ExecuteSimulation(IEnumerable<ISimulationStep> steps, TArgs args);
+    IAsyncEnumerable<(TEntity Previous, DateTime Time, TEntity Reached)> ExecuteSimulation(
+        IEnumerable<ISimulationStep> steps, TArgs args, ISystemContext systemContext);
 }

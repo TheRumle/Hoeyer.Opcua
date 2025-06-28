@@ -146,50 +146,6 @@ internal sealed class OpcEntityServer(
 
 
     /// <inheritdoc />
-    public override ResponseHeader Browse(RequestHeader requestHeader, ViewDescription view,
-        uint requestedMaxReferencesPerNode,
-        BrowseDescriptionCollection nodesToBrowse, out BrowseResultCollection results,
-        out DiagnosticInfoCollection diagnosticInfos)
-    {
-        using var scope = logger.BeginScope("Browse: {@Header}", requestHeader.ToLoggingObject());
-        var header = base.Browse(requestHeader, view, requestedMaxReferencesPerNode, nodesToBrowse, out results,
-            out diagnosticInfos);
-        return LogResponseHeader(header, diagnosticInfos)!;
-    }
-
-    /// <inheritdoc />
-    public override ResponseHeader Read(RequestHeader requestHeader, double maxAge,
-        TimestampsToReturn timestampsToReturn,
-        ReadValueIdCollection nodesToRead, out DataValueCollection results,
-        out DiagnosticInfoCollection diagnosticInfos)
-    {
-        using var scope = logger.BeginScope("Read: {@Header}", requestHeader.ToLoggingObject());
-        ResponseHeader? responseHeader = base.Read(requestHeader, maxAge, timestampsToReturn, nodesToRead, out results,
-            out diagnosticInfos);
-        return LogResponseHeader(responseHeader, diagnosticInfos)!;
-    }
-
-    /// <inheritdoc />
-    public override ResponseHeader Call(RequestHeader requestHeader, CallMethodRequestCollection methodsToCall,
-        out CallMethodResultCollection results, out DiagnosticInfoCollection diagnosticInfos)
-    {
-        using var scope = logger.BeginScope("Call: {@Header}", requestHeader.ToLoggingObject());
-        var responseHeader = base.Call(requestHeader, methodsToCall, out results, out diagnosticInfos);
-        return LogResponseHeader(responseHeader, diagnosticInfos)!;
-    }
-
-    /// <inheritdoc />
-    public override ResponseHeader Write(RequestHeader requestHeader, WriteValueCollection nodesToWrite,
-        out StatusCodeCollection results,
-        out DiagnosticInfoCollection diagnosticInfos)
-    {
-        using var scope = logger.BeginScope("Write: {@Header}", requestHeader.ToLoggingObject());
-        var responseHeader = base.Write(requestHeader, nodesToWrite, out results, out diagnosticInfos);
-        return LogResponseHeader(responseHeader, diagnosticInfos)!;
-    }
-
-
-    /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
         if (_disposed)

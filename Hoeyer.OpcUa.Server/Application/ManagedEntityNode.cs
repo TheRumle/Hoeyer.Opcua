@@ -1,49 +1,50 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
+﻿using System;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
-using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
 internal sealed record ManagedEntityNode<T> : IManagedEntityNode<T>
 {
+    private readonly IEntityNode _managedNode;
+
     public ManagedEntityNode(IEntityNode node, string entityNamespace, ushort entityNamespaceIndex)
     {
-        this.BaseObject = node.BaseObject;
-        this.Namespace = entityNamespace;
-        this.EntityNameSpaceIndex = entityNamespaceIndex;
-        this.PropertyStates = node.PropertyStates;
-        this.Methods = node.Methods;
+        _managedNode = node;
+        EntityNameSpaceIndex = entityNamespaceIndex;
+        Namespace = entityNamespace;
+        EntityName = _managedNode.BaseObject.BrowseName.Name;
     }
-
-    public object Lock { get; } = new();
-    public string Namespace { get; }
-    public ushort EntityNameSpaceIndex { get; }
-    public BaseObjectState BaseObject { get; }
-    public IEnumerable<PropertyState> PropertyStates { get; }
-    public IEnumerable<MethodState> Methods { get; }
-
-    public Dictionary<string, PropertyState> PropertyByBrowseName =>
-        PropertyStates.ToDictionary(e => e.BrowseName.Name);
-
-    public Dictionary<string, MethodState> MethodsByName => Methods.ToDictionary(e => e.BrowseName.Name);
+    private readonly object _lock = new();
 
     /// <inheritdoc />
-    public override string ToString()
+    public void Examine(Action<IEntityNode> effect)
     {
-        return JsonSerializer.Serialize(new
+        lock (_lock)
         {
-            Name = BaseObject.DisplayName.ToString(),
-            Id = BaseObject.NodeId.ToString(),
-            Namespace = EntityNameSpaceIndex.ToString(),
-            State = PropertyStates.Select(e => new
-            {
-                Name = e.DisplayName.ToString(),
-                Value = e.Value.ToString(),
-                Id = e.NodeId.ToString()
-            })
-        }, new JsonSerializerOptions { WriteIndented = true });
+            effect(_managedNode);
+        }
+    }
+
+    public  string Namespace { get; }
+    public ushort EntityNameSpaceIndex { get; }
+
+    public string EntityName { get; set; }
+
+    public void ChangeState(Action<IEntityNode> stateChanges)
+    {
+        lock (_lock)
+        {
+            stateChanges.Invoke(_managedNode);
+        }
+    }
+    
+    /// <inheritdoc />
+    public TOut Select<TOut>(Func<IEntityNode, TOut> selection)
+    {
+        lock (_lock)
+        {
+            return selection.Invoke(_managedNode);
+        }
     }
 }

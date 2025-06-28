@@ -18,12 +18,14 @@ public interface IGantryMethods
 public sealed class PlacementSimulator(ILogger<PlacementSimulator> logger)
     : IActionSimulationConfigurator<Gantry, PlaceContainerArgs>,
         IActionSimulationConfigurator<Gantry, PickUpContainerArgs>,
-        IActionSimulationConfigurator<Gantry, ChangePositionArgs>
+        IActionSimulationConfigurator<Gantry, ChangePositionArgs>,
+        IFunctionSimulationConfigurator<Gantry, GetCurrentContainerIdArgs, Guid>
+        
 {
     public IEnumerable<ISimulationStep> ConfigureSimulation(
-        IActionSimulationBuilder<Gantry, ChangePositionArgs> actionSimulationConfiguration)
+        IActionSimulationBuilder<Gantry, ChangePositionArgs> onMethodCall)
     {
-        return actionSimulationConfiguration
+        return onMethodCall
             .Wait(TimeSpan.FromSeconds(3))
             .ChangeState(e =>
             {
@@ -35,9 +37,9 @@ public sealed class PlacementSimulator(ILogger<PlacementSimulator> logger)
     }
 
     public IEnumerable<ISimulationStep> ConfigureSimulation(
-        IActionSimulationBuilder<Gantry, PickUpContainerArgs> actionSimulationConfiguration)
+        IActionSimulationBuilder<Gantry, PickUpContainerArgs> onMethodCall)
     {
-        return actionSimulationConfiguration
+        return onMethodCall
             .Wait(TimeSpan.FromSeconds(1))
             .ChangeState(e =>
             {
@@ -48,20 +50,16 @@ public sealed class PlacementSimulator(ILogger<PlacementSimulator> logger)
     }
 
     public IEnumerable<ISimulationStep> ConfigureSimulation(
-        IActionSimulationBuilder<Gantry, PlaceContainerArgs> actionSimulationConfiguration)
+        IActionSimulationBuilder<Gantry, PlaceContainerArgs> onMethodCall)
     {
-        return actionSimulationConfiguration
+        return onMethodCall
             .Wait(TimeSpan.FromSeconds(2))
             .ChangeStateAsync(async e => { await Task.CompletedTask; })
             .Build();
     }
-}
 
-public sealed class GetDateSimulator :
-    IFunctionSimulationConfigurator<Gantry, GetCurrentContainerIdArgs, Guid>
-{
-    /// <inheritdoc />
-    public IEnumerable<ISimulationStep> ConfigureSimulation(
-        IFunctionSimulationBuilder<Gantry, GetCurrentContainerIdArgs, Guid> functionConfig) =>
-        functionConfig.WithReturnValue(e => Guid.NewGuid());
+    public IEnumerable<ISimulationStep> ConfigureSimulation(IFunctionSimulationBuilder<Gantry, GetCurrentContainerIdArgs, Guid> functionConfig)
+    {
+        return functionConfig.WithReturnValue(t => t.State.HeldContainer);
+    }
 }

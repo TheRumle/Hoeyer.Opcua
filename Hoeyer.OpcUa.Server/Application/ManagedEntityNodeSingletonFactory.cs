@@ -14,8 +14,7 @@ internal sealed class ManagedEntityNodeSingletonFactory<T>(
     IOpcUaEntityServerInfo info,
     IEntityLoader<T> value,
     IEntityTranslator<T> translator,
-    IEntityNodeStructureFactory<T> structureFactory,
-    IEntityChangedBroadcaster<T> broadcaster) : IManagedEntityNodeSingletonFactory<T>
+    IEntityNodeStructureFactory<T> structureFactory) : IManagedEntityNodeSingletonFactory<T>
 {
     private IManagedEntityNode<T>? _node;
     public IManagedEntityNode? Node => _node;
@@ -31,7 +30,6 @@ internal sealed class ManagedEntityNodeSingletonFactory<T>(
         var nodeRepresentation = structureFactory.Create(namespaceIndex);
         translator.AssignToNode(entity, nodeRepresentation);
         _node = new ManagedEntityNode<T>(nodeRepresentation, @namespace, namespaceIndex);
-        broadcaster.BeginObserve(_node);
         return _node;
     }
 

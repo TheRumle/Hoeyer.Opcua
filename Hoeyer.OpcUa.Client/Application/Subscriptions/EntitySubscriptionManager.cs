@@ -61,7 +61,7 @@ internal sealed class EntitySubscriptionManager<T>(
 
         try
         {
-            Dictionary<string, PropertyState> properties = CurrentNodeState!.PropertyByBrowseName!;
+            var properties = CurrentNodeState!.PropertyByBrowseName!;
             if (!properties.TryGetValue(monitoredItem.DisplayName, out PropertyState? property))
             {
                 return;

@@ -22,5 +22,13 @@ internal interface ISimulationStepFactory<TEntity, TArguments>
 
     public AsyncActionStep<TEntity, TArguments> CreateAsyncActionStep(
         IManagedEntityNode currentState,
-        Func<SimulationStepContext<TEntity, TArguments>, ValueTask> stateChange);
+        Func<SimulationStepContext<TEntity, TArguments>, ValueTask> simulation);
+    
+    public SideEffectActionStep<TEntity, TArguments> CreateSideEffectStep(
+        IManagedEntityNode currentState,
+        Action<SimulationStepContext<TEntity, TArguments>> sideEffect);
+    
+    public AsyncSideEffectActionStep<TEntity, TArguments> CreateAsyncSideEffectStep(
+        IManagedEntityNode currentState,
+        Func<SimulationStepContext<TEntity, TArguments>, ValueTask> sideEffect);
 }

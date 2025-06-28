@@ -26,7 +26,7 @@ public sealed class EntityNodeManagerTest
         IEntityNodeManager manager = initializedEntityManagers.Manager!;
         OperationContext context = CreateOperationContext(RequestType.Read);
 
-        PropertyState nodeToRead = manager.ManagedEntity.PropertyByBrowseName[nameof(Gantry.AList)];
+        var nodeToRead = manager.ManagedEntity.Select(node => node.PropertyByBrowseName[nameof(Gantry.AList)]);
         var value = new ReadValueId
         {
             NodeId = nodeToRead.NodeId,
@@ -87,8 +87,9 @@ public sealed class EntityNodeManagerTest
     private static async Task AssertNoBadStatusOrNull(IMaybeInitializedEntityManager maybeInitializedManager)
     {
         using IDisposable assertScope = Assert.Multiple();
-        Dictionary<string, PropertyState> badProperties =
-            maybeInitializedManager.Manager!.ManagedEntity.PropertyByBrowseName;
+        var badProperties =
+            maybeInitializedManager.Manager!.ManagedEntity.Select(node => node.PropertyByBrowseName);
+        
         foreach ((var name, PropertyState value) in badProperties)
         {
             if (StatusCode.IsNotGood(value.StatusCode))

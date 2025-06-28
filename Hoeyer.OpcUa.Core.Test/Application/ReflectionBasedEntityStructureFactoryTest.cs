@@ -16,17 +16,16 @@ public sealed class ReflectionBasedEntityStructureFactoryTest
     [Test]
     public async Task BaseObjectNameMatchesTypeName()
     {
-        BaseObjectState result = _testSubject.Create(2).BaseObject;
+        var result = _testSubject.Create(2).BaseObject;
         await Assert.That(result.BrowseName.Name).IsEqualTo(nameof(AllPropertyTypesEntity));
     }
 
     [Test]
     public async Task PropertyNamesMatch()
     {
-        Dictionary<string, PropertyState>.KeyCollection nodePropertyNames =
-            _testSubject.Create(2).PropertyByBrowseName.Keys;
+        var nodePropertyNames = _testSubject.Create(2).PropertyByBrowseName.Keys;
 
-        HashSet<string> subjectPropertyNames = _entityType.GetProperties().Select(e => e.Name).ToHashSet();
+        var subjectPropertyNames = _entityType.GetProperties().Select(e => e.Name).ToHashSet();
         using (Assert.Multiple())
         {
             foreach (var name in nodePropertyNames)

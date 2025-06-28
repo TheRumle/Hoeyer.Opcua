@@ -18,7 +18,7 @@ internal sealed class EntityNodeManager<T>(
 
     public override void CreateAddressSpace(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
-        using IDisposable? scope = logger.BeginScope(ManagedEntity.ToLoggingObject());
+        using IDisposable? scope = logger.BeginScope(ManagedEntity.Select(e => e.ToLoggingObject()));
         logger.Log(LogLevel.Information, "Creating address space");
         try
         {
@@ -34,8 +34,8 @@ internal sealed class EntityNodeManager<T>(
     {
         lock (Lock)
         {
-            BaseObjectState node = ManagedEntity.BaseObject;
-            AddPredefinedNode(SystemContext, ManagedEntity.BaseObject);
+            BaseObjectState node = ManagedEntity.Select(e => e.BaseObject);
+            AddPredefinedNode(SystemContext, node);
             if (!externalReferences.TryGetValue(ObjectIds.ObjectsFolder, out IList<IReference>? references))
             {
                 references ??= new List<IReference>();

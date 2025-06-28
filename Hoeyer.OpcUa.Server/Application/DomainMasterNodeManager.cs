@@ -14,8 +14,10 @@ internal sealed class DomainMasterNodeManager : MasterNodeManager
         IEntityNodeManager[] additionalManagers) : base(server, applicationConfiguration,
         applicationConfiguration.ApplicationUri, additionalManagers)
     {
-        ManagedEntities = additionalManagers.Select(e => e.ManagedEntity);
+        Nodes = additionalManagers.Select(e => e.ManagedEntity);
     }
 
-    public IEnumerable<IEntityNode> ManagedEntities { get; private set; }
+    public IEnumerable<IManagedEntityNode> Nodes { get; set; }
+
+    public IEnumerable<IEntityNode> ManagedEntities => Nodes.Select(e => e.Select(node => node));
 }

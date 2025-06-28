@@ -2,14 +2,14 @@
 
 namespace Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
 
-public sealed record ReturnValueStepResult<T, TReturn>(
-    T PreviousState,
-    T ReachedState,
+public sealed record ReturnValueStepResult<TEntity, TReturn>(
+    TEntity PreviousState,
+    TEntity ReachedState,
     TReturn ReturnValue,
     DateTime TimeCreated)
 {
-    public T PreviousState { get; } = PreviousState;
-    public T ReachedState { get; } = ReachedState;
+    public TEntity PreviousState { get; } = PreviousState;
+    public TEntity ReachedState { get; } = ReachedState;
     public TReturn ReturnValue { get; } = ReturnValue;
     public DateTime TimeCreated { get; } = TimeCreated;
 }

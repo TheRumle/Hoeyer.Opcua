@@ -87,7 +87,7 @@ public static class ServiceCollectionExtension
             Type configurator = typeof(IPreinitializedNodeConfigurator<>).MakeGenericType(entity);
 
             Type executor = typeof(FunctionSimulationExecutor<,,>).MakeGenericType(entity, methodArgType, returnType);
-            Type executorInterface = typeof(IFunctionSimulationExecutor<,>).MakeGenericType(methodArgType, returnType);
+            Type executorInterface = typeof(IFunctionSimulationExecutor<,,>).MakeGenericType(entity, methodArgType, returnType);
 
             serviceCollection.AddSingleton(configurator, functionConfigurator);
             serviceCollection.AddSingleton(executorInterface, executor);
@@ -106,7 +106,7 @@ public static class ServiceCollectionExtension
             Type configurator = typeof(IPreinitializedNodeConfigurator<>).MakeGenericType(entity);
 
             Type executor = typeof(ActionSimulationExecutor<,>).MakeGenericType(entity, methodArgType);
-            Type executorInterface = typeof(IActionSimulationExecutor<>).MakeGenericType(methodArgType);
+            Type executorInterface = typeof(IActionSimulationExecutor<,>).MakeGenericType(entity, methodArgType);
 
             serviceCollection.AddSingleton(configurator, actionConfigurator);
             serviceCollection.AddSingleton(executorInterface, executor);

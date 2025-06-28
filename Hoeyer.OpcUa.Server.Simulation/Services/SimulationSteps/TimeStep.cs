@@ -1,27 +1,14 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
 
-internal sealed record TimeStep<TEntity> : ITimeStep
+internal sealed record TimeStep<TEntity>(TEntity State, TimeSpan TimeSpan, DateTime CreationTime) : ISimulationStep
 {
-    private readonly object _lock;
+    public TEntity State { get; } = State;
+    public TimeSpan TimeSpan { get; } = TimeSpan;
+    public DateTime CreationTime { get; } = CreationTime;
 
-    public TimeStep(TEntity State, TimeSpan TimeSpan, object Lock)
-    {
-        this.State = State;
-        this.TimeSpan = TimeSpan;
-        _lock = Lock;
-    }
-
-    public TEntity State { get; }
-    public TimeSpan TimeSpan { get; }
-
-    public void Execute()
-    {
-        lock (_lock)
-        {
-            Thread.Sleep(TimeSpan);
-        }
-    }
+    public async Task Execute() => await Task.Delay(TimeSpan);
 }

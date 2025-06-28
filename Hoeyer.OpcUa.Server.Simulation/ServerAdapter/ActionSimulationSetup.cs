@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Hoeyer.Common.Extensions.Async;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
@@ -9,25 +10,27 @@ using Hoeyer.OpcUa.Server.Simulation.Api;
 using Hoeyer.OpcUa.Server.Simulation.Builder;
 using Hoeyer.OpcUa.Server.Simulation.Services.Action;
 using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
+using Microsoft.Extensions.Logging;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Simulation.ServerAdapter;
 
 internal sealed class ActionSimulationSetup<TEntity, TMethodArgs>(
-    IActionSimulationExecutor<TMethodArgs> executor,
+    IActionSimulationExecutor<TEntity, TMethodArgs> executor,
     IEnumerable<IActionSimulationConfigurator<TEntity, TMethodArgs>> simulators,
     IEntityMethodArgTranslator<TMethodArgs> argsMapper,
     IEntityTranslator<TEntity> entityTranslator)
     : IPreinitializedNodeConfigurator<TEntity>
 {
-    public void Configure(IManagedEntityNode node)
+    private readonly int _numberOfArgs = typeof(TMethodArgs).GetProperties().Length;
+    
+    public void Configure(IManagedEntityNode managed)
     {
-        IOpcMethodArgumentsAttribute? annotation =
-            typeof(TMethodArgs).GetCustomAttributes().OfType<IOpcMethodArgumentsAttribute>().First();
-        AssertConfigurators(node, annotation);
+        var annotation = typeof(TMethodArgs).GetCustomAttributes().OfType<IOpcMethodArgumentsAttribute>().First();
+        managed.Examine(n => AssertConfigurators(n, annotation));
 
-        MethodState method = node.Methods.First(e => e.BrowseName.Name.Equals(annotation.MethodName));
-        IEnumerable<ISimulationStep> simultationSteps = ConfigureSimulation(node);
+        var method = managed.Select(e => e.Methods.First(method => method.BrowseName.Name.Equals(annotation.MethodName)));
+        var simultationSteps = ConfigureSimulation(managed);
 
 
         method.OnCallMethod += (context,
@@ -35,25 +38,24 @@ internal sealed class ActionSimulationSetup<TEntity, TMethodArgs>(
             inputArguments,
             outputArguments) =>
         {
-            TMethodArgs? argumentStructure = argsMapper.Map(inputArguments);
-            if (Equals(argumentStructure, default(TMethodArgs)))
+            var argumentStructure = argsMapper.Map(inputArguments);
+            if (inputArguments.Count != _numberOfArgs)
             {
                 return new ServiceResult(StatusCodes.BadInvalidArgument,
                     new SimulationFailureException(
-                        $"The method {method.BrowseName.Name} was called with invalid variables and could not be processed."));
+                        $"The method {method.BrowseName.Name} was called with invalid number variables and could not be processed."));
             }
 
             try
             {
-                executor.ExecuteSimulation(simultationSteps, argumentStructure!);
+                var res = executor.ExecuteSimulation(simultationSteps, argumentStructure!, context).Collect().Result;
+                return StatusCodes.Good;
             }
             catch (Exception e)
             {
                 return new ServiceResult(StatusCodes.BadInvalidArgument,
                     new SimulationFailureException("The simulation execution failed: " + e));
             }
-
-            return StatusCodes.Good;
         };
     }
 
@@ -61,10 +63,9 @@ internal sealed class ActionSimulationSetup<TEntity, TMethodArgs>(
     {
         try
         {
-            IActionSimulationConfigurator<TEntity, TMethodArgs> simulator = simulators.First();
-            var builder = new ActionSimulationBuilder<TEntity, TMethodArgs>(node,
-                new SimulationStepFactory<TEntity, TMethodArgs>(entityTranslator));
-            IEnumerable<ISimulationStep> simultationSteps = simulator.ConfigureSimulation(builder);
+            var simulator = simulators.First();
+            var builder = new ActionSimulationBuilder<TEntity, TMethodArgs>(node, new SimulationStepFactory<TEntity, TMethodArgs>(entityTranslator));
+            var simultationSteps = simulator.ConfigureSimulation(builder);
             return simultationSteps;
         }
         catch (Exception e)

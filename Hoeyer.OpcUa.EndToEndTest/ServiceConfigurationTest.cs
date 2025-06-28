@@ -30,11 +30,7 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     public async Task EntityInitializer_IsRegistered()
         => await AssertNumberEntitiesMatchesNumberServices(serverFixture.Services,
             typeof(IManagedEntityNodeSingletonFactory<>));
-
-
-    [Test]
-    public async Task EntityChanged_IsRegistered()
-        => await AssertNumberEntitiesMatchesNumberServices(serverFixture.Services, typeof(IEntityChangedBroadcaster<>));
+    
 
     [Test]
     public async Task EntityMonitor_IsRegistered()
@@ -71,17 +67,7 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
         var services = await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IEntityNodeManagerFactory));
         await Assert.That(services.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
     }
-
-    [Test]
-    [ServiceCollectionDataSource]
-    [TestSubject(typeof(IEntityChangedBroadcaster<>))]
-    public async Task EntityChangedMessenger_IsOnlyRegisteredAsSingleton(IServiceCollection descriptors)
-    {
-        IEnumerable<ServiceDescriptor> services =
-            await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IEntityChangedBroadcaster<>));
-        await Assert.That(services.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
-    }
-
+    
     [Test]
     [ClassDataSource<ApplicationFixture>]
     public async Task When_ActionSimulatorIsImplemented_ItIsRegistered(ApplicationFixture fixture)

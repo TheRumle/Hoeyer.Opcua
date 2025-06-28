@@ -1,35 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Server.Simulation.Api;
 using Hoeyer.OpcUa.Server.Simulation.Builder;
 using Hoeyer.OpcUa.Server.Simulation.Services.Function;
-using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Simulation.ServerAdapter;
 
 internal sealed class FunctionSimulationSetup<TEntity, TMethodArgs, TReturnType>(
-    IFunctionSimulationExecutor<TMethodArgs, TReturnType> executor,
+    IFunctionSimulationExecutor<TEntity, TMethodArgs, TReturnType> executor,
     IFunctionSimulationConfigurator<TEntity, TMethodArgs, TReturnType> configurator,
     IEntityMethodArgTranslator<TMethodArgs> argsMapper,
     ISimulationStepFactory<TEntity, TMethodArgs> simulationStepFactory) : IPreinitializedNodeConfigurator<TEntity>
 {
-    public void Configure(IManagedEntityNode node)
+    private readonly int _numberOfArgs = typeof(TMethodArgs).GetProperties().Length;
+
+
+    public void Configure(IManagedEntityNode managed)
     {
-        IOpcMethodArgumentsAttribute? annotation =
-            typeof(TMethodArgs).GetCustomAttributes().OfType<IOpcMethodArgumentsAttribute>().First();
-        AssertConfigurators(node, annotation);
+        var annotation = typeof(TMethodArgs).GetCustomAttributes().OfType<IOpcMethodArgumentsAttribute>().First();
+        managed.Examine(n => AssertConfigurators(n, annotation));
 
-        var builder = new FunctionSimulationBuilder<TEntity, TMethodArgs, TReturnType>(node, simulationStepFactory);
-        IEnumerable<ISimulationStep> simulationSteps = configurator.ConfigureSimulation(builder);
+        var builder = new FunctionSimulationBuilder<TEntity, TMethodArgs, TReturnType>(managed, simulationStepFactory);
+        var simulationSteps = configurator.ConfigureSimulation(builder);
 
-        MethodState method = node.Methods.First(e => e.BrowseName.Name.Equals(annotation.MethodName));
+        var method =
+            managed.Select(e => e.Methods.First(method => method.BrowseName.Name.Equals(annotation.MethodName)));
         method.OnCallMethod += (context,
             methodState,
             inputArguments,
@@ -38,16 +38,15 @@ internal sealed class FunctionSimulationSetup<TEntity, TMethodArgs, TReturnType>
             try
             {
                 TMethodArgs? argumentStructure = argsMapper.Map(inputArguments);
-                if (Equals(argumentStructure, default(TMethodArgs)))
+                if (inputArguments.Count != _numberOfArgs)
                 {
                     return new ServiceResult(StatusCodes.BadInvalidArgument,
                         new SimulationFailureException(
-                            $"The method {method.BrowseName.Name} was called with invalid variables and could not be processed."));
+                            $"The method {method.BrowseName.Name} was called with invalid number variables and could not be processed."));
                 }
 
-                ValueTask<TReturnType> executionResult =
-                    executor.ExecuteSimulation(simulationSteps, argumentStructure!);
-                outputArguments[0] = executionResult!.Result;
+                var executionResult = executor.ExecuteSimulation(simulationSteps, argumentStructure!, context).Result;
+                outputArguments[0] = executionResult.ReturnValue;
                 return StatusCodes.Good;
             }
             catch (SimulationFailureException configurationException)
