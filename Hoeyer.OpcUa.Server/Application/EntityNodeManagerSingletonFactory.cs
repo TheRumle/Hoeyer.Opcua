@@ -10,10 +10,6 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-public sealed class NodeSetupException(string err) : Exception(err)
-{
-}
-
 [OpcUaEntityService(typeof(IEntityNodeManagerFactory), ServiceLifetime.Singleton)]
 [OpcUaEntityService(typeof(IEntityNodeManagerFactory<>), ServiceLifetime.Singleton)]
 internal sealed class EntityNodeManagerSingletonFactory<T>(
