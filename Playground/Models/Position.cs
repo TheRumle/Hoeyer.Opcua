@@ -1,4 +1,4 @@
-﻿namespace Playground;
+﻿namespace Playground.Models;
 
 public enum Position
 {
