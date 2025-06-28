@@ -1,6 +1,6 @@
-﻿using Hoeyer.OpcUa.Core.Api;
+﻿using Hoeyer.OpcUa.Server.Api;
 
-namespace Playground;
+namespace Playground.Models.Loaders;
 
 public class GantryLoaderNumberTwo : IEntityLoader<GantryNumberTwo>
 {

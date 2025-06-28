@@ -1,6 +1,6 @@
-﻿using Hoeyer.OpcUa.Core.Api;
+﻿using Hoeyer.OpcUa.Server.Api;
 
-namespace Playground;
+namespace Playground.Models.Loaders;
 
 public class GantryLoader : IEntityLoader<Gantry>
 {
@@ -13,7 +13,8 @@ public class GantryLoader : IEntityLoader<Gantry>
             messages = ["stnrei", "snterio"],
             Moving = true,
             Position = Position.OnTheMoon,
-            Speeds = [2, 1]
+            Speeds = [2, 1],
+            BB = ["stneri,", "stnreio"]
         });
     }
 }

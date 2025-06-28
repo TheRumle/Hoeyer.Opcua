@@ -2,9 +2,14 @@ using System.Configuration;
 using System.Text.Json;
 using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Core.Services;
+using Hoeyer.OpcUa.Server.Api;
+using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Server.Services;
+using Hoeyer.OpcUa.Server.Simulation.Services;
 using Playground;
 using Playground.Configuration;
+using Playground.HostedServices;
+using Playground.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +24,7 @@ builder.Logging.AddJsonConsole(options =>
     };
     options.TimestampFormat = "yyyy-MM-dd HH:mm:ss";
 });
-builder.Services.AddHostedService<ExampleHost>().AddHostedService<PositionChanger>();
+builder.Services.AddHostedService<PositionChangeReactor>();
 builder.Services.Configure<HostOptions>(options =>
 {
     options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
@@ -32,12 +37,13 @@ if (opcUaConfig is null || opcUaConfig.Port == 0)
 builder.Services.AddOpcUaServerConfiguration(conf => conf
         .WithServerId("MyServer")
         .WithServerName("My Server")
-        .WithHttpsHost("localhost", opcUaConfig.Port)
+        .WithOpcTcpHost("localhost", opcUaConfig.Port)
         .WithEndpoints([$"opc.tcp://localhost:{opcUaConfig.Port}"])
         .Build())
     .WithEntityServices()
     .WithOpcUaServerAsBackgroundService()
-    .WithOpcUaClientServices();
+    .WithOpcUaClientServices()
+    .WithOpcUaServerSimulation();
 
 var app = builder.Build();
 
