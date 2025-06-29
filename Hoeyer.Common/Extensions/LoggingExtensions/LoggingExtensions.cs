@@ -29,6 +29,18 @@ public static class LoggingExtensions
         }
     }
 
+    public static void Try(this ILogger logger, Action action, string message)
+    {
+        try
+        {
+            action.Invoke();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, message);
+        }
+    }
+
     public static Task<T> TryAsync<T>(this ILogger logger, Func<Task<T>> action)
     {
         Task<T> LogError(Task<T> t)
