@@ -14,7 +14,7 @@ public static class DataTypeToTypeTranslator
         var p = node.PropertyByBrowseName.TryGetValue(name, out var value) ? value : null;
         if (p == null)
         {
-            return default;
+            throw new ArgumentException("Unknown property: " + name);
         }
 
         return (T)OpcToCSharpValueParser.ParseOpcValue(p.WrappedValue)!;
@@ -23,7 +23,7 @@ public static class DataTypeToTypeTranslator
     public static TCollection? TranslateToCollection<TCollection, T>(IEntityNode node, string name)
         where TCollection : ICollection<T>, new()
     {
-        var p = node.PropertyByBrowseName.TryGetValue(name, out var value) ? value : null;
+        var p = node.PropertyByBrowseName.GetValueOrDefault(name);
         if (p == null)
         {
             return [];

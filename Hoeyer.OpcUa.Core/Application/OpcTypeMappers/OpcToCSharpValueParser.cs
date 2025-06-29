@@ -17,8 +17,22 @@ public static class OpcToCSharpValueParser
         if (variant.TypeInfo.ValueRank != ValueRanks.OneDimension)
             throw new ArgumentException("Variant must be one dimension.");
 
-        IEnumerable<object> values = variant.Value as IEnumerable<object> ??
-                                     throw new ArgumentException("Variant value was not IEnumerable.");
+        if (variant.Value is T[] asArray)
+        {
+            return asArray;
+        }
+
+        if (variant.Value is IEnumerable<T> asEnumerable)
+        {
+            return asEnumerable.ToArray();
+        }
+
+        var values = variant.Value as IEnumerable<object>;
+        if (values is null)
+        {
+            throw new ArgumentException("Variant value was not IEnumerable or array type.");
+        }
+
         return values.Select(ParseTo<T>).ToArray();
     }
 
@@ -39,6 +53,7 @@ public static class OpcToCSharpValueParser
     {
         return value.TypeInfo.BuiltInType switch
         {
+            BuiltInType.Boolean => value.Value,
             BuiltInType.Null => null,
             BuiltInType.DateTime => DateTime.Parse((string)value.Value, DateTimeFormatInfo.InvariantInfo),
             BuiltInType.Guid => value.Value is Guid guid ? guid : ParseUuid((Uuid)value.Value),
