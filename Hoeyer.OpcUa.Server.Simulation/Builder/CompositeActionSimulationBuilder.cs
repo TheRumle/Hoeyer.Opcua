@@ -45,6 +45,5 @@ internal sealed class CompositeActionSimulationBuilder<TEntity, TArguments, TBui
         return builder;
     }
 
-    /// <inheritdoc />
-    public IEnumerable<ISimulationStep> Build() => throw new NotImplementedException();
+    public IEnumerable<ISimulationStep> Build() => queue.ToArray();
 }
