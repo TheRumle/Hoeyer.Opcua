@@ -3,6 +3,7 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <Nullable>enable</Nullable>
         <LangVersion>latestMajor</LangVersion>
+        <RootNamespace>Hoeyer.OpcUa.Server.Simulation</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>

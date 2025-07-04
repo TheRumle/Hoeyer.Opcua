@@ -8,7 +8,7 @@ namespace Playground.HostedServices;
 
 public class PositionChangeReactor(
     IEntitySubscriptionManager<Gantry> subs,
-    ICurrentEntityStateChannel<Gantry> channel,
+    ICurrentEntityStateChannel<Gantry> currentEntityStateChannel,
     ILogger<PositionChangeReactor> logger,
     IGantryMethods gantryMethods,
     EntityServerStartedMarker marker)
@@ -22,19 +22,13 @@ public class PositionChangeReactor(
         var values = Enum.GetValues(typeof(Position));
         var startPosition = (Position)values.GetValue(new Random().Next(values.Length))!;
         await marker;
-        _ = await subs.SubscribeToChange(channel, stoppingToken);
+        await subs.SubscribeToChange(currentEntityStateChannel, stoppingToken);
+        var reader = currentEntityStateChannel.Reader;
         await gantryMethods.ChangePosition(startPosition);
-        var reader = channel.Reader;
-        await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
         while (await reader.WaitToReadAsync(stoppingToken))
         {
             var message = await reader.ReadAsync(stoppingToken);
             var newPosition = message.Payload.Position;
-            if (LastPosition is null)
-            {
-                LastPosition = newPosition;
-                continue;
-            }
 
             if (LastPosition != newPosition)
             {
@@ -43,7 +37,11 @@ public class PositionChangeReactor(
                 {
                     Position.OverThere => Position.OverHere,
                     Position.OverHere => Position.OnTheMoon,
-                    Position.OnTheMoon => Position.OverThere,
+                    Position.OnTheMoon => Position.SanDiego,
+                    Position.SanDiego => Position.Mexico,
+                    Position.Mexico => Position.Aalborg,
+                    Position.Aalborg => Position.TheSecretUndergroundLab,
+                    Position.TheSecretUndergroundLab => Position.OverThere,
                     var _ => throw new ArgumentOutOfRangeException(newPosition.ToString() + " is not handled.")
                 };
                 await gantryMethods.ChangePosition(next);

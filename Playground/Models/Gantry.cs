@@ -6,6 +6,8 @@ namespace Playground.Models;
 public sealed record Gantry
 {
     public Position Position { get; set; }
+    public int Range { get; set; }
+
     public bool Moving { get; set; }
     public List<int> Speeds { get; set; }
     public Guid CurrentId { get; set; } = Guid.CreateVersion7();

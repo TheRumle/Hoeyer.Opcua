@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
 using Opc.Ua;
 

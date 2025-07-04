@@ -5,7 +5,7 @@ namespace Hoeyer.OpcUa.Simulation.SourceGeneration.Constants;
 internal static class WellKnown
 {
     private static FullyQualifiedTypeName ServerSimulationName(string className) =>
-        new("Hoeyer.OpcUa.Server.Simulation." + className);
+        new("Hoeyer.OpcUa.Simulation." + className);
 
     public static class FullyQualifiedAttribute
     {

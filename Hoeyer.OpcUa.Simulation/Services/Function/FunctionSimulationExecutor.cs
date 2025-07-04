@@ -26,7 +26,6 @@ internal sealed class FunctionSimulationExecutor<TEntity, TArgs, TReturnValue>(I
         return new FunctionSimulationExecutorResult<TEntity, TReturnValue>(
             [..execution, (result.PreviousState, result.TimeCreated, result.ReachedState)],
             result.ReturnValue);
-
     }
 
     private static void AssertSimulationSteps(List<ISimulationStep> executionSteps)
@@ -34,7 +33,7 @@ internal sealed class FunctionSimulationExecutor<TEntity, TArgs, TReturnValue>(I
         var errors = LastStepIsReturnValue(executionSteps)
             .Union(OnlyOneReturnValue(executionSteps))
             .ToList();
-        
+
         if (errors.Count > 0) throw new AggregateException(errors);
     }
 

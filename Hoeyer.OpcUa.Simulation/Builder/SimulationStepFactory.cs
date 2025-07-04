@@ -44,7 +44,8 @@ internal sealed class SimulationStepFactory<TEntity, TArguments>(IEntityTranslat
     }
 
 
-    public TimeStep<TEntity> CreateTimeStep(IManagedEntityNode node, TimeSpan span) => new(node.Select(translator.Translate), span, DateTime.Now);
+    public TimeStep<TEntity> CreateTimeStep(IManagedEntityNode node, TimeSpan span) =>
+        new(node.Select(translator.Translate), span, DateTime.Now);
 
     private void ChangeState(IManagedEntityNode currentState, TEntity state, ISystemContext context)
     {
@@ -55,7 +56,7 @@ internal sealed class SimulationStepFactory<TEntity, TArguments>(IEntityTranslat
             node.BaseObject.ClearChangeMasks(context, true);
         });
     }
-    
+
     private (TEntity toMutate, TEntity safekeep) CopyStateTwice(IManagedEntityNode currentState)
     {
         return currentState

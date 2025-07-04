@@ -5,13 +5,13 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
 
-public sealed class ReturnValueStep<TEntity, TArgs, TReturn>(IManagedEntityNode currentState,
-    Func<SimulationStepContext<TEntity, TArgs>, TReturn> returnValueProvider,
+internal sealed class ActionStep<TEntity, TArgs>(
+    IManagedEntityNode currentState,
+    Action<SimulationStepContext<TEntity, TArgs>> simulation,
     Func<IManagedEntityNode, (TEntity toMutate, TEntity safekeep)> copyStateTwice,
     Action<IManagedEntityNode, TEntity, ISystemContext> changeState) : ISimulationStep
 {
-
-    public ReturnValueStepResult<TEntity, TReturn> Execute(TArgs args, ISystemContext context)
+    public ActionStepResult<TEntity> Execute(TArgs args, ISystemContext context)
     {
         if (Equals(args, default(TArgs)))
         {
@@ -21,8 +21,8 @@ public sealed class ReturnValueStep<TEntity, TArgs, TReturn>(IManagedEntityNode 
 
         var (toMutate, history) = copyStateTwice(currentState);
         var simulationContext = new SimulationStepContext<TEntity, TArgs>(toMutate, args);
-        var value = returnValueProvider.Invoke(simulationContext);
+        simulation.Invoke(simulationContext);
         changeState(currentState, toMutate, context);
-        return new ReturnValueStepResult<TEntity, TReturn>(history, simulationContext.State, value, DateTime.Now);
+        return new ActionStepResult<TEntity>(history, toMutate, DateTime.Now);
     }
 }

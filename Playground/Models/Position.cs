@@ -4,5 +4,9 @@ public enum Position
 {
     OverThere,
     OverHere,
-    OnTheMoon
+    OnTheMoon,
+    SanDiego,
+    Mexico,
+    Aalborg,
+    TheSecretUndergroundLab
 }

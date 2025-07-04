@@ -11,7 +11,10 @@ namespace Hoeyer.OpcUa.Server.Simulation.Builder;
 internal sealed class
     FunctionSimulationBuilder<TEntity, TArguments, TReturn> : IFunctionSimulationBuilder<TEntity, TArguments, TReturn>
 {
-    private readonly CompositeActionSimulationBuilder<TEntity, TArguments, IFunctionSimulationBuilder<TEntity, TArguments, TReturn>> _commonOperations;
+    private readonly
+        CompositeActionSimulationBuilder<TEntity, TArguments, IFunctionSimulationBuilder<TEntity, TArguments, TReturn>>
+        _commonOperations;
+
     private readonly IManagedEntityNode _node;
     private readonly Queue<ISimulationStep> _simulationSteps;
     private readonly ISimulationStepFactory<TEntity, TArguments> _stepFactory;
@@ -38,14 +41,19 @@ internal sealed class
     public IEnumerable<ISimulationStep> Build() => _simulationSteps.ToList();
 
     /// <inheritdoc />
-    public IFunctionSimulationBuilder<TEntity, TArguments, TReturn> ChangeState(Action<SimulationStepContext<TEntity, TArguments>> stateChange) => _commonOperations.ChangeState(stateChange);
+    public IFunctionSimulationBuilder<TEntity, TArguments, TReturn> ChangeState(
+        Action<SimulationStepContext<TEntity, TArguments>> stateChange) => _commonOperations.ChangeState(stateChange);
 
     /// <inheritdoc />
-    public IFunctionSimulationBuilder<TEntity, TArguments, TReturn> ChangeStateAsync(Func<SimulationStepContext<TEntity, TArguments>, ValueTask> stateChange) => _commonOperations.ChangeStateAsync(stateChange);
+    public IFunctionSimulationBuilder<TEntity, TArguments, TReturn> ChangeStateAsync(
+        Func<SimulationStepContext<TEntity, TArguments>, ValueTask> stateChange) =>
+        _commonOperations.ChangeStateAsync(stateChange);
 
     /// <inheritdoc />
-    public IFunctionSimulationBuilder<TEntity, TArguments, TReturn> SideEffect(Action<SimulationStepContext<TEntity, TArguments>> sideEffect) => _commonOperations.SideEffect(sideEffect);
+    public IFunctionSimulationBuilder<TEntity, TArguments, TReturn> SideEffect(
+        Action<SimulationStepContext<TEntity, TArguments>> sideEffect) => _commonOperations.SideEffect(sideEffect);
 
     /// <inheritdoc />
-    public IFunctionSimulationBuilder<TEntity, TArguments, TReturn> Wait(TimeSpan timeSpan) => _commonOperations.Wait(timeSpan);
+    public IFunctionSimulationBuilder<TEntity, TArguments, TReturn> Wait(TimeSpan timeSpan) =>
+        _commonOperations.Wait(timeSpan);
 }
