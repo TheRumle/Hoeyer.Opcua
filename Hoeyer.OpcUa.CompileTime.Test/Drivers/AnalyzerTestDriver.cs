@@ -10,7 +10,7 @@ namespace Hoeyer.OpcUa.CompileTime.Test.Drivers;
 public sealed class AnalyzerTestDriver<T>(T analyzer, Action<string>? logger = null)
     where T : DiagnosticAnalyzer
 {
-    private readonly CompilationFactory _compilationFactory = new(nameof(AnalyzerTestDriver<T>), logger);
+    private readonly CompilationFactory _compilationFactory = new(nameof(AnalyzerTestDriver<T>));
 
     public Task<AnalyzerResult> RunAnalyzerOn(EntitySourceCode entitySourceCode,
         CancellationToken cancellationToken = default) => CreateAnalyzerResultTask(

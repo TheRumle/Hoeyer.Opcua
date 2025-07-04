@@ -9,7 +9,7 @@ namespace Hoeyer.OpcUa.CompileTime.Test.Drivers;
 public sealed class GeneratorTestDriver<T>(T generator, Action<string>? logger = null)
     where T : IIncrementalGenerator
 {
-    private readonly CompilationFactory _compilationFactory = new(nameof(GeneratorTestDriver<T>), logger);
+    private readonly CompilationFactory _compilationFactory = new(nameof(GeneratorTestDriver<T>));
 
     [SuppressMessage("csharpsquid", "S3220",
         Justification = "Cannot match the suggested function which uses ISourceGenerator")]

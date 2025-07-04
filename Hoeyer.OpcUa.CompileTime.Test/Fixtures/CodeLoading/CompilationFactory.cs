@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.CodeLoading;
 
-public sealed class CompilationFactory(string compilationName, Action<string>? log = null)
+public sealed class CompilationFactory(string compilationName)
 {
     [Pure]
     public CSharpCompilation CreateCompilation(params IEnumerable<SyntaxTree> trees)

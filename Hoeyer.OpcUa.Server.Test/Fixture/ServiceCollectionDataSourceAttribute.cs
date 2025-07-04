@@ -14,7 +14,7 @@ public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourc
     public override IServiceScope CreateScope(DataGeneratorMetadata dataGeneratorMetadata) =>
         ServiceProvider.CreateAsyncScope();
 
-    public override object Create(IServiceScope scope, Type type) => scope.ServiceProvider.GetService(type);
+    public override object Create(IServiceScope scope, Type type) => scope.ServiceProvider.GetService(type)!;
 
     private static IServiceProvider CreateSharedServiceProvider()
     {
@@ -27,7 +27,7 @@ public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourc
                 .Where(e => e.ServiceType.IsAssignableTo(typeof(IMaybeInitializedEntityManager)))
                 .Select(e => e.ImplementationType!);
 
-            return wanted.Select(p.GetService).Select(value => (IMaybeInitializedEntityManager)value);
+            return wanted.Select(p.GetService).Select(value => (IMaybeInitializedEntityManager)value!);
         });
 
         services.AddSingleton<List<IMaybeInitializedEntityManager>>(p =>
