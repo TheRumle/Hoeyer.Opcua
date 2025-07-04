@@ -10,6 +10,8 @@ using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Server.Simulation.Api;
 using Hoeyer.OpcUa.Server.Simulation.Builder;
 using Hoeyer.OpcUa.Server.Simulation.ServerAdapter;
+using Hoeyer.OpcUa.Server.Simulation.ServerAdapter.Action;
+using Hoeyer.OpcUa.Server.Simulation.ServerAdapter.Function;
 using Hoeyer.OpcUa.Server.Simulation.Services.Action;
 using Hoeyer.OpcUa.Server.Simulation.Services.Function;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,10 +23,10 @@ public static class ServiceCollectionExtension
     public static OnGoingOpcEntityServiceRegistration WithOpcUaServerSimulation(
         this OnGoingOpcEntityServiceRegistration registration)
     {
-        IServiceCollection serviceCollection = registration.Collection;
+        var serviceCollection = registration.Collection;
         serviceCollection.AddTransient<ITimeScaler, IdentityTimeScaler>();
-        ImmutableHashSet<Type> typeReferences =
-            typeof(IEntityMethodArgTranslator<>).GetTypesFromConsumingAssemblies().AsParallel().ToImmutableHashSet();
+        var typeReferences = typeof(IEntityMethodArgTranslator<>).GetTypesFromConsumingAssemblies().AsParallel()
+            .ToImmutableHashSet();
 
 
         var translatorInfoTuple = typeReferences
@@ -35,20 +37,22 @@ public static class ServiceCollectionExtension
             .Select(e => (e.Implementor, Interface: e.translatorInterface,
                 ArgType: e.translatorInterface!.GenericTypeArguments[0]));
 
-        foreach ((Type Implementor, Type? Interface, Type ArgType) translatorInfo in translatorInfoTuple)
+        foreach (var (implementor, @interface, argType) in translatorInfoTuple)
         {
-            serviceCollection.AddTransient(translatorInfo.Interface!, translatorInfo.Implementor);
+            serviceCollection.AddTransient(@interface!, implementor);
+            serviceCollection.AddTransient(
+                typeof(IMethodArgumentParser<>).MakeGenericType(argType),
+                typeof(MethodArgumentParser<>).MakeGenericType(argType)
+            );
         }
 
-        Type actionSimulatorInterface = typeof(IActionSimulationConfigurator<,>).GetGenericTypeDefinition();
-        List<SimulationPatternTypeDetails> actionSimulators =
-            GetSimulatorDetails(typeReferences, actionSimulatorInterface).ToList();
+        var actionSimulatorInterface = typeof(IActionSimulationConfigurator<,>).GetGenericTypeDefinition();
+        var actionSimulators = GetSimulatorDetails(typeReferences, actionSimulatorInterface).ToList();
 
-        Type functionSimulatorInterface = typeof(IFunctionSimulationConfigurator<,,>).GetGenericTypeDefinition();
-        List<SimulationPatternTypeDetails> functionSimulators =
-            GetSimulatorDetails(typeReferences, functionSimulatorInterface).ToList();
+        var functionSimulatorInterface = typeof(IFunctionSimulationConfigurator<,,>).GetGenericTypeDefinition();
+        var functionSimulators = GetSimulatorDetails(typeReferences, functionSimulatorInterface).ToList();
 
-        List<DuplicateSimulatorConfigurationException> duplicateDefinitions = actionSimulators.Union(functionSimulators)
+        var duplicateDefinitions = actionSimulators.Union(functionSimulators)
             .GroupBy(e => e.InstantiatedSimulatorInterface).Where(g => g.Count() > 1).Select(group =>
             {
                 var message =
@@ -60,6 +64,10 @@ public static class ServiceCollectionExtension
         {
             throw new SimulationConfigurationException(duplicateDefinitions);
         }
+
+        serviceCollection
+            .AddTransient<IOpcMethodArgumentsAttributeUsageValidator, OpcMethodArgumentsAttributeUsageValidator>();
+        serviceCollection.AddTransient<ISimulationExecutorErrorHandler, SimulationExecutorErrorHandler>();
 
         AddActionSimulation(actionSimulators, serviceCollection);
         AddFunctionSimulation(functionSimulators, serviceCollection);
@@ -73,21 +81,34 @@ public static class ServiceCollectionExtension
         foreach ((Type implementor, Type simulatorInterface, Type methodArgType, MethodInfo? method,
                      Type entity) in typeReferences)
         {
+            serviceCollection.AddSingleton(simulatorInterface, implementor);
+
             Type returnType = method!.ReturnType.GetGenericArguments()[0];
+
+            serviceCollection.AddTransient(
+                typeof(IFunctionSimulationOrchestrator<>).MakeGenericType(returnType),
+                typeof(FunctionSimulationOrchestrator<,,>).MakeGenericType(entity, methodArgType, returnType)
+            );
+
+            serviceCollection.AddTransient(
+                typeof(IFunctionSimulationBuilderFactory<,,>).MakeGenericType(entity, methodArgType, returnType),
+                typeof(FunctionSimulationBuilderFactory<,,>).MakeGenericType(entity, methodArgType, returnType)
+            );
+
 
             Type simulationStepFactoryTypeService =
                 typeof(ISimulationStepFactory<,>).MakeGenericType(entity, methodArgType);
             Type simulationStepFactoryType = typeof(SimulationStepFactory<,>).MakeGenericType(entity, methodArgType);
             serviceCollection.AddTransient(simulationStepFactoryTypeService, simulationStepFactoryType);
 
-            serviceCollection.AddSingleton(simulatorInterface, implementor);
 
             Type functionConfigurator =
                 typeof(FunctionSimulationSetup<,,>).MakeGenericType(entity, methodArgType, returnType);
             Type configurator = typeof(IPreinitializedNodeConfigurator<>).MakeGenericType(entity);
 
             Type executor = typeof(FunctionSimulationExecutor<,,>).MakeGenericType(entity, methodArgType, returnType);
-            Type executorInterface = typeof(IFunctionSimulationExecutor<,,>).MakeGenericType(entity, methodArgType, returnType);
+            var executorInterface =
+                typeof(IFunctionSimulationExecutor<,,>).MakeGenericType(entity, methodArgType, returnType);
 
             serviceCollection.AddSingleton(configurator, functionConfigurator);
             serviceCollection.AddSingleton(executorInterface, executor);
@@ -97,10 +118,19 @@ public static class ServiceCollectionExtension
     private static void AddActionSimulation(List<SimulationPatternTypeDetails> typeReferences,
         IServiceCollection serviceCollection)
     {
-        foreach ((Type implementor, Type simulatorInterface, Type methodArgType, MethodInfo? _, Type entity) in
+        foreach (var (implementor, simulatorInterface, methodArgType, _, entity) in
                  typeReferences)
         {
             serviceCollection.AddSingleton(simulatorInterface, implementor);
+            serviceCollection.AddTransient(
+                typeof(IActionSimulationOrchestrator),
+                typeof(ActionSimulationOrchestrator<,>).MakeGenericType(entity, methodArgType)
+            );
+
+            serviceCollection.AddTransient(
+                typeof(IActionSimulationBuilderFactory<,>).MakeGenericType(entity, methodArgType),
+                typeof(ActionSimulationBuilderFactory<,>).MakeGenericType(entity, methodArgType)
+            );
 
             Type actionConfigurator = typeof(ActionSimulationSetup<,>).MakeGenericType(entity, methodArgType);
             Type configurator = typeof(IPreinitializedNodeConfigurator<>).MakeGenericType(entity);
@@ -141,6 +171,6 @@ public static class ServiceCollectionExtension
         Type Implementor,
         Type InstantiatedSimulatorInterface,
         Type MethodArgType,
-        MethodInfo? MethodBeingSimulated,
+        MethodInfo MethodBeingSimulated,
         Type Entity);
 }
