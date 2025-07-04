@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -13,6 +12,7 @@ using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Client;
 
@@ -20,6 +20,7 @@ namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
 
 [OpcUaEntityService(typeof(IEntitySubscriptionManager<>), ServiceLifetime.Singleton)]
 internal sealed class EntitySubscriptionManager<T>(
+    ILogger<EntitySubscriptionManager<T>> logger,
     IEntitySessionFactory sessionFactory,
     IEntityBrowser<T> browser,
     IMonitorItemsFactory<T> monitorFactory,
@@ -28,10 +29,12 @@ internal sealed class EntitySubscriptionManager<T>(
 {
     private static readonly string SessionClientId = typeof(T).Name + "EntityMonitor";
 
+    private readonly SemaphoreSlim _lock = new(1);
+
     private readonly SubscriptionManager<T, ChannelBasedSubscription<T>> _subscriptionManager =
         new(new ChannelSubscriptionFactory<T>());
 
-    public IEnumerable<MonitoredItem> MonitoredItems { get; private set; } = [];
+    private List<MonitoredItem> MonitoredItems { get; set; } = [];
     private IEntityNode? CurrentNodeState { get; set; }
     public Subscription? Subscription { get; private set; }
 
@@ -39,22 +42,41 @@ internal sealed class EntitySubscriptionManager<T>(
     public async Task<IMessageSubscription> SubscribeToChange(
         IMessageConsumer<T> consumer, CancellationToken cancellationToken = default)
     {
-        CurrentNodeState ??= await browser.BrowseEntityNode(cancellationToken);
-
-        IEntitySession session = await sessionFactory.GetSessionForAsync(SessionClientId, cancellationToken);
-        (Subscription, MonitoredItems) = await monitorFactory.GetOrCreate(session, CurrentNodeState, cancellationToken);
-        foreach (MonitoredItem? items in MonitoredItems)
-        {
-            items.Notification += HandleChange;
-        }
-
-        await session.Session.PublishAsync(null, new SubscriptionAcknowledgementCollection(), cancellationToken);
+        await BeginMonitorNodes(cancellationToken);
         return _subscriptionManager.Subscribe(consumer);
     }
 
-    private void HandleChange(MonitoredItem monitoredItem, MonitoredItemNotificationEventArgs e)
+    private async Task BeginMonitorNodes(CancellationToken cancellationToken)
     {
-        if (monitoredItem == null!)
+        await _lock.WaitAsync(cancellationToken);
+        try
+        {
+            if (MonitoredItems.Count > 0)
+            {
+                return;
+            }
+
+            CurrentNodeState ??= await browser.BrowseEntityNode(cancellationToken);
+            var session = await sessionFactory.GetSessionForAsync(SessionClientId, cancellationToken);
+            var (subscription, items) = await monitorFactory.GetOrCreate(session, CurrentNodeState, cancellationToken);
+            (Subscription, MonitoredItems) = (subscription, items.ToList());
+
+            foreach (var item in MonitoredItems)
+            {
+                item.Notification += HandleChange;
+            }
+
+            await session.Session.PublishAsync(null, new SubscriptionAcknowledgementCollection(), cancellationToken);
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
+
+    private void HandleChange(MonitoredItem item, MonitoredItemNotificationEventArgs eventArgs)
+    {
+        if (item == null!)
         {
             return;
         }
@@ -62,46 +84,22 @@ internal sealed class EntitySubscriptionManager<T>(
         try
         {
             var properties = CurrentNodeState!.PropertyByBrowseName!;
-            if (!properties.TryGetValue(monitoredItem.DisplayName, out PropertyState? property))
+            if (!properties.TryGetValue(item.DisplayName, out var property))
             {
+                logger.LogInformation("Entity does not have any property named {Item}", item.DisplayName);
                 return;
             }
 
-            var currentValue = property.WrappedValue.Value;
-            IEnumerable<object> newValues = monitoredItem.DequeueValues().Select(e => e.Value);
-
-            foreach (var newValue in newValues.Where(newVal => !IsSameValue(currentValue, newVal)))
+            var values = item.DequeueValues().ToArray();
+            foreach (var value in values)
             {
-                property.Value = newValue;
+                property.Value = value.Value;
                 _subscriptionManager.Publish(translator.Translate(CurrentNodeState));
             }
         }
         catch (Exception exception)
         {
-            Console.WriteLine(exception);
-            throw;
+            logger.LogError(exception, "Error while processing change notification for {Item}", item.DisplayName);
         }
-    }
-
-    private static bool IsSameValue(object currentValue, object newValue)
-    {
-        if (currentValue.Equals(newValue))
-        {
-            return true;
-        }
-
-        if (currentValue is IEnumerable currentEnumerable &&
-            newValue is IEnumerable newEnumerable)
-        {
-            HashSet<object> currentSet = currentEnumerable.Cast<object>().ToHashSet();
-            HashSet<object> newSet = newEnumerable.Cast<object>().ToHashSet();
-
-            if (currentSet.SetEquals(newSet))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

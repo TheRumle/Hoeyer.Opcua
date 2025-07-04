@@ -34,14 +34,17 @@ public sealed class EntityWriter<TEntity>(
     public async Task AssignEntityProperties(IEnumerable<(string propertyName, object propertyValue)> entityState,
         CancellationToken cancellationToken = default)
     {
-        EntityNodeStructure structure = await browser.GetNodeStructure(cancellationToken);
+        var structure = await browser.GetNodeStructure(cancellationToken);
+        Dictionary<string, WriteValue> toWrite = new();
+
         foreach (var (key, value) in entityState)
         {
-            structure.Properties[key].Value = value;
+            var s = structure.Properties[key]!;
+            s.Value = value;
+            toWrite[key] = CreateWriteValue(s);
         }
 
-        IEnumerable<WriteValue> values = structure.PropertyStates.Select(CreateWriteValue);
-        await WriteValues(cancellationToken, values);
+        await WriteValues(cancellationToken, toWrite.Values);
     }
 
     private async Task WriteValues(CancellationToken cancellationToken,

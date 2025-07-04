@@ -61,29 +61,6 @@ public sealed class EntitySubscriptionManagerTest(ApplicationFixture fixture)
         await Assert.That(observer.Count).IsZero();
     }
 
-    [Test]
-    [Timeout(10_000)]
-    public async Task WhenSubscribed_AndStateIsSame_DoesNotNotify(CancellationToken token)
-    {
-        (ChannelSubscription awaitableObserver, TestSubscriberSubscription countingObserver) =
-            await CreateSubscriberPair(token);
-        ICurrentEntityStateChannel<Gantry> channel = awaitableObserver.Channel;
-        CountingConsumer<Gantry> observer = countingObserver.Consumer;
-
-        await WriteNode();
-        await channel.Reader.ReadAsync(token);
-        await Assert.That(observer.Count).IsEqualTo(NumberOfGantryPropsChanged);
-
-        await Assert.ThrowsAsync<OperationCanceledException>(async () =>
-        {
-            using var source = new CancellationTokenSource();
-            source.CancelAfter(TimeSpan.FromSeconds(1));
-            await WriteNode();
-            await channel.Reader.ReadAsync(source.Token);
-        });
-    }
-
-
     private async Task<(ChannelSubscription channel, TestSubscriberSubscription testSubscriber)> CreateSubscriberPair(
         CancellationToken token)
     {
