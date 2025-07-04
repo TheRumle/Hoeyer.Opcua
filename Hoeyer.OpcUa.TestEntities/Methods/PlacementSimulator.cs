@@ -1,11 +1,10 @@
 ﻿using Hoeyer.OpcUa.Server.Simulation.Api;
 using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
 using Hoeyer.OpcUa.TestEntities.Methods.Generated;
-using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.OpcUa.TestEntities.Methods;
 
-public sealed class PlacementSimulator(ILogger<PlacementSimulator> logger)
+public sealed class PositionChangeSimulation
     : IActionSimulationConfigurator<Gantry, PlaceContainerArgs>,
         IActionSimulationConfigurator<Gantry, PickUpContainerArgs>,
         IActionSimulationConfigurator<Gantry, ChangePositionArgs>,
