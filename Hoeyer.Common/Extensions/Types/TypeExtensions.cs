@@ -20,10 +20,12 @@ public static class TypeExtensions
             i.IsGenericType && i.GetGenericTypeDefinition() == @interface);
     }
 
-    public static Type? Implements(this Type t, Type @interface)
+    public static Type? GetImplementationOf(this Type t, Type @interface)
     {
         return t.GetInterfaces().FirstOrDefault(i => i == @interface);
     }
+
+    public static bool Implements(this Type t, Type @interface) => @interface.IsAssignableFrom(t);
 
     public static string GetFriendlyTypeName(this Type type)
     {

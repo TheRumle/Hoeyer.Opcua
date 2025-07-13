@@ -1,4 +1,8 @@
-﻿namespace Hoeyer.Opc.Ua.Test.TUnit.Extensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Hoeyer.Common.Extensions.Collection;
 
 public static class IEnumerableExtensions
 {
