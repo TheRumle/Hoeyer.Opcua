@@ -11,32 +11,22 @@ public sealed class SubscriptionCollection<T, TSubscription> : ISubscriptionColl
     where TSubscription : IMessageSubscription<T>
 {
     private readonly Func<IMessageConsumer<T>, TSubscription> _subscriptionFactory;
-    private readonly ConcurrentDictionary<Guid, TSubscription> _subscriptions = new();
+    private readonly ConcurrentDictionary<Guid, IMessageSubscription<T>> _subscriptions = new();
 
-
-    public SubscriptionCollection(Func<IMessageConsumer<T>, TSubscription> subscriptionFactory)
+    public SubscriptionCollection(IMessageSubscriptionFactory<T, TSubscription> factory)
     {
-        _subscriptionFactory = subscriptionFactory;
-    }
-
-    public void Dispose()
-    {
-        foreach (var su in _subscriptions.Values)
-        {
-            su.Dispose();
-        }
+        _subscriptionFactory = consumer => factory.CreateSubscription(consumer, sub => Remove(sub.SubscriptionId));
     }
 
     /// <inheritdoc />
-    public int NumberOfSubscriptions => _subscriptions.Count;
+    public int ActiveSubscriptionsCount => _subscriptions.Values.Count(e => !e.IsCancelled && !e.IsPaused);
 
-    public IEnumerable<IMessageSubscription<T>> Subscriptions =>
-        _subscriptions.Values.Select(e => e as IMessageSubscription<T>);
+    public IEnumerable<IMessageSubscription<T>> Subscriptions => _subscriptions.Values.Select(e => e);
 
     [Pure]
     public IMessageSubscription<T> Subscribe(IMessageConsumer<T> subscriber)
     {
-        var subscription = _subscriptionFactory.Invoke(subscriber);
+        IMessageSubscription<T>? subscription = _subscriptionFactory.Invoke(subscriber);
         _subscriptions.TryAdd(subscription.SubscriptionId, subscription);
         return subscription;
     }

@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Messaging.Api;
 using Microsoft.Extensions.Logging;
 
@@ -12,20 +11,20 @@ public sealed record ChannelBasedSubscription<T> : IMessageSubscription<T>
 {
     private readonly Channel<IMessage<T>> _channel;
     private readonly IMessageConsumer<T> _consumer;
-    private readonly IMessageUnsubscribable _creator;
     private readonly CancellationTokenSource _cts = new();
     private readonly ILogger _logger;
+    private readonly Action? _onDispose;
     public readonly Guid Id;
 
     public ChannelBasedSubscription(Guid id,
-        IMessageUnsubscribable creator,
         IMessageConsumer<T> consumer,
         Channel<IMessage<T>> channel,
-        ILogger logger)
+        ILogger logger,
+        Action<ChannelBasedSubscription<T>>? disposeCallback)
     {
+        _onDispose = () => disposeCallback?.Invoke(this);
         Id = id;
         _consumer = consumer;
-        _creator = creator;
         _channel = channel;
         _logger = logger;
         Task.Run(() => ProcessQueueAsync(_cts.Token), _cts.Token);
@@ -47,10 +46,11 @@ public sealed record ChannelBasedSubscription<T> : IMessageSubscription<T>
     /// <inheritdoc />
     public void Dispose()
     {
-        _logger.LogInformation("Subscription cancelled");
-        _creator.Unsubscribe(this);
         IsCancelled = true;
+        _channel.Writer.TryComplete();
+        _logger.LogDebug("Subscription cancelled with owner '{@Name}'", _consumer.GetType().Name);
         _cts.Dispose();
+        _onDispose?.Invoke();
     }
 
 
@@ -61,10 +61,7 @@ public sealed record ChannelBasedSubscription<T> : IMessageSubscription<T>
             await foreach (IMessage<T>? message in _channel.Reader.ReadAllAsync(token))
             {
                 if (IsCancelled || IsPaused) continue;
-                _logger
-                    .LogCaughtExceptionAs(LogLevel.Error)
-                    .WithErrorMessage("Consumer threw error")
-                    .WhenExecuting(() => _consumer.Consume(message));
+                _consumer.Consume(message);
             }
         }
         catch (OperationCanceledException)
@@ -73,7 +70,7 @@ public sealed record ChannelBasedSubscription<T> : IMessageSubscription<T>
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occured when reading from channel");
+            _logger.LogError(ex, "An error occured when processing message from channel.");
         }
     }
 }

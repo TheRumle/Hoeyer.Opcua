@@ -59,9 +59,9 @@ public abstract class SubscriptionSystemTest(IMessageSubscriptionFactory<int> fa
     {
         var subscriber = new TestSubscriber(1, token);
         IMessageSubscription<int> subscription = publisher.Subscribe(subscriber);
-        var before = publisher.Collection.NumberOfSubscriptions;
+        var before = publisher.Collection.ActiveSubscriptionsCount;
         subscription.Dispose();
-        await Assert.That(publisher.Collection.NumberOfSubscriptions).IsLessThan(before);
+        await Assert.That(publisher.Collection.ActiveSubscriptionsCount).IsLessThan(before);
     }
 
     [Test]

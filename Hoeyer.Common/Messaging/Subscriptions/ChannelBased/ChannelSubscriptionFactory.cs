@@ -6,36 +6,31 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 
-public sealed class ChannelSubscriptionFactory<T> : IMessageSubscriptionFactory<T, ChannelBasedSubscription<T>>,
-    IMessageSubscriptionFactory<T>
+public sealed class ChannelSubscriptionFactory<T>(ILoggerFactory loggerFactory)
+    : IMessageSubscriptionFactory<T, ChannelBasedSubscription<T>>,
+        IMessageSubscriptionFactory<T>
 {
-    private readonly ILogger _logger;
-    private readonly IChannelSubscriptionCreationStrategy<T> _strategy;
+    private readonly ILogger _logger = loggerFactory.CreateLogger<ChannelSubscriptionFactory<T>>();
 
 
-    public ChannelSubscriptionFactory(ILogger logger)
-    {
-        _logger = logger;
-        _strategy = new CreateUsingLoggerStrategy<T>(logger);
-    }
-
-    public ChannelSubscriptionFactory() : this(NullLogger.Instance)
+    public ChannelSubscriptionFactory() : this(NullLoggerFactory.Instance)
     {
     }
 
 
-    public ChannelSubscriptionFactory(ILoggerFactory loggerFactory)
-    {
-        _logger = loggerFactory.CreateLogger(typeof(ChannelSubscriptionFactory<T>));
-        _strategy = new CreateUsingLoggerFactoryStrategy<T>(loggerFactory);
-    }
+    public ChannelBasedSubscription<T> CreateSubscription(IMessageConsumer<T> consumer,
+        Action<ChannelBasedSubscription<T>>? disposeCallBack = null) =>
+        Create(consumer, disposeCallBack);
 
-    public ChannelBasedSubscription<T> CreateSubscription(
-        IMessageUnsubscribable creator,
-        IMessageConsumer<T> consumer)
+    public IMessageSubscription<T> CreateSubscription(IMessageConsumer<T> consumer,
+        Action<IMessageSubscription<T>>? disposeCallBack = null) => Create(consumer, disposeCallBack);
+
+    private ChannelBasedSubscription<T> Create(IMessageConsumer<T> consumer,
+        Action<ChannelBasedSubscription<T>>? disposeCallBack)
     {
         var subscriptionId = Guid.NewGuid();
-        _logger.LogInformation("Creating channel subscription {SubscriptionId}", subscriptionId);
+        _logger.LogDebug("Creating channel subscription '{SubscriptionId}' for {Consumer}", subscriptionId,
+            consumer.GetType().Name);
 
         var unboundedChannelOptions = new UnboundedChannelOptions
         {
@@ -43,10 +38,8 @@ public sealed class ChannelSubscriptionFactory<T> : IMessageSubscriptionFactory<
             SingleWriter = false,
             SingleReader = false
         };
-        return _strategy.Create(creator, consumer, unboundedChannelOptions);
-    }
 
-    IMessageSubscription<T> IMessageSubscriptionFactory<T, IMessageSubscription<T>>
-        .CreateSubscription(IMessageUnsubscribable creator, IMessageConsumer<T> consumer) =>
-        CreateSubscription(creator, consumer);
+        var channel = Channel.CreateUnbounded<IMessage<T>>(unboundedChannelOptions);
+        return new ChannelBasedSubscription<T>(subscriptionId, consumer, channel, _logger, disposeCallBack);
+    }
 }
