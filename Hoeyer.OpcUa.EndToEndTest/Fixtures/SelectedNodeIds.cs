@@ -1,4 +1,4 @@
-﻿using Hoeyer.Opc.Ua.Test.TUnit.Extensions;
+﻿using Hoeyer.Common.Extensions.Collection;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.EndToEndTest.Fixtures;

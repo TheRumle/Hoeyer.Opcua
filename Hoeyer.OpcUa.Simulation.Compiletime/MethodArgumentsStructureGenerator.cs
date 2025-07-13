@@ -87,7 +87,8 @@ public sealed class MethodArgumentsStructureGenerator : IIncrementalGenerator
             //method arg attribute
             var attrName = WellKnown.FullyQualifiedAttribute.OpcMethodArgumentsAttribute.WithGlobalPrefix;
             builder.WriteLine($"[{attrName}<{entity}, {@interface}>(\"{methodSymbol.Name}\")]");
-            builder.WriteLine($"public sealed record {className}");
+            builder.WriteLine($"public sealed record {className} : " +
+                              WellKnown.FullyQualifiedInterface.IArgsContainer.WithGlobalPrefix);
             builder.WriteLine("{");
             foreach (var (type, upperName, _, _) in paramList)
             {

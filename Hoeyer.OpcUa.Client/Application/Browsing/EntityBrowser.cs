@@ -94,13 +94,13 @@ public sealed class EntityBrowser<TEntity>(
 
     private async Task<ReadResult> ReadEntity(CancellationToken cancellationToken)
     {
-        _entityRoot ??= await FindEntityRoot(cancellationToken);
         return await logger.LogWithScopeAsync(new
         {
             Session = Session.ToLoggingObject(),
             Entity = EntityName
         }, async () =>
         {
+            _entityRoot ??= await FindEntityRoot(cancellationToken);
             IEnumerable<ReferenceWithId> descendants = await traversalStrategy
                 .TraverseFrom(_entityRoot.NodeId, Session, cancellationToken)
                 .Collect();
@@ -110,19 +110,12 @@ public sealed class EntityBrowser<TEntity>(
 
     private async Task<Node> FindEntityRoot(CancellationToken cancellationToken = default)
     {
-        return await logger.LogWithScopeAsync(new
-        {
-            Session = Session.ToLoggingObject(),
-            Entity = EntityName
-        }, async () =>
-        {
-            ReferenceWithId r = await traversalStrategy
-                .TraverseUntil(Session,
-                    ObjectIds.RootFolder,
-                    _identityMatcher.Invoke,
-                    cancellationToken);
+        ReferenceWithId r = await traversalStrategy
+            .TraverseUntil(Session,
+                ObjectIds.RootFolder,
+                _identityMatcher.Invoke,
+                cancellationToken);
 
-            return await reader.ReadNodeAsync(Session, r.NodeId, cancellationToken);
-        });
+        return await reader.ReadNodeAsync(Session, r.NodeId, cancellationToken);
     }
 }

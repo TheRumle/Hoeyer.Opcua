@@ -5,7 +5,7 @@ namespace Hoeyer.OpcUa.Server.Application;
 
 internal sealed class NoAccessRestrictionsConfigurator : IEntityNodeAccessConfigurator
 {
-    public void Configure(IManagedEntityNode managed)
+    public void Configure(IManagedEntityNode managed, ISystemContext context)
     {
         managed.ChangeState(entityNode =>
         {

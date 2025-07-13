@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Hoeyer.Common.Extensions.Async;
+using Hoeyer.Common.Extensions.Collection;
 using Hoeyer.Common.Extensions.Types;
-using Hoeyer.Opc.Ua.Test.TUnit.Extensions;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;

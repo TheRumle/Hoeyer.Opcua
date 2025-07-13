@@ -1,5 +1,4 @@
 ﻿using Hoeyer.OpcUa.Server.Api;
-using Hoeyer.OpcUa.TestEntities.Subtypes;
 
 namespace Hoeyer.OpcUa.TestEntities.Loaders;
 
@@ -10,10 +9,6 @@ public class AllPropertiesLoader : IEntityLoader<AllPropertyTypesEntity>
         new(new AllPropertyTypesEntity
         {
             Bool = true,
-            CustomIListMember = new CustomIList
-            {
-                21, 123, new Random().Next()
-            },
             Double = 2.123,
             Float = 2.231321f,
             Guid = Guid.CreateVersion7(),

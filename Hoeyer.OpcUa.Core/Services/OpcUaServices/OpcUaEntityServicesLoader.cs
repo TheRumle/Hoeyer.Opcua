@@ -7,7 +7,7 @@ namespace Hoeyer.OpcUa.Core.Services.OpcUaServices;
 
 public static class OpcUaEntityServicesLoader
 {
-    internal static List<OpcUaEntityServiceConfigurationException> AddEntityServices(IServiceCollection services)
+    public static List<OpcUaEntityServiceConfigurationException> AddEntityServices(this IServiceCollection services)
     {
         ImmutableHashSet<EntityServiceInfo> genericServices = OpcUaEntityTypes.GenericServices
             .Union(OpcUaEntityTypes.NonGenericServices)

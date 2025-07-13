@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Client.Api.Connection;
 using Hoeyer.OpcUa.Client.Api.Monitoring;
-using Hoeyer.OpcUa.Client.Application.Connection;
-using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
 
@@ -13,7 +11,7 @@ internal sealed class CopySubscriptionTransferStrategy : ISubscriptionTransferSt
     public async Task TransferSubscriptionsBetween(IEntitySession oldSession, IEntitySession newSession)
     {
         List<Task> tasks = new();
-        foreach (EntitySubscription? oldSub in oldSession.EntitySubscriptions.ToList())
+        foreach (var oldSub in oldSession.EntitySubscriptions.ToList())
         {
             var newSub = CloneSubscription(oldSession, oldSub);
             newSession.Session.AddSubscription(newSub);

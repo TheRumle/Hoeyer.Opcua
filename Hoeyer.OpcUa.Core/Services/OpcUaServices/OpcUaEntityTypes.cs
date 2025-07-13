@@ -26,11 +26,7 @@ public static class OpcUaEntityTypes
         .Select(e => (e.methodService, e.attributeInstance!.GenericTypeArguments[0]))
         .ToFrozenSet();
 
-    internal static FrozenSet<Type> ServiceTypes => TypesFromReferencingAssemblies
-        .Where(type => type.IsAnnotatedWith<OpcUaEntityServiceAttribute>())
-        .ToFrozenSet();
-
-    internal static FrozenSet<EntityServiceInfo> GenericServices => ServiceTypes
+    internal static readonly FrozenSet<EntityServiceInfo> GenericServices = ServiceTypes
         .Where(type => type.IsGenericType)
         .SelectMany(implementationType =>
         {
@@ -72,6 +68,10 @@ public static class OpcUaEntityTypes
 
             return new EntityServiceInfo(attr.ServiceType, implemetationType, entity, attr.Lifetime);
         })
+        .ToFrozenSet();
+
+    internal static FrozenSet<Type> ServiceTypes => TypesFromReferencingAssemblies
+        .Where(type => type.IsAnnotatedWith<OpcUaEntityServiceAttribute>())
         .ToFrozenSet();
 
     internal static FrozenSet<EntityServiceInfo> NonGenericServices => ServiceTypes

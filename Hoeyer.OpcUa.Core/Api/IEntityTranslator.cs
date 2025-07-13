@@ -13,4 +13,6 @@ public interface IEntityTranslator<T>
     /// <param name="state">The entity used for the assignment</param>
     /// <param name="assignment">An assignment based on name and value</param>
     public void AssignToStructure(T state, Action<string, object> assignment);
+
+    public T Copy(T state);
 }

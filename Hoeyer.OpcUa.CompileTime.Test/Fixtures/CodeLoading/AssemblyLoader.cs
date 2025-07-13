@@ -1,6 +1,7 @@
 ﻿using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Server.Api;
-using Hoeyer.OpcUa.Server.Simulation.Api;
+using Hoeyer.OpcUa.Simulation.Api;
+using Hoeyer.OpcUa.Simulation.Api.Configuration;
 using Microsoft.CodeAnalysis;
 using Assembly = System.Reflection.Assembly;
 
@@ -13,11 +14,12 @@ public static class AssemblyLoader
         Assembly.Load("mscorlib"),
         Assembly.Load("netstandard"),
         Assembly.Load("System"),
-        Assembly.Load("System.Runtime"), // ✅ This is critical
+        Assembly.Load("System.Runtime"),
         typeof(OpcUaEntityAttribute).Assembly,
         typeof(OpcUaEntityMethodsAttribute<>).Assembly,
+        typeof(OpcMethodArgumentsAttribute<,>).Assembly,
         typeof(EntityServerStartedMarker).Assembly,
-        typeof(IActionSimulationConfigurator<,>).Assembly
+        typeof(ISimulation<,>).Assembly,
     ];
 
     public static readonly IReadOnlySet<MetadataReference> CoreMetadataReferences = CoreAssemblies

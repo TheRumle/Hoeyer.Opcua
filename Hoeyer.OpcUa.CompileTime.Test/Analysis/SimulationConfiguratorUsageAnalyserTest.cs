@@ -1,5 +1,6 @@
 ﻿using Hoeyer.Common.Extensions;
 using Hoeyer.OpcUa.CompileTime.Test.Drivers;
+using Hoeyer.OpcUa.Simulation.Api.Configuration;
 using Hoeyer.OpcUa.Simulation.SourceGeneration;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -12,10 +13,9 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
                                                      using System.Collections.Generic;
                                                      using System.Threading.Tasks;
                                                      using Hoeyer.OpcUa.Core;
-                                                     using Hoeyer.OpcUa.Server.Simulation.Api;
-                                                     using Hoeyer.OpcUa.Server.Simulation.Services.Action;
-                                                     using Hoeyer.OpcUa.Server.Simulation.Services.SimulationSteps;
-                                                     using Hoeyer.OpcUa.Server.Simulation;
+                                                     using Hoeyer.OpcUa.Simulation.Api;
+                                                     using Hoeyer.OpcUa.Simulation.Api.Configuration;
+                                                     using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
 
                                                      namespace Hoeyer.OpcUa.EntityDefinitions;
 
@@ -56,63 +56,69 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
 
                                                      """;
 
-    private const string ActionSimulator_NoReturnValue = """
-                                                         public sealed class NoReturnValueActionSimulator : IActionSimulationConfigurator<Gantry, NoReturnValueArgs>
-                                                         {
-                                                             public IEnumerable<ISimulationStep> ConfigureSimulation(
-                                                                 IActionSimulationBuilder<Gantry, NoReturnValueArgs> actionSimulationConfiguration) => [];
-                                                         }
+    private static readonly string ActionSimulationInterface = typeof(ISimulation<,>).Name.Split('`')[0];
+    private static readonly string FunctionSimulationInterface = typeof(ISimulation<,,>).Name.Split('`')[0];
 
-                                                         """;
+    private static readonly string SimulationBuilder = typeof(ISimulationBuilder<,>).Name.Split('`')[0];
+    private static readonly string SimulationBuilderWithReturn = typeof(ISimulationBuilder<,,>).Name.Split('`')[0];
 
-    private const string ActionSimulatorFor_IntReturnValue = """
-                                                             public sealed class IntReturnValueActionSimulator : IActionSimulationConfigurator<Gantry, IntReturnValueArgs>
-                                                             {
-                                                                 public IEnumerable<ISimulationStep> ConfigureSimulation(
-                                                                     IActionSimulationBuilder<Gantry, IntReturnValueArgs> actionSimulationConfiguration) => [];
-                                                             }
-                                                             """;
-
-    private const string FuncSimulatorFor_IntReturnValue = """
-                                                           public sealed class
-                                                               IntReturnValueFuncSimulator : IFunctionSimulationConfigurator<Gantry, IntReturnValueArgs, int>
-                                                           {
-                                                               public IEnumerable<ISimulationStep> ConfigureSimulation(
-                                                                   IFunctionSimulationBuilder<Gantry, IntReturnValueArgs, int> actionSimulationConfiguration) =>
-                                                                   actionSimulationConfiguration.WithReturnValue((_) => 2);
-                                                           }
-
-                                                           """;
-
-    private const string FuncSimulatorFor_NoReturnValue = """
-                                                          public sealed class NoReturnValueFuncSimulator : IFunctionSimulationConfigurator<Gantry, NoReturnValueArgs, int>
-                                                          {
-                                                              public IEnumerable<ISimulationStep> ConfigureSimulation(
-                                                                  IFunctionSimulationBuilder<Gantry, NoReturnValueArgs, int> actionSimulationConfiguration) => [];
-                                                          }
-                                                          """;
-
-
-    private const string FuncSimulatorForIntTask_WrongReturnType = """
-                                                                   public sealed class
-                                                                       IntReturnValueButGivesStringFuncSimulator : IFunctionSimulationConfigurator<Gantry, IntReturnValueArgs, string>
-                                                                   {
-                                                                       public IEnumerable<ISimulationStep> ConfigureSimulation(
-                                                                           IFunctionSimulationBuilder<Gantry, IntReturnValueArgs, string> actionSimulationConfiguration) =>
-                                                                           actionSimulationConfiguration.WithReturnValue((_) => "2");
-                                                                   }
-
-                                                                   """;
-
-    private const string FuncSimulatorForIntTask_CorrectReturnType = """
-                                                                     public sealed class
-                                                                         IntReturnValueButGivesStringFuncSimulator : IFunctionSimulationConfigurator<Gantry, IntReturnValueArgs, int>
+    private static readonly string ActionSimulator_NoReturnValue = $$"""
+                                                                     public sealed class NoReturnValueActionSimulator : {{ActionSimulationInterface}}<Gantry, NoReturnValueArgs>
                                                                      {
                                                                          public IEnumerable<ISimulationStep> ConfigureSimulation(
-                                                                             IFunctionSimulationBuilder<Gantry, IntReturnValueArgs, int> actionSimulationConfiguration) =>
-                                                                             actionSimulationConfiguration.WithReturnValue((_) => 2);
+                                                                             {{SimulationBuilder}}<Gantry, NoReturnValueArgs> actionSimulationConfiguration) => [];
                                                                      }
+
                                                                      """;
+
+    private static readonly string ActionSimulatorFor_IntReturnValue = $$"""
+                                                                         public sealed class IntReturnValueActionSimulator : {{ActionSimulationInterface}}<Gantry, IntReturnValueArgs>
+                                                                         {
+                                                                             public IEnumerable<ISimulationStep> ConfigureSimulation(
+                                                                                 {{SimulationBuilder}}<Gantry, IntReturnValueArgs> actionSimulationConfiguration) => [];
+                                                                         }
+                                                                         """;
+
+    private static readonly string FuncSimulatorFor_IntReturnValue = $$"""
+                                                                       public sealed class
+                                                                           IntReturnValueFuncSimulator : {{FunctionSimulationInterface}}<Gantry, IntReturnValueArgs, int>
+                                                                       {
+                                                                           public IEnumerable<ISimulationStep> ConfigureSimulation(
+                                                                               {{SimulationBuilderWithReturn}}<Gantry, IntReturnValueArgs, int> actionSimulationConfiguration) =>
+                                                                               actionSimulationConfiguration.WithReturnValue((_) => 2);
+                                                                       }
+
+                                                                       """;
+
+    private static readonly string FuncSimulatorFor_NoReturnValue = $$"""
+                                                                      public sealed class NoReturnValueFuncSimulator : {{FunctionSimulationInterface}}<Gantry, NoReturnValueArgs, int>
+                                                                      {
+                                                                          public IEnumerable<ISimulationStep> ConfigureSimulation(
+                                                                              {{SimulationBuilderWithReturn}}<Gantry, NoReturnValueArgs, int> actionSimulationConfiguration) => [];
+                                                                      }
+                                                                      """;
+
+
+    private static readonly string FuncSimulatorForIntTask_WrongReturnType = $$"""
+                                                                               public sealed class
+                                                                                   IntReturnValueButGivesStringFuncSimulator : {{FunctionSimulationInterface}}<Gantry, IntReturnValueArgs, string>
+                                                                               {
+                                                                                   public IEnumerable<ISimulationStep> ConfigureSimulation(
+                                                                                       {{SimulationBuilderWithReturn}}<Gantry, IntReturnValueArgs, string> actionSimulationConfiguration) =>
+                                                                                       actionSimulationConfiguration.WithReturnValue((_) => "2");
+                                                                               }
+
+                                                                               """;
+
+    private static readonly string FuncSimulatorForIntTask_CorrectReturnType = $$"""
+                                                                                 public sealed class
+                                                                                     IntReturnValueButGivesStringFuncSimulator : {{FunctionSimulationInterface}}<Gantry, IntReturnValueArgs, int>
+                                                                                 {
+                                                                                     public IEnumerable<ISimulationStep> ConfigureSimulation(
+                                                                                         {{SimulationBuilderWithReturn}}<Gantry, IntReturnValueArgs, int> actionSimulationConfiguration) =>
+                                                                                         actionSimulationConfiguration.WithReturnValue((_) => 2);
+                                                                                 }
+                                                                                 """;
 
 
     private readonly SimulationConfiguratorUsageAnalyser Analyzer = new();

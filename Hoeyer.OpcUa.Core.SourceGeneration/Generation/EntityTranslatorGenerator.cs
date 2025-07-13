@@ -72,12 +72,44 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
             writer.WriteLine(propertyName).Write(" = ").Write(propertyName).Write(",");
         }
 
-        writer.WriteLine("};");
-        writer.WriteLine("}");
-        writer.WriteLine("}");
+        writer.WriteLine("};"); //return object creation end 
         writer.WriteLine("}");
 
+        //Copy method begin
+        WriteCopyMethod(typeContext, writer, entityName);
+        writer.WriteLine("}");
+        writer.WriteLine("}"); //class end
+
         return (writer, symbol);
+    }
+
+    private static void WriteCopyMethod(TypeContext typeContext, SourceCodeWriter writer, string entityName)
+    {
+        var propertySymbols = typeContext.Node.Members.OfType<PropertyDeclarationSyntax>()
+            .Select(e => (symbol: typeContext.SemanticModel.GetDeclaredSymbol(e)!, text: e.Identifier.Text));
+
+
+        writer.WriteLine("public " + entityName + " Copy(" + entityName + " entity)");
+        writer.WriteLine("{");
+        writer.WriteLine("return new " + entityName + "()");
+        writer.WriteLine("{");
+        foreach (var (symbol, propertyName) in propertySymbols)
+        {
+            var listInterface = GetListInterface(symbol, typeContext.SemanticModel);
+            if (listInterface != null)
+            {
+                var type = symbol.Type.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
+                writer.Write(propertyName).Write(" = new " + type + " ( ").Write("entity." + propertyName)
+                    .Write(".ToList())").Write(",\n");
+            }
+            else
+            {
+                writer.Write(propertyName).Write(" = ").Write("entity." + propertyName).Write(",\n");
+            }
+        }
+
+        writer.WriteLine("};");
+        writer.WriteLine("}"); //copy method end
     }
 
     private static void WriteTranslations(SourceCodeWriter writer, TypeDeclarationSyntax symbol,

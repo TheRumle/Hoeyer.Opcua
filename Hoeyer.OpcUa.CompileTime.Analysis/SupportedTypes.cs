@@ -104,8 +104,20 @@ public static class SupportedTypes
         public static bool Supports(ITypeSymbol typeSymbol)
         {
             if (typeSymbol is not INamedTypeSymbol named) return false;
+            var isIlist = named.OriginalDefinition.SpecialType == SpecialType.System_Collections_Generic_IList_T;
+            bool isList = named.OriginalDefinition.Name == "List" &&
+                          named.OriginalDefinition.ContainingNamespace.ToDisplayString() ==
+                          "System.Collections.Generic";
 
+            if (isList || isIlist)
+            {
+                return named.TypeArguments.All(Simple.Supports)
+                       && named.Constructors.Any(c =>
+                           c.Parameters.Length == 0 && // Check for no parameters
+                           c.DeclaredAccessibility == Accessibility.Public);
+            }
 
+            return false;
             var iListImplementations = named
                 .AllInterfaces
                 .Where(i =>

@@ -1,3 +1,3 @@
 ﻿namespace Hoeyer.OpcUa.Server.Api.NodeManagement;
 
-public interface IEntityNodeAccessConfigurator : IPreinitializedNodeConfigurator;
+public interface IEntityNodeAccessConfigurator : INodeConfigurator;

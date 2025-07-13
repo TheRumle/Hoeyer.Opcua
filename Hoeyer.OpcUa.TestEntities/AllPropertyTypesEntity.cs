@@ -1,5 +1,4 @@
 ﻿using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.TestEntities.Subtypes;
 
 namespace Hoeyer.OpcUa.TestEntities;
 
@@ -14,7 +13,6 @@ public sealed record AllPropertyTypesEntity
     }
 
 
-    public CustomIList CustomIListMember { get; set; }
     public int Integer { get; set; }
     public long Long { get; set; }
     public string String { get; set; }
@@ -38,10 +36,6 @@ public sealed record AllPropertyTypesEntity
             Double = _random.NextDouble() * 1000,
             Float = (float)(_random.NextDouble() * 1000),
             Bool = _random.Next(2) == 1,
-            CustomIListMember = new CustomIList
-            {
-                231, 22, 30
-            }
         };
     }
 }

@@ -126,9 +126,6 @@ public class EntityTranslatorTest
             await Assert.That((object)entity.Float).IsEqualTo(node.PropertyByBrowseName["Float"].Value);
             await Assert.That((object)entity.Bool).IsEqualTo(node.PropertyByBrowseName["Bool"].Value);
             await Assert.That(entity.IntList).IsEquivalentTo((int[])node.PropertyByBrowseName["IntList"].Value);
-
-            await Assert.That(entity.CustomIListMember)
-                .IsEquivalentTo((ICollection<int>)node.PropertyByBrowseName["CustomIListMember"].Value);
         }
     }
 }

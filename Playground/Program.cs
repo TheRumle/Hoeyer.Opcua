@@ -2,14 +2,13 @@ using System.Configuration;
 using System.Text.Json;
 using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Core.Services;
-using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Server.Services;
-using Hoeyer.OpcUa.Server.Simulation.Services;
-using Playground;
+using Hoeyer.OpcUa.Simulation.ServerAdapter;
+using Hoeyer.OpcUa.Simulation.Services;
 using Playground.Configuration;
-using Playground.HostedServices;
 using Playground.Models;
+using Playground.Reactants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,17 +33,20 @@ var opcUaConfig = builder.Configuration.GetSection("OpcUa").Get<OpcUaOptions>();
 if (opcUaConfig is null || opcUaConfig.Port == 0)
     throw new ConfigurationErrorsException("OpcUa configuration is missing");
 
-builder.Services.AddOpcUaServerConfiguration(conf => conf
+var collection = builder.Services.AddOpcUaServerConfiguration(conf => conf
         .WithServerId("MyServer")
         .WithServerName("My Server")
         .WithOpcTcpHost("localhost", opcUaConfig.Port)
         .WithEndpoints([$"opc.tcp://localhost:{opcUaConfig.Port}"])
         .Build())
     .WithEntityServices()
+    .WithOpcUaSimulationServices(config => { config.AdaptToServerRuntime(); })
     .WithOpcUaServerAsBackgroundService()
-    .WithOpcUaClientServices()
-    .WithOpcUaServerSimulation();
+    .WithOpcUaClientServices();
 
+var provider = collection.Collection.BuildServiceProvider();
+var configurators = provider.GetRequiredService<IEnumerable<INodeConfigurator<Gantry>>>();
+configurators.First(e => e.GetType().Namespace.ToLower().Contains("simulation"));
 var app = builder.Build();
 
 

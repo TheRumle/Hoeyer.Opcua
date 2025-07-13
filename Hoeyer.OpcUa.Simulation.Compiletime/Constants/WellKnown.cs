@@ -4,8 +4,8 @@ namespace Hoeyer.OpcUa.Simulation.SourceGeneration.Constants;
 
 internal static class WellKnown
 {
-    private static FullyQualifiedTypeName ServerSimulationName(string className) =>
-        new("Hoeyer.OpcUa.Simulation." + className);
+    private static FullyQualifiedTypeName SimulationApiName(string className) =>
+        new("Hoeyer.OpcUa.Simulation.Api" + className);
 
     public static class FullyQualifiedAttribute
     {
@@ -22,7 +22,7 @@ internal static class WellKnown
             CoreTypeName("OpcUaEntityServiceAttribute");
 
         public static readonly FullyQualifiedTypeName OpcMethodArgumentsAttribute =
-            ServerSimulationName("OpcMethodArgumentsAttribute");
+            SimulationApiName(".OpcMethodArgumentsAttribute");
 
         private static FullyQualifiedTypeName CoreTypeName(string className) => new("Hoeyer.OpcUa.Core." + className);
     }
@@ -32,14 +32,20 @@ internal static class WellKnown
         public static readonly FullyQualifiedTypeName MethodCallerType =
             new("Hoeyer.OpcUa.Client.Api.Calling.IMethodCaller");
 
+        public static readonly FullyQualifiedTypeName IArgsContainer =
+            SimulationApiName(".IArgsContainer");
+
         public static FullyQualifiedTypeName IActionSimulationConfigurator =>
-            ServerSimulationName($"Api.IActionSimulationConfigurator`2");
+            SimulationApiName($".Configuration.ISimulation`2");
 
         public static FullyQualifiedTypeName IFunctionSimulationConfigurator =>
-            ServerSimulationName($"Api.IFunctionSimulationConfigurator`3");
+            SimulationApiName($".Configuration.ISimulation`3");
 
         public static FullyQualifiedTypeName IObjectArgsToTypedArgs(string attributeClassName) =>
-            ServerSimulationName($"Api.IEntityMethodArgTranslator<{attributeClassName}>");
+            SimulationServerAdapterApiName($".IEntityMethodArgTranslator<{attributeClassName}>");
+
+        private static FullyQualifiedTypeName SimulationServerAdapterApiName(string s) =>
+            new("Hoeyer.OpcUa.Simulation.ServerAdapter.Api" + s);
     }
 
 
@@ -49,12 +55,12 @@ internal static class WellKnown
             new("Hoeyer.OpcUa.Client.Api.Calling.IMethodCaller");
 
         public static FullyQualifiedTypeName IActionSimulationConfigurator =>
-            ServerSimulationName($"Api.IActionSimulationConfigurator.");
+            SimulationApiName($"IActionSimulationConfigurator.");
 
         public static FullyQualifiedTypeName IFuncSimulationConfigurator =>
-            ServerSimulationName($"Api.IFunctionSimulationConfigurator.");
+            SimulationApiName($"IFunctionSimulationConfigurator.");
 
         public static FullyQualifiedTypeName IObjectArgsToTypedArgs(string attributeClassName) =>
-            ServerSimulationName($"Api.IEntityMethodArgTranslator<{attributeClassName}>");
+            SimulationApiName($"IEntityMethodArgTranslator<{attributeClassName}>");
     }
 }

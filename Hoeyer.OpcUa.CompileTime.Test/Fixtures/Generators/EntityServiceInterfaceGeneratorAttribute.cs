@@ -1,4 +1,4 @@
-﻿using Hoeyer.Opc.Ua.Test.TUnit.Extensions;
+﻿using Hoeyer.Common.Extensions.Collection;
 using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;

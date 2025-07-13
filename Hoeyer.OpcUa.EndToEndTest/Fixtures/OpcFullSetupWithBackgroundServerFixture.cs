@@ -1,7 +1,8 @@
 ﻿using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Core.Test.Fixtures;
 using Hoeyer.OpcUa.Server.Services;
-using Hoeyer.OpcUa.Server.Simulation.Services;
+using Hoeyer.OpcUa.Simulation.ServerAdapter;
+using Hoeyer.OpcUa.Simulation.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -14,7 +15,11 @@ public class OpcFullSetupWithBackgroundServerFixture : OpcUaCoreServicesFixture
         OnGoingOpcEntityServiceRegistration
             .WithOpcUaServer()
             .WithOpcUaClientServices()
-            .WithOpcUaServerSimulation()
+            .WithOpcUaSimulationServices(c =>
+            {
+                c.WithTimeScaling(double.Epsilon)
+                    .AdaptToServerRuntime();
+            })
             .WithOpcUaServerAsBackgroundService()
             .Collection.AddLogging(e => e.AddSimpleConsole());
     }

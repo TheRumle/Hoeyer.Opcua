@@ -21,4 +21,8 @@
         <Using Include="TUnit"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Folder Include="Extensions\"/>
+    </ItemGroup>
+
 </Project>
