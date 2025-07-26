@@ -8,6 +8,9 @@ public abstract class ServiceInjectionTest(
     IServiceCollection collection,
     IEnumerable<IPartialServiceMatcher> allMatchers)
 {
+    private readonly IServiceScope _asyncScope = collection.BuildServiceProvider().CreateScope();
+    private readonly IServiceProvider _provider = collection.BuildServiceProvider();
+
     private List<IPartialServiceMatcher> MatchersWithLifetime(ServiceLifetime lifetime)
         => allMatchers.Where(d => d.Lifetime == lifetime).ToList();
 
@@ -59,15 +62,13 @@ public abstract class ServiceInjectionTest(
 
     private async Task AssertServiceCanBeCreated(ServiceDescriptor descriptor)
     {
-        var provider = collection.BuildServiceProvider();
-        var foundService = provider.GetService(descriptor.ServiceType);
+        var foundService = _provider.GetService(descriptor.ServiceType);
         await Assert.That(foundService).IsNotNull().Because("We want to construct the service as a singleton");
     }
 
     private async Task AssertServiceCanBeCreatedScoped(ServiceDescriptor descriptor)
     {
-        var provider = collection.BuildServiceProvider().CreateAsyncScope();
-        var foundService = provider.ServiceProvider.GetService(descriptor.ServiceType);
+        var foundService = _asyncScope.ServiceProvider.GetService(descriptor.ServiceType);
         await Assert.That(foundService).IsNotNull().Because("We want to construct the service as a singleton");
     }
 }
