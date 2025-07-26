@@ -25,7 +25,11 @@ public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourc
         fixture.OnGoingOpcEntityServiceRegistration
             .WithOpcUaClientServices()
             .WithOpcUaServer()
-            .WithOpcUaSimulationServices(c => { c.WithTimeScaling(double.Epsilon).AdaptToServerRuntime(); });
+            .WithOpcUaSimulationServices(configure =>
+            {
+                configure.WithTimeScaling(double.Epsilon);
+                configure.AdaptToRuntime<ServerSimulationAdapter>();
+            });
         fixture.ServiceCollection.AddSingleton(fixture.ServiceCollection);
         return fixture.ServiceCollection;
     }

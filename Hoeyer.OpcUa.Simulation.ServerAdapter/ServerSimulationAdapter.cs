@@ -14,15 +14,60 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter;
 
-public static class SimulationAdaptionServiceExtensions
+public sealed class ServerSimulationAdapter : ILayerAdapter<SimulationServicesConfig>
 {
+    public void Adapt(SimulationServicesConfig adaptionSource, IServiceCollection adaptionTarget)
+    {
+        var simulationServiceContainer = adaptionSource.SimulationServices;
+
+        var argTranslators = typeof(IEntityMethodArgTranslator<>)
+            .GetTypesFromConsumingAssemblies()
+            .Select(e => (Implementor: e,
+                translatorInterface: e.GetImplementedVersionOfGeneric(typeof(IEntityMethodArgTranslator<>))))
+            .Where(e => e.translatorInterface is not null)
+            .Select(e => (ArgTranslatorImplementor: e.Implementor, ArgTranslatorInterface: e.translatorInterface,
+                ArgContainer: e.translatorInterface!.GenericTypeArguments[0]))
+            .AsParallel();
+
+        simulationServiceContainer.AddScoped<ISimulationExecutorErrorHandler, SimulationExecutorErrorHandler>();
+        foreach (var (argTranslatorImplementor, argTranslatorInterface, argContainer) in argTranslators)
+        {
+            simulationServiceContainer.AddScoped(argTranslatorInterface!, argTranslatorImplementor);
+            simulationServiceContainer.AddScoped(argTranslatorImplementor, argTranslatorImplementor);
+            simulationServiceContainer.AddScoped(typeof(IMethodArgumentParser<>).MakeGenericType(argContainer),
+                typeof(MethodArgumentParser<>).MakeGenericType(argContainer));
+        }
+
+        foreach (var (entityType, methodArgs) in adaptionSource.ActionSimulationPatterns)
+        {
+            ExecuteLocalGenericRegistration(nameof(AddActionAdapterServices), [entityType, methodArgs],
+                simulationServiceContainer);
+        }
+
+        foreach (var (entityType, methodArgs, returnType) in adaptionSource.FunctionSimulationPatterns)
+        {
+            ExecuteLocalGenericRegistration(nameof(AddFunctionAdapterServices), [entityType, methodArgs, returnType],
+                simulationServiceContainer);
+        }
+
+        var entities = adaptionSource
+            .ActionSimulationPatterns.Select(e => e.entityType)
+            .Union(adaptionSource.FunctionSimulationPatterns.Select(e => e.entityType));
+        foreach (var entity in entities)
+        {
+            ExecuteLocalGenericRegistration(nameof(RegisterPerEntityServices), [entity], simulationServiceContainer);
+            ExecuteLocalGenericRegistration(nameof(AdaptToServerLayer), [entity], simulationServiceContainer,
+                adaptionTarget);
+        }
+    }
+
     [SuppressMessage("Design", "S3011",
         Justification =
             "This makes type safety easier to manage as compiletime information about generic arguments is present.")]
     private static void ExecuteLocalGenericRegistration(string methodName, Type[] generics, params object[] arguments)
     {
-        var info = typeof(SimulationAdaptionServiceExtensions)
-            .GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Public)!;
+        var info = typeof(ServerSimulationAdapter).GetMethod(methodName,
+            BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Public)!;
         info.MakeGenericMethod(generics).Invoke(null, arguments);
     }
 
@@ -67,54 +112,6 @@ public static class SimulationAdaptionServiceExtensions
             INodeConfigurator<TEntity>,
             FunctionSimulationAdapter<TEntity, TMethodArgs, TReturnType>
         >();
-    }
-
-    public static SimulationAdapterConfig AdaptToServerRuntime(this SimulationAdapterConfig config)
-    {
-        var simulationServiceContainer = config.SimulationServicesContainer;
-        var serviceCollection = config.Services;
-
-        var argTranslators = typeof(IEntityMethodArgTranslator<>)
-            .GetTypesFromConsumingAssemblies()
-            .Select(e => (Implementor: e,
-                translatorInterface: e.GetImplementedVersionOfGeneric(typeof(IEntityMethodArgTranslator<>))))
-            .Where(e => e.translatorInterface is not null)
-            .Select(e => (ArgTranslatorImplementor: e.Implementor, ArgTranslatorInterface: e.translatorInterface,
-                ArgContainer: e.translatorInterface!.GenericTypeArguments[0]))
-            .AsParallel();
-
-        simulationServiceContainer.AddScoped<ISimulationExecutorErrorHandler, SimulationExecutorErrorHandler>();
-        foreach (var (argTranslatorImplementor, argTranslatorInterface, argContainer) in argTranslators)
-        {
-            simulationServiceContainer.AddScoped(argTranslatorInterface!, argTranslatorImplementor);
-            simulationServiceContainer.AddScoped(argTranslatorImplementor, argTranslatorImplementor);
-            simulationServiceContainer.AddScoped(typeof(IMethodArgumentParser<>).MakeGenericType(argContainer),
-                typeof(MethodArgumentParser<>).MakeGenericType(argContainer));
-        }
-
-        foreach (var (entityType, methodArgs) in config.ActionSimulationPatterns)
-        {
-            ExecuteLocalGenericRegistration(nameof(AddActionAdapterServices), [entityType, methodArgs],
-                simulationServiceContainer);
-        }
-
-        foreach (var (entityType, methodArgs, returnType) in config.FunctionSimulationPatterns)
-        {
-            ExecuteLocalGenericRegistration(nameof(AddFunctionAdapterServices), [entityType, methodArgs, returnType],
-                simulationServiceContainer);
-        }
-
-        var entities = config
-            .ActionSimulationPatterns.Select(e => e.entityType)
-            .Union(config.FunctionSimulationPatterns.Select(e => e.entityType));
-        foreach (var entity in entities)
-        {
-            ExecuteLocalGenericRegistration(nameof(RegisterPerEntityServices), [entity], simulationServiceContainer);
-            ExecuteLocalGenericRegistration(nameof(AdaptToServerLayer), [entity], simulationServiceContainer,
-                serviceCollection);
-        }
-
-        return config;
     }
 
     private static void AdaptToServerLayer<TEntity>(SimulationServicesContainer simulationServicesContainer,

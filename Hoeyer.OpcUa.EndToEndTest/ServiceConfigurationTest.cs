@@ -78,7 +78,7 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     [Test]
     [ServiceCollectionDataSource]
     [TestSubject(typeof(ServiceCollectionExtension))]
-    [TestSubject(typeof(SimulationAdaptionServiceExtensions))]
+    [TestSubject(typeof(ServerSimulationAdapter))]
     public async Task CanProvide_SimulationServerAdapters_SimulationNoReturn(IServiceCollection collection)
     {
         var provider = collection.BuildServiceProvider().CreateAsyncScope().ServiceProvider;
@@ -96,13 +96,13 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     [Test]
     [ServiceCollectionDataSource]
     [TestSubject(typeof(ServiceCollectionExtension))]
-    [TestSubject(typeof(SimulationAdaptionServiceExtensions))]
+    [TestSubject(typeof(ServerSimulationAdapter))]
     public async Task EntityStateChangedNotifier_IsRegisteredAs_ScopedIActionSimulationProcessor(
         IServiceCollection collection)
     {
         var foundDescriptor = collection.FirstOrDefault(e =>
-            e.Lifetime == ServiceLifetime.Scoped && e.ImplementationType.GetGenericTypeDefinition() !=
-            typeof(EntityStateChangedNotifier<>));
+            e is { Lifetime: ServiceLifetime.Scoped, ImplementationType: not null }
+            && e.ImplementationType.GetGenericTypeDefinition() != typeof(EntityStateChangedNotifier<>));
 
         await Assert.That(foundDescriptor).IsNotNull().Because("Any " + nameof(EntityStateChangedNotifier<int>) +
                                                                " should be registered as " +

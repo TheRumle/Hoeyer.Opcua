@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Hoeyer.Common.Extensions.Types;
+using Hoeyer.Common.Messaging.Api;
+using Hoeyer.Common.Messaging.Subscriptions;
 using Hoeyer.Opc.Ua.Test.TUnit.DependencyInjection.ServiceDescriptors;
 using Hoeyer.OpcUa.Simulation.Api.Configuration;
 using Hoeyer.OpcUa.Simulation.Api.Execution;
@@ -27,8 +29,8 @@ public sealed class
 
     public static IEnumerable<IPartialServiceMatcher> AllMatchers() =>
     [
-        new GenericMatcher(typeof(ISimulationBuilder<,>), ServiceLifetime.Scoped),
-        new GenericMatcher(typeof(ISimulationBuilder<,,>), ServiceLifetime.Scoped),
+        new GenericMatcher(typeof(ISubscriptionManager<>), ServiceLifetime.Singleton),
+        new GenericMatcher(typeof(IMessageSubscriptionFactory<>), ServiceLifetime.Singleton),
         new GenericMatcher(typeof(ISimulationBuilderFactory<,>), ServiceLifetime.Singleton),
         new GenericMatcher(typeof(ISimulationBuilderFactory<,,>), ServiceLifetime.Singleton),
         new ConcreteServiceWithGenericImplMatcher<ISimulationStepValidator>(
@@ -73,26 +75,26 @@ public sealed class
 
 
     [Test]
-    [DisplayName("The service '$descriptor' can be provided as singleton.")]
+    [DisplayName("$descriptor can be provided as singleton.")]
     [InstanceMethodDataSource<ServiceExtensionTest>(nameof(SingletonServices))]
     public async Task ServiceCanBeCreatedAsSingleton(ServiceDescriptor descriptor) =>
         await AssertServiceCanBeCreated(descriptor);
 
     [Test]
-    [DisplayName("The service '$descriptor' can be provided as singleton.")]
+    [DisplayName("$descriptor can be provided as singleton.")]
     [InstanceMethodDataSource<ServiceExtensionTest>(nameof(TransientServices))]
     public async Task ServiceCanBeCreatedAsTransient(ServiceDescriptor descriptor) =>
         await AssertServiceCanBeCreated(descriptor);
 
     [Test]
-    [DisplayName("The service '$descriptor' can be provided as scoped.")]
+    [DisplayName("$descriptor can be provided as scoped.")]
     [InstanceMethodDataSource<ServiceExtensionTest>(nameof(ScopedServices))]
     public async Task ServiceCanBeCreatedAsScoped(ServiceDescriptor descriptor) =>
         await AssertServiceCanBeCreatedScoped(descriptor);
 
 
     [Test]
-    [DisplayName("A service matching $matcher has been registered")]
+    [DisplayName("$matcher has been registered")]
     [InstanceMethodDataSource<ServiceExtensionTest>(nameof(AllMatchers))]
     public async Task ServiceIsRegistered(IPartialServiceMatcher matcher)
     {

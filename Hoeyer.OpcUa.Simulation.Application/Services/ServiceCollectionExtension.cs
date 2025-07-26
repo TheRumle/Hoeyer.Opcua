@@ -33,14 +33,12 @@ public static class ServiceCollectionExtension
     }
 
     public static OnGoingOpcEntityServiceRegistrationWithSimulation WithOpcUaSimulationServices(
-        this IServiceCollection registration, Action<SimulationAdapterConfig> configure)
-    {
-        return WithOpcUaSimulationServices(new OnGoingOpcEntityServiceRegistration(registration), c => { });
-    }
+        this IServiceCollection registration, Action<SimulationServicesConfig> configure) =>
+        WithOpcUaSimulationServices(new OnGoingOpcEntityServiceRegistration(registration), configure);
 
 
     public static OnGoingOpcEntityServiceRegistrationWithSimulation WithOpcUaSimulationServices(
-        this OnGoingOpcEntityServiceRegistration registration, Action<SimulationAdapterConfig> adapterSetup)
+        this OnGoingOpcEntityServiceRegistration registration, Action<SimulationServicesConfig> configure)
     {
         var originalCollection = registration.Collection;
         var collection = new ServiceCollection().WithEntityServices();
@@ -62,9 +60,9 @@ public static class ServiceCollectionExtension
         var (actionSimulators, functionSimulators) = AddCoreServices(typeReferences, simulationServices);
         ValidateServices(actionSimulators.Union(functionSimulators));
 
-        var config = new SimulationAdapterConfig(registration.Collection, simulationServices, actionSimulators,
+        var config = new SimulationServicesConfig(registration.Collection, simulationServices, actionSimulators,
             functionSimulators);
-        adapterSetup.Invoke(config);
+        configure.Invoke(config);
         return new OnGoingOpcEntityServiceRegistrationWithSimulation(registration.Collection, simulationServices);
     }
 
@@ -254,8 +252,9 @@ public static class ServiceCollectionExtension
             IMessageSubscriptionFactory<SimulationResult<TEntity>>,
             ChannelSubscriptionFactory<SimulationResult<TEntity>>
         >();
-        simulationService
-            .AddSingleton<ISubscriptionManager<SimulationResult<TEntity>>,
-                SubscriptionManager<SimulationResult<TEntity>>>();
+        simulationService.AddSingleton<
+            ISubscriptionManager<SimulationResult<TEntity>>,
+            SubscriptionManager<SimulationResult<TEntity>>
+        >();
     }
 }

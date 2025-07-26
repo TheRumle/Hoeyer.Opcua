@@ -64,9 +64,10 @@ public sealed record ChannelBasedSubscription<T> : IMessageSubscription<T>
                 _consumer.Consume(message);
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException e)
         {
-            // Expected during shutdown
+            // Expected during shutdown of manager
+            _logger.LogDebug(e, "{@Subscription} has been cancelled", SubscriptionId.ToString());
         }
         catch (Exception ex)
         {

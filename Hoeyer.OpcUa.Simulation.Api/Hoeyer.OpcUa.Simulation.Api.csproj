@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
+        <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj"/>
 
     </ItemGroup>
 

@@ -15,10 +15,11 @@ public class OpcFullSetupWithBackgroundServerFixture : OpcUaCoreServicesFixture
         OnGoingOpcEntityServiceRegistration
             .WithOpcUaServer()
             .WithOpcUaClientServices()
-            .WithOpcUaSimulationServices(c =>
+            .WithOpcUaSimulationServices(configure =>
             {
-                c.WithTimeScaling(double.Epsilon)
-                    .AdaptToServerRuntime();
+                configure
+                    .WithTimeScaling(double.Epsilon)
+                    .AdaptToRuntime<ServerSimulationAdapter>();
             })
             .WithOpcUaServerAsBackgroundService()
             .Collection.AddLogging(e => e.AddSimpleConsole());

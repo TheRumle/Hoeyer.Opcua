@@ -1,17 +1,29 @@
-﻿namespace Hoeyer.Opc.Ua.Test.TUnit.DependencyInjection.ServiceDescriptors;
+﻿using Hoeyer.Common.Extensions.Types;
 
-public readonly record struct TypeDescriptorString(IPartialServiceMatcher Matcher)
+namespace Hoeyer.Opc.Ua.Test.TUnit.DependencyInjection.ServiceDescriptors;
+
+public readonly struct TypeDescriptorString(IPartialServiceMatcher Matcher)
 {
+    private readonly IPartialServiceMatcher _matcher = Matcher;
+
     public static implicit operator string(TypeDescriptorString s)
     {
-        var descriptor = s.Matcher;
+        var descriptor = s._matcher;
         var lifeTime = " with lifetime " + descriptor.Lifetime;
         var impl = descriptor.Implementation == null
             ? ""
             : " with implementation type " + descriptor.Implementation.Name;
-        if (descriptor.ServiceType.IsConstructedGenericType)
+
+        if (descriptor.ServiceType.IsGenericTypeDefinition)
         {
-            return descriptor.ServiceType.GetGenericTypeDefinition().Name + lifeTime + impl;
+            return descriptor.ServiceType.GetFriendlyTypeName() + lifeTime + impl;
+        }
+        else if (descriptor.ServiceType.IsConstructedGenericType)
+        {
+            var numParams = descriptor.ServiceType.GetGenericArguments().Length;
+            var genericArg = string.Join(",", Enumerable.Range(0, numParams).Select(e => "T" + e));
+            return descriptor.ServiceType.GetGenericTypeDefinition().GetFriendlyTypeName() + $"[{genericArg}]" +
+                   lifeTime + impl;
         }
 
         return descriptor.ServiceType.Name + lifeTime + impl;
