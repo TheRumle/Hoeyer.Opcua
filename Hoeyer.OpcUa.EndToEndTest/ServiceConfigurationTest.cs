@@ -3,9 +3,7 @@ using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
-using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
-using Hoeyer.OpcUa.Simulation.Api.Configuration;
 using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
 using Hoeyer.OpcUa.Simulation.ServerAdapter;
 using Hoeyer.OpcUa.Simulation.Services;
@@ -72,25 +70,6 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     }
 
     [Test]
-    [ClassDataSource<ApplicationFixture>]
-    public async Task When_ActionSimulatorIsImplemented_ItIsRegistered(ApplicationFixture fixture)
-    {
-        await fixture.GetService<EntityServerStartedMarker>();
-        var simulator = fixture.GetService<ISimulation<Gantry, PickUpContainerArgs>>();
-        await Assert.That(simulator).IsNotNull();
-    }
-
-    [Test]
-    [ClassDataSource<ApplicationFixture>]
-    public async Task When_FunctionSimulatorIsImplemented_ItIsRegistered(ApplicationFixture fixture)
-    {
-        await fixture.GetService<EntityServerStartedMarker>();
-        var simulator = fixture.GetService<ISimulation<Gantry, GetCurrentContainerIdArgs, Guid>>();
-        await Assert.That(simulator).IsNotNull();
-    }
-
-
-    [Test]
     [ServiceCollectionDataSource]
     [TestSubject(typeof(IGantryMethods))]
     public async Task GantryMethodsInterface_ShouldBeRegistered(IGantryMethods methodInterface)
@@ -103,11 +82,15 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     public async Task CanProvide_SimulationServerAdapters_SimulationNoReturn(IServiceCollection collection)
     {
         var provider = collection.BuildServiceProvider().CreateAsyncScope().ServiceProvider;
-        var adapter = provider.GetRequiredService<ActionSimulationAdapter<Gantry, ChangePositionArgs>>();
-        var configurators = provider.GetRequiredService<IEnumerable<INodeConfigurator<Gantry>>>();
-
+        var adapter = provider.GetService<ActionSimulationAdapter<Gantry, ChangePositionArgs>>();
+        var configurators = provider.GetService<IEnumerable<INodeConfigurator<Gantry>>>()?.ToList();
         var wantedName = typeof(EntityStateChangedNotifier<>).Name;
-        await Assert.That(configurators.Where(e => wantedName.Contains(e.GetType().Name))).IsNotEmpty();
+        using (Assert.Multiple())
+        {
+            await Assert.That(adapter).IsNotNull();
+            await Assert.That(configurators).IsNotNull();
+            await Assert.That(configurators!.Where(e => wantedName.Contains(e.GetType().Name))).IsNotEmpty();
+        }
     }
 
     [Test]

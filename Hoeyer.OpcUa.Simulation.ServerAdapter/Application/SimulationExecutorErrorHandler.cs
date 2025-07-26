@@ -1,13 +1,22 @@
 ﻿using System;
 using Hoeyer.OpcUa.Simulation.Api.Configuration.Exceptions;
 using Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
+using Microsoft.Extensions.Logging;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter.Application;
 
-internal sealed class SimulationExecutorErrorHandler : ISimulationExecutorErrorHandler
+internal sealed class SimulationExecutorErrorHandler(ILogger<SimulationExecutorErrorHandler> errorLogger)
+    : ISimulationExecutorErrorHandler
 {
-    public ServiceResult HandleError(Exception exception)
+    public ServiceResult HandleError(Exception exception, MethodState method)
+    {
+        errorLogger.LogError(exception, "An exception occured while executing the simulation of method {@Method}",
+            method.BrowseName.Name);
+        return HandleError(exception);
+    }
+
+    private ServiceResult HandleError(Exception exception)
     {
         return exception switch
         {

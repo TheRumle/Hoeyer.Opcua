@@ -9,9 +9,9 @@ namespace Hoeyer.OpcUa.Simulation.Execution;
 internal sealed class ReturnValueOrderValidator<TState, TArgs, TReturnValue> : ISimulationStepValidator
 {
     /// <inheritdoc />
-    public void ValidateOrThrow(IEnumerable<ISimulationStep> executionSteps)
+    public void ValidateOrThrow(IEnumerable<ISimulationStep> steps)
     {
-        var list = executionSteps.ToList();
+        var list = steps.ToList();
         var errors = LastStepIsReturnValue(list)
             .Union(OnlyOneReturnValue(list))
             .ToList();

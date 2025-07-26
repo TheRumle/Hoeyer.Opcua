@@ -1,5 +1,4 @@
 ﻿using Hoeyer.Opc.Ua.Test.TUnit;
-using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Test.Fixtures;
 using Hoeyer.OpcUa.TestEntities;
@@ -45,9 +44,6 @@ public class EntityTranslatorTest
 
     [Test]
     [ServiceCollectionDataSource]
-    [RegressionTest(
-        "Translating Entities' List<string> properties to Lists<string> instead of string[] results in errors when trying to fetch the value from the server. The OpcUa framework cannot convert List<string> to a meaningful result when reading the node.",
-        typeof(IEntityBrowser))]
     public async Task WhenTranslating_ToEntityNode_ListValuesAreTranslatedTo_Arrays(
         IEntityTranslator<Gantry> translator,
         IEntityNodeStructureFactory<Gantry> structure)

@@ -5,5 +5,5 @@ namespace Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
 
 internal interface ISimulationExecutorErrorHandler
 {
-    ServiceResult HandleError(Exception exception);
+    ServiceResult HandleError(Exception exception, MethodState method);
 }

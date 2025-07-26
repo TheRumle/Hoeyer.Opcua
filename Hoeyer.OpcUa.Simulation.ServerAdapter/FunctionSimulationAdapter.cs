@@ -1,21 +1,16 @@
 ﻿using System;
-using Hoeyer.OpcUa.Core.Api;
+using System.Collections.Generic;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Simulation.Api;
-using Hoeyer.OpcUa.Simulation.Api.Configuration;
 using Hoeyer.OpcUa.Simulation.Api.Execution;
-using Hoeyer.OpcUa.Simulation.Configuration;
 using Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
-using Microsoft.Extensions.Logging;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter;
 
 internal sealed class FunctionSimulationAdapter<TEntity, TMethodArgs, TReturnType>(
-    ILogger logger,
-    IEntityTranslator<TEntity> translator,
-    IMethodArgumentParser<TMethodArgs> argsParser,
-    ISimulation<TEntity, TMethodArgs, TReturnType> simulator,
+    IAdaptionContextTranslator<(IList<object>, IManagedEntityNode), TEntity, TMethodArgs, TReturnType>
+        contextTranslator,
     ISimulationOrchestrator<TEntity, TMethodArgs, TReturnType> orchestrator,
     ISimulationExecutorErrorHandler errorHandler,
     IOpcMethodArgumentsAttributeUsageValidator argsTypeAnnotationValidator)
@@ -31,18 +26,15 @@ internal sealed class FunctionSimulationAdapter<TEntity, TMethodArgs, TReturnTyp
         {
             try
             {
-                var builder = new SimulationBuilder<TEntity, TMethodArgs, TReturnType>(translator);
-                var simulationSteps = simulator.ConfigureSimulation(builder);
-                var initialState = managed.Select(translator.Translate);
-                var args = argsParser.ParseToArgsStructure(inputArguments);
+                var (initialState, args, simulationSteps) =
+                    contextTranslator.CreateSimulationContext((inputArguments, managed));
                 var result = orchestrator.ExecuteMethodSimulation(initialState, args, simulationSteps).Result;
                 outputArguments[0] = result;
                 return StatusCodes.Good;
             }
             catch (Exception e)
             {
-                logger.LogError(e, "An error occured why executing simulation");
-                return errorHandler.HandleError(e);
+                return errorHandler.HandleError(e, method);
             }
         };
     }

@@ -8,7 +8,7 @@ using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
 
 namespace Hoeyer.OpcUa.Simulation.Configuration;
 
-public sealed class SimulationBuilder<TEntity, TArguments> : ISimulationBuilder<TEntity, TArguments>
+internal sealed class SimulationBuilder<TEntity, TArguments> : ISimulationBuilder<TEntity, TArguments>
 {
     private readonly
         CompositeActionSimulationBuilder<TEntity, TArguments, SimulationBuilder<TEntity, TArguments>>
@@ -37,7 +37,7 @@ public sealed class SimulationBuilder<TEntity, TArguments> : ISimulationBuilder<
     public ISimulationBuilder<TEntity, TArguments> Wait(TimeSpan timeSpan) => _commonOperations.Wait(timeSpan);
 }
 
-public sealed class
+internal sealed class
     SimulationBuilder<TEntity, TArguments, TReturn> : ISimulationBuilder<TEntity, TArguments, TReturn>
 {
     private readonly CompositeActionSimulationBuilder<TEntity, TArguments,

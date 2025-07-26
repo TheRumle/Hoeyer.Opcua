@@ -1,5 +1,4 @@
-﻿using Hoeyer.Opc.Ua.Test.TUnit;
-using Hoeyer.OpcUa.Core.Services.OpcUaServices;
+﻿using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.TestEntities.Methods;
 using Hoeyer.OpcUa.TestEntities.Methods.Generated;
 
@@ -8,7 +7,6 @@ namespace Hoeyer.OpcUa.Core.Test.Services.OpcUaServices;
 public sealed class OpcUaEntityTypesTest
 {
     [Test]
-    [RegressionTest("The subject was not autowired", typeof(IGantryMethods))]
     public async Task Contains_GantryMethodCaller()
     {
         var gantryMethodsIsRegisteredAsServiceType =

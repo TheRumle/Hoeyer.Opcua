@@ -10,11 +10,17 @@
 
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.4">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="JetBrains.Annotations" Version="2024.3.0"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.1"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0"/>
         <PackageReference Include="TUnit" Version="0.25.21"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -22,6 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Folder Include="DependencyInjection\"/>
         <Folder Include="Extensions\"/>
     </ItemGroup>
 

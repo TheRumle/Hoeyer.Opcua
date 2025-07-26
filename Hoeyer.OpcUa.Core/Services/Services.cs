@@ -17,16 +17,19 @@ public static class Services
         return new OnGoingOpcEntityServiceRegistration(services);
     }
 
-    public static OnGoingOpcEntityServiceRegistration WithEntityServices(
-        this OnGoingOpcEntityServiceRegistration registration)
+    public static IServiceCollection WithEntityServices(this IServiceCollection services)
     {
-        var services = registration.Collection;
         var errs = services
             .AddEntityServices()
             .ToList();
         if (errs.Any()) throw new OpcUaEntityServiceConfigurationException(errs);
+        return services;
+    }
 
-
+    public static OnGoingOpcEntityServiceRegistration WithEntityServices(
+        this OnGoingOpcEntityServiceRegistration registration)
+    {
+        registration.Collection.WithEntityServices();
         return registration;
     }
 }

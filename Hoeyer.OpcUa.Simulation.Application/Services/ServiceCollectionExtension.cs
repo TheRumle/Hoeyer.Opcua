@@ -10,12 +10,14 @@ using Hoeyer.Common.Messaging.Subscriptions;
 using Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Simulation.Api;
 using Hoeyer.OpcUa.Simulation.Api.Configuration;
 using Hoeyer.OpcUa.Simulation.Api.Configuration.Exceptions;
 using Hoeyer.OpcUa.Simulation.Api.Execution;
 using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
 using Hoeyer.OpcUa.Simulation.Api.Services;
+using Hoeyer.OpcUa.Simulation.Configuration;
 using Hoeyer.OpcUa.Simulation.Execution;
 using Hoeyer.OpcUa.Simulation.PostProcessing;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,17 +26,25 @@ namespace Hoeyer.OpcUa.Simulation.Services;
 
 public static class ServiceCollectionExtension
 {
-    public static OnGoingOpcEntityServiceRegistration WithOpcUaSimulationServices(
+    public static OnGoingOpcEntityServiceRegistrationWithSimulation WithOpcUaSimulationServices(
         this OnGoingOpcEntityServiceRegistration registration)
     {
         return WithOpcUaSimulationServices(registration, (c) => { });
     }
 
-    public static OnGoingOpcEntityServiceRegistration WithOpcUaSimulationServices(
+    public static OnGoingOpcEntityServiceRegistrationWithSimulation WithOpcUaSimulationServices(
+        this IServiceCollection registration, Action<SimulationAdapterConfig> configure)
+    {
+        return WithOpcUaSimulationServices(new OnGoingOpcEntityServiceRegistration(registration), c => { });
+    }
+
+
+    public static OnGoingOpcEntityServiceRegistrationWithSimulation WithOpcUaSimulationServices(
         this OnGoingOpcEntityServiceRegistration registration, Action<SimulationAdapterConfig> adapterSetup)
     {
         var originalCollection = registration.Collection;
-        var simulationServices = new SimulationServicesContainer(new ServiceCollection());
+        var collection = new ServiceCollection().WithEntityServices();
+        var simulationServices = new SimulationServicesContainer(collection);
         simulationServices.AddRange(originalCollection);
         originalCollection
             .AddTransient<IOpcMethodArgumentsAttributeUsageValidator, OpcMethodArgumentsAttributeUsageValidator>();
@@ -52,10 +62,10 @@ public static class ServiceCollectionExtension
         var (actionSimulators, functionSimulators) = AddCoreServices(typeReferences, simulationServices);
         ValidateServices(actionSimulators.Union(functionSimulators));
 
-        var config = new SimulationAdapterConfig(originalCollection, simulationServices, actionSimulators,
+        var config = new SimulationAdapterConfig(registration.Collection, simulationServices, actionSimulators,
             functionSimulators);
         adapterSetup.Invoke(config);
-        return registration;
+        return new OnGoingOpcEntityServiceRegistrationWithSimulation(registration.Collection, simulationServices);
     }
 
     private static void ValidateServices(IEnumerable<SimulationPatternTypeDetails> actionSimulators)
@@ -64,7 +74,7 @@ public static class ServiceCollectionExtension
             .GroupBy(e => e.InstantiatedSimulatorInterface).Where(g => g.Count() > 1).Select(group =>
             {
                 var message =
-                    $"Multiple implementations of '{group.Key.GetFriendlyTypeName()}' were found. The framework allows only for one implementation per method to simulate. Remove one of the simulation configurators: [\n\t{string.Join(",\n\t", group.Select(e => e.Implementor.GetFriendlyTypeName()))}\n]";
+                    $"Multiple implementations of '{group.Key.GetFriendlyTypeName()}' were found. The framework allows only for one implementation per simulation. Remove one of the simulations: [\n\t{string.Join(",\n\t", group.Select(e => e.Implementor.GetFriendlyTypeName()))}\n]";
                 return new DuplicateSimulatorConfigurationException(message);
             }).ToList();
 
@@ -134,6 +144,11 @@ public static class ServiceCollectionExtension
     {
         foreach (var serviceCollection in collections)
         {
+            serviceCollection.AddScoped<ISimulationBuilder<TEntity, TArgs>>
+                (p => p.GetRequiredService<ISimulationBuilderFactory<TEntity, TArgs>>().CreateSimulationBuilder());
+
+            serviceCollection
+                .AddSingleton<ISimulationBuilderFactory<TEntity, TArgs>, SimulationBuilderFactory<TEntity, TArgs>>();
             serviceCollection.AddTransient(typeof(ISimulation<TEntity, TArgs>), impl);
             serviceCollection.AddTransient(impl, impl);
         }
@@ -144,6 +159,13 @@ public static class ServiceCollectionExtension
     {
         foreach (var serviceCollection in collections)
         {
+            serviceCollection.AddScoped<ISimulationBuilder<TEntity, TArgs, TReturn>>
+            (p => p.GetRequiredService<ISimulationBuilderFactory<TEntity, TArgs, TReturn>>()
+                .CreateSimulationBuilder());
+
+            serviceCollection
+                .AddSingleton<ISimulationBuilderFactory<TEntity, TArgs, TReturn>,
+                    SimulationBuilderFactory<TEntity, TArgs, TReturn>>();
             serviceCollection.AddTransient(typeof(ISimulation<TEntity, TArgs, TReturn>), impl);
             serviceCollection.AddTransient(impl, impl);
         }

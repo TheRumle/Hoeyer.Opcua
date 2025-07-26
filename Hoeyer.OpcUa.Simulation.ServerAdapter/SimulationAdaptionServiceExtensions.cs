@@ -1,20 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.Common.Reflection;
-using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
-using Hoeyer.OpcUa.Simulation.Api;
-using Hoeyer.OpcUa.Simulation.Api.Configuration;
-using Hoeyer.OpcUa.Simulation.Api.Execution;
 using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
 using Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
 using Hoeyer.OpcUa.Simulation.ServerAdapter.Application;
 using Hoeyer.OpcUa.Simulation.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter;
 
@@ -47,56 +43,30 @@ public static class SimulationAdaptionServiceExtensions
     private static void AddActionAdapterServices<TEntity, TMethodArgs>(
         SimulationServicesContainer simulationServicesContainer)
     {
-        simulationServicesContainer
-            .AddSingleton<INodeConfigurator<TEntity>, ActionSimulationAdapter<TEntity, TMethodArgs>>(coreServices =>
-            {
-                var logger = coreServices.GetRequiredService<ILogger<ActionSimulationAdapter<TEntity, TMethodArgs>>>();
-                var entityTranslator = coreServices.GetRequiredService<IEntityTranslator<TEntity>>();
+        simulationServicesContainer.AddTransient<
+            IAdaptionContextTranslator<(IList<object>, IManagedEntityNode), TEntity, TMethodArgs>,
+            AdaptionContextTranslator<TEntity, TMethodArgs>
+        >();
 
-                var orchestrator = coreServices.GetRequiredService<ISimulationOrchestrator<TEntity, TMethodArgs>>();
-                var argsParser = coreServices.GetRequiredService<IMethodArgumentParser<TMethodArgs>>();
-                var simulator = coreServices.GetRequiredService<ISimulation<TEntity, TMethodArgs>>();
-                var errorHandler = coreServices.GetRequiredService<ISimulationExecutorErrorHandler>();
-                var validator = coreServices.GetRequiredService<IOpcMethodArgumentsAttributeUsageValidator>();
-
-                return new ActionSimulationAdapter<TEntity, TMethodArgs>(
-                    logger: logger,
-                    translator: entityTranslator,
-                    argsParser: argsParser,
-                    simulator: simulator,
-                    orchestrator: orchestrator,
-                    errorHandler: errorHandler,
-                    argsTypeAnnotationValidator: validator);
-            });
+        simulationServicesContainer.AddSingleton<
+            INodeConfigurator<TEntity>,
+            ActionSimulationAdapter<TEntity, TMethodArgs>
+        >();
     }
 
     private static void AddFunctionAdapterServices<TEntity, TMethodArgs, TReturnType>(
         SimulationServicesContainer simulationServicesContainer)
     {
-        simulationServicesContainer
-            .AddSingleton<INodeConfigurator<TEntity>,
-                FunctionSimulationAdapter<TEntity, TMethodArgs, TReturnType>>(coreServices =>
-            {
-                var logger = coreServices
-                    .GetRequiredService<ILogger<FunctionSimulationAdapter<TEntity, TMethodArgs, TReturnType>>>();
-                var entityTranslator = coreServices.GetRequiredService<IEntityTranslator<TEntity>>();
+        simulationServicesContainer.AddTransient<
+            IAdaptionContextTranslator<(IList<object>, IManagedEntityNode), TEntity, TMethodArgs, TReturnType>,
+            AdaptionContextTranslator<TEntity, TMethodArgs, TReturnType>
+        >();
 
-                var orchestrator = coreServices
-                    .GetRequiredService<ISimulationOrchestrator<TEntity, TMethodArgs, TReturnType>>();
-                var argsParser = coreServices.GetRequiredService<IMethodArgumentParser<TMethodArgs>>();
-                var simulator = coreServices.GetRequiredService<ISimulation<TEntity, TMethodArgs, TReturnType>>();
-                var errorHandler = coreServices.GetRequiredService<ISimulationExecutorErrorHandler>();
-                var validator = coreServices.GetRequiredService<IOpcMethodArgumentsAttributeUsageValidator>();
 
-                return new FunctionSimulationAdapter<TEntity, TMethodArgs, TReturnType>(
-                    logger: logger,
-                    translator: entityTranslator,
-                    argsParser: argsParser,
-                    simulator: simulator,
-                    orchestrator: orchestrator,
-                    errorHandler: errorHandler,
-                    argsTypeAnnotationValidator: validator);
-            });
+        simulationServicesContainer.AddSingleton<
+            INodeConfigurator<TEntity>,
+            FunctionSimulationAdapter<TEntity, TMethodArgs, TReturnType>
+        >();
     }
 
     public static SimulationAdapterConfig AdaptToServerRuntime(this SimulationAdapterConfig config)
