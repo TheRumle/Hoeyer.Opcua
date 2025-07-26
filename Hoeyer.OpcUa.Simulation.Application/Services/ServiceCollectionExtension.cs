@@ -63,7 +63,7 @@ public static class ServiceCollectionExtension
         var config = new SimulationServicesConfig(registration.Collection, simulationServices, actionSimulators,
             functionSimulators);
         configure.Invoke(config);
-        return new OnGoingOpcEntityServiceRegistrationWithSimulation(registration.Collection, simulationServices);
+        return new OnGoingOpcEntityServiceRegistrationWithSimulation(registration.Collection, config);
     }
 
     private static void ValidateServices(IEnumerable<SimulationPatternTypeDetails> actionSimulators)

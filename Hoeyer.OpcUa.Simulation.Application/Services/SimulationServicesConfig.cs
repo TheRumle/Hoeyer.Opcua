@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.Common.Messaging.Subscriptions;
 using Hoeyer.OpcUa.Simulation.Api.Execution;
@@ -8,11 +9,6 @@ using Hoeyer.OpcUa.Simulation.Api.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Simulation.Services;
-
-public interface ILayerAdapter<in TAdaptionSource>
-{
-    public void Adapt(TAdaptionSource adaptionSource, IServiceCollection adaptionTarget);
-}
 
 /// <summary>
 ///     Provides an interface that can be used to adapt the simulation services. The methods of this class provides an
@@ -25,6 +21,15 @@ public class SimulationServicesConfig
     public readonly IReadOnlyList<(Type entityType, Type methodArgs)> ActionSimulationPatterns;
     public readonly IReadOnlyList<(Type entityType, Type methodArgs, Type returnType)> FunctionSimulationPatterns;
     public readonly SimulationServicesContainer SimulationServices;
+
+    public SimulationServicesConfig(SimulationServicesConfig source)
+    {
+        _originalServices = source._originalServices;
+        SimulationServices = source.SimulationServices;
+        ActionSimulationPatterns = source.ActionSimulationPatterns.ToList();
+        FunctionSimulationPatterns = source.FunctionSimulationPatterns.ToList();
+        TimeScaler = source.TimeScaler;
+    }
 
     public SimulationServicesConfig(IServiceCollection originalServices,
         SimulationServicesContainer simulationServices,

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hoeyer.Common.Extensions.Types;
@@ -19,13 +20,16 @@ namespace Simulation.Application.Test;
 [TestSubject(typeof(ServiceCollectionExtension))]
 [TestSubject(typeof(SimulationServicesContainer))]
 [InheritsTests]
+[ClassDataSource<ServiceCollectionFixture>]
 public sealed class
-    ServiceExtensionTest //: ServiceInjectionTest(new ServiceCollectionFixture().SimulationServices, AllMatchers)
+    ServiceExtensionTest(
+        ServiceCollectionFixture
+            fixture) //: ServiceInjectionTest(new ServiceCollectionFixture().SimulationServices, AllMatchers)
 {
     private static readonly Dictionary<ServiceLifetime, List<IPartialServiceMatcher>> AllMatchersByLifetime =
         CreateLifetimeDictionary();
 
-    private readonly IServiceCollection _collection = new ServiceCollectionFixture().SimulationServices;
+    private readonly IServiceCollection _collection = fixture.SimulationServices;
 
     public static IEnumerable<IPartialServiceMatcher> AllMatchers() =>
     [
@@ -114,5 +118,12 @@ public sealed class
         var provider = _collection.BuildServiceProvider().CreateAsyncScope();
         var foundService = provider.ServiceProvider.GetService(descriptor.ServiceType);
         await Assert.That(foundService).IsNotNull().Because("We want to construct the service as a singleton");
+    }
+
+    private class TestFactory<T> : IMessageSubscriptionFactory<T>
+    {
+        /// <inheritdoc />
+        public IMessageSubscription<T> CreateSubscription(IMessageConsumer<T> consumer,
+            Action<IMessageSubscription<T>>? disposeCallBack = null) => null!;
     }
 }

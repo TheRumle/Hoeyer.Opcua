@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.Client.Api.Browsing;
+﻿using Hoeyer.Common.Extensions.Types;
+using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
@@ -81,6 +82,21 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     [TestSubject(typeof(ServerSimulationAdapter))]
     public async Task CanProvide_SimulationServerAdapters_SimulationNoReturn(IServiceCollection collection)
     {
+        var adapterMatcher = (ServiceDescriptor e, Type genericTarget) => e.ImplementationType != null
+                                                                          && e.ImplementationType
+                                                                              .IsGenericImplementationOf(genericTarget);
+
+        var adapters = collection
+            .Where(e => adapterMatcher(e, typeof(ActionSimulationAdapter<,>)) ||
+                        adapterMatcher(e, typeof(FunctionSimulationAdapter<,,>)));
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(adapters).IsNotEmpty()
+                .Because("At least one adapter between simulation and service collection should exist");
+        }
+
+
         var provider = collection.BuildServiceProvider().CreateAsyncScope().ServiceProvider;
         var adapter = provider.GetService<ActionSimulationAdapter<Gantry, ChangePositionArgs>>();
         var configurators = provider.GetService<IEnumerable<INodeConfigurator<Gantry>>>()?.ToList();

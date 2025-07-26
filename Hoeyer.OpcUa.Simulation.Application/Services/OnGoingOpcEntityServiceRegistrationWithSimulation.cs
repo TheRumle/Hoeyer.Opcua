@@ -1,11 +1,20 @@
-﻿using Hoeyer.OpcUa.Core.Configuration;
+﻿using System;
+using Hoeyer.OpcUa.Core.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Simulation.Services;
 
 public sealed record OnGoingOpcEntityServiceRegistrationWithSimulation(
     IServiceCollection Collection,
-    SimulationServicesContainer SimulationServices) : OnGoingOpcEntityServiceRegistration(Collection)
+    SimulationServicesConfig Config) : OnGoingOpcEntityServiceRegistration(Collection)
 {
-    public SimulationServicesContainer SimulationServices { get; } = SimulationServices;
+    public SimulationServicesContainer SimulationServices { get; } = Config.SimulationServices;
+    public SimulationServicesConfig Config { get; } = Config;
+
+    public OnGoingOpcEntityServiceRegistrationWithSimulation CreateReconfigured(
+        Action<SimulationServicesConfig> reconfigure)
+    {
+        reconfigure(new SimulationServicesConfig(Config));
+        return new OnGoingOpcEntityServiceRegistrationWithSimulation(Collection, Config);
+    }
 }

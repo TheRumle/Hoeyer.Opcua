@@ -25,6 +25,22 @@ public static class TypeExtensions
         return t.GetInterfaces().FirstOrDefault(i => i == @interface);
     }
 
+    public static bool IsGenericImplementationOf(this Type t, Type target)
+    {
+        if (!target.IsGenericType)
+        {
+            throw new ArgumentException(nameof(target) + " is not a generic type");
+        }
+
+        if (!t.IsGenericType)
+        {
+            return false;
+        }
+
+        var wanted = t.IsGenericTypeDefinition ? t : t.GetGenericTypeDefinition();
+        return target == wanted;
+    }
+
     public static bool Implements(this Type t, Type @interface) => @interface.IsAssignableFrom(t);
 
     public static string GetFriendlyTypeName(this Type type)

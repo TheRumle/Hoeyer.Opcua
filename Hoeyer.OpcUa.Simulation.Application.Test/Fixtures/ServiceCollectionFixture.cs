@@ -6,16 +6,16 @@ namespace Simulation.Application.Test.Fixtures;
 
 public sealed class ServiceCollectionFixture
 {
-    public readonly OnGoingOpcEntityServiceRegistrationWithSimulation OngoingRegistration;
+    public readonly OnGoingOpcEntityServiceRegistrationWithSimulation ongoingConfiguration;
     public readonly IServiceProvider ServiceProvider;
 
     public readonly IServiceCollection SimulationServices;
 
     public ServiceCollectionFixture()
     {
-        OngoingRegistration = new ServiceCollection()
-            .WithOpcUaSimulationServices(c => c.WithTimeScaling(float.Epsilon));
-        SimulationServices = OngoingRegistration.SimulationServices;
+        ongoingConfiguration =
+            new ServiceCollection().WithOpcUaSimulationServices(c => c.WithTimeScaling(float.Epsilon));
+        SimulationServices = ongoingConfiguration.SimulationServices;
         ServiceProvider = SimulationServices.BuildServiceProvider();
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
