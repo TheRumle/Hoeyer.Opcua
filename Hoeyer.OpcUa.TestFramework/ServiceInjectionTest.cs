@@ -3,13 +3,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.Opc.Ua.Test.TUnit;
 
-//TODO fix when TUnit works
 public abstract class ServiceInjectionTest(
     IServiceCollection collection,
     IEnumerable<IPartialServiceMatcher> allMatchers)
 {
     private readonly IServiceScope _asyncScope = collection.BuildServiceProvider().CreateScope();
     private readonly IServiceProvider _provider = collection.BuildServiceProvider();
+
+    public IEnumerable<ServiceDescriptor> TransientServices =>
+        GetMatchingDescriptors(MatchersWithLifetime(ServiceLifetime.Transient));
 
     private List<IPartialServiceMatcher> MatchersWithLifetime(ServiceLifetime lifetime)
         => allMatchers.Where(d => d.Lifetime == lifetime).ToList();
@@ -23,9 +25,6 @@ public abstract class ServiceInjectionTest(
     public IEnumerable<ServiceDescriptor> SingletonServices() =>
         GetMatchingDescriptors(MatchersWithLifetime(ServiceLifetime.Singleton));
 
-    public IEnumerable<ServiceDescriptor> TransientServices() =>
-        GetMatchingDescriptors(MatchersWithLifetime(ServiceLifetime.Transient));
-
     public IEnumerable<ServiceDescriptor> ScopedServices() =>
         GetMatchingDescriptors(MatchersWithLifetime(ServiceLifetime.Scoped));
 
@@ -34,26 +33,26 @@ public abstract class ServiceInjectionTest(
 
     [Test]
     [DisplayName("The service '$descriptor.ServiceType' can be provided as singleton.")]
-    [InstanceMethodDataSource<ServiceInjectionTest>(nameof(SingletonServices))]
+    [InstanceMethodDataSource(nameof(SingletonServices))]
     public async Task ServiceCanBeCreatedAsSingleton(ServiceDescriptor descriptor) =>
         await AssertServiceCanBeCreated(descriptor);
 
     [Test]
     [DisplayName("The service '$descriptor.ServiceType' can be provided as singleton.")]
-    [InstanceMethodDataSource<ServiceInjectionTest>(nameof(TransientServices))]
+    [InstanceMethodDataSource(nameof(TransientServices))]
     public async Task ServiceCanBeCreatedAsTransient(ServiceDescriptor descriptor) =>
         await AssertServiceCanBeCreated(descriptor);
 
     [Test]
     [DisplayName("The service '$descriptor.ServiceType' can be provided as scoped.")]
-    [InstanceMethodDataSource<ServiceInjectionTest>(nameof(ScopedServices))]
+    [InstanceMethodDataSource(nameof(ScopedServices))]
     public async Task ServiceCanBeCreatedAsScoped(ServiceDescriptor descriptor) =>
         await AssertServiceCanBeCreatedScoped(descriptor);
 
 
     [Test]
     [DisplayName("A service matching $matcher has been registered")]
-    [InstanceMethodDataSource<ServiceInjectionTest>(nameof(AllDescriptors))]
+    [InstanceMethodDataSource(nameof(AllDescriptors))]
     public async Task ServiceIsRegistered(IPartialServiceMatcher matcher)
     {
         await Assert.That(collection.Any(matcher.Equals)).IsTrue();

@@ -17,7 +17,7 @@ public class CompileTimeTypeAnnotations
 
 
     [Test]
-    [AnalyserFixtureGenerator]
+    [AnalyserFixture]
     public async Task IsAnnotatedWithAnalyzer(DiagnosticAnalyzer analyzer)
     {
         await Assert.That(analyzer.GetType().IsAnnotatedWith<DiagnosticAnalyzerAttribute>()).IsTrue()

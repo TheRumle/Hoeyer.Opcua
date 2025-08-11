@@ -10,16 +10,16 @@ internal sealed class
     IncrementalGeneratorFixtureGeneratorAttribute : DataSourceGeneratorAttribute<IIncrementalGenerator>
 {
     /// <inheritdoc />
-    public override IEnumerable<Func<IIncrementalGenerator>> GenerateDataSources(
+    protected override IEnumerable<Func<IIncrementalGenerator>> GenerateDataSources(
         DataGeneratorMetadata dataGeneratorMetadata)
     {
         IEnumerable<Func<IIncrementalGenerator>> generatedCoreServices =
-            new TypesWithEmptyCtorScanningGeneratorAttribute<IIncrementalGenerator,
-                EntityTranslatorGenerator>().GenerateDataSources(dataGeneratorMetadata);
+            new TypesWithEmptyCtorScanner<IIncrementalGenerator,
+                EntityTranslatorGenerator>().GenerateDataSources();
 
         IEnumerable<Func<IIncrementalGenerator>> generatedClientServices =
-            new TypesWithEmptyCtorScanningGeneratorAttribute<IIncrementalGenerator,
-                RemoteMethodCallerGenerator>().GenerateDataSources(dataGeneratorMetadata);
+            new TypesWithEmptyCtorScanner<IIncrementalGenerator,
+                RemoteMethodCallerGenerator>().GenerateDataSources();
 
         return generatedClientServices.Concat(generatedCoreServices);
     }

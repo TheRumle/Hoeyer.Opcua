@@ -6,8 +6,8 @@ namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;
 [SuppressMessage("Design", "S3993", Justification = "TUnits' attributeusage must not and cannot be overwritten.")]
 public sealed class UnsupportedTypesSourceCodeGeneratorAttribute : DataSourceGeneratorAttribute<EntitySourceCode>
 {
-    /// <inheritdoc />
-    public override IEnumerable<Func<EntitySourceCode>> GenerateDataSources(DataGeneratorMetadata dataGeneratorMetadata)
+    protected override IEnumerable<Func<EntitySourceCode>> GenerateDataSources(
+        DataGeneratorMetadata dataGeneratorMetadata)
     {
         return EntitySourceCodeDefinitions.UnsupportedTypes.Select(source => (Func<EntitySourceCode>)(() => source));
     }

@@ -5,8 +5,7 @@ namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;
 
 public sealed class EntityServiceInterfaceGeneratorAttribute : DataSourceGeneratorAttribute<ServiceInterfaceSourceCode>
 {
-    /// <inheritdoc />
-    public override IEnumerable<Func<ServiceInterfaceSourceCode>> GenerateDataSources(
+    protected override IEnumerable<Func<ServiceInterfaceSourceCode>> GenerateDataSources(
         DataGeneratorMetadata dataGeneratorMetadata)
         => EntitySourceCodeDefinitions.ValidEntities.SelectMany(TestBehaviours.GetServiceInterfaceSourceCodeFor)
             .SelectFunc();
