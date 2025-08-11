@@ -10,7 +10,6 @@ using Hoeyer.Common.Messaging.Subscriptions;
 using Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Core.Configuration;
-using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Simulation.Api;
 using Hoeyer.OpcUa.Simulation.Api.Configuration;
 using Hoeyer.OpcUa.Simulation.Api.Configuration.Exceptions;
@@ -41,7 +40,7 @@ public static class ServiceCollectionExtension
         this OnGoingOpcEntityServiceRegistration registration, Action<SimulationServicesConfig> configure)
     {
         var originalCollection = registration.Collection;
-        var collection = new ServiceCollection().WithEntityServices();
+        var collection = new ServiceCollection();
         var simulationServices = new SimulationServicesContainer(collection);
         simulationServices.AddRange(originalCollection);
         originalCollection
@@ -60,8 +59,12 @@ public static class ServiceCollectionExtension
         var (actionSimulators, functionSimulators) = AddCoreServices(typeReferences, simulationServices);
         ValidateServices(actionSimulators.Union(functionSimulators));
 
-        var config = new SimulationServicesConfig(registration.Collection, simulationServices, actionSimulators,
+        var config = new SimulationServicesConfig(
+            registration.Collection,
+            simulationServices,
+            actionSimulators,
             functionSimulators);
+
         configure.Invoke(config);
         return new OnGoingOpcEntityServiceRegistrationWithSimulation(registration.Collection, config);
     }

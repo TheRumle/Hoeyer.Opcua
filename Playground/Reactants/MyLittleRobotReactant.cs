@@ -13,7 +13,7 @@ public sealed class MyLittleRobotReactant(
 {
     protected override async Task ExecuteAsync(CancellationToken token)
     {
-        var subscription = await subManager.SubscribeToChange(stateChannel, token);
+        var subscription = await subManager.SubscribeToAllPropertyChanges(stateChannel, token);
         var reader = stateChannel.Reader;
         while (await reader.WaitToReadAsync(token))
         {

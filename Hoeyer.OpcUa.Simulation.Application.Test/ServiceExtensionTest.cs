@@ -18,9 +18,9 @@ namespace Simulation.Application.Test;
 [TestSubject(typeof(SimulationServicesContainer))]
 [InheritsTests]
 public sealed class ServiceExtensionTest()
-    : ServiceInjectionTest(new ServiceCollectionFixture().SimulationServices, AllMatchers)
+    : ServiceInjectionTest(new ServiceCollectionFixture().SimulationServices, TestData)
 {
-    public static IEnumerable<IPartialServiceMatcher> AllMatchers =>
+    public static IEnumerable<IPartialServiceMatcher> TestData =>
     [
         new GenericMatcher(typeof(ISubscriptionManager<>), ServiceLifetime.Singleton),
         new GenericMatcher(typeof(IMessageSubscriptionFactory<>), ServiceLifetime.Singleton),
