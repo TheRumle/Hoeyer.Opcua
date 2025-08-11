@@ -7,7 +7,7 @@ namespace Hoeyer.OpcUa.Client.SourceGeneration.Generation.IncrementalProvider;
 internal static class IncrementalGeneratorExtensions
 {
     public static UnloadedIncrementalValuesProvider<(InterfaceDeclarationSyntax interfaceNode, SemanticModel model)>
-        GetEntityMethodInterfaces(
+        GetAgentMethodInterfaces(
             this IncrementalGeneratorInitializationContext context)
     {
         IncrementalValuesProvider<GeneratorSyntaxContext> interfaceDeclarations = context.SyntaxProvider
@@ -30,7 +30,7 @@ internal static class IncrementalGeneratorExtensions
                     if (attributeClass is null) continue;
 
 
-                    if (attributeClass.Name == "OpcUaEntityMethodsAttribute" &&
+                    if (attributeClass.Name == "OpcUaAgentMethodsAttribute" &&
                         attributeClass.ContainingNamespace.ToDisplayString() == "Hoeyer.OpcUa.Core" &&
                         attributeClass.IsGenericType)
                         return (interfaceNode, model);

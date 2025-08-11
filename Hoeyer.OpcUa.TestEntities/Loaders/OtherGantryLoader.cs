@@ -2,7 +2,7 @@
 
 namespace Hoeyer.OpcUa.TestEntities.Loaders;
 
-public class OtherGantryLoader : IEntityLoader<OtherGantry>
+public class OtherGantryLoader : IAgentLoader<OtherGantry>
 {
     /// <inheritdoc />
     public ValueTask<OtherGantry> LoadCurrentState()

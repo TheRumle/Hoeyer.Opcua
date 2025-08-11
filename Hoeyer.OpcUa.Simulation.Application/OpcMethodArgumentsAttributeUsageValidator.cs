@@ -30,7 +30,7 @@ public sealed class OpcMethodArgumentsAttributeUsageValidator : IOpcMethodArgume
         if (method == null)
         {
             throw new SimulationConfigurationException(
-                $"The arguments type {argsName} does not point to a method on the entity {managed.BaseObject.BrowseName.Name}");
+                $"The arguments type {argsName} does not point to a method on the agent {managed.BaseObject.BrowseName.Name}");
         }
 
         return method;
@@ -41,20 +41,20 @@ public sealed class OpcMethodArgumentsAttributeUsageValidator : IOpcMethodArgume
         if (annotation is null)
         {
             throw new SimulationConfigurationException(
-                $"The type '{argsName}' must be annotated with {nameof(IOpcMethodArgumentsAttribute)}. If you are creating a simulation for a method from an interface annotated with {nameof(OpcUaEntityMethodsAttribute<object>)}, then use the generated method args: XXXArgs.");
+                $"The type '{argsName}' must be annotated with {nameof(IOpcMethodArgumentsAttribute)}. If you are creating a simulation for a method from an interface annotated with {nameof(OpcUaAgentMethodsAttribute<object>)}, then use the generated method args: XXXArgs.");
         }
 
         var methods = node.Methods.Where(e => e.BrowseName.Name == annotation.MethodName).ToArray();
         if (methods.Length > 1)
         {
             throw new SimulationConfigurationException(
-                $"Multiple methods matched BrowseName {annotation.MethodName} on entity {annotation.Entity.Name}");
+                $"Multiple methods matched BrowseName {annotation.MethodName} on agent {annotation.Agent.Name}");
         }
 
         if (methods.Length == 0)
         {
             throw new SimulationConfigurationException(
-                $"No method matched BrowseName {annotation.MethodName} on entity {annotation.Entity.Name}");
+                $"No method matched BrowseName {annotation.MethodName} on agent {annotation.Agent.Name}");
         }
     }
 }

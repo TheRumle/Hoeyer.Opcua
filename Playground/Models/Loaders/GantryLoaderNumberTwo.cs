@@ -2,7 +2,7 @@
 
 namespace Playground.Models.Loaders;
 
-public class GantryLoaderNumberTwo : IEntityLoader<GantryNumberTwo>
+public class GantryLoaderNumberTwo : IAgentLoader<GantryNumberTwo>
 {
     /// <inheritdoc />
     public ValueTask<GantryNumberTwo> LoadCurrentState()

@@ -18,33 +18,33 @@ namespace Hoeyer.OpcUa.EndToEndTest;
 public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFixture serverFixture)
 {
     [Test]
-    public async Task EntityBrowser_IsRegistered()
-        => await AssertNumberEntitiesMatchesNumberServices(serverFixture.Services, typeof(IEntityBrowser<>));
+    public async Task AgentBrowser_IsRegistered()
+        => await AssertNumberEntitiesMatchesNumberServices(serverFixture.Services, typeof(IAgentBrowser<>));
 
     [Test]
-    public async Task EntityTranslator_IsRegistered()
-        => await AssertNumberEntitiesMatchesNumberServices(serverFixture.Services, typeof(IEntityTranslator<>));
+    public async Task AgentTranslator_IsRegistered()
+        => await AssertNumberEntitiesMatchesNumberServices(serverFixture.Services, typeof(IAgentTranslator<>));
 
 
     [Test]
-    public async Task EntityInitializer_IsRegistered()
+    public async Task AgentInitializer_IsRegistered()
         => await AssertNumberEntitiesMatchesNumberServices(serverFixture.Services,
             typeof(IManagedAgentSingletonFactory<>));
 
 
     [Test]
-    public async Task EntityMonitor_IsRegistered()
+    public async Task AgentMonitor_IsRegistered()
         => await AssertNumberEntitiesMatchesNumberServices(serverFixture.Services,
-            typeof(IEntitySubscriptionManager<>));
+            typeof(IAgentSubscriptionManager<>));
 
 
     [Test]
     [ServiceCollectionDataSource]
-    [TestSubject(typeof(IEntitySubscriptionManager<>))]
-    public async Task EntityMonitor_IsOnlyRegisteredAsSingleton(IServiceCollection descriptors)
+    [TestSubject(typeof(IAgentSubscriptionManager<>))]
+    public async Task AgentMonitor_IsOnlyRegisteredAsSingleton(IServiceCollection descriptors)
     {
         IEnumerable<ServiceDescriptor> services =
-            await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IEntitySubscriptionManager<>));
+            await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IAgentSubscriptionManager<>));
         await Assert.That(services.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
     }
 
@@ -116,14 +116,14 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     [ServiceCollectionDataSource]
     [TestSubject(typeof(ServiceCollectionExtension))]
     [TestSubject(typeof(ServerSimulationAdapter))]
-    public async Task EntityStateChangedNotifier_IsRegisteredAs_ScopedIActionSimulationProcessor(
+    public async Task AgentStateChangedNotifier_IsRegisteredAs_ScopedIActionSimulationProcessor(
         IServiceCollection collection)
     {
         var foundDescriptor = collection.FirstOrDefault(e =>
             e is { Lifetime: ServiceLifetime.Scoped, ImplementationType: not null }
-            && e.ImplementationType.GetGenericTypeDefinition() != typeof(EntityStateChangedNotifier<>));
+            && e.ImplementationType.GetGenericTypeDefinition() != typeof(AgentStateChangedNotifier<>));
 
-        await Assert.That(foundDescriptor).IsNotNull().Because("Any " + nameof(EntityStateChangedNotifier<int>) +
+        await Assert.That(foundDescriptor).IsNotNull().Because("Any " + nameof(AgentStateChangedNotifier<int>) +
                                                                " should be registered as " +
                                                                typeof(IStateChangeSimulationProcessor<>).Name);
     }
@@ -137,11 +137,11 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
                 serviceType.IsConstructedGenericType && serviceType.GetGenericTypeDefinition() == wantedType
             : serviceType => serviceType.IsAssignableFrom(wantedType);
 
-        await Assert.That(OpcUaEntityTypes.Entities.Count).IsNotZero()
+        await Assert.That(OpcUaAgentTypes.Entities.Count).IsNotZero()
             .Because(" there must be entities for services to be generated");
         var services = collection.Where(e => typeFilter.Invoke(e.ServiceType)).ToList();
         await Assert.That(services).IsNotEmpty().Because(" there should be at least one service registered");
-        await Assert.That(services.Count).IsEqualTo(OpcUaEntityTypes.Entities.Count);
+        await Assert.That(services.Count).IsEqualTo(OpcUaAgentTypes.Entities.Count);
         return services;
     }
 }

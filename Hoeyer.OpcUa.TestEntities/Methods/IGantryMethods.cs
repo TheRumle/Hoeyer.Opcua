@@ -2,7 +2,7 @@
 
 namespace Hoeyer.OpcUa.TestEntities.Methods;
 
-[OpcUaEntityMethods<Gantry>]
+[OpcUaAgentMethods<Gantry>]
 public interface IGantryMethods
 {
     Task ChangePosition(Position position);

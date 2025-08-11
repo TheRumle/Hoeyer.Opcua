@@ -8,15 +8,15 @@ using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
 
 namespace Hoeyer.OpcUa.Simulation.Configuration;
 
-internal sealed class SimulationBuilder<TEntity, TArguments> : ISimulationBuilder<TEntity, TArguments>
+internal sealed class SimulationBuilder<TAgent, TArguments> : ISimulationBuilder<TAgent, TArguments>
 {
     private readonly
-        CompositeActionSimulationBuilder<TEntity, TArguments, SimulationBuilder<TEntity, TArguments>>
+        CompositeActionSimulationBuilder<TAgent, TArguments, SimulationBuilder<TAgent, TArguments>>
         _commonOperations;
 
     private readonly Queue<ISimulationStep> _simulationSteps;
 
-    public SimulationBuilder(IEntityTranslator<TEntity> translator)
+    public SimulationBuilder(IAgentTranslator<TAgent> translator)
     {
         _simulationSteps = new Queue<ISimulationStep>();
         _commonOperations = new(this, translator, _simulationSteps);
@@ -24,30 +24,30 @@ internal sealed class SimulationBuilder<TEntity, TArguments> : ISimulationBuilde
 
     public IEnumerable<ISimulationStep> Build() => _simulationSteps.ToArray();
 
-    public ISimulationBuilder<TEntity, TArguments> ChangeState(
-        Action<SimulationStepContext<TEntity, TArguments>> stateChange) => _commonOperations.ChangeState(stateChange);
+    public ISimulationBuilder<TAgent, TArguments> ChangeState(
+        Action<SimulationStepContext<TAgent, TArguments>> stateChange) => _commonOperations.ChangeState(stateChange);
 
-    public ISimulationBuilder<TEntity, TArguments> ChangeStateAsync(
-        Func<SimulationStepContext<TEntity, TArguments>, ValueTask> stateChange) =>
+    public ISimulationBuilder<TAgent, TArguments> ChangeStateAsync(
+        Func<SimulationStepContext<TAgent, TArguments>, ValueTask> stateChange) =>
         _commonOperations.ChangeStateAsync(stateChange);
 
-    public ISimulationBuilder<TEntity, TArguments> SideEffect(
-        Action<SimulationStepContext<TEntity, TArguments>> sideEffect) => _commonOperations.SideEffect(sideEffect);
+    public ISimulationBuilder<TAgent, TArguments> SideEffect(
+        Action<SimulationStepContext<TAgent, TArguments>> sideEffect) => _commonOperations.SideEffect(sideEffect);
 
-    public ISimulationBuilder<TEntity, TArguments> Wait(TimeSpan timeSpan) => _commonOperations.Wait(timeSpan);
+    public ISimulationBuilder<TAgent, TArguments> Wait(TimeSpan timeSpan) => _commonOperations.Wait(timeSpan);
 }
 
 internal sealed class
-    SimulationBuilder<TEntity, TArguments, TReturn> : ISimulationBuilder<TEntity, TArguments, TReturn>
+    SimulationBuilder<TAgent, TArguments, TReturn> : ISimulationBuilder<TAgent, TArguments, TReturn>
 {
-    private readonly CompositeActionSimulationBuilder<TEntity, TArguments,
-            ISimulationBuilder<TEntity, TArguments, TReturn>>
+    private readonly CompositeActionSimulationBuilder<TAgent, TArguments,
+            ISimulationBuilder<TAgent, TArguments, TReturn>>
         _commonOperations;
 
     private readonly Queue<ISimulationStep> _simulationSteps = new();
-    private readonly IEntityTranslator<TEntity> _translator;
+    private readonly IAgentTranslator<TAgent> _translator;
 
-    public SimulationBuilder(IEntityTranslator<TEntity> translator)
+    public SimulationBuilder(IAgentTranslator<TAgent> translator)
     {
         this._translator = translator;
         _commonOperations = new(this, translator, _simulationSteps);
@@ -55,24 +55,24 @@ internal sealed class
 
 
     public IEnumerable<ISimulationStep> WithReturnValue(
-        Func<SimulationStepContext<TEntity, TArguments>, TReturn> returnValueFactory)
+        Func<SimulationStepContext<TAgent, TArguments>, TReturn> returnValueFactory)
     {
         _simulationSteps.Enqueue(
-            new ReturnValueStep<TEntity, TArguments, TReturn>(returnValueFactory, _translator.Copy));
+            new ReturnValueStep<TAgent, TArguments, TReturn>(returnValueFactory, _translator.Copy));
         return _simulationSteps.ToArray();
     }
 
-    public ISimulationBuilder<TEntity, TArguments, TReturn> ChangeState(
-        Action<SimulationStepContext<TEntity, TArguments>> stateChange) => _commonOperations.ChangeState(stateChange);
+    public ISimulationBuilder<TAgent, TArguments, TReturn> ChangeState(
+        Action<SimulationStepContext<TAgent, TArguments>> stateChange) => _commonOperations.ChangeState(stateChange);
 
-    public ISimulationBuilder<TEntity, TArguments, TReturn> ChangeStateAsync(
-        Func<SimulationStepContext<TEntity, TArguments>, ValueTask> stateChange) =>
+    public ISimulationBuilder<TAgent, TArguments, TReturn> ChangeStateAsync(
+        Func<SimulationStepContext<TAgent, TArguments>, ValueTask> stateChange) =>
         _commonOperations.ChangeStateAsync(stateChange);
 
-    public ISimulationBuilder<TEntity, TArguments, TReturn> SideEffect(
-        Action<SimulationStepContext<TEntity, TArguments>> sideEffect) => _commonOperations.SideEffect(sideEffect);
+    public ISimulationBuilder<TAgent, TArguments, TReturn> SideEffect(
+        Action<SimulationStepContext<TAgent, TArguments>> sideEffect) => _commonOperations.SideEffect(sideEffect);
 
-    public ISimulationBuilder<TEntity, TArguments, TReturn> Wait(TimeSpan timeSpan) =>
+    public ISimulationBuilder<TAgent, TArguments, TReturn> Wait(TimeSpan timeSpan) =>
         _commonOperations.Wait(timeSpan);
 
     public IEnumerable<ISimulationStep> Build() => _simulationSteps.ToList();

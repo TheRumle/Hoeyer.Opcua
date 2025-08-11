@@ -13,16 +13,16 @@ public sealed class OpcUaServerServiceFixture
     {
         ReservedPort reservedPort = new();
         var services = new ServiceCollection();
-        OnGoingOpcEntityServiceRegistration = services.AddLogging(c => c.SetMinimumLevel(LogLevel.Warning))
+        OnGoingOpcAgentServiceRegistration = services.AddLogging(c => c.SetMinimumLevel(LogLevel.Warning))
             .AddOpcUaServerConfiguration(conf => conf
                 .WithServerId("MyServer")
                 .WithServerName("My Server")
                 .WithHttpsHost("localhost", reservedPort.Port)
                 .WithEndpoints([$"opc.tcp://localhost:{reservedPort.Port}"])
                 .Build())
-            .WithEntityServices()
+            .WithAgentServices()
             .WithOpcUaServer();
     }
 
-    public OnGoingOpcEntityServiceRegistration OnGoingOpcEntityServiceRegistration { get; set; }
+    public OnGoingOpcAgentServiceRegistration OnGoingOpcAgentServiceRegistration { get; set; }
 }

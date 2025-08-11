@@ -6,30 +6,30 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Core.Services.OpcUaServices;
 
-public static class OpcUaEntityServicesLoader
+public static class OpcUaAgentServicesLoader
 {
-    private static readonly Lazy<ImmutableHashSet<EntityServiceInfo>> Services = new(() => OpcUaEntityTypes
+    private static readonly Lazy<ImmutableHashSet<AgentServiceInfo>> Services = new(() => OpcUaAgentTypes
         .GenericServices
-        .Union(OpcUaEntityTypes.NonGenericServices)
-        .Union(OpcUaEntityTypes.BehaviourImplementations)
+        .Union(OpcUaAgentTypes.NonGenericServices)
+        .Union(OpcUaAgentTypes.BehaviourImplementations)
         .ToImmutableHashSet());
 
-    public static List<OpcUaEntityServiceConfigurationException> AddEntityServices(this IServiceCollection services)
+    public static List<OpcUaAgentServiceConfigurationException> AddAgentServices(this IServiceCollection services)
     {
-        List<OpcUaEntityServiceConfigurationException> errs = [];
+        List<OpcUaAgentServiceConfigurationException> errs = [];
         foreach (var service in Services.Value)
         {
             try
             {
                 service.AddToCollection(services);
             }
-            catch (OpcUaEntityServiceConfigurationException ex)
+            catch (OpcUaAgentServiceConfigurationException ex)
             {
                 errs.Add(ex);
             }
             catch (Exception e)
             {
-                errs.Add(new OpcUaEntityServiceConfigurationException(e.Message));
+                errs.Add(new OpcUaAgentServiceConfigurationException(e.Message));
             }
         }
 

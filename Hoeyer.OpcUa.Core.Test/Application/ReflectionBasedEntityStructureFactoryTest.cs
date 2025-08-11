@@ -5,18 +5,18 @@ using JetBrains.Annotations;
 
 namespace Hoeyer.OpcUa.Core.Test.Application;
 
-[TestSubject(typeof(ReflectionBasedEntityStructureFactory<>))]
+[TestSubject(typeof(ReflectionBasedAgentStructureFactory<>))]
 [TestSubject(typeof(IAgentStructureFactory<>))]
-public sealed class ReflectionBasedEntityStructureFactoryTest
+public sealed class ReflectionBasedAgentStructureFactoryTest
 {
-    private readonly Type _entityType = typeof(AllPropertyTypesEntity);
-    private readonly ReflectionBasedEntityStructureFactory<AllPropertyTypesEntity> _testSubject = new();
+    private readonly Type _agentType = typeof(AllPropertyTypesAgent);
+    private readonly ReflectionBasedAgentStructureFactory<AllPropertyTypesAgent> _testSubject = new();
 
     [Test]
     public async Task BaseObjectNameMatchesTypeName()
     {
         var result = _testSubject.Create(2).BaseObject;
-        await Assert.That(result.BrowseName.Name).IsEqualTo(nameof(AllPropertyTypesEntity));
+        await Assert.That(result.BrowseName.Name).IsEqualTo(nameof(AllPropertyTypesAgent));
     }
 
     [Test]
@@ -24,7 +24,7 @@ public sealed class ReflectionBasedEntityStructureFactoryTest
     {
         var nodePropertyNames = _testSubject.Create(2).PropertyByBrowseName.Keys;
 
-        var subjectPropertyNames = _entityType.GetProperties().Select(e => e.Name).ToHashSet();
+        var subjectPropertyNames = _agentType.GetProperties().Select(e => e.Name).ToHashSet();
         using (Assert.Multiple())
         {
             foreach (var name in nodePropertyNames)

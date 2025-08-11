@@ -2,7 +2,7 @@
 
 namespace Playground.Models.Loaders;
 
-public sealed class MyLittleRobotLoader : IEntityLoader<MyLittleRobot>
+public sealed class MyLittleRobotLoader : IAgentLoader<MyLittleRobot>
 {
     public ValueTask<MyLittleRobot> LoadCurrentState()
     {

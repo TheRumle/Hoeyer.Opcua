@@ -14,42 +14,42 @@ namespace Hoeyer.OpcUa.Server.Services;
 
 public static class ServiceExtensions
 {
-    public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServer(
-        this OnGoingOpcEntityServiceRegistration serviceRegistration,
+    public static OnGoingOpcAgentServerServiceRegistration WithOpcUaServer(
+        this OnGoingOpcAgentServiceRegistration serviceRegistration,
         Action<ServerConfiguration>? additionalConfiguration = null)
     {
         IServiceCollection collection = serviceRegistration.Collection;
 
-        collection.AddSingleton<OpcUaEntityServerSetup>(p =>
+        collection.AddSingleton<OpcUaAgentServerSetup>(p =>
         {
-            var standardConfig = p.GetService<IOpcUaEntityServerInfo>();
+            var standardConfig = p.GetService<IOpcUaAgentServerInfo>();
             if (standardConfig == null)
             {
                 throw new InvalidOperationException(
-                    $"No {nameof(IOpcUaEntityServerInfo)} has been registered! This should be prevented using builder pattern. Are you using the library as intended and using the {nameof(Core.Services.Services.AddOpcUaServerConfiguration)} {nameof(IServiceCollection)} extension method?");
+                    $"No {nameof(IOpcUaAgentServerInfo)} has been registered! This should be prevented using builder pattern. Are you using the library as intended and using the {nameof(Core.Services.Services.AddOpcUaServerConfiguration)} {nameof(IServiceCollection)} extension method?");
             }
 
-            return new OpcUaEntityServerSetup(standardConfig, additionalConfiguration ?? (value => { }));
+            return new OpcUaAgentServerSetup(standardConfig, additionalConfiguration ?? (value => { }));
         });
 
 
         collection.AddSingleton<IAgentAccessConfigurator, NoAccessRestrictionsConfigurator>();
-        collection.AddSingleton<EntityServerStartedMarker>();
-        collection.AddSingleton<OpcUaEntityServerFactory>();
-        collection.AddSingleton<OpcEntityServer>();
-        collection.AddSingleton<IStartableEntityServer>(p =>
+        collection.AddSingleton<AgentServerStartedMarker>();
+        collection.AddSingleton<OpcUaAgentServerFactory>();
+        collection.AddSingleton<OpcAgentServer>();
+        collection.AddSingleton<IStartableAgentServer>(p =>
         {
-            var factory = p.GetRequiredService<OpcUaEntityServerFactory>();
+            var factory = p.GetRequiredService<OpcUaAgentServerFactory>();
             return factory.CreateServer();
         });
         AddLoaders(serviceRegistration.Collection);
 
 
-        return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
+        return new OnGoingOpcAgentServerServiceRegistration(serviceRegistration.Collection);
     }
 
-    public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServerAsBackgroundService(
-        this OnGoingOpcEntityServiceRegistration serviceRegistration,
+    public static OnGoingOpcAgentServerServiceRegistration WithOpcUaServerAsBackgroundService(
+        this OnGoingOpcAgentServiceRegistration serviceRegistration,
         Action<ServerConfiguration>? additionalConfiguration = null)
     {
         var serverConfig = serviceRegistration.WithOpcUaServer(additionalConfiguration);
@@ -57,16 +57,16 @@ public static class ServiceExtensions
         return serverConfig;
     }
 
-    public static OpcUaEntityServerSetup WithAdditionalServerConfiguration(IOpcUaEntityServerInfo setup,
+    public static OpcUaAgentServerSetup WithAdditionalServerConfiguration(IOpcUaAgentServerInfo setup,
         Action<ServerConfiguration> additionalConfiguration)
     {
-        return new OpcUaEntityServerSetup(setup, additionalConfiguration);
+        return new OpcUaAgentServerSetup(setup, additionalConfiguration);
     }
 
     private static void AddLoaders(IServiceCollection collection)
     {
-        Type loaderType = typeof(IEntityLoader<>);
-        IEnumerable<(Type Service, Type Implementation)> loaders = OpcUaEntityTypes
+        Type loaderType = typeof(IAgentLoader<>);
+        IEnumerable<(Type Service, Type Implementation)> loaders = OpcUaAgentTypes
             .TypesFromReferencingAssemblies
             .Select(type =>
             {

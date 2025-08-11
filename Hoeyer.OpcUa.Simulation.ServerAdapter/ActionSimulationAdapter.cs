@@ -8,12 +8,12 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter;
 
-internal sealed class ActionSimulationAdapter<TEntity, TMethodArgs>(
-    IAdaptionContextTranslator<(IList<object>, IManagedAgent), TEntity, TMethodArgs> contextTranslator,
-    ISimulationOrchestrator<TEntity, TMethodArgs> orchestrator,
+internal sealed class ActionSimulationAdapter<TAgent, TMethodArgs>(
+    IAdaptionContextTranslator<(IList<object>, IManagedAgent), TAgent, TMethodArgs> contextTranslator,
+    ISimulationOrchestrator<TAgent, TMethodArgs> orchestrator,
     ISimulationExecutorErrorHandler errorHandler,
     IOpcMethodArgumentsAttributeUsageValidator argsTypeAnnotationValidator)
-    : INodeConfigurator<TEntity>
+    : INodeConfigurator<TAgent>
 {
     public void Configure(IManagedAgent managed, ISystemContext context)
     {

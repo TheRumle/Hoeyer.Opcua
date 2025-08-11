@@ -4,7 +4,7 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Api.Monitoring;
 
-public sealed class MonitoredEntityItem(MonitoredItem inner) : MonitoredItem(inner), IDisposable
+public sealed class MonitoredAgentItem(MonitoredItem inner) : MonitoredItem(inner), IDisposable
 {
     private readonly List<MonitoredItemNotificationEventHandler> _subscribers = new();
 

@@ -3,4 +3,4 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Client.Api.Browsing;
 
-public record struct EntityReadResult(Node Node, IEnumerable<ReferenceDescription> Children);
+public record struct AgentReadResult(Node Node, IEnumerable<ReferenceDescription> Children);

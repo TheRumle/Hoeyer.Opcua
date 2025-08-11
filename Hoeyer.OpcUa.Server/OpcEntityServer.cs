@@ -15,15 +15,15 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server;
 
-internal sealed class OpcEntityServer(
-    IOpcUaEntityServerInfo applicationProductDetails,
-    IEnumerable<IAgentManagerFactory> entityManagerFactories,
-    ILogger<OpcEntityServer> logger)
+internal sealed class OpcAgentServer(
+    IOpcUaAgentServerInfo applicationProductDetails,
+    IEnumerable<IAgentManagerFactory> agentManagerFactories,
+    ILogger<OpcAgentServer> logger)
     : StandardServer
 {
     private static readonly DateTime buildDate = DateTime.UtcNow;
     public readonly IEnumerable<Uri> EndPoints = [..applicationProductDetails.Endpoints];
-    public readonly IOpcUaEntityServerInfo ServerInfo = applicationProductDetails;
+    public readonly IOpcUaAgentServerInfo ServerInfo = applicationProductDetails;
 
     private bool _disposed;
 
@@ -42,8 +42,8 @@ internal sealed class OpcEntityServer(
     {
         return logger.Try(() =>
         {
-            Task<IAgentManager>[] managerCreationTasks = entityManagerFactories
-                .Select(async factory => await factory.CreateEntityManager(server))
+            Task<IAgentManager>[] managerCreationTasks = agentManagerFactories
+                .Select(async factory => await factory.CreateAgentManager(server))
                 .ToArray();
 
             Task.WhenAll(managerCreationTasks).Wait();
@@ -61,7 +61,7 @@ internal sealed class OpcEntityServer(
     /// <inheritdoc />
     public override ResponseHeader ActivateSession(RequestHeader requestHeader, SignatureData clientSignature,
         SignedSoftwareCertificateCollection clientSoftwareCertificates, StringCollection localeIds,
-        ExtensionObject userIdentityToken, SignatureData userTokenSignature, out byte[] serverNonce,
+        ExtensionObject userIdagentToken, SignatureData userTokenSignature, out byte[] serverNonce,
         out StatusCodeCollection results, out DiagnosticInfoCollection diagnosticInfos)
     {
         try
@@ -70,12 +70,12 @@ internal sealed class OpcEntityServer(
                    {
                        ClientSignature = clientSignature.Signature,
                        UserTokenSignature = userTokenSignature.Signature,
-                       UserIdentityToken = userIdentityToken.Body,
+                       UserIdagentToken = userIdagentToken.Body,
                        RequestHeader = requestHeader.ToLoggingObject(),
                    }))
             {
                 var header = base.ActivateSession(requestHeader, clientSignature, clientSoftwareCertificates, localeIds,
-                    userIdentityToken, userTokenSignature, out serverNonce, out results, out diagnosticInfos);
+                    userIdagentToken, userTokenSignature, out serverNonce, out results, out diagnosticInfos);
                 return LogResponseHeader(header, diagnosticInfos)!;
             }
         }
@@ -128,8 +128,8 @@ internal sealed class OpcEntityServer(
         }
         catch (Exception e)
         {
-            logger.LogCritical(e, " A critical error occured when trying to start the OpcEntityServer.");
-            throw new OpcUaEntityServiceConfigurationException([e]);
+            logger.LogCritical(e, " A critical error occured when trying to start the OpcAgentServer.");
+            throw new OpcUaAgentServiceConfigurationException([e]);
         }
     }
 

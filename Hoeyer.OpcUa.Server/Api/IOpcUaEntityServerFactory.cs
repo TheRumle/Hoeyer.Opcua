@@ -1,6 +1,6 @@
 ﻿namespace Hoeyer.OpcUa.Server.Api;
 
-public interface IOpcUaEntityServerFactory
+public interface IOpcUaAgentServerFactory
 {
-    IStartableEntityServer CreateServer();
+    IStartableAgentServer CreateServer();
 }

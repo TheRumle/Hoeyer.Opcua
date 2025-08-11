@@ -7,6 +7,6 @@ public class OpcUaClientServicesFixture : OpcUaCoreServicesFixture
 {
     public OpcUaClientServicesFixture()
     {
-        OnGoingOpcEntityServiceRegistration.WithOpcUaClientServices();
+        OnGoingOpcAgentServiceRegistration.WithOpcUaClientServices();
     }
 }

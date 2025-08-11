@@ -4,32 +4,32 @@ using System.Linq;
 
 namespace Hoeyer.OpcUa.Core.Services.OpcUaServices;
 
-public class OpcUaEntityServiceConfigurationException(string message) : Exception(message)
+public class OpcUaAgentServiceConfigurationException(string message) : Exception(message)
 {
-    public OpcUaEntityServiceConfigurationException(
-        IEnumerable<OpcUaEntityServiceConfigurationException> configurationExceptions) :
+    public OpcUaAgentServiceConfigurationException(
+        IEnumerable<OpcUaAgentServiceConfigurationException> configurationExceptions) :
         this(
             string.Join("\n", configurationExceptions.Select(e => e.Message)))
     {
     }
 
-    public OpcUaEntityServiceConfigurationException(
+    public OpcUaAgentServiceConfigurationException(
         IEnumerable<Exception> configurationExceptions) :
         this(string.Join("\n", configurationExceptions.Select(e => e.Message)))
     {
     }
 
 
-    public OpcUaEntityServiceConfigurationException(
-        params OpcUaEntityServiceConfigurationException[] configurationExceptions) :
+    public OpcUaAgentServiceConfigurationException(
+        params OpcUaAgentServiceConfigurationException[] configurationExceptions) :
         this(string.Join("\n", configurationExceptions.Select(e => e.Message)))
     {
     }
 
-    public static OpcUaEntityServiceConfigurationException ServiceNotConfigured(Type entity, Type service)
+    public static OpcUaAgentServiceConfigurationException ServiceNotConfigured(Type agent, Type service)
     {
         var missingService = service.IsGenericType ? service.GetGenericTypeDefinition().Name : service.Name;
-        return new OpcUaEntityServiceConfigurationException(
-            $"The Entity {entity.Name} does not have any {missingService} configured!");
+        return new OpcUaAgentServiceConfigurationException(
+            $"The Agent {agent.Name} does not have any {missingService} configured!");
     }
 }

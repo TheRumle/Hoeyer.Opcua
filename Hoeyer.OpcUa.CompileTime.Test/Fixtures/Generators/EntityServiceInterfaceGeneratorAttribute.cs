@@ -1,12 +1,12 @@
 ﻿using Hoeyer.Common.Extensions.Collection;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
+using Hoeyer.OpcUa.CompileTime.Test.Fixtures.AgentDefinitions;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;
 
-public sealed class EntityServiceInterfaceGeneratorAttribute : DataSourceGeneratorAttribute<ServiceInterfaceSourceCode>
+public sealed class AgentServiceInterfaceGeneratorAttribute : DataSourceGeneratorAttribute<ServiceInterfaceSourceCode>
 {
     protected override IEnumerable<Func<ServiceInterfaceSourceCode>> GenerateDataSources(
         DataGeneratorMetadata dataGeneratorMetadata)
-        => EntitySourceCodeDefinitions.ValidEntities.SelectMany(TestBehaviours.GetServiceInterfaceSourceCodeFor)
+        => AgentSourceCodeDefinitions.ValidEntities.SelectMany(TestBehaviours.GetServiceInterfaceSourceCodeFor)
             .SelectFunc();
 }

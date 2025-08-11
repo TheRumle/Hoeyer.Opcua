@@ -6,44 +6,44 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Api.Monitoring;
 
-public sealed class EntitySubscription : Subscription, IEntitySubscription
+public sealed class AgentSubscription : Subscription, IAgentSubscription
 {
-    private readonly List<MonitoredEntityItem> _entityItems = new();
+    private readonly List<MonitoredAgentItem> _agentItems = new();
     public readonly MonitoredItemNotificationEventHandler Callback;
 
-    public EntitySubscription(IEntitySession session,
+    public AgentSubscription(IAgentSession session,
         Action<MonitoredItem, MonitoredItemNotificationEventArgs> callback) : base(session.Session.DefaultSubscription)
     {
         Callback = new MonitoredItemNotificationEventHandler(callback);
     }
 
-    public EntitySubscription(IEntitySession session, MonitoredItemNotificationEventHandler callback) : base(
+    public AgentSubscription(IAgentSession session, MonitoredItemNotificationEventHandler callback) : base(
         session.Session.DefaultSubscription)
     {
         Callback = callback;
     }
 
-    public IReadOnlyList<MonitoredEntityItem> EntityItems => _entityItems.AsReadOnly();
+    public IReadOnlyList<MonitoredAgentItem> AgentItems => _agentItems.AsReadOnly();
 
-    public void AddEntityItem(MonitoredEntityItem item)
+    public void AddAgentItem(MonitoredAgentItem item)
     {
         AddItem(item);
-        _entityItems.Add(item);
+        _agentItems.Add(item);
         item.Notification += Callback;
     }
 
-    public void AddEntityItems(IEnumerable<MonitoredEntityItem> items)
+    public void AddAgentItems(IEnumerable<MonitoredAgentItem> items)
     {
-        foreach (MonitoredEntityItem? item in items)
+        foreach (MonitoredAgentItem? item in items)
         {
-            AddEntityItem(item);
+            AddAgentItem(item);
         }
     }
 
-    public void RemoveEntityItem(MonitoredEntityItem item)
+    public void RemoveAgentItem(MonitoredAgentItem item)
     {
         RemoveItem(item);
-        _entityItems.Remove(item);
+        _agentItems.Remove(item);
         item.Notification -= Callback;
     }
 

@@ -10,8 +10,8 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Hoeyer.OpcUa.CompileTime.Analysis;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class EntityAnalyzer() : ConcurrentAnalyzer([
-    Rules.OpcUaEntityMemberNotSupported,
+public sealed class AgentAnalyzer() : ConcurrentAnalyzer([
+    Rules.OpcUaAgentMemberNotSupported,
     Rules.MustBeSupportedOpcUaType,
     Rules.MustHavePublicSetter,
     Rules.MustNotBeNullablePropertyDescriptor
@@ -27,7 +27,7 @@ public sealed class EntityAnalyzer() : ConcurrentAnalyzer([
     private static void AnalyzeSupportedMembers(SyntaxNodeAnalysisContext context)
     {
         if (context.Node is not TypeDeclarationSyntax typeSyntax ||
-            !typeSyntax.IsAnnotatedAsOpcUaEntity(context.SemanticModel))
+            !typeSyntax.IsAnnotatedAsOpcUaAgent(context.SemanticModel))
         {
             return;
         }
@@ -60,7 +60,7 @@ public sealed class EntityAnalyzer() : ConcurrentAnalyzer([
         var errors = unsupportedMembers
             .Select(e => e.GetIdentifierText())
             .Select(e => Diagnostic.Create(
-                Rules.OpcUaEntityMemberNotSupported,
+                Rules.OpcUaAgentMemberNotSupported,
                 e.location
             ))
             .Concat(GetTypeViolations(context, supportedMembers))

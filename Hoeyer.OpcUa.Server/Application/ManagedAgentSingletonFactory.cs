@@ -9,11 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-[OpcUaEntityService(typeof(IManagedAgentSingletonFactory<>), ServiceLifetime.Singleton)]
+[OpcUaAgentService(typeof(IManagedAgentSingletonFactory<>), ServiceLifetime.Singleton)]
 internal sealed class ManagedAgentSingletonFactory<T>(
-    IOpcUaEntityServerInfo info,
-    IEntityLoader<T> value,
-    IEntityTranslator<T> translator,
+    IOpcUaAgentServerInfo info,
+    IAgentLoader<T> value,
+    IAgentTranslator<T> translator,
     IAgentStructureFactory<T> structureFactory) : IManagedAgentSingletonFactory<T>
 {
     private IManagedAgent<T>? _node;
@@ -26,9 +26,9 @@ internal sealed class ManagedAgentSingletonFactory<T>(
         var @namespace = info.Host + $"/{typeof(T).Name}";
         var namespaceIndex = namespaceToIndex.Invoke(@namespace);
 
-        var entity = await value.LoadCurrentState();
+        var agent = await value.LoadCurrentState();
         var nodeRepresentation = structureFactory.Create(namespaceIndex);
-        translator.AssignToNode(entity, nodeRepresentation);
+        translator.AssignToNode(agent, nodeRepresentation);
         _node = new ManagedAgent<T>(nodeRepresentation, @namespace, namespaceIndex);
         return _node;
     }
@@ -39,7 +39,7 @@ internal sealed class ManagedAgentSingletonFactory<T>(
         if (_node == null)
         {
             throw new AgentProviderException(typeof(T),
-                $"The node factory has not yet been provided with an namespace index used to construct the node. Have you awaited the {nameof(EntityServerStartedMarker)}?");
+                $"The node factory has not yet been provided with an namespace index used to construct the node. Have you awaited the {nameof(AgentServerStartedMarker)}?");
         }
 
         return _node;

@@ -1,6 +1,6 @@
-﻿namespace Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
+﻿namespace Hoeyer.OpcUa.Core.Configuration.AgentServerBuilder;
 
-public interface IEntityServerConfigurationBuildable
+public interface IAgentServerConfigurationBuildable
 {
-    IOpcUaEntityServerInfo Build();
+    IOpcUaAgentServerInfo Build();
 }

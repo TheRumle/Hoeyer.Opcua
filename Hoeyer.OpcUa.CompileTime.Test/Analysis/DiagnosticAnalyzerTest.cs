@@ -1,5 +1,5 @@
 ﻿using Hoeyer.OpcUa.CompileTime.Test.Drivers;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
+using Hoeyer.OpcUa.CompileTime.Test.Fixtures.AgentDefinitions;
 using Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -11,11 +11,11 @@ public abstract class DiagnosticAnalyzerTest<TAnalyzer> where TAnalyzer : Diagno
     protected AnalyzerTestDriver<DiagnosticAnalyzer> Driver => new(Analyzer, Console.WriteLine);
 
     [Test]
-    [ValidEntitySourceCodeGenerator]
-    [DisplayName("Does not report error for $entitySourceCode")]
-    public async Task GivenValidEntity_ShouldNotHaveDiagnostic(EntitySourceCode entitySourceCode)
+    [ValidAgentSourceCodeGenerator]
+    [DisplayName("Does not report error for $agentSourceCode")]
+    public async Task GivenValidAgent_ShouldNotHaveDiagnostic(AgentSourceCode agentSourceCode)
     {
-        var res = await Driver.RunAnalyzerOn(entitySourceCode);
+        var res = await Driver.RunAnalyzerOn(agentSourceCode);
         var diagnosticsReportedByAnalyzer =
             res.Diagnostics.Where(diagnostic => Analyzer.SupportedDiagnostics.Contains(diagnostic.Descriptor));
         await Assert.That(diagnosticsReportedByAnalyzer).IsEmpty()

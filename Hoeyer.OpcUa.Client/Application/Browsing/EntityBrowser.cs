@@ -19,32 +19,32 @@ using Opc.Ua.Client;
 namespace Hoeyer.OpcUa.Client.Application.Browsing;
 
 /// <summary>
-///     A client for browsing an entity - traverses the node tree from root using the <paramref name="traversalStrategy" />
-///     and until a match is found using <paramref name="identityMatcher" /> - the match is deemed to be the entity node.
+///     A client for browsing an agent - traverses the node tree from root using the <paramref name="traversalStrategy" />
+///     and until a match is found using <paramref name="idagentMatcher" /> - the match is deemed to be the agent node.
 ///     If the node has already been found previously, the tree is not traversed again.
 /// </summary>
 /// <param name="logger">A logger to log browse exceptions and diagnostics</param>
 /// <param name="traversalStrategy">A strategy for traversing the node tree</param>
-/// <param name="identityMatcher">True if the provided <see cref="ReferenceDescription" /> is a description for the entity</param>
-/// <typeparam name="TEntity">The entity the EntityBrowser is assigned to</typeparam>
-[OpcUaEntityService(typeof(IEntityBrowser<>))]
-public sealed class EntityBrowser<TEntity>(
-    ILogger<EntityBrowser<TEntity>> logger,
+/// <param name="idagentMatcher">True if the provided <see cref="ReferenceDescription" /> is a description for the agent</param>
+/// <typeparam name="TAgent">The agent the AgentBrowser is assigned to</typeparam>
+[OpcUaAgentService(typeof(IAgentBrowser<>))]
+public sealed class AgentBrowser<TAgent>(
+    ILogger<AgentBrowser<TAgent>> logger,
     INodeTreeTraverser traversalStrategy,
-    IEntitySessionFactory sessionFactory,
+    IAgentSessionFactory sessionFactory,
     INodeReader reader,
-    IAgentStructureFactory<TEntity> nodeStructureFactory,
-    EntityDescriptionMatcher<TEntity>? identityMatcher = null) : IEntityBrowser<TEntity>
+    IAgentStructureFactory<TAgent> nodeStructureFactory,
+    AgentDescriptionMatcher<TAgent>? idagentMatcher = null) : IAgentBrowser<TAgent>
 {
-    private static readonly string EntityName = typeof(TEntity).Name;
+    private static readonly string AgentName = typeof(TAgent).Name;
 
-    private readonly EntityDescriptionMatcher<TEntity> _identityMatcher
-        = identityMatcher ?? (n => EntityName.Equals(n.BrowseName.Name));
+    private readonly AgentDescriptionMatcher<TAgent> _idagentMatcher
+        = idagentMatcher ?? (n => AgentName.Equals(n.BrowseName.Name));
 
     private readonly Lazy<ISession>
-        _session = new(() => sessionFactory.GetSessionFor(typeof(TEntity).Name + "Browser").Session);
+        _session = new(() => sessionFactory.GetSessionFor(typeof(TAgent).Name + "Browser").Session);
 
-    private Node? _entityRoot;
+    private Node? _agentRoot;
     private ISession Session => _session.Value;
 
     public (IAgent node, DateTime timeLoaded)? LastState { get; private set; }
@@ -52,8 +52,8 @@ public sealed class EntityBrowser<TEntity>(
     /// <inheritdoc />
     public async Task<IAgent> BrowseAgent(CancellationToken cancellationToken = default)
     {
-        ReadResult values = await ReadEntity(cancellationToken);
-        return await ParseToEntity(Session, cancellationToken, values);
+        ReadResult values = await ReadAgent(cancellationToken);
+        return await ParseToAgent(Session, cancellationToken, values);
     }
 
     public async ValueTask<AgentStructure> GetNodeStructure(CancellationToken token = default) =>
@@ -61,7 +61,7 @@ public sealed class EntityBrowser<TEntity>(
             ? LastState.Value.node.ToStructureOnly()
             : await BrowseAgent(token).ThenAsync(e => e.ToStructureOnly());
 
-    private async Task<IAgent> ParseToEntity(ISession session, CancellationToken cancellationToken,
+    private async Task<IAgent> ParseToAgent(ISession session, CancellationToken cancellationToken,
         ReadResult values)
     {
         List<VariableNode> variables = await reader
@@ -76,7 +76,7 @@ public sealed class EntityBrowser<TEntity>(
 
     private IAgent AssignReadValues(List<VariableNode> variables)
     {
-        var index = _entityRoot!.NodeId.NamespaceIndex;
+        var index = _agentRoot!.NodeId.NamespaceIndex;
         var structure = nodeStructureFactory.Create(index);
         foreach (PropertyState? state in structure.PropertyStates)
         {
@@ -92,28 +92,28 @@ public sealed class EntityBrowser<TEntity>(
         return structure;
     }
 
-    private async Task<ReadResult> ReadEntity(CancellationToken cancellationToken)
+    private async Task<ReadResult> ReadAgent(CancellationToken cancellationToken)
     {
         return await logger.LogWithScopeAsync(new
         {
             Session = Session.ToLoggingObject(),
-            Entity = EntityName
+            Agent = AgentName
         }, async () =>
         {
-            _entityRoot ??= await FindEntityRoot(cancellationToken);
+            _agentRoot ??= await FindAgentRoot(cancellationToken);
             IEnumerable<ReferenceWithId> descendants = await traversalStrategy
-                .TraverseFrom(_entityRoot.NodeId, Session, cancellationToken)
+                .TraverseFrom(_agentRoot.NodeId, Session, cancellationToken)
                 .Collect();
             return await reader.ReadNodesAsync(Session, descendants.Select(e => e.NodeId), ct: cancellationToken);
         });
     }
 
-    private async Task<Node> FindEntityRoot(CancellationToken cancellationToken = default)
+    private async Task<Node> FindAgentRoot(CancellationToken cancellationToken = default)
     {
         ReferenceWithId r = await traversalStrategy
             .TraverseUntil(Session,
                 ObjectIds.RootFolder,
-                _identityMatcher.Invoke,
+                _idagentMatcher.Invoke,
                 cancellationToken);
 
         return await reader.ReadNodeAsync(Session, r.NodeId, cancellationToken);

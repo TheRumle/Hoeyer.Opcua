@@ -5,14 +5,14 @@ using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
 namespace Hoeyer.OpcUa.Simulation.Api.Configuration;
 
 public interface
-    ISimulationBuilder<TEntity, TArguments>
-    : IComposedSimulationBuilder<TEntity, TArguments, ISimulationBuilder<TEntity, TArguments>>
+    ISimulationBuilder<TAgent, TArguments>
+    : IComposedSimulationBuilder<TAgent, TArguments, ISimulationBuilder<TAgent, TArguments>>
 {
     IEnumerable<ISimulationStep> Build();
 }
 
-public interface ISimulationBuilder<TEntity, TArguments, in TReturn>
-    : IComposedSimulationBuilder<TEntity, TArguments, ISimulationBuilder<TEntity, TArguments, TReturn>>
+public interface ISimulationBuilder<TAgent, TArguments, in TReturn>
+    : IComposedSimulationBuilder<TAgent, TArguments, ISimulationBuilder<TAgent, TArguments, TReturn>>
 {
     /// <summary>
     /// Finalize the simulation configuration by providing an expression used to compute the result of the method call
@@ -21,5 +21,5 @@ public interface ISimulationBuilder<TEntity, TArguments, in TReturn>
     /// <typeparam name="TReturn">The return value</typeparam>
     /// <returns>a sequence of ISimulationSteps that has been configured using the builder with the last element being a step containing the return value.</returns>
     IEnumerable<ISimulationStep> WithReturnValue(
-        Func<SimulationStepContext<TEntity, TArguments>, TReturn> returnValueFactory);
+        Func<SimulationStepContext<TAgent, TArguments>, TReturn> returnValueFactory);
 }

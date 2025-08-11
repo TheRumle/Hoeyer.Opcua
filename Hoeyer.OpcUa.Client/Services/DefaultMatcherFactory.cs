@@ -7,7 +7,7 @@ namespace Hoeyer.OpcUa.Client.Services;
 
 public static class DefaultMatcherFactory
 {
-    public static object CreateMatcher(Type entityType)
+    public static object CreateMatcher(Type agentType)
     {
         // (ReferenceDescription referenceDescription) =>
         ParameterExpression referenceParam = Expression.Parameter(typeof(ReferenceDescription), "referenceDescription");
@@ -19,16 +19,16 @@ public static class DefaultMatcherFactory
         // referenceDescription.BrowseName.Name
         MemberExpression nameProperty = Expression.Property(browseNameProperty, nameof(QualifiedName.Name));
 
-        // entityType.Name
-        ConstantExpression typeName = Expression.Constant(entityType.Name);
+        // agentType.Name
+        ConstantExpression typeName = Expression.Constant(agentType.Name);
 
-        // entityType.Name.Equals(referenceDescription.BrowseName.Name)
+        // agentType.Name.Equals(referenceDescription.BrowseName.Name)
         MethodCallExpression equalsCall = Expression.Call(typeName,
             typeof(string).GetMethod("Equals", new[] { typeof(string) }),
             nameProperty);
 
-        // Create the delegate type EntityDescriptionMatcher<TEntity>
-        Type delegateType = typeof(EntityDescriptionMatcher<>).MakeGenericType(entityType);
+        // Create the delegate type AgentDescriptionMatcher<TAgent>
+        Type delegateType = typeof(AgentDescriptionMatcher<>).MakeGenericType(agentType);
 
         // Create and return the lambda expression
         LambdaExpression lambda = Expression.Lambda(delegateType, equalsCall, referenceParam);

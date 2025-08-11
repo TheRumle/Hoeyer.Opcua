@@ -2,7 +2,7 @@
 
 namespace Playground.Models;
 
-[OpcUaEntity]
+[OpcUaAgent]
 public sealed class OtherGantry
 {
     public int OtherGantryIntValue { get; set; }

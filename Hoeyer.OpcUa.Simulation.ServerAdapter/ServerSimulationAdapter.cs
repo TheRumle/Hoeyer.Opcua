@@ -23,25 +23,25 @@ public sealed class ServerSimulationAdapter : ILayerAdapter<SimulationServicesCo
 
         ExtractInputArgumentTranslation(simulationServiceContainer);
 
-        foreach (var (entityType, methodArgs) in adaptionSource.ActionSimulationPatterns)
+        foreach (var (agentType, methodArgs) in adaptionSource.ActionSimulationPatterns)
         {
-            ExecuteLocalGenericRegistration(nameof(AdaptActionSimulationToTarget), [entityType, methodArgs],
+            ExecuteLocalGenericRegistration(nameof(AdaptActionSimulationToTarget), [agentType, methodArgs],
                 simulationServiceContainer, adaptionTarget);
         }
 
-        foreach (var (entityType, methodArgs, returnType) in adaptionSource.FunctionSimulationPatterns)
+        foreach (var (agentType, methodArgs, returnType) in adaptionSource.FunctionSimulationPatterns)
         {
             ExecuteLocalGenericRegistration(nameof(AdaptFunctionSimulationToTarget),
-                [entityType, methodArgs, returnType], simulationServiceContainer, adaptionTarget);
+                [agentType, methodArgs, returnType], simulationServiceContainer, adaptionTarget);
         }
     }
 
     private static void ExtractInputArgumentTranslation(SimulationServicesContainer simulationServiceContainer)
     {
-        var argTranslators = typeof(IEntityMethodArgTranslator<>)
+        var argTranslators = typeof(IAgentMethodArgTranslator<>)
             .GetTypesFromConsumingAssemblies()
             .Select(e => (Implementor: e,
-                translatorInterface: e.GetImplementedVersionOfGeneric(typeof(IEntityMethodArgTranslator<>))))
+                translatorInterface: e.GetImplementedVersionOfGeneric(typeof(IAgentMethodArgTranslator<>))))
             .Where(e => e.translatorInterface is not null)
             .Select(e => (ArgTranslatorImplementor: e.Implementor, ArgTranslatorInterface: e.translatorInterface,
                 ArgContainer: e.translatorInterface!.GenericTypeArguments[0]))
@@ -67,52 +67,52 @@ public sealed class ServerSimulationAdapter : ILayerAdapter<SimulationServicesCo
         info.MakeGenericMethod(generics).Invoke(null, arguments);
     }
 
-    private static void BuildSingletonAdapterInstance<TEntity>(
+    private static void BuildSingletonAdapterInstance<TAgent>(
         SimulationServicesContainer simulationServicesContainer, IServiceCollection targetCollection)
     {
-        simulationServicesContainer.AddSingleton<EntityStateChangedNotifier<TEntity>>();
-        simulationServicesContainer.AddSingleton<IStateChangeSimulationProcessor<TEntity>>(p =>
-            p.GetRequiredService<EntityStateChangedNotifier<TEntity>>());
-        simulationServicesContainer.AddSingleton<INodeConfigurator<TEntity>>(p =>
-            p.GetRequiredService<EntityStateChangedNotifier<TEntity>>());
-        var adapters = simulationServicesContainer.BuildServiceProvider().GetServices<INodeConfigurator<TEntity>>();
+        simulationServicesContainer.AddSingleton<AgentStateChangedNotifier<TAgent>>();
+        simulationServicesContainer.AddSingleton<IStateChangeSimulationProcessor<TAgent>>(p =>
+            p.GetRequiredService<AgentStateChangedNotifier<TAgent>>());
+        simulationServicesContainer.AddSingleton<INodeConfigurator<TAgent>>(p =>
+            p.GetRequiredService<AgentStateChangedNotifier<TAgent>>());
+        var adapters = simulationServicesContainer.BuildServiceProvider().GetServices<INodeConfigurator<TAgent>>();
         foreach (var adapter in adapters)
         {
             targetCollection.AddSingleton(adapter);
         }
     }
 
-    private static void AdaptFunctionSimulationToTarget<TEntity, TMethodArgs, TReturnType>(
+    private static void AdaptFunctionSimulationToTarget<TAgent, TMethodArgs, TReturnType>(
         SimulationServicesContainer source, IServiceCollection target)
     {
         source.AddTransient<
-            IAdaptionContextTranslator<(IList<object>, IManagedAgent), TEntity, TMethodArgs, TReturnType>,
-            AdaptionContextTranslator<TEntity, TMethodArgs, TReturnType>
+            IAdaptionContextTranslator<(IList<object>, IManagedAgent), TAgent, TMethodArgs, TReturnType>,
+            AdaptionContextTranslator<TAgent, TMethodArgs, TReturnType>
         >();
 
 
         source.AddSingleton<
-            INodeConfigurator<TEntity>,
-            FunctionSimulationAdapter<TEntity, TMethodArgs, TReturnType>
+            INodeConfigurator<TAgent>,
+            FunctionSimulationAdapter<TAgent, TMethodArgs, TReturnType>
         >();
 
-        BuildSingletonAdapterInstance<TEntity>(source, target);
+        BuildSingletonAdapterInstance<TAgent>(source, target);
     }
 
 
-    private static void AdaptActionSimulationToTarget<TEntity, TMethodArgs>(
+    private static void AdaptActionSimulationToTarget<TAgent, TMethodArgs>(
         SimulationServicesContainer simulationServicesContainer, IServiceCollection targetCollection)
     {
         simulationServicesContainer.AddTransient<
-            IAdaptionContextTranslator<(IList<object>, IManagedAgent), TEntity, TMethodArgs>,
-            AdaptionContextTranslator<TEntity, TMethodArgs>
+            IAdaptionContextTranslator<(IList<object>, IManagedAgent), TAgent, TMethodArgs>,
+            AdaptionContextTranslator<TAgent, TMethodArgs>
         >();
 
         simulationServicesContainer.AddSingleton<
-            INodeConfigurator<TEntity>,
-            ActionSimulationAdapter<TEntity, TMethodArgs>
+            INodeConfigurator<TAgent>,
+            ActionSimulationAdapter<TAgent, TMethodArgs>
         >();
 
-        BuildSingletonAdapterInstance<TEntity>(simulationServicesContainer, targetCollection);
+        BuildSingletonAdapterInstance<TAgent>(simulationServicesContainer, targetCollection);
     }
 }

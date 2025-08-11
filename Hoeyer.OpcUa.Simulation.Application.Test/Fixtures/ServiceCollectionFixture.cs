@@ -6,14 +6,14 @@ namespace Simulation.Application.Test.Fixtures;
 
 public sealed class ServiceCollectionFixture
 {
-    public readonly OnGoingOpcEntityServiceRegistrationWithSimulation ongoingConfiguration;
+    public readonly OnGoingOpcAgentServiceRegistrationWithSimulation ongoingConfiguration;
 
     public readonly IServiceCollection SimulationServices;
 
     public ServiceCollectionFixture()
     {
         ongoingConfiguration = new ServiceCollection()
-            .WithEntityServices()
+            .WithAgentServices()
             .WithOpcUaSimulationServices(c => c.WithTimeScaling(float.Epsilon));
         SimulationServices = ongoingConfiguration.SimulationServices;
     }

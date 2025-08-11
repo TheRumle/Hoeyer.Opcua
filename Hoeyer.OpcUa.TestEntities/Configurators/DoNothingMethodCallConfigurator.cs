@@ -7,8 +7,8 @@ namespace Hoeyer.OpcUa.TestEntities.Configurators;
 /// <summary>
 /// A configurator that ensures that all service methods will have at least one method listener configured.
 /// </summary>
-[OpcUaEntityService(typeof(INodeConfigurator<>))]
-public sealed class DoNothingMethodCallConfigurator<TEntity> : INodeConfigurator<TEntity>
+[OpcUaAgentService(typeof(INodeConfigurator<>))]
+public sealed class DoNothingMethodCallConfigurator<TAgent> : INodeConfigurator<TAgent>
 {
     /// <inheritdoc />
     public void Configure(IManagedAgent managed, ISystemContext context)

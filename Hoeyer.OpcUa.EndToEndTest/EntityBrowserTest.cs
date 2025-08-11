@@ -10,45 +10,45 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.EndToEndTest;
 
-[TestSubject(typeof(IEntityBrowser<>))]
+[TestSubject(typeof(IAgentBrowser<>))]
 [TestSubject(typeof(INodeReader))]
-public sealed class EntityBrowserTest
+public sealed class AgentBrowserTest
 {
     [Test]
-    [ApplicationFixtureGenerator<IEntityBrowser>]
-    public async Task EntityBrowser_CanCreateAgent_AndTranslateIt(ApplicationFixture<IEntityBrowser> services)
+    [ApplicationFixtureGenerator<IAgentBrowser>]
+    public async Task AgentBrowser_CanCreateAgent_AndTranslateIt(ApplicationFixture<IAgentBrowser> services)
     {
-        var entity = await services.ExecuteAsync(browser => browser.BrowseAgent(CancellationToken.None));
+        var agent = await services.ExecuteAsync(browser => browser.BrowseAgent(CancellationToken.None));
 
-        await Assert.That(entity).IsNotDefault();
-        await Assert.That(entity.PropertyStates).IsNotEmpty();
-        await Assert.That(entity.BaseObject).IsNotDefault();
+        await Assert.That(agent).IsNotDefault();
+        await Assert.That(agent.PropertyStates).IsNotEmpty();
+        await Assert.That(agent.BaseObject).IsNotDefault();
     }
 
     [Test]
-    [ApplicationFixtureGenerator<IEntityBrowser>]
-    public async Task EntityBrowser_BrowsedEntity_DoesNotHaveNullValues(ApplicationFixture<IEntityBrowser> services)
+    [ApplicationFixtureGenerator<IAgentBrowser>]
+    public async Task AgentBrowser_BrowsedAgent_DoesNotHaveNullValues(ApplicationFixture<IAgentBrowser> services)
     {
-        var entity = await services.ExecuteAsync(browser => browser.BrowseAgent(CancellationToken.None));
-        Dictionary<string, object?> propertyValue = GetNullPropertyValues(entity);
+        var agent = await services.ExecuteAsync(browser => browser.BrowseAgent(CancellationToken.None));
+        Dictionary<string, object?> propertyValue = GetNullPropertyValues(agent);
 
         using (Assert.Multiple())
         {
             foreach (var key in propertyValue.Keys)
             {
                 Assert.Fail(
-                    $"{entity.BaseObject.BrowseName.Name}.{key} was null and no browsed property should be null");
+                    $"{agent.BaseObject.BrowseName.Name}.{key} was null and no browsed property should be null");
             }
         }
     }
 
     [Test]
-    [TestSubject(typeof(IEntityTranslator<Gantry>))]
+    [TestSubject(typeof(IAgentTranslator<Gantry>))]
     [ClassDataSource<ApplicationFixture>]
-    public async Task EntityBrowser_BrowsedEntity_CanBeTranslated_DoesNotHaveNullValues(ApplicationFixture services)
+    public async Task AgentBrowser_BrowsedAgent_CanBeTranslated_DoesNotHaveNullValues(ApplicationFixture services)
     {
-        var browser = services.GetService<IEntityBrowser<Gantry>>();
-        var translator = services.GetService<IEntityTranslator<Gantry>>();
+        var browser = services.GetService<IAgentBrowser<Gantry>>();
+        var translator = services.GetService<IAgentTranslator<Gantry>>();
         var node = await browser.BrowseAgent();
         var gantry = translator.Translate(node);
 
@@ -64,11 +64,11 @@ public sealed class EntityBrowserTest
             .Because(" after reading the node and translating it, there should not be null values");
     }
 
-    [ApplicationFixtureGenerator<IEntityBrowser>]
+    [ApplicationFixtureGenerator<IAgentBrowser>]
     [Test]
-    public void CanBrowseOnSimultaneousThreads(ApplicationFixture<IEntityBrowser> fixture)
+    public void CanBrowseOnSimultaneousThreads(ApplicationFixture<IAgentBrowser> fixture)
     {
-        IEntityBrowser browser = fixture.TestedService;
+        IAgentBrowser browser = fixture.TestedService;
         var first = new Thread(() => browser.BrowseAgent(CancellationToken.None).GetAwaiter().GetResult());
         var second = new Thread(() => browser.BrowseAgent(CancellationToken.None).GetAwaiter().GetResult());
         first.Start();
@@ -77,9 +77,9 @@ public sealed class EntityBrowserTest
         second.Join();
     }
 
-    private static Dictionary<string, object?> GetNullPropertyValues(IAgent entity)
+    private static Dictionary<string, object?> GetNullPropertyValues(IAgent agent)
     {
-        return entity.PropertyStates
+        return agent.PropertyStates
             .Where(e => e.Value is null or Variant { Value: null })
             .ToDictionary<PropertyState, string, object>(prop => prop.BrowseName.Name, prop => null!)!;
     }

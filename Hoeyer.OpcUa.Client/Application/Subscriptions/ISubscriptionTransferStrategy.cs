@@ -5,5 +5,5 @@ namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
 
 internal interface ISubscriptionTransferStrategy
 {
-    public Task TransferSubscriptionsBetween(IEntitySession oldSession, IEntitySession newSession);
+    public Task TransferSubscriptionsBetween(IAgentSession oldSession, IAgentSession newSession);
 }

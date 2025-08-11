@@ -2,7 +2,7 @@
 
 namespace Hoeyer.OpcUa.TestEntities;
 
-[OpcUaEntity]
+[OpcUaAgent]
 public sealed class OtherGantry
 {
     public int OtherGantryIntValue { get; set; }

@@ -11,17 +11,17 @@ internal static class WellKnown
 
     public static class FullyQualifiedAttribute
     {
-        public static readonly FullyQualifiedTypeName EntityAttribute = CoreTypeName("OpcUaEntityAttribute");
+        public static readonly FullyQualifiedTypeName AgentAttribute = CoreTypeName("OpcUaAgentAttribute");
 
-        public static readonly FullyQualifiedTypeName EntityBehaviourAttribute =
-            CoreTypeName("OpcUaEntityMethodsAttribute");
+        public static readonly FullyQualifiedTypeName AgentBehaviourAttribute =
+            CoreTypeName("OpcUaAgentMethodsAttribute");
 
-        public static readonly FullyQualifiedTypeName GenericEntityBehaviourAttribute =
-            CoreTypeName("OpcUaEntityMethodsAttribute<T>");
+        public static readonly FullyQualifiedTypeName GenericAgentBehaviourAttribute =
+            CoreTypeName("OpcUaAgentMethodsAttribute<T>");
 
 
-        public static readonly FullyQualifiedTypeName OpcUaEntityServiceAttribute =
-            CoreTypeName("OpcUaEntityServiceAttribute");
+        public static readonly FullyQualifiedTypeName OpcUaAgentServiceAttribute =
+            CoreTypeName("OpcUaAgentServiceAttribute");
     }
 
     public static class FullyQualifiedInterface
@@ -32,10 +32,10 @@ internal static class WellKnown
         public static FullyQualifiedTypeName DataTypeTranslator =>
             CoreTypeName("Application.OpcTypeMappers.DataTypeToTypeTranslator");
 
-        public static FullyQualifiedTypeName EntityTranslatorInterfaceOf(string T) =>
-            CoreApiTypeName($"IEntityTranslator<{T}>");
+        public static FullyQualifiedTypeName AgentTranslatorInterfaceOf(string T) =>
+            CoreApiTypeName($"IAgentTranslator<{T}>");
 
-        public static FullyQualifiedTypeName EntityTranslatorInterfaceOf() =>
-            CoreApiTypeName($"IEntityTranslator<>");
+        public static FullyQualifiedTypeName AgentTranslatorInterfaceOf() =>
+            CoreApiTypeName($"IAgentTranslator<>");
     }
 }

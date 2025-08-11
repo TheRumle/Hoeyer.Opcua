@@ -7,7 +7,7 @@ using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using JetBrains.Annotations;
 using Opc.Ua;
-using EntityBrowseException = Hoeyer.OpcUa.Client.Api.Browsing.Exceptions.EntityBrowseException;
+using AgentBrowseException = Hoeyer.OpcUa.Client.Api.Browsing.Exceptions.AgentBrowseException;
 
 namespace Hoeyer.OpcUa.EndToEndTest;
 
@@ -32,9 +32,9 @@ public abstract class NodeTreeTraverserTest<T>(ApplicationFixture<T> fixture) wh
 
     [Test]
     [Timeout(10_0000)]
-    public async Task WhenTraversingWithNoMatch_ThrowsEntityBrowseException(CancellationToken token)
+    public async Task WhenTraversingWithNoMatch_ThrowsAgentBrowseException(CancellationToken token)
     {
-        await Assert.ThrowsAsync<EntityBrowseException>(
+        await Assert.ThrowsAsync<AgentBrowseException>(
             fixture.ExecuteWithSessionAsync((session, strategy)
                 => strategy.TraverseUntil(session, ObjectIds.RootFolder, e => false, token)));
     }

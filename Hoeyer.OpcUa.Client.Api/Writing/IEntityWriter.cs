@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 
 namespace Hoeyer.OpcUa.Client.Api.Writing;
 
-public interface IEntityWriter;
+public interface IAgentWriter;
 
-public interface IEntityWriter<in T> : IEntityWriter
+public interface IAgentWriter<in T> : IAgentWriter
 {
-    public Task AssignEntityValues(T entity, CancellationToken cancellationToken = default);
+    public Task AssignAgentValues(T agent, CancellationToken cancellationToken = default);
 
-    public Task AssignEntityProperties(IEnumerable<(string propertyName, object propertyValue)> entityState,
+    public Task AssignAgentProperties(IEnumerable<(string propertyName, object propertyValue)> agentState,
         CancellationToken cancellationToken = default);
 }

@@ -12,9 +12,9 @@ public interface IManagedAgent<T> : IManagedAgent;
 public interface IManagedAgent
 {
     string Namespace { get; }
-    ushort EntityNameSpaceIndex { get; }
+    ushort AgentNameSpaceIndex { get; }
 
-    string EntityName { get; }
+    string AgentName { get; }
 
     /// <summary>
     /// Locks the node and changes its state

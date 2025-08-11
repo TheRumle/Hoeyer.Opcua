@@ -6,5 +6,5 @@ internal interface IAgentManager<T> : IAgentManager;
 
 public interface IAgentManager : INodeManager2
 {
-    public IManagedAgent ManagedEntity { get; }
+    public IManagedAgent ManagedAgent { get; }
 }

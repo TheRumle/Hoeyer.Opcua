@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Hoeyer.OpcUa.Server.Api;
 
-public sealed class EntityServerStartedMarker
+public sealed class AgentServerStartedMarker
 {
     private readonly Task _task = new(() => { });
     public bool IsServerStarted => _task.IsCompleted;

@@ -9,17 +9,17 @@ internal static class WellKnown
 
     public static class FullyQualifiedAttribute
     {
-        public static readonly FullyQualifiedTypeName EntityAttribute = CoreTypeName("OpcUaEntityAttribute");
+        public static readonly FullyQualifiedTypeName AgentAttribute = CoreTypeName("OpcUaAgentAttribute");
 
-        public static readonly FullyQualifiedTypeName EntityBehaviourAttribute =
-            CoreTypeName("OpcUaEntityMethodsAttribute");
+        public static readonly FullyQualifiedTypeName AgentBehaviourAttribute =
+            CoreTypeName("OpcUaAgentMethodsAttribute");
 
-        public static readonly FullyQualifiedTypeName GenericEntityBehaviourAttribute =
-            CoreTypeName("OpcUaEntityMethodsAttribute<T>");
+        public static readonly FullyQualifiedTypeName GenericAgentBehaviourAttribute =
+            CoreTypeName("OpcUaAgentMethodsAttribute<T>");
 
 
-        public static readonly FullyQualifiedTypeName OpcUaEntityServiceAttribute =
-            CoreTypeName("OpcUaEntityServiceAttribute");
+        public static readonly FullyQualifiedTypeName OpcUaAgentServiceAttribute =
+            CoreTypeName("OpcUaAgentServiceAttribute");
 
         public static readonly FullyQualifiedTypeName OpcMethodArgumentsAttribute =
             SimulationApiName(".OpcMethodArgumentsAttribute");
@@ -42,7 +42,7 @@ internal static class WellKnown
             SimulationApiName($".Configuration.ISimulation`3");
 
         public static FullyQualifiedTypeName IObjectArgsToTypedArgs(string attributeClassName) =>
-            SimulationServerAdapterApiName($".IEntityMethodArgTranslator<{attributeClassName}>");
+            SimulationServerAdapterApiName($".IAgentMethodArgTranslator<{attributeClassName}>");
 
         private static FullyQualifiedTypeName SimulationServerAdapterApiName(string s) =>
             new("Hoeyer.OpcUa.Simulation.ServerAdapter.Api" + s);
@@ -61,6 +61,6 @@ internal static class WellKnown
             SimulationApiName($"IFunctionSimulationConfigurator.");
 
         public static FullyQualifiedTypeName IObjectArgsToTypedArgs(string attributeClassName) =>
-            SimulationApiName($"IEntityMethodArgTranslator<{attributeClassName}>");
+            SimulationApiName($"IAgentMethodArgTranslator<{attributeClassName}>");
     }
 }

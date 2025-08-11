@@ -9,11 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.EndToEndTest;
 
-[TestSubject(typeof(EntitySubscriptionManager<>))]
-[TestSubject(typeof(CurrentEntityStateChannel<>))]
-[NotInParallel(nameof(EntitySubscriptionManagerTest))]
+[TestSubject(typeof(AgentSubscriptionManager<>))]
+[TestSubject(typeof(CurrentAgentStateChannel<>))]
+[NotInParallel(nameof(AgentSubscriptionManagerTest))]
 [ClassDataSource<ApplicationFixture>]
-public sealed class EntitySubscriptionManagerTest(ApplicationFixture fixture)
+public sealed class AgentSubscriptionManagerTest(ApplicationFixture fixture)
 {
     private const string EXPECTED_STRING_VALUE = "Hetsratsratsralo there";
     private static readonly int NumberOfGantryPropsChanged = 1;
@@ -23,7 +23,7 @@ public sealed class EntitySubscriptionManagerTest(ApplicationFixture fixture)
     [Timeout(10_000)]
     public async Task WhenWritingNode_ObserverIsNotified(CancellationToken token)
     {
-        ((ICurrentEntityStateChannel<Gantry> channel, IMessageSubscription _),
+        ((ICurrentAgentStateChannel<Gantry> channel, IMessageSubscription _),
             (CountingConsumer<Gantry> observer, IMessageSubscription _)) = await CreateSubscriberPair(token);
         await WriteNode();
         await channel.Reader.WaitToReadAsync(token);
@@ -38,7 +38,7 @@ public sealed class EntitySubscriptionManagerTest(ApplicationFixture fixture)
     [Timeout(10_000)]
     public async Task WhenPausingNotification_ObserverIsNotNotified(CancellationToken token)
     {
-        ((ICurrentEntityStateChannel<Gantry> channel, IMessageSubscription _),
+        ((ICurrentAgentStateChannel<Gantry> channel, IMessageSubscription _),
             (CountingConsumer<Gantry> observer, IMessageSubscription subscription)) = await CreateSubscriberPair(token);
         subscription.Pause();
 
@@ -52,7 +52,7 @@ public sealed class EntitySubscriptionManagerTest(ApplicationFixture fixture)
     [Timeout(10_000)]
     public async Task WhenSubscriptionIsCancelled_ObserverIsNotNotified(CancellationToken token)
     {
-        ((ICurrentEntityStateChannel<Gantry> channel, IMessageSubscription _),
+        ((ICurrentAgentStateChannel<Gantry> channel, IMessageSubscription _),
             (CountingConsumer<Gantry> observer, IMessageSubscription subscription)) = await CreateSubscriberPair(token);
         subscription.Dispose();
 
@@ -65,8 +65,8 @@ public sealed class EntitySubscriptionManagerTest(ApplicationFixture fixture)
         CancellationToken token)
     {
         var testSubscriber = new CountingConsumer<Gantry>();
-        var monitor = fixture.GetService<IEntitySubscriptionManager<Gantry>>();
-        var channel = fixture.GetService<ICurrentEntityStateChannel<Gantry>>();
+        var monitor = fixture.GetService<IAgentSubscriptionManager<Gantry>>();
+        var channel = fixture.GetService<ICurrentAgentStateChannel<Gantry>>();
         return new ValueTuple<ChannelSubscription, TestSubscriberSubscription>(
             new ChannelSubscription(channel, await monitor.SubscribeToAllPropertyChanges(channel, token)),
             new TestSubscriberSubscription(testSubscriber,
@@ -75,12 +75,12 @@ public sealed class EntitySubscriptionManagerTest(ApplicationFixture fixture)
 
     private async Task WriteNode()
     {
-        var writer = fixture.ServiceProvider.GetService<IEntityWriter<Gantry>>()!;
-        await writer.AssignEntityProperties([(nameof(Gantry.StringValue), EXPECTED_STRING_VALUE)]);
+        var writer = fixture.ServiceProvider.GetService<IAgentWriter<Gantry>>()!;
+        await writer.AssignAgentProperties([(nameof(Gantry.StringValue), EXPECTED_STRING_VALUE)]);
     }
 
     public sealed record ChannelSubscription(
-        ICurrentEntityStateChannel<Gantry> Channel,
+        ICurrentAgentStateChannel<Gantry> Channel,
         IMessageSubscription Subscription);
 
     public sealed record TestSubscriberSubscription(

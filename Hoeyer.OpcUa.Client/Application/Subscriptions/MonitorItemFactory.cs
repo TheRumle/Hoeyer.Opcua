@@ -14,24 +14,23 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
 
-[OpcUaEntityService(typeof(IMonitorItemsFactory<>))]
+[OpcUaAgentService(typeof(IMonitorItemsFactory<>))]
 public sealed class MonitorItemFactory<T>(
     ILogger<MonitorItemFactory<T>> logger,
-    IEntityPropertyCollection<T> propertyCollection,
-    EntityMonitoringConfiguration entityMonitoringConfiguration) : IMonitorItemsFactory<T>
+    AgentMonitoringConfiguration agentMonitoringConfiguration) : IMonitorItemsFactory<T>
 {
     private static readonly int NumberOfProperties = typeof(T).GetProperties().Length;
     private readonly Random _guids = new(231687);
     private bool _subscriptionCreated;
     private bool AllItemsMonitored => MonitoredItemsByName.Values.Count == NumberOfProperties;
 
-    private EntitySubscription Subscription { get; set; } = null!;
-    private Dictionary<string, MonitoredEntityItem> MonitoredItemsByName { get; } = [];
-    private IEnumerable<MonitoredEntityItem> MonitoredItems => MonitoredItemsByName.Values;
+    private AgentSubscription Subscription { get; set; } = null!;
+    private Dictionary<string, MonitoredAgentItem> MonitoredItemsByName { get; } = [];
+    private IEnumerable<MonitoredAgentItem> MonitoredItems => MonitoredItemsByName.Values;
 
 
-    public async ValueTask<(EntitySubscription subscription, IReadOnlyList<MonitoredItem> variableMonitoring)>
-        CreateAndMonitorAll(IEntitySession session,
+    public async ValueTask<(AgentSubscription subscription, IReadOnlyList<MonitoredItem> variableMonitoring)>
+        CreateAndMonitorAll(IAgentSession session,
             IAgent node,
             Action<MonitoredItem, MonitoredItemNotificationEventArgs> callback,
             CancellationToken cancel = default)
@@ -42,7 +41,7 @@ public sealed class MonitorItemFactory<T>(
     }
 
 
-    public async ValueTask<IReadOnlyList<MonitoredEntityItem>> MonitorAllProperties(EntitySubscription subscription,
+    public async ValueTask<IReadOnlyList<MonitoredAgentItem>> MonitorAllProperties(AgentSubscription subscription,
         IAgent node, CancellationToken cancel = default)
     {
         IEnumerable<(NodeId Id, string Name)> nodes =
@@ -54,15 +53,15 @@ public sealed class MonitorItemFactory<T>(
         return await MonitorProperties(subscription, nodes, cancel);
     }
 
-    public async ValueTask<IReadOnlyList<MonitoredEntityItem>> MonitorProperties(
-        EntitySubscription subscription,
+    public async ValueTask<IReadOnlyList<MonitoredAgentItem>> MonitorProperties(
+        AgentSubscription subscription,
         IEnumerable<(NodeId Id, string Name)> nodesToMonitor,
         CancellationToken cancel = default)
     {
         var nodes = nodesToMonitor.ToList();
         if (AllItemsMonitored)
         {
-            return Subscription.EntityItems.Where(monitored => nodes.Select(e => e.Id).Contains(monitored.StartNodeId))
+            return Subscription.AgentItems.Where(monitored => nodes.Select(e => e.Id).Contains(monitored.StartNodeId))
                 .ToList();
         }
 
@@ -74,25 +73,25 @@ public sealed class MonitorItemFactory<T>(
             .Select(e => CreateMonitoredItem(subscription, e.Id, e.Name))
             .ToList();
 
-        foreach (var monitoredEntityItem in items.Where(item =>
+        foreach (var monitoredAgentItem in items.Where(item =>
                      !MonitoredItemsByName.ContainsKey(item.DisplayName)))
         {
-            MonitoredItemsByName[monitoredEntityItem.DisplayName] = monitoredEntityItem;
-            subscription.AddEntityItem(monitoredEntityItem);
+            MonitoredItemsByName[monitoredAgentItem.DisplayName] = monitoredAgentItem;
+            subscription.AddAgentItem(monitoredAgentItem);
         }
 
         await Subscription.ApplyChangesAsync(cancel);
         return items;
     }
 
-    public async ValueTask<MonitoredEntityItem> MonitorProperty(
-        EntitySubscription subscription,
+    public async ValueTask<MonitoredAgentItem> MonitorProperty(
+        AgentSubscription subscription,
         (NodeId Id, string Name) nodeToMonitor,
         CancellationToken cancel = default) =>
         (await MonitorProperties(subscription, [nodeToMonitor], cancel)).First();
 
-    public async ValueTask<EntitySubscription> GetOrCreateSubscriptionWithCallback(
-        IEntitySession session,
+    public async ValueTask<AgentSubscription> GetOrCreateSubscriptionWithCallback(
+        IAgentSession session,
         string subscriptionName,
         Action<MonitoredItem, MonitoredItemNotificationEventArgs> callback,
         CancellationToken cancel = default)
@@ -103,15 +102,15 @@ public sealed class MonitorItemFactory<T>(
         }
 
         using var scope = logger.BeginScope("Creating subscription");
-        Subscription = new EntitySubscription(session, callback)
+        Subscription = new AgentSubscription(session, callback)
         {
-            PublishingInterval = entityMonitoringConfiguration!.ServerPublishingInterval.Milliseconds,
+            PublishingInterval = agentMonitoringConfiguration!.ServerPublishingInterval.Milliseconds,
             SequentialPublishing = true,
             Priority = 0,
             DisplayName = subscriptionName,
             TransferId = _guids.GetUInt()
         };
-        if (session.EntitySubscriptions.All(e => e.Id != Subscription.Id))
+        if (session.AgentSubscriptions.All(e => e.Id != Subscription.Id))
         {
             session.Session.AddSubscription(Subscription);
         }
@@ -121,7 +120,7 @@ public sealed class MonitorItemFactory<T>(
         return Subscription;
     }
 
-    private static MonitoredEntityItem CreateMonitoredItem(
+    private static MonitoredAgentItem CreateMonitoredItem(
         Subscription subscription, NodeId nodeId,
         string name) =>
         new(subscription!.DefaultItem)

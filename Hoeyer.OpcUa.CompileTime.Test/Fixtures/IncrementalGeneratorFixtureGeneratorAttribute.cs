@@ -15,7 +15,7 @@ internal sealed class
     {
         IEnumerable<Func<IIncrementalGenerator>> generatedCoreServices =
             new TypesWithEmptyCtorScanner<IIncrementalGenerator,
-                EntityTranslatorGenerator>().GenerateDataSources();
+                AgentTranslatorGenerator>().GenerateDataSources();
 
         IEnumerable<Func<IIncrementalGenerator>> generatedClientServices =
             new TypesWithEmptyCtorScanner<IIncrementalGenerator,

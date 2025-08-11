@@ -26,34 +26,34 @@ public static class Rules
         DesignCategory,
         DiagnosticSeverity.Error,
         true,
-        "OpcUa entity properties must not be annotated as nullable.");
+        "OpcUa agent properties must not be annotated as nullable.");
 
 
-    public static readonly DiagnosticDescriptor OpcUaEntityMemberNotSupported = CreateErrorDescriptor(
+    public static readonly DiagnosticDescriptor OpcUaAgentMemberNotSupported = CreateErrorDescriptor(
         "HOEYERUA0004",
         DesignCategory,
-        "The member is not supported for OpcUa entity definitions");
+        "The member is not supported for OpcUa agent definitions");
 
-    public static readonly DiagnosticDescriptor OpcUaEntityBehaviourMemberNotSupported = CreateErrorDescriptor(
+    public static readonly DiagnosticDescriptor OpcUaAgentBehaviourMemberNotSupported = CreateErrorDescriptor(
         "HOEYERUA0005",
         DesignCategory,
-        "The member is not supported for OpcUa entity behaviour definitions.");
+        "The member is not supported for OpcUa agent behaviour definitions.");
 
 
-    public static readonly DiagnosticDescriptor MustBeOpcEntityArgument = CreateErrorDescriptor(
+    public static readonly DiagnosticDescriptor MustBeOpcAgentArgument = CreateErrorDescriptor(
         "HOEYERUA0006",
         DesignCategory,
-        $"The argument must be a type annotated with '{WellKnown.FullyQualifiedAttribute.EntityAttribute.WithoutGlobalPrefix}'.");
+        $"The argument must be a type annotated with '{WellKnown.FullyQualifiedAttribute.AgentAttribute.WithoutGlobalPrefix}'.");
 
     public static readonly DiagnosticDescriptor ReturnTypeMustBeTask = CreateErrorDescriptor(
         "HOEYERUA0007",
         DesignCategory,
-        "The return of entity methods must be of type Task or Task<T> and T must be either a native OpcUa type or an IList of such type with a default constructor.");
+        "The return of agent methods must be of type Task or Task<T> and T must be either a native OpcUa type or an IList of such type with a default constructor.");
 
     public static readonly DiagnosticDescriptor MethodNameMustBeUnique = CreateErrorDescriptor(
         "HOEYERUA0008",
         DesignCategory,
-        "Entity methods must be uniquely identified by their name.");
+        "Agent methods must be uniquely identified by their name.");
 
     public static Diagnostic MustNotBeNullableProperty(PropertyDeclarationSyntax property) =>
         Diagnostic.Create(MustNotBeNullablePropertyDescriptor, property.GetLocation(), property.Identifier);

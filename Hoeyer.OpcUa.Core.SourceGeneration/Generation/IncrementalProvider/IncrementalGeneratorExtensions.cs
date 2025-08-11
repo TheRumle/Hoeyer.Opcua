@@ -10,7 +10,7 @@ internal static class IncrementalGeneratorExtensions
         this IncrementalGeneratorInitializationContext context)
     {
         var valueProvider = context.SyntaxProvider.ForAttributeWithMetadataName(
-                "Hoeyer.OpcUa.Core.OpcUaEntityAttribute",
+                "Hoeyer.OpcUa.Core.OpcUaAgentAttribute",
                 (_, _) => true,
                 (attributeSyntaxContext, cancellationToken) =>
                 {

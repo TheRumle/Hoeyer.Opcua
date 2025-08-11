@@ -3,7 +3,7 @@ using Hoeyer.OpcUa.TestEntities.Methods;
 
 namespace Hoeyer.OpcUa.TestEntities;
 
-[OpcUaEntity]
+[OpcUaAgent]
 public sealed class Gantry
 {
     public required Position Position { get; set; }

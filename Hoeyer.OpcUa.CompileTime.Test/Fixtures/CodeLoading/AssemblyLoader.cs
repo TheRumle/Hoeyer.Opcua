@@ -15,10 +15,10 @@ public static class AssemblyLoader
         Assembly.Load("netstandard"),
         Assembly.Load("System"),
         Assembly.Load("System.Runtime"),
-        typeof(OpcUaEntityAttribute).Assembly,
-        typeof(OpcUaEntityMethodsAttribute<>).Assembly,
+        typeof(OpcUaAgentAttribute).Assembly,
+        typeof(OpcUaAgentMethodsAttribute<>).Assembly,
         typeof(OpcMethodArgumentsAttribute<,>).Assembly,
-        typeof(EntityServerStartedMarker).Assembly,
+        typeof(AgentServerStartedMarker).Assembly,
         typeof(ISimulation<,>).Assembly,
     ];
 

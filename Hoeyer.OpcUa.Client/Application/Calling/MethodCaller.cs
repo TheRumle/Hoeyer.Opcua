@@ -11,11 +11,11 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Client.Application.Calling;
 
-[OpcUaEntityService(typeof(IMethodCaller<>))]
-public class MethodCaller<TEntity>(IEntityBrowser<TEntity> browser, IEntitySessionFactory factory)
-    : IMethodCaller<TEntity>
+[OpcUaAgentService(typeof(IMethodCaller<>))]
+public class MethodCaller<TAgent>(IAgentBrowser<TAgent> browser, IAgentSessionFactory factory)
+    : IMethodCaller<TAgent>
 {
-    private static readonly string SessionClientId = typeof(TEntity).Name + "MethodCaller";
+    private static readonly string SessionClientId = typeof(TAgent).Name + "MethodCaller";
 
     public async Task CallMethod(string methodName,
         CancellationToken token = default,
@@ -39,9 +39,9 @@ public class MethodCaller<TEntity>(IEntityBrowser<TEntity> browser, IEntitySessi
         var Agent = await browser.GetNodeStructure(token);
         var methodNodesByName = Agent.Methods;
         NodeId methodToCall = methodNodesByName[methodName] ??
-                              throw new NoSuchEntityMethodException(Agent.EntityName, methodName);
+                              throw new NoSuchAgentMethodException(Agent.AgentName, methodName);
 
-        IEntitySession session = await factory.GetSessionForAsync(SessionClientId, token);
+        IAgentSession session = await factory.GetSessionForAsync(SessionClientId, token);
         return await session.Session.CallAsync(Agent.NodeId, methodToCall, token, args);
     }
 }

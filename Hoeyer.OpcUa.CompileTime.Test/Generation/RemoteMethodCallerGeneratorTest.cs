@@ -5,4 +5,4 @@ namespace Hoeyer.OpcUa.CompileTime.Test.Generation;
 
 [TestSubject(typeof(RemoteMethodCallerGenerator))]
 [InheritsTests]
-public sealed class RemoteMethodCallerGeneratorTest : GeneratorWithEntityMethodsTargetTest<RemoteMethodCallerGenerator>;
+public sealed class RemoteMethodCallerGeneratorTest : GeneratorWithAgentMethodsTargetTest<RemoteMethodCallerGenerator>;

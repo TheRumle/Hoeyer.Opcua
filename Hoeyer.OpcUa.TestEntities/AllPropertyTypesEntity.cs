@@ -2,8 +2,8 @@
 
 namespace Hoeyer.OpcUa.TestEntities;
 
-[OpcUaEntity]
-public sealed record AllPropertyTypesEntity
+[OpcUaAgent]
+public sealed record AllPropertyTypesAgent
 {
     public enum EnumValue
     {
@@ -23,10 +23,10 @@ public sealed record AllPropertyTypesEntity
     public bool Bool { get; set; }
 
 
-    public static AllPropertyTypesEntity CreateRandom()
+    public static AllPropertyTypesAgent CreateRandom()
     {
         Random _random = new();
-        return new AllPropertyTypesEntity
+        return new AllPropertyTypesAgent
         {
             Integer = _random.Next(),
             Long = _random.NextInt64(),

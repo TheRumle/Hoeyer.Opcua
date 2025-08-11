@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.CompileTime.Analysis;
 using Hoeyer.OpcUa.CompileTime.Test.Drivers;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
+using Hoeyer.OpcUa.CompileTime.Test.Fixtures.AgentDefinitions;
 using Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;
 using Hoeyer.OpcUa.Core;
 using JetBrains.Annotations;
@@ -8,31 +8,31 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
 
-[TestSubject(typeof(EntityBehaviourAnalyzer))]
-public class EntityBehaviourAnalyzerTest
+[TestSubject(typeof(AgentBehaviourAnalyzer))]
+public class AgentBehaviourAnalyzerTest
 {
-    public const string NotAnnotated_PropertyAccessesTestEntity = """
-                                                                  namespace Test;
-                                                                  using System;
-                                                                  using System.Collections.Generic;
-                                                                  using Hoeyer.OpcUa.Core;
-                                                                  public class PropertyAccessesTestEntity
-                                                                  {
-                                                                      public string S { get; set; }
-                                                                  }
-                                                                  """;
+    public const string NotAnnotated_PropertyAccessesTestAgent = """
+                                                                 namespace Test;
+                                                                 using System;
+                                                                 using System.Collections.Generic;
+                                                                 using Hoeyer.OpcUa.Core;
+                                                                 public class PropertyAccessesTestAgent
+                                                                 {
+                                                                     public string S { get; set; }
+                                                                 }
+                                                                 """;
 
-    protected readonly EntityBehaviourAnalyzer Analyzer = new();
+    protected readonly AgentBehaviourAnalyzer Analyzer = new();
     protected AnalyzerTestDriver<DiagnosticAnalyzer> Driver => new(Analyzer, Console.WriteLine);
 
-    private static string GetValidInterfaceFor(string entityName) =>
+    private static string GetValidInterfaceFor(string agentName) =>
         $$"""
           namespace Test;
           using System;
           using System.Collections.Generic;
           using Hoeyer.OpcUa.Core;
           using System.Threading.Tasks;
-          [{{nameof(OpcUaEntityMethodsAttribute<object>)}}<{{entityName}}>]
+          [{{nameof(OpcUaAgentMethodsAttribute<object>)}}<{{agentName}}>]
           public interface FuncReferencingSelf
           {
               public Task<List<int>> ListMethod(bool a, int b, int c);
@@ -44,12 +44,12 @@ public class EntityBehaviourAnalyzerTest
           """;
 
     [Test]
-    public async Task WhenGiven_NonOpcEntityClass_ReportsDiagnostic()
+    public async Task WhenGiven_NonOpcAgentClass_ReportsDiagnostic()
     {
-        var entityName = "PropertyAccessesTestEntity";
-        var interfaceDefinition = GetValidInterfaceFor(entityName);
-        var data = new EntityAndServiceSourceCode("TestInterface", entityName,
-            NotAnnotated_PropertyAccessesTestEntity, interfaceDefinition);
+        var agentName = "PropertyAccessesTestAgent";
+        var interfaceDefinition = GetValidInterfaceFor(agentName);
+        var data = new AgentAndServiceSourceCode("TestInterface", agentName,
+            NotAnnotated_PropertyAccessesTestAgent, interfaceDefinition);
 
 
         var result = await Driver.RunAnalyzerOn(data);
@@ -57,11 +57,11 @@ public class EntityBehaviourAnalyzerTest
     }
 
     [Test]
-    [ValidEntitySourceCodeGenerator]
-    public async Task WhenGiven_ValidEntity_ValidInterface_NoDiagnosticPresent(EntitySourceCode sourceCode)
+    [ValidAgentSourceCodeGenerator]
+    public async Task WhenGiven_ValidAgent_ValidInterface_NoDiagnosticPresent(AgentSourceCode sourceCode)
     {
         var interfaceDefinition = GetValidInterfaceFor(sourceCode.Type);
-        var data = new EntityAndServiceSourceCode("TestInterface", sourceCode.Type,
+        var data = new AgentAndServiceSourceCode("TestInterface", sourceCode.Type,
             sourceCode.SourceCodeString, interfaceDefinition);
 
         AnalyzerResult result = await Driver.RunAnalyzerOn(data, CancellationToken.None);

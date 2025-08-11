@@ -1,6 +1,6 @@
-﻿namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
+﻿namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.AgentDefinitions;
 
-public record EntitySourceCode(string Type, string SourceCodeString)
+public record AgentSourceCode(string Type, string SourceCodeString)
 {
     public override string ToString() => Type;
 }

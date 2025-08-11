@@ -1,20 +1,20 @@
 ﻿using Hoeyer.OpcUa.CompileTime.Analysis;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
+using Hoeyer.OpcUa.CompileTime.Test.Fixtures.AgentDefinitions;
 using Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;
 using JetBrains.Annotations;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
 
-[TestSubject(typeof(EntityAnalyzer))]
+[TestSubject(typeof(AgentAnalyzer))]
 [InheritsTests]
-public sealed class EntityAnalyzerTest : DiagnosticAnalyzerTest<EntityAnalyzer>
+public sealed class AgentAnalyzerTest : DiagnosticAnalyzerTest<AgentAnalyzer>
 {
     [Test]
     [UnsupportedTypesSourceCodeGenerator]
-    [DisplayName("Reports error for $entitySourceCode")]
-    public async Task GivenEntityWithUnsupportedFields_ShouldHaveDiagnostic(EntitySourceCode entitySourceCode)
+    [DisplayName("Reports error for $agentSourceCode")]
+    public async Task GivenAgentWithUnsupportedFields_ShouldHaveDiagnostic(AgentSourceCode agentSourceCode)
     {
-        var res = await Driver.RunAnalyzerOn(entitySourceCode);
+        var res = await Driver.RunAnalyzerOn(agentSourceCode);
         var diagnosticsReportedByAnalyzer =
             res.Diagnostics.Where(diagnostic => Analyzer.SupportedDiagnostics.Contains(diagnostic.Descriptor));
         await Assert.That(diagnosticsReportedByAnalyzer).IsNotEmpty()

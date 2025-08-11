@@ -25,19 +25,19 @@ namespace Hoeyer.OpcUa.Simulation.Services;
 
 public static class ServiceCollectionExtension
 {
-    public static OnGoingOpcEntityServiceRegistrationWithSimulation WithOpcUaSimulationServices(
-        this OnGoingOpcEntityServiceRegistration registration)
+    public static OnGoingOpcAgentServiceRegistrationWithSimulation WithOpcUaSimulationServices(
+        this OnGoingOpcAgentServiceRegistration registration)
     {
         return WithOpcUaSimulationServices(registration, (c) => { });
     }
 
-    public static OnGoingOpcEntityServiceRegistrationWithSimulation WithOpcUaSimulationServices(
+    public static OnGoingOpcAgentServiceRegistrationWithSimulation WithOpcUaSimulationServices(
         this IServiceCollection registration, Action<SimulationServicesConfig> configure) =>
-        WithOpcUaSimulationServices(new OnGoingOpcEntityServiceRegistration(registration), configure);
+        WithOpcUaSimulationServices(new OnGoingOpcAgentServiceRegistration(registration), configure);
 
 
-    public static OnGoingOpcEntityServiceRegistrationWithSimulation WithOpcUaSimulationServices(
-        this OnGoingOpcEntityServiceRegistration registration, Action<SimulationServicesConfig> configure)
+    public static OnGoingOpcAgentServiceRegistrationWithSimulation WithOpcUaSimulationServices(
+        this OnGoingOpcAgentServiceRegistration registration, Action<SimulationServicesConfig> configure)
     {
         var originalCollection = registration.Collection;
         var collection = new ServiceCollection();
@@ -47,7 +47,7 @@ public static class ServiceCollectionExtension
             .AddTransient<IOpcMethodArgumentsAttributeUsageValidator, OpcMethodArgumentsAttributeUsageValidator>();
         simulationServices
             .AddTransient<IOpcMethodArgumentsAttributeUsageValidator, OpcMethodArgumentsAttributeUsageValidator>();
-        simulationServices.AddTransient<ITimeScaler, IdentityTimeScaler>();
+        simulationServices.AddTransient<ITimeScaler, Identity>();
 
 
         //Used as marker
@@ -66,7 +66,7 @@ public static class ServiceCollectionExtension
             functionSimulators);
 
         configure.Invoke(config);
-        return new OnGoingOpcEntityServiceRegistrationWithSimulation(registration.Collection, config);
+        return new OnGoingOpcAgentServiceRegistrationWithSimulation(registration.Collection, config);
     }
 
     private static void ValidateServices(IEnumerable<SimulationPatternTypeDetails> actionSimulators)
@@ -105,17 +105,17 @@ public static class ServiceCollectionExtension
         SimulationServicesContainer simulationServicesContainer)
     {
         foreach ((Type implementor, Type simulatorInterface, Type methodArgType, Type methodReturnType,
-                     Type entity) in typeReferences)
+                     Type agent) in typeReferences)
         {
             List<IServiceCollection> args = [simulationServicesContainer];
             ExecuteLocalStaticGeneric(
                 nameof(AddFunctionSimulationConfigurator),
-                generics: [entity, methodArgType, methodReturnType],
+                generics: [agent, methodArgType, methodReturnType],
                 args: [implementor, args]);
 
             ExecuteLocalStaticGeneric(
                 nameof(RegisterFunctionServices),
-                generics: [entity, methodArgType, methodReturnType],
+                generics: [agent, methodArgType, methodReturnType],
                 args: args);
         }
     }
@@ -124,50 +124,50 @@ public static class ServiceCollectionExtension
     private static void AddActionServices(List<SimulationPatternTypeDetails> typeReferences,
         SimulationServicesContainer simulationServicesContainer)
     {
-        foreach (var (implementor, simulatorInterface, methodArgType, _, entity) in
+        foreach (var (implementor, simulatorInterface, methodArgType, _, agent) in
                  typeReferences)
         {
             List<IServiceCollection> args = [simulationServicesContainer];
             ExecuteLocalStaticGeneric(
                 nameof(AddActionSimulationConfigurator),
-                generics: [entity, methodArgType],
+                generics: [agent, methodArgType],
                 args: [implementor, args]);
 
             ExecuteLocalStaticGeneric(
                 nameof(RegisterActionServices),
-                generics: [entity, methodArgType],
+                generics: [agent, methodArgType],
                 args: args);
         }
     }
 
-    private static void AddActionSimulationConfigurator<TEntity, TArgs>(Type impl,
+    private static void AddActionSimulationConfigurator<TAgent, TArgs>(Type impl,
         params IEnumerable<IServiceCollection> collections)
     {
         foreach (var serviceCollection in collections)
         {
-            serviceCollection.AddScoped<ISimulationBuilder<TEntity, TArgs>>
-                (p => p.GetRequiredService<ISimulationBuilderFactory<TEntity, TArgs>>().CreateSimulationBuilder());
+            serviceCollection.AddScoped<ISimulationBuilder<TAgent, TArgs>>
+                (p => p.GetRequiredService<ISimulationBuilderFactory<TAgent, TArgs>>().CreateSimulationBuilder());
 
             serviceCollection
-                .AddSingleton<ISimulationBuilderFactory<TEntity, TArgs>, SimulationBuilderFactory<TEntity, TArgs>>();
-            serviceCollection.AddTransient(typeof(ISimulation<TEntity, TArgs>), impl);
+                .AddSingleton<ISimulationBuilderFactory<TAgent, TArgs>, SimulationBuilderFactory<TAgent, TArgs>>();
+            serviceCollection.AddTransient(typeof(ISimulation<TAgent, TArgs>), impl);
             serviceCollection.AddTransient(impl, impl);
         }
     }
 
-    private static void AddFunctionSimulationConfigurator<TEntity, TArgs, TReturn>(Type impl,
+    private static void AddFunctionSimulationConfigurator<TAgent, TArgs, TReturn>(Type impl,
         params IEnumerable<IServiceCollection> collections)
     {
         foreach (var serviceCollection in collections)
         {
-            serviceCollection.AddScoped<ISimulationBuilder<TEntity, TArgs, TReturn>>
-            (p => p.GetRequiredService<ISimulationBuilderFactory<TEntity, TArgs, TReturn>>()
+            serviceCollection.AddScoped<ISimulationBuilder<TAgent, TArgs, TReturn>>
+            (p => p.GetRequiredService<ISimulationBuilderFactory<TAgent, TArgs, TReturn>>()
                 .CreateSimulationBuilder());
 
             serviceCollection
-                .AddSingleton<ISimulationBuilderFactory<TEntity, TArgs, TReturn>,
-                    SimulationBuilderFactory<TEntity, TArgs, TReturn>>();
-            serviceCollection.AddTransient(typeof(ISimulation<TEntity, TArgs, TReturn>), impl);
+                .AddSingleton<ISimulationBuilderFactory<TAgent, TArgs, TReturn>,
+                    SimulationBuilderFactory<TAgent, TArgs, TReturn>>();
+            serviceCollection.AddTransient(typeof(ISimulation<TAgent, TArgs, TReturn>), impl);
             serviceCollection.AddTransient(impl, impl);
         }
     }
@@ -184,41 +184,41 @@ public static class ServiceCollectionExtension
     }
 
 
-    private static void RegisterFunctionServices<TEntity, TArgs, TReturn>(
+    private static void RegisterFunctionServices<TAgent, TArgs, TReturn>(
         params IEnumerable<IServiceCollection> simulationServices)
     {
         foreach (var simulationService in simulationServices)
         {
-            AddSubscription<TEntity>(simulationService);
+            AddSubscription<TAgent>(simulationService);
             simulationService
-                .AddTransient<ISimulationStepValidator, ReturnValueOrderValidator<TEntity, TArgs, TReturn>>();
+                .AddTransient<ISimulationStepValidator, ReturnValueOrderValidator<TAgent, TArgs, TReturn>>();
             simulationService
-                .AddTransient<ISimulationExecutor<TEntity, TArgs>,
-                    SimulationExecutor<TEntity, TArgs>>(); //for compositional design
+                .AddTransient<ISimulationExecutor<TAgent, TArgs>,
+                    SimulationExecutor<TAgent, TArgs>>(); //for compositional design
             simulationService
-                .AddTransient<ISimulationExecutor<TEntity, TArgs, TReturn>,
-                    SimulationExecutor<TEntity, TArgs, TReturn>>();
+                .AddTransient<ISimulationExecutor<TAgent, TArgs, TReturn>,
+                    SimulationExecutor<TAgent, TArgs, TReturn>>();
             simulationService
-                .AddSingleton<ISimulationProcessorPipeline<TEntity, TArgs, TReturn>,
-                    SimulationProcessorPipeline<TEntity, TArgs, TReturn>>();
+                .AddSingleton<ISimulationProcessorPipeline<TAgent, TArgs, TReturn>,
+                    SimulationProcessorPipeline<TAgent, TArgs, TReturn>>();
             simulationService
-                .AddSingleton<ISimulationOrchestrator<TEntity, TArgs, TReturn>,
-                    SimulationOrchestrator<TEntity, TArgs, TReturn>>();
+                .AddSingleton<ISimulationOrchestrator<TAgent, TArgs, TReturn>,
+                    SimulationOrchestrator<TAgent, TArgs, TReturn>>();
         }
     }
 
-    private static void RegisterActionServices<TEntity, TArgs>(
+    private static void RegisterActionServices<TAgent, TArgs>(
         params IEnumerable<IServiceCollection> simulationServices)
     {
         foreach (var simulationService in simulationServices)
         {
-            AddSubscription<TEntity>(simulationService);
-            simulationService.AddTransient<ISimulationExecutor<TEntity, TArgs>, SimulationExecutor<TEntity, TArgs>>();
+            AddSubscription<TAgent>(simulationService);
+            simulationService.AddTransient<ISimulationExecutor<TAgent, TArgs>, SimulationExecutor<TAgent, TArgs>>();
             simulationService
-                .AddSingleton<ISimulationProcessorPipeline<TEntity, TArgs>,
-                    SimulationProcessorPipeline<TEntity, TArgs>>();
+                .AddSingleton<ISimulationProcessorPipeline<TAgent, TArgs>,
+                    SimulationProcessorPipeline<TAgent, TArgs>>();
             simulationService
-                .AddSingleton<ISimulationOrchestrator<TEntity, TArgs>, SimulationOrchestrator<TEntity, TArgs>>();
+                .AddSingleton<ISimulationOrchestrator<TAgent, TArgs>, SimulationOrchestrator<TAgent, TArgs>>();
         }
     }
 
@@ -249,15 +249,15 @@ public static class ServiceCollectionExtension
             simulatorInterface!.GenericTypeArguments[0]);
     }
 
-    private static void AddSubscription<TEntity>(IServiceCollection simulationService)
+    private static void AddSubscription<TAgent>(IServiceCollection simulationService)
     {
         simulationService.AddSingleton<
-            IMessageSubscriptionFactory<SimulationResult<TEntity>>,
-            ChannelSubscriptionFactory<SimulationResult<TEntity>>
+            IMessageSubscriptionFactory<SimulationResult<TAgent>>,
+            ChannelSubscriptionFactory<SimulationResult<TAgent>>
         >();
         simulationService.AddSingleton<
-            ISubscriptionManager<SimulationResult<TEntity>>,
-            SubscriptionManager<SimulationResult<TEntity>>
+            ISubscriptionManager<SimulationResult<TAgent>>,
+            SubscriptionManager<SimulationResult<TAgent>>
         >();
     }
 }

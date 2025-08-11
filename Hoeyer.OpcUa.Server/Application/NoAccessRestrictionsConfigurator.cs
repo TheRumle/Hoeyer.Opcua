@@ -9,11 +9,11 @@ internal sealed class NoAccessRestrictionsConfigurator : IAgentAccessConfigurato
     {
         managed.ChangeState(Agent =>
         {
-            foreach (var managedEntityPropertyState in Agent.PropertyStates)
+            foreach (var managedAgentPropertyState in Agent.PropertyStates)
             {
-                managedEntityPropertyState.UserAccessLevel = AccessLevels.CurrentRead | AccessLevels.CurrentWrite;
-                managedEntityPropertyState.AccessLevel = AccessLevels.CurrentRead | AccessLevels.CurrentWrite;
-                managedEntityPropertyState.MinimumSamplingInterval = 500;
+                managedAgentPropertyState.UserAccessLevel = AccessLevels.CurrentRead | AccessLevels.CurrentWrite;
+                managedAgentPropertyState.AccessLevel = AccessLevels.CurrentRead | AccessLevels.CurrentWrite;
+                managedAgentPropertyState.MinimumSamplingInterval = 500;
             }
         });
     }

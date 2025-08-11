@@ -2,7 +2,7 @@
 
 namespace Playground.Models;
 
-[OpcUaEntity]
+[OpcUaAgent]
 public sealed record MyLittleRobot
 {
     public required string Name { get; set; }

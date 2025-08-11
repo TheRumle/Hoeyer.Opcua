@@ -1,11 +1,11 @@
 ﻿using Hoeyer.Common.Extensions.Collection;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
+using Hoeyer.OpcUa.CompileTime.Test.Fixtures.AgentDefinitions;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;
 
-public sealed class ValidEntitySourceCodeGeneratorAttribute : DataSourceGeneratorAttribute<EntitySourceCode>
+public sealed class ValidAgentSourceCodeGeneratorAttribute : DataSourceGeneratorAttribute<AgentSourceCode>
 {
-    protected override IEnumerable<Func<EntitySourceCode>>
+    protected override IEnumerable<Func<AgentSourceCode>>
         GenerateDataSources(DataGeneratorMetadata dataGeneratorMetadata) =>
-        EntitySourceCodeDefinitions.ValidEntities.SelectFunc();
+        AgentSourceCodeDefinitions.ValidEntities.SelectFunc();
 }

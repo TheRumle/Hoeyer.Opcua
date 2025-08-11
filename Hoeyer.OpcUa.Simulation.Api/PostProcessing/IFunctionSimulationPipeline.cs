@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace Hoeyer.OpcUa.Simulation.Api.PostProcessing;
 
-internal interface IFunctionSimulationPipeline<in TEntity, in TArgs, in TReturn>
+internal interface IFunctionSimulationPipeline<in TAgent, in TArgs, in TReturn>
 {
     ValueTask OnSimulationBegin(TArgs args);
 
-    ValueTask ProcessStep(TEntity previous, DateTime timeStamp, TEntity reached,
+    ValueTask ProcessStep(TAgent previous, DateTime timeStamp, TAgent reached,
         ActionType actionType);
 
     ValueTask OnSimulationFinished();

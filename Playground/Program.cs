@@ -37,7 +37,7 @@ builder.Services.AddOpcUaServerConfiguration(conf => conf
         .WithOpcTcpHost("localhost", opcUaConfig.Port)
         .WithEndpoints([$"opc.tcp://localhost:{opcUaConfig.Port}"])
         .Build())
-    .WithEntityServices()
+    .WithAgentServices()
     .WithOpcUaSimulationServices(config =>
     {
         config.WithTimeScaling(0.1);

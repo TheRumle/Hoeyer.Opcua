@@ -3,14 +3,14 @@ using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
 
-public interface IAdaptionContextTranslator<TContext, TEntity, TMethodArgs>
+public interface IAdaptionContextTranslator<TContext, TAgent, TMethodArgs>
 {
-    public (TEntity currentState, TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps)
+    public (TAgent currentState, TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps)
         CreateSimulationContext(TContext cont);
 }
 
-public interface IAdaptionContextTranslator<in TContext, TEntity, TMethodArgs, TReturn>
+public interface IAdaptionContextTranslator<in TContext, TAgent, TMethodArgs, TReturn>
 {
-    public (TEntity currentState, TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps)
+    public (TAgent currentState, TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps)
         CreateSimulationContext(TContext context);
 }

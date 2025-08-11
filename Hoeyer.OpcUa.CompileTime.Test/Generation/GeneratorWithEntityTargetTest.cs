@@ -1,5 +1,5 @@
 ﻿using Hoeyer.OpcUa.CompileTime.Test.Drivers;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
+using Hoeyer.OpcUa.CompileTime.Test.Fixtures.AgentDefinitions;
 using Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -7,23 +7,23 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace Hoeyer.OpcUa.CompileTime.Test.Generation;
 
 [InheritsTests]
-public abstract class GeneratorWithEntityTargetTest<T> where T : IIncrementalGenerator, new()
+public abstract class GeneratorWithAgentTargetTest<T> where T : IIncrementalGenerator, new()
 {
     protected readonly GeneratorTestDriver<T> TestDriver = new(new T(), Console.WriteLine);
 
     [Test]
-    [ValidEntitySourceCodeGenerator]
-    [DisplayName("Can generate valid syntax tree for '$entitySourceCode'")]
-    public async Task WhenGiven_CorrectSourceCodeInfo_ShouldGenerateValidSyntaxTrees(EntitySourceCode entitySourceCode)
+    [ValidAgentSourceCodeGenerator]
+    [DisplayName("Can generate valid syntax tree for '$agentSourceCode'")]
+    public async Task WhenGiven_CorrectSourceCodeInfo_ShouldGenerateValidSyntaxTrees(AgentSourceCode agentSourceCode)
     {
-        GeneratorResult generationResult = TestDriver.RunGeneratorOn(entitySourceCode.SourceCodeString);
+        GeneratorResult generationResult = TestDriver.RunGeneratorOn(agentSourceCode.SourceCodeString);
         await Assert.That(generationResult.GeneratedTrees).IsNotEmpty().Because("source code should be generated.");
     }
 
     [Test]
-    [ValidEntitySourceCodeGenerator]
+    [ValidAgentSourceCodeGenerator]
     [DisplayName("Generates valid syntax tree for $sourceCode")]
-    public async Task WhenGivenValidSourceCode_ProducesValidSyntaxTree(EntitySourceCode sourceCode)
+    public async Task WhenGivenValidSourceCode_ProducesValidSyntaxTree(AgentSourceCode sourceCode)
     {
         GeneratorResult generationResult = TestDriver.RunGeneratorOn(sourceCode.SourceCodeString);
         var syntaxTree = CSharpSyntaxTree.ParseText(generationResult.SourceCode);
@@ -34,11 +34,11 @@ public abstract class GeneratorWithEntityTargetTest<T> where T : IIncrementalGen
     }
 
     [Test]
-    [ValidEntitySourceCodeGenerator]
+    [ValidAgentSourceCodeGenerator]
     [DisplayName("Will not produce any diagnostic for valid class fixtures")]
-    public async Task Generator_ShouldNeverProduceDiagnostics(EntitySourceCode entitySourceCode)
+    public async Task Generator_ShouldNeverProduceDiagnostics(AgentSourceCode agentSourceCode)
     {
-        GeneratorResult generationResult = TestDriver.RunGeneratorOn(entitySourceCode.SourceCodeString);
+        GeneratorResult generationResult = TestDriver.RunGeneratorOn(agentSourceCode.SourceCodeString);
         await Assert.That(generationResult.Errors).IsEmpty().Because(
             "The generator should not be responsible for analyzing source code, only production of generated code.");
     }

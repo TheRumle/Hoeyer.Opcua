@@ -1,20 +1,20 @@
 ﻿using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
+namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.AgentDefinitions;
 
-public static class EntitySourceCodeDefinitions
+public static class AgentSourceCodeDefinitions
 {
     private static readonly Regex ClassNameRegex = new(@"class\s+([A-Za-z_][A-Za-z0-9_]*)\s*");
 
-    private static readonly IEnumerable<string> ValidEntityClassDefinitions =
+    private static readonly IEnumerable<string> ValidAgentClassDefinitions =
     [
         """
         namespace Test;
         using System;
         using System.Collections.Generic;
         using Hoeyer.OpcUa.Core;
-        [OpcUaEntity]
+        [OpcUaAgent]
         public class SupportedDataTypes
         {
             public List<int> ListField { get; set; } = null!;
@@ -36,8 +36,8 @@ public static class EntitySourceCodeDefinitions
         using System;
         using System.Collections.Generic;
         using Hoeyer.OpcUa.Core;
-        [OpcUaEntity]
-        public class PropertyAccessesTestEntity
+        [OpcUaAgent]
+        public class PropertyAccessesTestAgent
         {
             public string S { get; set; }
         }
@@ -47,7 +47,7 @@ public static class EntitySourceCodeDefinitions
         using System;
         using System.Collections.Generic;
         using Hoeyer.OpcUa.Core;
-        [OpcUaEntity]
+        [OpcUaAgent]
         public class FullyQualifiedLongAttributeName
         {
             public string MyString { get; set; } = "";
@@ -65,7 +65,7 @@ public static class EntitySourceCodeDefinitions
             OnTheMoon
         }
 
-        [OpcUaEntity]
+        [OpcUaAgent]
         public sealed class EnumSupport
         {
             public Position Position { get; set; }
@@ -73,14 +73,14 @@ public static class EntitySourceCodeDefinitions
         """
     ];
 
-    private static readonly IEnumerable<string> UnsupportedEntityClassDefinitions =
+    private static readonly IEnumerable<string> UnsupportedAgentClassDefinitions =
     [
         """
         namespace Test;
         using System;
         using System.Collections.Generic;
         using Hoeyer.OpcUa.Core;
-        [OpcUaEntity]
+        [OpcUaAgent]
         public class HashSetType
         {
             public HashSet<int> ListField { get; set; } = null!;
@@ -98,7 +98,7 @@ public static class EntitySourceCodeDefinitions
             OnTheMoon
         }
 
-        [OpcUaEntity]
+        [OpcUaAgent]
         public class DelegateType
         {
             public delegate void ChangePosition(Position oldPosition, Position newPosition);
@@ -109,7 +109,7 @@ public static class EntitySourceCodeDefinitions
         using System;
         using System.Collections.Generic;
         using Hoeyer.OpcUa.Core;
-        [OpcUaEntity]
+        [OpcUaAgent]
         public class SelfReference
         {
             public SelfReference self {get; set;}
@@ -120,7 +120,7 @@ public static class EntitySourceCodeDefinitions
         using System;
         using System.Collections.Generic;
         using Hoeyer.OpcUa.Core;
-        [OpcUaEntity]
+        [OpcUaAgent]
         public class FuncReferencingSelf
         {
             public event Func<int, int, FuncReferencingSelf> function;
@@ -131,7 +131,7 @@ public static class EntitySourceCodeDefinitions
         using System;
         using System.Collections.Generic;
         using Hoeyer.OpcUa.Core;
-        [OpcUaEntity]
+        [OpcUaAgent]
         public class ActionEvent
         {
             public string MyString { get; set; } = "";
@@ -143,7 +143,7 @@ public static class EntitySourceCodeDefinitions
         using System;
         using System.Collections.Generic;
         using Hoeyer.OpcUa.Core;
-        [OpcUaEntity]
+        [OpcUaAgent]
         public class FuncEvent
         {
             public event Func<int, int, string> function;
@@ -152,13 +152,13 @@ public static class EntitySourceCodeDefinitions
     ];
 
 
-    public static readonly ImmutableHashSet<EntitySourceCode> ValidEntities = ValidEntityClassDefinitions
-        .Select(sourceCode => new EntitySourceCode(ClassNameRegex.Match(sourceCode).Groups[1].Value, sourceCode))
+    public static readonly ImmutableHashSet<AgentSourceCode> ValidEntities = ValidAgentClassDefinitions
+        .Select(sourceCode => new AgentSourceCode(ClassNameRegex.Match(sourceCode).Groups[1].Value, sourceCode))
         .ToImmutableHashSet();
 
-    public static readonly ImmutableHashSet<EntitySourceCode> UnsupportedTypes = UnsupportedEntityClassDefinitions
-        .Select(sourceCode => new EntitySourceCode(ClassNameRegex.Match(sourceCode).Groups[1].Value, sourceCode))
+    public static readonly ImmutableHashSet<AgentSourceCode> UnsupportedTypes = UnsupportedAgentClassDefinitions
+        .Select(sourceCode => new AgentSourceCode(ClassNameRegex.Match(sourceCode).Groups[1].Value, sourceCode))
         .ToImmutableHashSet();
 
-    public static readonly ImmutableHashSet<EntitySourceCode> All = ValidEntities.Union(UnsupportedTypes);
+    public static readonly ImmutableHashSet<AgentSourceCode> All = ValidEntities.Union(UnsupportedTypes);
 }

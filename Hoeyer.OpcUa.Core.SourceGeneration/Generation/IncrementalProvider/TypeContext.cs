@@ -22,7 +22,7 @@ public sealed record TypeContext(SemanticModel SemanticModel, TypeDeclarationSyn
     private INamespaceSymbol NameSpace => SemanticModel.GetDeclaredSymbol(Node)!.ContainingNamespace;
 
     /// <summary>
-    ///     Gets the using statements necessary to compile the Entity.
+    ///     Gets the using statements necessary to compile the Agent.
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
@@ -40,7 +40,7 @@ public sealed record TypeContext(SemanticModel SemanticModel, TypeDeclarationSyn
     }
 
     /// <summary>
-    ///     Gets the using statements necessary to compile the Entity and a using statement for the Entity itself.
+    ///     Gets the using statements necessary to compile the Agent and a using statement for the Agent itself.
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>

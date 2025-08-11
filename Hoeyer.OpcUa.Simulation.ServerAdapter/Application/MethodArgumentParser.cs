@@ -9,7 +9,7 @@ namespace Hoeyer.OpcUa.Simulation.ServerAdapter.Application;
 /// Parses a list of method arguments into a strongly-typed argument structure of type <typeparamref name="TMethodArgs"/>.
 /// </summary>
 /// <typeparam name="TMethodArgs">The type representing the structure of method arguments.</typeparam>
-internal sealed class MethodArgumentParser<TMethodArgs>(IEntityMethodArgTranslator<TMethodArgs> argsMapper)
+internal sealed class MethodArgumentParser<TMethodArgs>(IAgentMethodArgTranslator<TMethodArgs> argsMapper)
     : IMethodArgumentParser<TMethodArgs> where TMethodArgs : IArgsContainer
 {
     private static readonly int NumberOfArgs = typeof(TMethodArgs).GetProperties().Length;

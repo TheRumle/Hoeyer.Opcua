@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Hoeyer.OpcUa.Core.Configuration;
 
-public interface IOpcUaEntityServerInfo
+public interface IOpcUaAgentServerInfo
 {
     string ServerId { get; }
     string ApplicationName { get; }

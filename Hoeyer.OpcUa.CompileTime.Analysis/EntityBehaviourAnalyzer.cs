@@ -9,10 +9,10 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Hoeyer.OpcUa.CompileTime.Analysis;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class EntityBehaviourAnalyzer()
+public sealed class AgentBehaviourAnalyzer()
     : ConcurrentAnalyzer([
-        Rules.MustBeSupportedOpcUaType, Rules.ReturnTypeMustBeTask, Rules.OpcUaEntityBehaviourMemberNotSupported,
-        Rules.MustBeOpcEntityArgument, Rules.MethodNameMustBeUnique
+        Rules.MustBeSupportedOpcUaType, Rules.ReturnTypeMustBeTask, Rules.OpcUaAgentBehaviourMemberNotSupported,
+        Rules.MustBeOpcAgentArgument, Rules.MethodNameMustBeUnique
     ])
 {
     /// <inheritdoc />
@@ -24,13 +24,13 @@ public sealed class EntityBehaviourAnalyzer()
     private static void AnalyzeSyntax(SyntaxNodeAnalysisContext context)
     {
         if (context.Node is not InterfaceDeclarationSyntax interfaceSyntax ||
-            !interfaceSyntax.IsAnnotatedAsOpcUaEntityBehaviour(context.SemanticModel))
+            !interfaceSyntax.IsAnnotatedAsOpcUaAgentBehaviour(context.SemanticModel))
         {
             return;
         }
 
         var errors = GetMemberNotSupported(interfaceSyntax)
-            .Concat(GetGenericArgNotEntity(interfaceSyntax, context.SemanticModel))
+            .Concat(GetGenericArgNotAgent(interfaceSyntax, context.SemanticModel))
             .Concat(GetMemberTypesNotSupported(interfaceSyntax, context.SemanticModel))
             .Concat(GetUniqueMethodNameViolations(interfaceSyntax));
 
@@ -79,18 +79,18 @@ public sealed class EntityBehaviourAnalyzer()
         return interfaceSyntax
             .Members
             .Where(member => member is not MethodDeclarationSyntax)
-            .Select(e => Diagnostic.Create(Rules.OpcUaEntityMemberNotSupported, e.GetLocation()));
+            .Select(e => Diagnostic.Create(Rules.OpcUaAgentMemberNotSupported, e.GetLocation()));
     }
 
-    private static IEnumerable<Diagnostic> GetGenericArgNotEntity(TypeDeclarationSyntax interfaceSyntax,
+    private static IEnumerable<Diagnostic> GetGenericArgNotAgent(TypeDeclarationSyntax interfaceSyntax,
         SemanticModel model)
     {
-        AttributeData? attribute = interfaceSyntax.GetOpcUaEntityBehaviourAttribute(model);
+        AttributeData? attribute = interfaceSyntax.GetOpcUaAgentBehaviourAttribute(model);
         ITypeSymbol? targetType = attribute?.AttributeClass?.TypeArguments.FirstOrDefault();
         if (targetType == null) yield break;
-        if (!targetType.IsAnnotatedAsOpcUaEntity())
+        if (!targetType.IsAnnotatedAsOpcUaAgent())
         {
-            yield return Diagnostic.Create(Rules.MustBeOpcEntityArgument, interfaceSyntax.Identifier.GetLocation());
+            yield return Diagnostic.Create(Rules.MustBeOpcAgentArgument, interfaceSyntax.Identifier.GetLocation());
         }
     }
 }

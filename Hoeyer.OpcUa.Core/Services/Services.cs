@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Hoeyer.OpcUa.Core.Configuration;
-using Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
+using Hoeyer.OpcUa.Core.Configuration.AgentServerBuilder;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,27 +9,27 @@ namespace Hoeyer.OpcUa.Core.Services;
 
 public static class Services
 {
-    public static OnGoingOpcEntityServiceRegistration AddOpcUaServerConfiguration(this IServiceCollection services,
-        Func<IEntityServerConfigurationBuilder, IOpcUaEntityServerInfo> configurationBuilder)
+    public static OnGoingOpcAgentServiceRegistration AddOpcUaServerConfiguration(this IServiceCollection services,
+        Func<IAgentServerConfigurationBuilder, IOpcUaAgentServerInfo> configurationBuilder)
     {
-        var entityServerConfiguration = configurationBuilder.Invoke(EntityServerConfigurationBuilder.Create());
-        services.AddSingleton(entityServerConfiguration);
-        return new OnGoingOpcEntityServiceRegistration(services);
+        var agentServerConfiguration = configurationBuilder.Invoke(AgentServerConfigurationBuilder.Create());
+        services.AddSingleton(agentServerConfiguration);
+        return new OnGoingOpcAgentServiceRegistration(services);
     }
 
-    public static IServiceCollection WithEntityServices(this IServiceCollection services)
+    public static IServiceCollection WithAgentServices(this IServiceCollection services)
     {
         var errs = services
-            .AddEntityServices()
+            .AddAgentServices()
             .ToList();
-        if (errs.Any()) throw new OpcUaEntityServiceConfigurationException(errs);
+        if (errs.Any()) throw new OpcUaAgentServiceConfigurationException(errs);
         return services;
     }
 
-    public static OnGoingOpcEntityServiceRegistration WithEntityServices(
-        this OnGoingOpcEntityServiceRegistration registration)
+    public static OnGoingOpcAgentServiceRegistration WithAgentServices(
+        this OnGoingOpcAgentServiceRegistration registration)
     {
-        registration.Collection.WithEntityServices();
+        registration.Collection.WithAgentServices();
         return registration;
     }
 }

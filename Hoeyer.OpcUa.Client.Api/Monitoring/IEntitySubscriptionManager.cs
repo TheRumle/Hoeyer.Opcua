@@ -5,7 +5,7 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Api.Monitoring;
 
-public interface IEntitySubscriptionManager<out T>
+public interface IAgentSubscriptionManager<out T>
 {
     public Subscription? Subscription { get; }
 

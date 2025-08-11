@@ -11,18 +11,18 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-[OpcUaEntityService(typeof(IAgentManagerFactory), ServiceLifetime.Singleton)]
-[OpcUaEntityService(typeof(IAgentManagerFactory<>), ServiceLifetime.Singleton)]
+[OpcUaAgentService(typeof(IAgentManagerFactory), ServiceLifetime.Singleton)]
+[OpcUaAgentService(typeof(IAgentManagerFactory<>), ServiceLifetime.Singleton)]
 internal sealed class AgentManagerSingletonFactory<T>(
     ILoggerFactory factory,
     IManagedAgentSingletonFactory<T> nodeFactory,
-    MaybeInitializedEntityManager<T> loadableManager,
+    MaybeInitializedAgentManager<T> loadableManager,
     IEnumerable<INodeConfigurator<T>> preinitializedNodeConfigurators,
     IAgentAccessConfigurator accessConfigurator) : IAgentManagerFactory<T>
 {
     public IAgentManager<T>? CreatedManager { get; private set; }
 
-    public async Task<IAgentManager> CreateEntityManager(IServerInternal server)
+    public async Task<IAgentManager> CreateAgentManager(IServerInternal server)
     {
         CreatedManager ??= await CreateManager(server);
         return CreatedManager;

@@ -4,26 +4,26 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Core.Services.OpcUaServices;
 
-internal sealed record EntityServiceInfo
+internal sealed record AgentServiceInfo
 {
     /// <summary>
     /// Represents a Service of type IMyService &lt;T&gt; where T remains generic.
     /// </summary>
-    public EntityServiceInfo(
+    public AgentServiceInfo(
         Type serviceType,
         Type ImplementationType,
-        Type Entity,
+        Type Agent,
         ServiceLifetime lifetime
     )
     {
         ServiceLifetime = lifetime;
         ServiceType = serviceType;
         this.ImplementationType = ImplementationType;
-        this.Entity = Entity;
+        this.Agent = Agent;
 
-        if (Entity.GetCustomAttribute<OpcUaEntityAttribute>() is null)
+        if (Agent.GetCustomAttribute<OpcUaAgentAttribute>() is null)
             throw new ArgumentException(
-                $"The type '{ImplementationType.Name}' is being registered as '{serviceType.Name}' but '{Entity.Name}' must be annotated with {nameof(OpcUaEntityAttribute)} to be considered an Entity.");
+                $"The type '{ImplementationType.Name}' is being registered as '{serviceType.Name}' but '{Agent.Name}' must be annotated with {nameof(OpcUaAgentAttribute)} to be considered an Agent.");
     }
 
     public ServiceLifetime ServiceLifetime { get; }
@@ -31,7 +31,7 @@ internal sealed record EntityServiceInfo
     public Type ServiceType { get; }
     public Type ImplementationType { get; }
 
-    public Type Entity { get; }
+    public Type Agent { get; }
 
     public override string ToString() => $"{ServiceType.FullName} being implemented by {ImplementationType.FullName}";
 

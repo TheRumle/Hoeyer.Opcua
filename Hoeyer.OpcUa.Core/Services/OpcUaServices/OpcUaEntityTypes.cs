@@ -8,45 +8,45 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Core.Services.OpcUaServices;
 
-public static class OpcUaEntityTypes
+public static class OpcUaAgentTypes
 {
-    public readonly static FrozenSet<Type> TypesFromReferencingAssemblies = typeof(OpcUaEntityAttribute)
+    public readonly static FrozenSet<Type> TypesFromReferencingAssemblies = typeof(OpcUaAgentAttribute)
         .GetTypesFromConsumingAssemblies()
         .ToFrozenSet();
 
     public static readonly FrozenSet<Type> Entities = TypesFromReferencingAssemblies
-        .Where(type => type.IsAnnotatedWith<OpcUaEntityAttribute>())
+        .Where(type => type.IsAnnotatedWith<OpcUaAgentAttribute>())
         .ToFrozenSet();
 
 
-    internal static readonly FrozenSet<(Type service, Type entity)> EntityBehaviours = TypesFromReferencingAssemblies
+    internal static readonly FrozenSet<(Type service, Type agent)> AgentBehaviours = TypesFromReferencingAssemblies
         .Select(service => (methodService: service,
-            attributeInstance: service.GetAnnotationInstance(typeof(OpcUaEntityMethodsAttribute<>))))
+            attributeInstance: service.GetAnnotationInstance(typeof(OpcUaAgentMethodsAttribute<>))))
         .Where(annotationInstance => annotationInstance.attributeInstance is not null)
         .Select(e => (e.methodService, e.attributeInstance!.GenericTypeArguments[0]))
         .ToFrozenSet();
 
-    internal static readonly FrozenSet<EntityServiceInfo> GenericServices = ServiceTypes
+    internal static readonly FrozenSet<AgentServiceInfo> GenericServices = ServiceTypes
         .Where(type => type.IsGenericType)
         .SelectMany(implementationType =>
         {
             //Find all generic services and create types instantiated version of them
-            IEnumerable<OpcUaEntityServiceAttribute> attrs =
-                implementationType.GetCustomAttributes<OpcUaEntityServiceAttribute>();
+            IEnumerable<OpcUaAgentServiceAttribute> attrs =
+                implementationType.GetCustomAttributes<OpcUaAgentServiceAttribute>();
             return attrs.SelectMany(attr =>
             {
                 if (implementationType.IsConstructedGenericType)
                 {
-                    Type? entity = implementationType.GenericTypeArguments[0];
-                    return [(implementationType, attr, entity)];
+                    Type? agent = implementationType.GenericTypeArguments[0];
+                    return [(implementationType, attr, agent)];
                 }
 
                 if (implementationType.IsGenericTypeDefinition)
                 {
-                    return Entities.Select(entity =>
+                    return Entities.Select(agent =>
                     {
-                        Type value = implementationType.MakeGenericType(entity);
-                        return (implementationType: value, attr, entity);
+                        Type value = implementationType.MakeGenericType(agent);
+                        return (implementationType: value, attr, agent);
                     });
                 }
 
@@ -56,37 +56,37 @@ public static class OpcUaEntityTypes
         .Select(tuple =>
         {
             //For each instantiated service, also create generic versions of the interface
-            (Type? implemetationType, OpcUaEntityServiceAttribute? attr, Type? entity) = tuple;
+            (Type? implemetationType, OpcUaAgentServiceAttribute? attr, Type? agent) = tuple;
             if (attr.ServiceType.IsConstructedGenericType)
-                return new EntityServiceInfo(attr.ServiceType, implemetationType, entity, attr.Lifetime);
+                return new AgentServiceInfo(attr.ServiceType, implemetationType, agent, attr.Lifetime);
 
             if (attr.ServiceType.IsGenericTypeDefinition)
             {
-                Type service = attr.ServiceType.MakeGenericType(entity);
-                return new EntityServiceInfo(service, implemetationType, entity, attr.Lifetime);
+                Type service = attr.ServiceType.MakeGenericType(agent);
+                return new AgentServiceInfo(service, implemetationType, agent, attr.Lifetime);
             }
 
-            return new EntityServiceInfo(attr.ServiceType, implemetationType, entity, attr.Lifetime);
+            return new AgentServiceInfo(attr.ServiceType, implemetationType, agent, attr.Lifetime);
         })
         .ToFrozenSet();
 
     internal static FrozenSet<Type> ServiceTypes => TypesFromReferencingAssemblies
-        .Where(type => type.IsAnnotatedWith<OpcUaEntityServiceAttribute>())
+        .Where(type => type.IsAnnotatedWith<OpcUaAgentServiceAttribute>())
         .ToFrozenSet();
 
-    internal static FrozenSet<EntityServiceInfo> NonGenericServices => ServiceTypes
+    internal static FrozenSet<AgentServiceInfo> NonGenericServices => ServiceTypes
         .Where(type => !type.IsGenericType)
         .SelectMany(implementationType =>
         {
             //Find all generic services and create types instantiated version of them
-            IEnumerable<OpcUaEntityServiceAttribute> attrs =
-                implementationType.GetCustomAttributes<OpcUaEntityServiceAttribute>();
+            IEnumerable<OpcUaAgentServiceAttribute> attrs =
+                implementationType.GetCustomAttributes<OpcUaAgentServiceAttribute>();
             return attrs.SelectMany(attr =>
             {
                 if (attr.ServiceType.IsConstructedGenericType)
                 {
-                    Type? entity = attr.ServiceType.GenericTypeArguments[0];
-                    return [new EntityServiceInfo(attr.ServiceType, implementationType, entity, attr.Lifetime)];
+                    Type? agent = attr.ServiceType.GenericTypeArguments[0];
+                    return [new AgentServiceInfo(attr.ServiceType, implementationType, agent, attr.Lifetime)];
                 }
 
                 if (attr.ServiceType.IsGenericTypeDefinition)
@@ -95,22 +95,22 @@ public static class OpcUaEntityTypes
                         .GetInterfaces()
                         .First(e => e.IsGenericType && e.GetGenericTypeDefinition() == attr.ServiceType);
 
-                    Type? entity = implemetation.GenericTypeArguments[0];
+                    Type? agent = implemetation.GenericTypeArguments[0];
 
-                    return [new EntityServiceInfo(implemetation, implementationType, entity, attr.Lifetime)];
+                    return [new AgentServiceInfo(implemetation, implementationType, agent, attr.Lifetime)];
                 }
 
 
-                return Enumerable.Empty<EntityServiceInfo>();
+                return Enumerable.Empty<AgentServiceInfo>();
             });
         }).Where(e => e is not null)
         .ToFrozenSet();
 
 
-    internal static FrozenSet<EntityServiceInfo> BehaviourImplementations =>
+    internal static FrozenSet<AgentServiceInfo> BehaviourImplementations =>
         ServiceTypes
-            .SelectMany(type => EntityBehaviours
+            .SelectMany(type => AgentBehaviours
                 .Where(tuple => type.GetInterfaces().Contains(tuple.service))
-                .Select(tuple => new EntityServiceInfo(tuple.service, type, tuple.entity, ServiceLifetime.Singleton)))
+                .Select(tuple => new AgentServiceInfo(tuple.service, type, tuple.agent, ServiceLifetime.Singleton)))
             .ToFrozenSet();
 };

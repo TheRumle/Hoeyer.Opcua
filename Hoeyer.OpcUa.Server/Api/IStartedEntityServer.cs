@@ -2,4 +2,4 @@
 
 namespace Hoeyer.OpcUa.Server.Api;
 
-public interface IStartedEntityServer : IDisposable;
+public interface IStartedAgentServer : IDisposable;

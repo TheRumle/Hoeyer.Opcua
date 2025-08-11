@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
+﻿namespace Hoeyer.OpcUa.Core.Configuration.AgentServerBuilder;
 
 public interface IServerNameStep
 {

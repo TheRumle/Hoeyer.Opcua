@@ -5,11 +5,11 @@ using System.Reflection;
 namespace Hoeyer.OpcUa.Simulation.Api;
 
 [AttributeUsage(AttributeTargets.Struct | AttributeTargets.Class, Inherited = false)]
-public sealed class OpcMethodArgumentsAttribute<TEntity, TInterface> : Attribute, IOpcMethodArgumentsAttribute
+public sealed class OpcMethodArgumentsAttribute<TAgent, TInterface> : Attribute, IOpcMethodArgumentsAttribute
 {
     public OpcMethodArgumentsAttribute(string methodName)
     {
-        Entity = typeof(TEntity);
+        Agent = typeof(TAgent);
         Interface = typeof(TInterface);
         MethodName = methodName;
         Method = Interface.GetMember(methodName)
@@ -19,7 +19,7 @@ public sealed class OpcMethodArgumentsAttribute<TEntity, TInterface> : Attribute
 
     public MethodInfo Method { get; }
 
-    public Type Entity { get; }
+    public Type Agent { get; }
     public Type Interface { get; }
     public string MethodName { get; }
 }
