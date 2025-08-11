@@ -9,6 +9,7 @@ using Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Connection;
 using Hoeyer.OpcUa.Client.Api.Monitoring;
+using Hoeyer.OpcUa.Client.Extensions;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,49 +30,44 @@ internal sealed class EntitySubscriptionManager<T>(
 {
     private static readonly string SessionClientId = typeof(T).Name + "EntityMonitor";
 
-    private readonly SemaphoreSlim _lock = new(1);
-
     private readonly SubscriptionManager<T, ChannelBasedSubscription<T>> _subscriptionManager =
         new(new ChannelSubscriptionFactory<T>());
 
-    private List<MonitoredItem> MonitoredItems { get; set; } = [];
+    private IReadOnlyList<MonitoredItem> MonitoredItems { get; set; } = [];
     private IEntityNode? CurrentNodeState { get; set; }
-    public Subscription? Subscription { get; private set; }
+    private EntitySubscription? EntitySubscription { get; set; }
+    public Subscription? Subscription => EntitySubscription;
 
 
-    public async Task<IMessageSubscription> SubscribeToChange(
+    public async Task<IMessageSubscription> SubscribeToAllPropertyChanges(
         IMessageConsumer<T> consumer, CancellationToken cancellationToken = default)
     {
-        await BeginMonitorNodes(cancellationToken);
+        CurrentNodeState ??= await browser.BrowseEntityNode(cancellationToken);
+        var session = await sessionFactory.GetSessionForAsync(SessionClientId, cancellationToken);
+        (EntitySubscription, MonitoredItems) =
+            await monitorFactory.CreateAndMonitorAll(session, CurrentNodeState, HandleChange, cancellationToken);
+        await session.Session.PublishAsync(null, new SubscriptionAcknowledgementCollection(), cancellationToken);
         return _subscriptionManager.Subscribe(consumer);
     }
 
-    private async Task BeginMonitorNodes(CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public async Task<IMessageSubscription> SubscribeToProperty(
+        IMessageConsumer<T> consumer,
+        string propertyName,
+        CancellationToken cancellationToken = default)
     {
-        await _lock.WaitAsync(cancellationToken);
-        try
-        {
-            if (MonitoredItems.Count > 0)
-            {
-                return;
-            }
+        CurrentNodeState ??= await browser.BrowseEntityNode(cancellationToken);
+        var session = await sessionFactory.GetSessionForAsync(SessionClientId, cancellationToken);
+        EntitySubscription ??= await monitorFactory.GetOrCreateSubscriptionWithCallback(
+            session,
+            "EntitySubscriptionManagerSubscription",
+            HandleChange,
+            cancellationToken);
 
-            CurrentNodeState ??= await browser.BrowseEntityNode(cancellationToken);
-            var session = await sessionFactory.GetSessionForAsync(SessionClientId, cancellationToken);
-            var (subscription, items) = await monitorFactory.GetOrCreate(session, CurrentNodeState, cancellationToken);
-            (Subscription, MonitoredItems) = (subscription, items.ToList());
-
-            foreach (var item in MonitoredItems)
-            {
-                item.Notification += HandleChange;
-            }
-
-            await session.Session.PublishAsync(null, new SubscriptionAcknowledgementCollection(), cancellationToken);
-        }
-        finally
-        {
-            _lock.Release();
-        }
+        var propertyIdentity = CurrentNodeState.PropertyByBrowseName[propertyName].ToIdentityTuple();
+        await monitorFactory.MonitorProperty(EntitySubscription, propertyIdentity, cancellationToken);
+        await session.Session.PublishAsync(null, new SubscriptionAcknowledgementCollection(), cancellationToken);
+        return _subscriptionManager.Subscribe(consumer);
     }
 
     private void HandleChange(MonitoredItem item, MonitoredItemNotificationEventArgs eventArgs)

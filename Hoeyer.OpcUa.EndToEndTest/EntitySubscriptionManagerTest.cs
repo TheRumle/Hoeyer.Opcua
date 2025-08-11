@@ -11,8 +11,8 @@ namespace Hoeyer.OpcUa.EndToEndTest;
 
 [TestSubject(typeof(EntitySubscriptionManager<>))]
 [TestSubject(typeof(CurrentEntityStateChannel<>))]
-[ClassDataSource<ApplicationFixture>]
 [NotInParallel(nameof(EntitySubscriptionManagerTest))]
+[ClassDataSource<ApplicationFixture>]
 public sealed class EntitySubscriptionManagerTest(ApplicationFixture fixture)
 {
     private const string EXPECTED_STRING_VALUE = "Hetsratsratsralo there";
@@ -68,8 +68,9 @@ public sealed class EntitySubscriptionManagerTest(ApplicationFixture fixture)
         var monitor = fixture.GetService<IEntitySubscriptionManager<Gantry>>();
         var channel = fixture.GetService<ICurrentEntityStateChannel<Gantry>>();
         return new ValueTuple<ChannelSubscription, TestSubscriberSubscription>(
-            new ChannelSubscription(channel, await monitor.SubscribeToChange(channel, token)),
-            new TestSubscriberSubscription(testSubscriber, await monitor.SubscribeToChange(testSubscriber, token)));
+            new ChannelSubscription(channel, await monitor.SubscribeToAllPropertyChanges(channel, token)),
+            new TestSubscriberSubscription(testSubscriber,
+                await monitor.SubscribeToAllPropertyChanges(testSubscriber, token)));
     }
 
     private async Task WriteNode()
@@ -78,11 +79,11 @@ public sealed class EntitySubscriptionManagerTest(ApplicationFixture fixture)
         await writer.AssignEntityProperties([(nameof(Gantry.StringValue), EXPECTED_STRING_VALUE)]);
     }
 
-    private sealed record ChannelSubscription(
+    public sealed record ChannelSubscription(
         ICurrentEntityStateChannel<Gantry> Channel,
         IMessageSubscription Subscription);
 
-    private sealed record TestSubscriberSubscription(
+    public sealed record TestSubscriberSubscription(
         CountingConsumer<Gantry> Consumer,
         IMessageSubscription Subscription);
 }

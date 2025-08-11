@@ -23,7 +23,7 @@ internal sealed class CopySubscriptionTransferStrategy : ISubscriptionTransferSt
 
     private static EntitySubscription CloneSubscription(IEntitySession oldSession, EntitySubscription oldSub)
     {
-        var newSub = new EntitySubscription(oldSession)
+        var newSub = new EntitySubscription(oldSession, oldSub.Callback)
         {
             PublishingInterval = oldSub.PublishingInterval,
             KeepAliveCount = oldSub.KeepAliveCount,

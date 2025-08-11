@@ -24,11 +24,4 @@ internal sealed class EntitySession(ISession session) : IEntitySession
     }
 
     public static ISession ToISession(EntitySession entitySession) => entitySession.Session;
-
-    public EntitySubscription CreateSubscription()
-    {
-        var s = new EntitySubscription(this);
-        _managedEntitySubscriptions.Add(s);
-        return s;
-    }
 }

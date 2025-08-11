@@ -7,7 +7,7 @@ public sealed class ApplicationFixtureGeneratorAttribute<T> : DataSourceGenerato
     where T : notnull
 {
     /// <inheritdoc />
-    public override IEnumerable<Func<ApplicationFixture<T>>> GenerateDataSources(
+    protected override IEnumerable<Func<ApplicationFixture<T>>> GenerateDataSources(
         DataGeneratorMetadata dataGeneratorMetadata)
     {
         IServiceCollection allServices = new OpcFullSetupWithBackgroundServerFixture().ServiceCollection;
@@ -16,12 +16,6 @@ public sealed class ApplicationFixtureGeneratorAttribute<T> : DataSourceGenerato
             .DistinctBy(e => e.ImplementationType)
             .ToList();
         if (serviceMatches.Count == 0) throw new ArgumentException("There were no services to test!");
-        return ApplicationFixtureIterator(serviceMatches);
-    }
-
-    private static IEnumerable<Func<ApplicationFixture<T>>> ApplicationFixtureIterator(
-        List<ServiceDescriptor> serviceMatches)
-    {
         foreach (var service in serviceMatches)
         {
             var f = new ApplicationFixture<T>(service, new OpcFullSetupWithBackgroundServerFixture().ServiceCollection);
