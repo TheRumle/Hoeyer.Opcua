@@ -13,12 +13,12 @@ public interface IMonitorItemsFactory<T>
 {
     ValueTask<(EntitySubscription subscription, IReadOnlyList<MonitoredItem> variableMonitoring)> CreateAndMonitorAll(
         IEntitySession session,
-        IEntityNode node,
+        IAgent node,
         Action<MonitoredItem, MonitoredItemNotificationEventArgs> callback,
         CancellationToken cancel = default);
 
     ValueTask<IReadOnlyList<MonitoredEntityItem>> MonitorAllProperties(EntitySubscription subscription,
-        IEntityNode node, CancellationToken cancel = default);
+        IAgent node, CancellationToken cancel = default);
 
     ValueTask<EntitySubscription> GetOrCreateSubscriptionWithCallback(
         IEntitySession session,

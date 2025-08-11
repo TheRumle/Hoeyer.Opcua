@@ -8,13 +8,13 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-internal sealed class EntityNodeManager<T>(
-    IManagedEntityNode<T> managedEntity,
+internal sealed class AgentManager<T>(
+    IManagedAgent<T> managedEntity,
     IServerInternal server,
     ILogger logger)
-    : CustomNodeManager(server, managedEntity.Namespace), IEntityNodeManager<T>
+    : CustomNodeManager(server, managedEntity.Namespace), IAgentManager<T>
 {
-    public IManagedEntityNode ManagedEntity { get; } = managedEntity;
+    public IManagedAgent ManagedEntity { get; } = managedEntity;
 
     public override void CreateAddressSpace(IDictionary<NodeId, IList<IReference>> externalReferences)
     {

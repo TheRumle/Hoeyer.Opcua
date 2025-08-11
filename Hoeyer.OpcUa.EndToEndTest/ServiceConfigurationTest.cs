@@ -29,7 +29,7 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     [Test]
     public async Task EntityInitializer_IsRegistered()
         => await AssertNumberEntitiesMatchesNumberServices(serverFixture.Services,
-            typeof(IManagedEntityNodeSingletonFactory<>));
+            typeof(IManagedAgentSingletonFactory<>));
 
 
     [Test]
@@ -50,21 +50,21 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
 
     [Test]
     [ServiceCollectionDataSource]
-    [TestSubject(typeof(IEntityNodeManagerFactory<>))]
-    public async Task EntityNodeManagerFactory_Generic_AreSingleton(IServiceCollection descriptors)
+    [TestSubject(typeof(IAgentManagerFactory<>))]
+    public async Task AgentManagerFactory_Generic_AreSingleton(IServiceCollection descriptors)
     {
         IEnumerable<ServiceDescriptor> services =
-            await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IEntityNodeManagerFactory<>));
+            await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IAgentManagerFactory<>));
         await Assert.That(services.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
     }
 
     [Test]
-    [TestSubject(typeof(IEntityNodeManagerFactory))]
+    [TestSubject(typeof(IAgentManagerFactory))]
     [DisplayName("Node manager factory (non-generic) - number of singletons")]
     [ServiceCollectionDataSource]
-    public async Task EntityNodeManagerFactory_NonGeneric_AreSingleton(IServiceCollection descriptors)
+    public async Task AgentManagerFactory_NonGeneric_AreSingleton(IServiceCollection descriptors)
     {
-        var services = await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IEntityNodeManagerFactory));
+        var services = await AssertNumberEntitiesMatchesNumberServices(descriptors, typeof(IAgentManagerFactory));
         await Assert.That(services.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
     }
 

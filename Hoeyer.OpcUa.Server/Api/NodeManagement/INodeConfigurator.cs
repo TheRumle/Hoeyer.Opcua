@@ -4,7 +4,7 @@ namespace Hoeyer.OpcUa.Server.Api.NodeManagement;
 
 public interface INodeConfigurator
 {
-    public void Configure(IManagedEntityNode managed, ISystemContext context);
+    public void Configure(IManagedAgent managed, ISystemContext context);
 }
 
 public interface INodeConfigurator<T> : INodeConfigurator;

@@ -33,7 +33,7 @@ public static class ServiceExtensions
         });
 
 
-        collection.AddSingleton<IEntityNodeAccessConfigurator, NoAccessRestrictionsConfigurator>();
+        collection.AddSingleton<IAgentAccessConfigurator, NoAccessRestrictionsConfigurator>();
         collection.AddSingleton<EntityServerStartedMarker>();
         collection.AddSingleton<OpcUaEntityServerFactory>();
         collection.AddSingleton<OpcEntityServer>();

@@ -46,7 +46,7 @@ public static class LoggingExtensions
 
     public static object ToLoggingObject(this BaseObjectState node) => CoreInfoObject(node);
 
-    public static object ToLoggingObject(this IEntityNode node)
+    public static object ToLoggingObject(this IAgent node)
     {
         return new
         {

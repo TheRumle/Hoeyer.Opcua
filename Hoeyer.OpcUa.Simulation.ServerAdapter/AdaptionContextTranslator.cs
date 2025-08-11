@@ -12,10 +12,10 @@ public sealed class AdaptionContextTranslator<TEntity, TMethodArgs>(
     ISimulationBuilderFactory<TEntity, TMethodArgs> simulationBuilderFactory,
     ISimulation<TEntity, TMethodArgs> simulator,
     IMethodArgumentParser<TMethodArgs> argsParser
-) : IAdaptionContextTranslator<(IList<object>, IManagedEntityNode), TEntity, TMethodArgs>
+) : IAdaptionContextTranslator<(IList<object>, IManagedAgent), TEntity, TMethodArgs>
 {
     public (TEntity currentState, TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps)
-        CreateSimulationContext((IList<object>, IManagedEntityNode) context)
+        CreateSimulationContext((IList<object>, IManagedAgent) context)
     {
         var (inputArguments, managedEntity) = context;
         var builder = simulationBuilderFactory.CreateSimulationBuilder();
@@ -31,10 +31,10 @@ public sealed class AdaptionContextTranslator<TEntity, TMethodArgs, TReturn>(
     ISimulationBuilderFactory<TEntity, TMethodArgs, TReturn> simulationBuilderFactory,
     ISimulation<TEntity, TMethodArgs, TReturn> simulator,
     IMethodArgumentParser<TMethodArgs> argsParser
-) : IAdaptionContextTranslator<(IList<object>, IManagedEntityNode), TEntity, TMethodArgs, TReturn>
+) : IAdaptionContextTranslator<(IList<object>, IManagedAgent), TEntity, TMethodArgs, TReturn>
 {
     public (TEntity currentState, TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps)
-        CreateSimulationContext((IList<object>, IManagedEntityNode) context)
+        CreateSimulationContext((IList<object>, IManagedAgent) context)
     {
         var (inputArguments, managedEntity) = context;
         var builder = simulationBuilderFactory.CreateSimulationBuilder();

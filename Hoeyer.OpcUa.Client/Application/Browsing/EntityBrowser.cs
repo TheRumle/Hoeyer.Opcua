@@ -33,7 +33,7 @@ public sealed class EntityBrowser<TEntity>(
     INodeTreeTraverser traversalStrategy,
     IEntitySessionFactory sessionFactory,
     INodeReader reader,
-    IEntityNodeStructureFactory<TEntity> nodeStructureFactory,
+    IAgentStructureFactory<TEntity> nodeStructureFactory,
     EntityDescriptionMatcher<TEntity>? identityMatcher = null) : IEntityBrowser<TEntity>
 {
     private static readonly string EntityName = typeof(TEntity).Name;
@@ -47,21 +47,21 @@ public sealed class EntityBrowser<TEntity>(
     private Node? _entityRoot;
     private ISession Session => _session.Value;
 
-    public (IEntityNode node, DateTime timeLoaded)? LastState { get; private set; }
+    public (IAgent node, DateTime timeLoaded)? LastState { get; private set; }
 
     /// <inheritdoc />
-    public async Task<IEntityNode> BrowseEntityNode(CancellationToken cancellationToken = default)
+    public async Task<IAgent> BrowseAgent(CancellationToken cancellationToken = default)
     {
         ReadResult values = await ReadEntity(cancellationToken);
         return await ParseToEntity(Session, cancellationToken, values);
     }
 
-    public async ValueTask<EntityNodeStructure> GetNodeStructure(CancellationToken token = default) =>
+    public async ValueTask<AgentStructure> GetNodeStructure(CancellationToken token = default) =>
         LastState.HasValue
             ? LastState.Value.node.ToStructureOnly()
-            : await BrowseEntityNode(token).ThenAsync(e => e.ToStructureOnly());
+            : await BrowseAgent(token).ThenAsync(e => e.ToStructureOnly());
 
-    private async Task<IEntityNode> ParseToEntity(ISession session, CancellationToken cancellationToken,
+    private async Task<IAgent> ParseToEntity(ISession session, CancellationToken cancellationToken,
         ReadResult values)
     {
         List<VariableNode> variables = await reader
@@ -70,14 +70,14 @@ public sealed class EntityBrowser<TEntity>(
             .ThenAsync(result => result.SuccesfulReads.OfType<VariableNode>())
             .ThenAsync(nodes => nodes.ToList());
 
-        IEntityNode structure = AssignReadValues(variables);
+        var structure = AssignReadValues(variables);
         return structure;
     }
 
-    private IEntityNode AssignReadValues(List<VariableNode> variables)
+    private IAgent AssignReadValues(List<VariableNode> variables)
     {
         var index = _entityRoot!.NodeId.NamespaceIndex;
-        IEntityNode structure = nodeStructureFactory.Create(index);
+        var structure = nodeStructureFactory.Create(index);
         foreach (PropertyState? state in structure.PropertyStates)
         {
             VariableNode? match = variables.FirstOrDefault(n => n != null && n.NodeId.Equals(state.NodeId));
@@ -87,7 +87,7 @@ public sealed class EntityBrowser<TEntity>(
             }
         }
 
-        LastState = new ValueTuple<IEntityNode, DateTime>(structure, DateTime.Now);
+        LastState = new ValueTuple<IAgent, DateTime>(structure, DateTime.Now);
 
         return structure;
     }

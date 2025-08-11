@@ -9,5 +9,5 @@ public interface IMaybeInitializedEntityManager
 {
     public string EntityName { get; }
     bool HasValue { get; }
-    IEntityNodeManager? Manager { get; }
+    IAgentManager? Manager { get; }
 }

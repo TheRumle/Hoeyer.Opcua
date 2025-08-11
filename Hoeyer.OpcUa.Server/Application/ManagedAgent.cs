@@ -4,21 +4,21 @@ using Hoeyer.OpcUa.Server.Api.NodeManagement;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-internal sealed record ManagedEntityNode<T> : IManagedEntityNode<T>
+internal sealed record ManagedAgent<T> : IManagedAgent<T>
 {
-    private readonly IEntityNode _managedNode;
+    private readonly object _lock = new();
+    private readonly IAgent _managedNode;
 
-    public ManagedEntityNode(IEntityNode node, string entityNamespace, ushort entityNamespaceIndex)
+    public ManagedAgent(IAgent node, string entityNamespace, ushort entityNamespaceIndex)
     {
         _managedNode = node;
         EntityNameSpaceIndex = entityNamespaceIndex;
         Namespace = entityNamespace;
         EntityName = _managedNode.BaseObject.BrowseName.Name;
     }
-    private readonly object _lock = new();
 
     /// <inheritdoc />
-    public void Examine(Action<IEntityNode> effect)
+    public void Examine(Action<IAgent> effect)
     {
         lock (_lock)
         {
@@ -26,21 +26,21 @@ internal sealed record ManagedEntityNode<T> : IManagedEntityNode<T>
         }
     }
 
-    public  string Namespace { get; }
+    public string Namespace { get; }
     public ushort EntityNameSpaceIndex { get; }
 
     public string EntityName { get; set; }
 
-    public void ChangeState(Action<IEntityNode> stateChanges)
+    public void ChangeState(Action<IAgent> stateChanges)
     {
         lock (_lock)
         {
             stateChanges.Invoke(_managedNode);
         }
     }
-    
+
     /// <inheritdoc />
-    public TOut Select<TOut>(Func<IEntityNode, TOut> selection)
+    public TOut Select<TOut>(Func<IAgent, TOut> selection)
     {
         lock (_lock)
         {

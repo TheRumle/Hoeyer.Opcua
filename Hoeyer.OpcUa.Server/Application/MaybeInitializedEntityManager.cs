@@ -11,5 +11,5 @@ public sealed class MaybeInitializedEntityManager<T> : IMaybeInitializedEntityMa
     public string EntityName { get; } = typeof(T).Name;
 
     public bool HasValue => Manager != null;
-    public IEntityNodeManager? Manager { get; internal set; }
+    public IAgentManager? Manager { get; internal set; }
 }

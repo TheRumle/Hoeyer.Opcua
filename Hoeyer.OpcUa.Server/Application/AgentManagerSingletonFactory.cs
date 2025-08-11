@@ -11,26 +11,26 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-[OpcUaEntityService(typeof(IEntityNodeManagerFactory), ServiceLifetime.Singleton)]
-[OpcUaEntityService(typeof(IEntityNodeManagerFactory<>), ServiceLifetime.Singleton)]
-internal sealed class EntityNodeManagerSingletonFactory<T>(
+[OpcUaEntityService(typeof(IAgentManagerFactory), ServiceLifetime.Singleton)]
+[OpcUaEntityService(typeof(IAgentManagerFactory<>), ServiceLifetime.Singleton)]
+internal sealed class AgentManagerSingletonFactory<T>(
     ILoggerFactory factory,
-    IManagedEntityNodeSingletonFactory<T> nodeFactory,
+    IManagedAgentSingletonFactory<T> nodeFactory,
     MaybeInitializedEntityManager<T> loadableManager,
     IEnumerable<INodeConfigurator<T>> preinitializedNodeConfigurators,
-    IEntityNodeAccessConfigurator accessConfigurator) : IEntityNodeManagerFactory<T>
+    IAgentAccessConfigurator accessConfigurator) : IAgentManagerFactory<T>
 {
-    public IEntityNodeManager<T>? CreatedManager { get; private set; }
+    public IAgentManager<T>? CreatedManager { get; private set; }
 
-    public async Task<IEntityNodeManager> CreateEntityManager(IServerInternal server)
+    public async Task<IAgentManager> CreateEntityManager(IServerInternal server)
     {
         CreatedManager ??= await CreateManager(server);
         return CreatedManager;
     }
 
-    private async Task<EntityNodeManager<T>> CreateManager(IServerInternal server)
+    private async Task<AgentManager<T>> CreateManager(IServerInternal server)
     {
-        IManagedEntityNode<T> node = await nodeFactory.CreateManagedEntityNode(server.NamespaceUris.GetIndexOrAppend);
+        IManagedAgent<T> node = await nodeFactory.CreateManagedAgent(server.NamespaceUris.GetIndexOrAppend);
         List<Exception> configurationExceptions = ConfigurePreInitialization(node, server.DefaultSystemContext);
         if (configurationExceptions.Count > 0)
         {
@@ -39,13 +39,13 @@ internal sealed class EntityNodeManagerSingletonFactory<T>(
 
 
         ILogger logger = factory.CreateLogger(node.Select(e => e.BaseObject.BrowseName.Name + "Manager"));
-        var createdManager = new EntityNodeManager<T>(node, server, logger);
+        var createdManager = new AgentManager<T>(node, server, logger);
         loadableManager.Manager = createdManager; //mark the manager being loaded
 
         return createdManager;
     }
 
-    private List<Exception> ConfigurePreInitialization(IManagedEntityNode node, ISystemContext context)
+    private List<Exception> ConfigurePreInitialization(IManagedAgent node, ISystemContext context)
     {
         var exceptions = new List<Exception>();
         accessConfigurator.Configure(node, context);

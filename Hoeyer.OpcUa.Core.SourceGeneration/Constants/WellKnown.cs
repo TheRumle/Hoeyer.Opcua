@@ -26,8 +26,8 @@ internal static class WellKnown
 
     public static class FullyQualifiedInterface
     {
-        public static FullyQualifiedTypeName IEntityNode =>
-            CoreApiTypeName("IEntityNode");
+        public static FullyQualifiedTypeName IAgent =>
+            CoreApiTypeName("IAgent");
 
         public static FullyQualifiedTypeName DataTypeTranslator =>
             CoreTypeName("Application.OpcTypeMappers.DataTypeToTypeTranslator");

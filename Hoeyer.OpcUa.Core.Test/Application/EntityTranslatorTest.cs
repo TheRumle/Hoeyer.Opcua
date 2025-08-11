@@ -14,11 +14,11 @@ public class EntityTranslatorTest
 {
     [Test]
     [ServiceCollectionDataSource]
-    public async Task WhenAssigningValues_ToEntityNode_MethodsDoesNotDisappear(
+    public async Task WhenAssigningValues_ToAgent_MethodsDoesNotDisappear(
         IEntityTranslator<AllPropertyTypesEntity> translator,
-        IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
+        IAgentStructureFactory<AllPropertyTypesEntity> structure)
     {
-        IEntityNode node = structure.Create(2);
+        var node = structure.Create(2);
         var entity = AllPropertyTypesEntity.CreateRandom();
         HashSet<MethodState> before = node.Methods.ToHashSet();
 
@@ -30,11 +30,11 @@ public class EntityTranslatorTest
 
     [Test]
     [ServiceCollectionDataSource]
-    public async Task WhenAssigningValues_ToEntityNode_PropertiesDoesNotDisappear(
+    public async Task WhenAssigningValues_ToAgent_PropertiesDoesNotDisappear(
         IEntityTranslator<AllPropertyTypesEntity> translator,
-        IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
+        IAgentStructureFactory<AllPropertyTypesEntity> structure)
     {
-        IEntityNode node = structure.Create(2);
+        var node = structure.Create(2);
         var entity = AllPropertyTypesEntity.CreateRandom();
         HashSet<PropertyState> before = node.PropertyStates.ToHashSet();
         translator.AssignToNode(entity, node);
@@ -44,11 +44,11 @@ public class EntityTranslatorTest
 
     [Test]
     [ServiceCollectionDataSource]
-    public async Task WhenTranslating_ToEntityNode_ListValuesAreTranslatedTo_Arrays(
+    public async Task WhenTranslating_ToAgent_ListValuesAreTranslatedTo_Arrays(
         IEntityTranslator<Gantry> translator,
-        IEntityNodeStructureFactory<Gantry> structure)
+        IAgentStructureFactory<Gantry> structure)
     {
-        IEntityNode node = structure.Create(2);
+        var node = structure.Create(2);
         translator.AssignToNode(new Gantry
         {
             AAginList =
@@ -79,9 +79,9 @@ public class EntityTranslatorTest
     [ServiceCollectionDataSource]
     public async Task WhenTranslating_MultipleTimes_StateIsPreserved(
         IEntityTranslator<AllPropertyTypesEntity> translator,
-        IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
+        IAgentStructureFactory<AllPropertyTypesEntity> structure)
     {
-        IEntityNode node = structure.Create(2);
+        var node = structure.Create(2);
         var entity = AllPropertyTypesEntity.CreateRandom();
 
         translator.AssignToNode(entity, node);
@@ -97,10 +97,10 @@ public class EntityTranslatorTest
     [ServiceCollectionDataSource]
     public async Task When_AssigningToNode_ValuesAre_Equal(
         IEntityTranslator<AllPropertyTypesEntity> translator,
-        IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
+        IAgentStructureFactory<AllPropertyTypesEntity> structure)
     {
         //Arrange
-        IEntityNode node = structure.Create(2);
+        var node = structure.Create(2);
         var entity = AllPropertyTypesEntity.CreateRandom();
 
         //Act
@@ -110,7 +110,7 @@ public class EntityTranslatorTest
         await AssertPropertiesEqual(entity, node);
     }
 
-    private static async Task AssertPropertiesEqual(AllPropertyTypesEntity entity, IEntityNode node)
+    private static async Task AssertPropertiesEqual(AllPropertyTypesEntity entity, IAgent node)
     {
         using (Assert.Multiple())
         {
