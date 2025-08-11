@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Hoeyer.OpcUa.Core.SourceGeneration.Generation;
 
 [Generator]
-public class AgentTranslatorGenerator : IIncrementalGenerator
+public class EntityTranslatorGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -30,27 +30,27 @@ public class AgentTranslatorGenerator : IIncrementalGenerator
     private static (SourceCodeWriter writer, INamedTypeSymbol symbol) CreateSourceCode(TypeContext typeContext)
     {
         INamedTypeSymbol symbol = typeContext.SemanticModel.GetDeclaredSymbol(typeContext.Node)!;
-        var agentName = symbol.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
+        var entityName = symbol.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
 
         var writer = new SourceCodeWriter();
         writer.WriteLine("namespace " + WellKnown.CoreServiceName + ".Generated {");
         writer.Write("[")
-            .Write(WellKnown.FullyQualifiedAttribute.OpcUaAgentServiceAttribute.WithGlobalPrefix)
-            .Write("(typeof(").Write(WellKnown.FullyQualifiedInterface.AgentTranslatorInterfaceOf().WithGlobalPrefix)
+            .Write(WellKnown.FullyQualifiedAttribute.OpcUaEntityServiceAttribute.WithGlobalPrefix)
+            .Write("(typeof(").Write(WellKnown.FullyQualifiedInterface.EntityTranslatorInterfaceOf().WithGlobalPrefix)
             .Write("))").Write("]");
 
         writer.WriteLine("public sealed class " + symbol.Name + "Translator" + " : " + WellKnown.FullyQualifiedInterface
-            .AgentTranslatorInterfaceOf(agentName).WithGlobalPrefix);
+            .EntityTranslatorInterfaceOf(entityName).WithGlobalPrefix);
         writer.WriteLine("{");
 
-        writer.WriteLine("public void AssignToNode( " + agentName + " state, " +
+        writer.WriteLine("public void AssignToNode( " + entityName + " state, " +
                          WellKnown.FullyQualifiedInterface.IAgent.WithGlobalPrefix + " node)");
 
         writer.WriteLine("{");
         WriteAssignments(writer, typeContext.Node, typeContext.SemanticModel);
         writer.WriteLine("}");
 
-        writer.WriteLine("public void AssignToStructure(" + agentName + " state, ");
+        writer.WriteLine("public void AssignToStructure(" + entityName + " state, ");
         writer.WriteLine("global::System.Action<string, object> assignmentAction");
         writer.WriteLine(")");
         writer.WriteLine("{");
@@ -58,13 +58,13 @@ public class AgentTranslatorGenerator : IIncrementalGenerator
         writer.WriteLine("}");
 
 
-        writer.WriteLine("public " + agentName + " Translate( " +
+        writer.WriteLine("public " + entityName + " Translate( " +
                          WellKnown.FullyQualifiedInterface.IAgent.WithGlobalPrefix + " state)");
         writer.WriteLine("{");
 
         WriteTranslations(writer, typeContext.Node, typeContext.SemanticModel);
 
-        writer.WriteLine("return new " + agentName + "()");
+        writer.WriteLine("return new " + entityName + "()");
         writer.WriteLine("{");
         foreach (var propertyName in typeContext.Node.Members.OfType<PropertyDeclarationSyntax>()
                      .Select(prop => prop.Identifier.Text))
@@ -76,22 +76,22 @@ public class AgentTranslatorGenerator : IIncrementalGenerator
         writer.WriteLine("}");
 
         //Copy method begin
-        WriteCopyMethod(typeContext, writer, agentName);
+        WriteCopyMethod(typeContext, writer, entityName);
         writer.WriteLine("}");
         writer.WriteLine("}"); //class end
 
         return (writer, symbol);
     }
 
-    private static void WriteCopyMethod(TypeContext typeContext, SourceCodeWriter writer, string agentName)
+    private static void WriteCopyMethod(TypeContext typeContext, SourceCodeWriter writer, string entityName)
     {
         var propertySymbols = typeContext.Node.Members.OfType<PropertyDeclarationSyntax>()
             .Select(e => (symbol: typeContext.SemanticModel.GetDeclaredSymbol(e)!, text: e.Identifier.Text));
 
 
-        writer.WriteLine("public " + agentName + " Copy(" + agentName + " agent)");
+        writer.WriteLine("public " + entityName + " Copy(" + entityName + " entity)");
         writer.WriteLine("{");
-        writer.WriteLine("return new " + agentName + "()");
+        writer.WriteLine("return new " + entityName + "()");
         writer.WriteLine("{");
         foreach (var (symbol, propertyName) in propertySymbols)
         {
@@ -99,12 +99,12 @@ public class AgentTranslatorGenerator : IIncrementalGenerator
             if (listInterface != null)
             {
                 var type = symbol.Type.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
-                writer.Write(propertyName).Write(" = new " + type + " ( ").Write("agent." + propertyName)
+                writer.Write(propertyName).Write(" = new " + type + " ( ").Write("entity." + propertyName)
                     .Write(".ToList())").Write(",\n");
             }
             else
             {
-                writer.Write(propertyName).Write(" = ").Write("agent." + propertyName).Write(",\n");
+                writer.Write(propertyName).Write(" = ").Write("entity." + propertyName).Write(",\n");
             }
         }
 

@@ -5,23 +5,23 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Connection;
 
-internal sealed class AgentSession(ISession session) : IAgentSession
+internal sealed class EntitySession(ISession session) : IEntitySession
 {
-    private readonly List<AgentSubscription> _managedAgentSubscriptions = new();
+    private readonly List<EntitySubscription> _managedEntitySubscriptions = new();
 
     public ISession Session => session;
-    public IEnumerable<AgentSubscription> AgentSubscriptions => _managedAgentSubscriptions;
+    public IEnumerable<EntitySubscription> EntitySubscriptions => _managedEntitySubscriptions;
 
     public void Dispose()
     {
         session.Dispose();
-        foreach (AgentSubscription? agentSubscription in AgentSubscriptions)
+        foreach (EntitySubscription? entitySubscription in EntitySubscriptions)
         {
-            agentSubscription.Dispose();
+            entitySubscription.Dispose();
         }
 
-        _managedAgentSubscriptions.Clear();
+        _managedEntitySubscriptions.Clear();
     }
 
-    public static ISession ToISession(AgentSession agentSession) => agentSession.Session;
+    public static ISession ToISession(EntitySession entitySession) => entitySession.Session;
 }

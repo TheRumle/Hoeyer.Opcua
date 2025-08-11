@@ -4,18 +4,18 @@ using Hoeyer.OpcUa.Core.Api;
 
 namespace Hoeyer.OpcUa.Client.Api.Browsing;
 
-public interface IAgentBrowser<T> : IAgentBrowser;
+public interface IEntityBrowser<T> : IEntityBrowser;
 
-public interface IAgentBrowser
+public interface IEntityBrowser
 {
     /// <summary>
-    ///     Creates a new IAgent node by browsing the server.
+    ///     Creates a new IEntity node by browsing the server.
     ///     Traverses the node tree of the OpcUa server to starting from the root. The traversal halts when the node
-    ///     representing the agent has been found, browsed and read. A full tree traversal will be skipped if the agent node
-    ///     has already been found previously - instead traversal will begin from the root of the node representing the agent.
+    ///     representing the entity has been found, browsed and read. A full tree traversal will be skipped if the entity node
+    ///     has already been found previously - instead traversal will begin from the root of the node representing the entity.
     /// </summary>
     /// <param name="cancellationToken">Token to cancel the browse</param>
-    /// <returns>An IAgent representing the structure of the agent.</returns>
+    /// <returns>An IAgent representing the structure of the entity.</returns>
     Task<IAgent> BrowseAgent(CancellationToken cancellationToken = default);
 
     /// <summary>

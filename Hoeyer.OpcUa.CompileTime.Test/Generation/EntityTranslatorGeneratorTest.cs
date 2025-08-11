@@ -3,6 +3,6 @@ using JetBrains.Annotations;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Generation;
 
-[TestSubject(typeof(AgentTranslatorGenerator))]
+[TestSubject(typeof(EntityTranslatorGenerator))]
 [InheritsTests]
-public sealed class AgentTranslatorGeneratorTest : GeneratorWithAgentTargetTest<AgentTranslatorGenerator>;
+public sealed class EntityTranslatorGeneratorTest : GeneratorWithEntityTargetTest<EntityTranslatorGenerator>;

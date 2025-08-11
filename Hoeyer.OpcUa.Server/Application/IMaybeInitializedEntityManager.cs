@@ -3,11 +3,11 @@
 namespace Hoeyer.OpcUa.Server.Application;
 
 /// <summary>
-/// A node manager that is not initialised until the OpcUa Agent server has been started, as marked by the <see cref="Hoeyer.OpcUa.Server.Api.AgentServerStartedMarker"/> being completed.
+/// A node manager that is not initialised until the OpcUa Entity server has been started, as marked by the <see cref="Hoeyer.OpcUa.Server.Api.EntityServerStartedMarker"/> being completed.
 /// </summary>
-public interface IMaybeInitializedAgentManager
+public interface IMaybeInitializedEntityManager
 {
-    public string AgentName { get; }
+    public string EntityName { get; }
     bool HasValue { get; }
     IAgentManager? Manager { get; }
 }

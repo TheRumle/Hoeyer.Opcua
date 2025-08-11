@@ -1,14 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.AgentDefinitions;
+using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;
 
 [SuppressMessage("Design", "S3993", Justification = "TUnits' attributeusage must not and cannot be overwritten.")]
-public sealed class UnsupportedTypesSourceCodeGeneratorAttribute : DataSourceGeneratorAttribute<AgentSourceCode>
+public sealed class UnsupportedTypesSourceCodeGeneratorAttribute : DataSourceGeneratorAttribute<EntitySourceCode>
 {
-    protected override IEnumerable<Func<AgentSourceCode>> GenerateDataSources(
+    protected override IEnumerable<Func<EntitySourceCode>> GenerateDataSources(
         DataGeneratorMetadata dataGeneratorMetadata)
     {
-        return AgentSourceCodeDefinitions.UnsupportedTypes.Select(source => (Func<AgentSourceCode>)(() => source));
+        return EntitySourceCodeDefinitions.UnsupportedTypes.Select(source => (Func<EntitySourceCode>)(() => source));
     }
 }

@@ -17,8 +17,8 @@ public sealed class SimulationConfiguratorUsageAnalyser : DiagnosticAnalyzer
     [
         SimulationRules.MustBeActionSimulation,
         SimulationRules.MustBeFunctionSimulation,
-        SimulationRules.TAgentMustBeAnAgent,
-        SimulationRules.TArgsMustBeAnnotatedWithOpcAgentMethodArgs,
+        SimulationRules.TEntityMustBeAnEntity,
+        SimulationRules.TArgsMustBeAnnotatedWithOpcEntityMethodArgs,
         SimulationRules.ReturnTypeMustMatchReturnTypeOfSimulatedMethod
     ];
 
@@ -159,7 +159,7 @@ public sealed class SimulationConfiguratorUsageAnalyser : DiagnosticAnalyzer
         AttributeData? argsAttrData = argsType.GetOpcArgsAttribute();
         if (argsAttrData is null)
         {
-            reporter.ReportDiagnostic(SimulationRules.TArgsMustBeAnnotatedWithOpcAgentMethodArgs);
+            reporter.ReportDiagnostic(SimulationRules.TArgsMustBeAnnotatedWithOpcEntityMethodArgs);
             return default;
         }
 

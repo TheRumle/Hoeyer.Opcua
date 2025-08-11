@@ -40,7 +40,7 @@ public static class OpcAttributeUsages
         }
 
 
-        FullyQualifiedTypeName serviceAttribute = WellKnown.FullyQualifiedAttribute.OpcUaAgentServiceAttribute;
+        FullyQualifiedTypeName serviceAttribute = WellKnown.FullyQualifiedAttribute.OpcUaEntityServiceAttribute;
 
         return
             SyntaxFactory.Attribute(SyntaxFactory.IdentifierName(serviceAttribute.WithGlobalPrefix))

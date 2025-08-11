@@ -17,6 +17,6 @@ public static class NodeClassFilters
                                  | NodeClass.Method
                                  | NodeClass.Unspecified;
 
-    public const NodeClass AgentData = NodeClass.Method | NodeClass.Variable | NodeClass.Object;
-    public const NodeClass Agent = NodeClass.ReferenceType | NodeClass.Object | NodeClass.ObjectType;
+    public const NodeClass EntityData = NodeClass.Method | NodeClass.Variable | NodeClass.Object;
+    public const NodeClass Entity = NodeClass.ReferenceType | NodeClass.Object | NodeClass.ObjectType;
 }

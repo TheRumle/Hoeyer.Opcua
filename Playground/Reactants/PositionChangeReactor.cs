@@ -7,11 +7,11 @@ using Playground.Models.Methods;
 namespace Playground.Reactants;
 
 public class PositionChangeReactor(
-    IAgentSubscriptionManager<Gantry> subs,
-    ICurrentAgentStateChannel<Gantry> currentAgentStateChannel,
+    IEntitySubscriptionManager<Gantry> subs,
+    ICurrentEntityStateChannel<Gantry> currentEntityStateChannel,
     ILogger<PositionChangeReactor> logger,
     IGantryMethods gantryMethods,
-    AgentServerStartedMarker marker)
+    EntityServerStartedMarker marker)
     : BackgroundService
 {
     private Position? LastPosition = null;
@@ -22,8 +22,8 @@ public class PositionChangeReactor(
         var values = Enum.GetValues(typeof(Position));
         var startPosition = (Position)values.GetValue(new Random().Next(values.Length))!;
         await marker;
-        await subs.SubscribeToAllPropertyChanges(currentAgentStateChannel, stoppingToken);
-        var reader = currentAgentStateChannel.Reader;
+        await subs.SubscribeToAllPropertyChanges(currentEntityStateChannel, stoppingToken);
+        var reader = currentEntityStateChannel.Reader;
         await gantryMethods.ChangePosition(startPosition);
         while (await reader.WaitToReadAsync(stoppingToken))
         {

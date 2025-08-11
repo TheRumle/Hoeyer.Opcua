@@ -8,21 +8,21 @@ namespace Hoeyer.OpcUa.Core.Test.Fixtures;
 
 public class OpcUaCoreServicesFixture
 {
-    public readonly OnGoingOpcAgentServiceRegistration OnGoingOpcAgentServiceRegistration;
+    public readonly OnGoingOpcEntityServiceRegistration OnGoingOpcEntityServiceRegistration;
 
     public OpcUaCoreServicesFixture()
     {
         ReservedPort reservedPort = new();
         var services = new ServiceCollection();
-        OnGoingOpcAgentServiceRegistration = services.AddLogging(c => c.SetMinimumLevel(LogLevel.Warning))
+        OnGoingOpcEntityServiceRegistration = services.AddLogging(c => c.SetMinimumLevel(LogLevel.Warning))
             .AddOpcUaServerConfiguration(conf => conf
                 .WithServerId("MyServer")
                 .WithServerName("My Server")
                 .WithHttpsHost("localhost", reservedPort.Port)
                 .WithEndpoints([$"opc.tcp://localhost:{reservedPort.Port}"])
                 .Build())
-            .WithAgentServices();
+            .WithEntityServices();
     }
 
-    public IServiceCollection ServiceCollection => OnGoingOpcAgentServiceRegistration.Collection;
+    public IServiceCollection ServiceCollection => OnGoingOpcEntityServiceRegistration.Collection;
 }

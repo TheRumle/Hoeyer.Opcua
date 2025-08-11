@@ -1,17 +1,17 @@
 ﻿using Hoeyer.OpcUa.CompileTime.Test.Drivers;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.AgentDefinitions;
+using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
 using Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Generation;
 
-public abstract class GeneratorWithAgentMethodsTargetTest<T> where T : IIncrementalGenerator, new()
+public abstract class GeneratorWithEntityMethodsTargetTest<T> where T : IIncrementalGenerator, new()
 {
     protected readonly GeneratorTestDriver<T> TestDriver = new(new T(), Console.WriteLine);
 
     [Test]
-    [AgentServiceInterfaceGenerator]
+    [EntityServiceInterfaceGenerator]
     [DisplayName("Can generate valid syntax tree for $serviceInterface")]
     public async Task WhenGiven_CorrectSourceCodeInfo_ShouldGenerateValidSyntaxTrees(
         ServiceInterfaceSourceCode serviceInterface)
@@ -21,7 +21,7 @@ public abstract class GeneratorWithAgentMethodsTargetTest<T> where T : IIncremen
     }
 
     [Test]
-    [AgentServiceInterfaceGenerator]
+    [EntityServiceInterfaceGenerator]
     [DisplayName("Generates valid syntax tree for $serviceInterface")]
     public async Task WhenGivenValidSourceCode_ProducesValidSyntaxTree(ServiceInterfaceSourceCode serviceInterface)
     {
@@ -35,11 +35,11 @@ public abstract class GeneratorWithAgentMethodsTargetTest<T> where T : IIncremen
 
 
     [Test]
-    [AgentServiceInterfaceGenerator]
+    [EntityServiceInterfaceGenerator]
     [DisplayName("Will not produce any diagnostic for valid fixtures")]
-    public async Task Generator_ShouldNeverProduceDiagnostics(ServiceInterfaceSourceCode agentSourceCode)
+    public async Task Generator_ShouldNeverProduceDiagnostics(ServiceInterfaceSourceCode entitySourceCode)
     {
-        GeneratorResult generationResult = TestDriver.RunGeneratorOn(agentSourceCode.SourceCodeString);
+        GeneratorResult generationResult = TestDriver.RunGeneratorOn(entitySourceCode.SourceCodeString);
         await Assert.That(generationResult.Errors).IsEmpty().Because(
             "The generator should not be responsible for analyzing source code, only production of generated code.");
     }

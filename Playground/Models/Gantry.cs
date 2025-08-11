@@ -2,7 +2,7 @@
 
 namespace Playground.Models;
 
-[OpcUaAgent]
+[OpcUaEntity]
 public sealed record Gantry
 {
     public Position Position { get; set; }

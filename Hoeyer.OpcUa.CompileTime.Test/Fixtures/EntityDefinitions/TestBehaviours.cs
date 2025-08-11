@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Hoeyer.OpcUa.Core;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.AgentDefinitions;
+namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
 
 public static class TestBehaviours
 {
@@ -11,7 +11,7 @@ public static class TestBehaviours
     public static readonly string[] Interfaces =
     [
         $@"
-        [{nameof(OpcUaAgentMethodsAttribute<object>)}<{ENTITY_NAME}>]
+        [{nameof(OpcUaEntityMethodsAttribute<object>)}<{ENTITY_NAME}>]
          public interface TestInterface
         {{
             Task None(int q, int b, List<int> dict);
@@ -23,12 +23,12 @@ public static class TestBehaviours
 
 
     public static IEnumerable<ServiceInterfaceSourceCode> GetServiceInterfaceSourceCodeFor(
-        AgentSourceCode agentSourceCode)
+        EntitySourceCode entitySourceCode)
     {
-        return Interfaces.Select(e => e.Replace(ENTITY_NAME, agentSourceCode.Type)).Select(interfaceSourceCode =>
+        return Interfaces.Select(e => e.Replace(ENTITY_NAME, entitySourceCode.Type)).Select(interfaceSourceCode =>
         {
             var interfaceName = InterfaceNameRegex.Match(interfaceSourceCode).Groups[1].Value;
-            return new ServiceInterfaceSourceCode(interfaceName, interfaceSourceCode, agentSourceCode);
+            return new ServiceInterfaceSourceCode(interfaceName, interfaceSourceCode, entitySourceCode);
         });
     }
 }

@@ -7,7 +7,7 @@ namespace Hoeyer.OpcUa.Client.SourceGeneration.Extensions;
 
 public static class AttributeExtensions
 {
-    public static INamedTypeSymbol? GetAgentFromGenericArgument(this AttributeSyntax attribute, SemanticModel model)
+    public static INamedTypeSymbol? GetEntityFromGenericArgument(this AttributeSyntax attribute, SemanticModel model)
     {
         SymbolInfo symbolInfo = model.GetSymbolInfo(attribute);
         if (symbolInfo.Symbol is not IMethodSymbol attributeConstructor) return null;
@@ -18,13 +18,13 @@ public static class AttributeExtensions
         if (attributeType is not INamedTypeSymbol { IsGenericType: true, Arity: 1 } namedType) return null;
 
         if (namedType.OriginalDefinition.ToDisplayString() == WellKnown.FullyQualifiedAttribute
-                .GenericAgentBehaviourAttribute.WithoutGlobalPrefix ||
+                .GenericEntityBehaviourAttribute.WithoutGlobalPrefix ||
             namedType.OriginalDefinition.ToDisplayString() == WellKnown.FullyQualifiedAttribute
-                .GenericAgentBehaviourAttribute.WithGlobalPrefix)
+                .GenericEntityBehaviourAttribute.WithGlobalPrefix)
         {
             return namedType
                 .TypeArguments
-                .Where(type => type.IsAnnotatedAsOpcUaAgent())
+                .Where(type => type.IsAnnotatedAsOpcUaEntity())
                 .OfType<INamedTypeSymbol>()
                 .First();
         }

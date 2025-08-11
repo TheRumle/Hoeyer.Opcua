@@ -18,8 +18,8 @@ namespace Hoeyer.OpcUa.Simulation.Services;
 public class SimulationServicesConfig
 {
     private readonly IServiceCollection _originalServices;
-    public readonly IReadOnlyList<(Type agentType, Type methodArgs)> ActionSimulationPatterns;
-    public readonly IReadOnlyList<(Type agentType, Type methodArgs, Type returnType)> FunctionSimulationPatterns;
+    public readonly IReadOnlyList<(Type entityType, Type methodArgs)> ActionSimulationPatterns;
+    public readonly IReadOnlyList<(Type entityType, Type methodArgs, Type returnType)> FunctionSimulationPatterns;
     public readonly SimulationServicesContainer SimulationServices;
 
     public SimulationServicesConfig(SimulationServicesConfig source)
@@ -38,15 +38,15 @@ public class SimulationServicesConfig
     {
         SimulationServices = simulationServices;
         _originalServices = originalServices;
-        ActionSimulationPatterns = actionSimulationPatterns.Select(e => (e.Agent, e.MethodArgType)).ToList();
+        ActionSimulationPatterns = actionSimulationPatterns.Select(e => (e.Entity, e.MethodArgType)).ToList();
         FunctionSimulationPatterns = functionSimulationPatterns
-            .Select(e => (e.Agent, e.MethodArgType, e.UnwrappedReturnType!)).ToList();
+            .Select(e => (e.Entity, e.MethodArgType, e.UnwrappedReturnType!)).ToList();
 
-        originalServices.AddTransient<ITimeScaler, Identity>();
-        SimulationServices.AddTransient<ITimeScaler, Identity>();
+        originalServices.AddTransient<ITimeScaler, IdentityTimeScaler>();
+        SimulationServices.AddTransient<ITimeScaler, IdentityTimeScaler>();
     }
 
-    internal ITimeScaler TimeScaler { get; set; } = new Identity();
+    internal ITimeScaler TimeScaler { get; set; } = new IdentityTimeScaler();
 
     public SimulationServicesConfig WithTimeScaling(double scalingFactor)
     {
@@ -81,10 +81,10 @@ public class SimulationServicesConfig
         return this;
     }
 
-    public SimulationServicesConfig WithSubscriptionFactory<TFactory, TAgent>()
-        where TFactory : class, IMessageSubscriptionFactory<SimulationResult<TAgent>>
+    public SimulationServicesConfig WithSubscriptionFactory<TFactory, TEntity>()
+        where TFactory : class, IMessageSubscriptionFactory<SimulationResult<TEntity>>
     {
-        SimulationServices.AddSingleton<IMessageSubscriptionFactory<SimulationResult<TAgent>>, TFactory>();
+        SimulationServices.AddSingleton<IMessageSubscriptionFactory<SimulationResult<TEntity>>, TFactory>();
         return this;
     }
 

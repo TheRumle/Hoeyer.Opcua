@@ -8,10 +8,10 @@ namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
 
 internal sealed class CopySubscriptionTransferStrategy : ISubscriptionTransferStrategy
 {
-    public async Task TransferSubscriptionsBetween(IAgentSession oldSession, IAgentSession newSession)
+    public async Task TransferSubscriptionsBetween(IEntitySession oldSession, IEntitySession newSession)
     {
         List<Task> tasks = new();
-        foreach (var oldSub in oldSession.AgentSubscriptions.ToList())
+        foreach (var oldSub in oldSession.EntitySubscriptions.ToList())
         {
             var newSub = CloneSubscription(oldSession, oldSub);
             newSession.Session.AddSubscription(newSub);
@@ -21,9 +21,9 @@ internal sealed class CopySubscriptionTransferStrategy : ISubscriptionTransferSt
         await Task.WhenAll(tasks.ToArray());
     }
 
-    private static AgentSubscription CloneSubscription(IAgentSession oldSession, AgentSubscription oldSub)
+    private static EntitySubscription CloneSubscription(IEntitySession oldSession, EntitySubscription oldSub)
     {
-        var newSub = new AgentSubscription(oldSession, oldSub.Callback)
+        var newSub = new EntitySubscription(oldSession, oldSub.Callback)
         {
             PublishingInterval = oldSub.PublishingInterval,
             KeepAliveCount = oldSub.KeepAliveCount,
@@ -33,9 +33,9 @@ internal sealed class CopySubscriptionTransferStrategy : ISubscriptionTransferSt
             DisplayName = oldSub.DisplayName
         };
 
-        foreach (var oldItem in oldSub.AgentItems)
+        foreach (var oldItem in oldSub.EntityItems)
         {
-            var newItem = new MonitoredAgentItem(oldItem)
+            var newItem = new MonitoredEntityItem(oldItem)
             {
                 StartNodeId = oldItem.StartNodeId,
                 AttributeId = oldItem.AttributeId,

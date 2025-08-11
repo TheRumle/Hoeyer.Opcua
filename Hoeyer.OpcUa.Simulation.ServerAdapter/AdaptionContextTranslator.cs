@@ -7,40 +7,40 @@ using Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter;
 
-public sealed class AdaptionContextTranslator<TAgent, TMethodArgs>(
-    IAgentTranslator<TAgent> agentTranslator,
-    ISimulationBuilderFactory<TAgent, TMethodArgs> simulationBuilderFactory,
-    ISimulation<TAgent, TMethodArgs> simulator,
+public sealed class AdaptionContextTranslator<TEntity, TMethodArgs>(
+    IEntityTranslator<TEntity> entityTranslator,
+    ISimulationBuilderFactory<TEntity, TMethodArgs> simulationBuilderFactory,
+    ISimulation<TEntity, TMethodArgs> simulator,
     IMethodArgumentParser<TMethodArgs> argsParser
-) : IAdaptionContextTranslator<(IList<object>, IManagedAgent), TAgent, TMethodArgs>
+) : IAdaptionContextTranslator<(IList<object>, IManagedAgent), TEntity, TMethodArgs>
 {
-    public (TAgent currentState, TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps)
+    public (TEntity currentState, TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps)
         CreateSimulationContext((IList<object>, IManagedAgent) context)
     {
-        var (inputArguments, managedAgent) = context;
+        var (inputArguments, managedEntity) = context;
         var builder = simulationBuilderFactory.CreateSimulationBuilder();
         var simulationSteps = simulator.ConfigureSimulation(builder);
         var args = argsParser.ParseToArgsStructure(inputArguments);
-        var currentState = managedAgent.Select(agentTranslator.Translate);
+        var currentState = managedEntity.Select(entityTranslator.Translate);
         return (currentState, args, simulationSteps);
     }
 }
 
-public sealed class AdaptionContextTranslator<TAgent, TMethodArgs, TReturn>(
-    IAgentTranslator<TAgent> agentTranslator,
-    ISimulationBuilderFactory<TAgent, TMethodArgs, TReturn> simulationBuilderFactory,
-    ISimulation<TAgent, TMethodArgs, TReturn> simulator,
+public sealed class AdaptionContextTranslator<TEntity, TMethodArgs, TReturn>(
+    IEntityTranslator<TEntity> entityTranslator,
+    ISimulationBuilderFactory<TEntity, TMethodArgs, TReturn> simulationBuilderFactory,
+    ISimulation<TEntity, TMethodArgs, TReturn> simulator,
     IMethodArgumentParser<TMethodArgs> argsParser
-) : IAdaptionContextTranslator<(IList<object>, IManagedAgent), TAgent, TMethodArgs, TReturn>
+) : IAdaptionContextTranslator<(IList<object>, IManagedAgent), TEntity, TMethodArgs, TReturn>
 {
-    public (TAgent currentState, TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps)
+    public (TEntity currentState, TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps)
         CreateSimulationContext((IList<object>, IManagedAgent) context)
     {
-        var (inputArguments, managedAgent) = context;
+        var (inputArguments, managedEntity) = context;
         var builder = simulationBuilderFactory.CreateSimulationBuilder();
         var simulationSteps = simulator.ConfigureSimulation(builder);
         var args = argsParser.ParseToArgsStructure(inputArguments);
-        var currentState = managedAgent.Select(agentTranslator.Translate);
+        var currentState = managedEntity.Select(entityTranslator.Translate);
         return (currentState, args, simulationSteps);
     }
 }

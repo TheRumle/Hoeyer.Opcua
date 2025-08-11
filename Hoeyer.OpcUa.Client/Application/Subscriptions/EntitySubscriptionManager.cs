@@ -19,24 +19,24 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
 
-[OpcUaAgentService(typeof(IAgentSubscriptionManager<>), ServiceLifetime.Singleton)]
-internal sealed class AgentSubscriptionManager<T>(
-    ILogger<AgentSubscriptionManager<T>> logger,
-    IAgentSessionFactory sessionFactory,
-    IAgentBrowser<T> browser,
+[OpcUaEntityService(typeof(IEntitySubscriptionManager<>), ServiceLifetime.Singleton)]
+internal sealed class EntitySubscriptionManager<T>(
+    ILogger<EntitySubscriptionManager<T>> logger,
+    IEntitySessionFactory sessionFactory,
+    IEntityBrowser<T> browser,
     IMonitorItemsFactory<T> monitorFactory,
-    IAgentTranslator<T> translator)
-    : IAgentSubscriptionManager<T>
+    IEntityTranslator<T> translator)
+    : IEntitySubscriptionManager<T>
 {
-    private static readonly string SessionClientId = typeof(T).Name + "AgentMonitor";
+    private static readonly string SessionClientId = typeof(T).Name + "EntityMonitor";
 
     private readonly SubscriptionManager<T, ChannelBasedSubscription<T>> _subscriptionManager =
         new(new ChannelSubscriptionFactory<T>());
 
     private IReadOnlyList<MonitoredItem> MonitoredItems { get; set; } = [];
     private IAgent? CurrentNodeState { get; set; }
-    private AgentSubscription? AgentSubscription { get; set; }
-    public Subscription? Subscription => AgentSubscription;
+    private EntitySubscription? EntitySubscription { get; set; }
+    public Subscription? Subscription => EntitySubscription;
 
 
     public async Task<IMessageSubscription> SubscribeToAllPropertyChanges(
@@ -44,7 +44,7 @@ internal sealed class AgentSubscriptionManager<T>(
     {
         CurrentNodeState ??= await browser.BrowseAgent(cancellationToken);
         var session = await sessionFactory.GetSessionForAsync(SessionClientId, cancellationToken);
-        (AgentSubscription, MonitoredItems) =
+        (EntitySubscription, MonitoredItems) =
             await monitorFactory.CreateAndMonitorAll(session, CurrentNodeState, HandleChange, cancellationToken);
         await session.Session.PublishAsync(null, new SubscriptionAcknowledgementCollection(), cancellationToken);
         return _subscriptionManager.Subscribe(consumer);
@@ -58,14 +58,14 @@ internal sealed class AgentSubscriptionManager<T>(
     {
         CurrentNodeState ??= await browser.BrowseAgent(cancellationToken);
         var session = await sessionFactory.GetSessionForAsync(SessionClientId, cancellationToken);
-        AgentSubscription ??= await monitorFactory.GetOrCreateSubscriptionWithCallback(
+        EntitySubscription ??= await monitorFactory.GetOrCreateSubscriptionWithCallback(
             session,
-            "AgentSubscriptionManagerSubscription",
+            "EntitySubscriptionManagerSubscription",
             HandleChange,
             cancellationToken);
 
-        var propertyIdagent = CurrentNodeState.PropertyByBrowseName[propertyName].ToIdagentTuple();
-        await monitorFactory.MonitorProperty(AgentSubscription, propertyIdagent, cancellationToken);
+        var propertyIdentity = CurrentNodeState.PropertyByBrowseName[propertyName].ToIdentityTuple();
+        await monitorFactory.MonitorProperty(EntitySubscription, propertyIdentity, cancellationToken);
         await session.Session.PublishAsync(null, new SubscriptionAcknowledgementCollection(), cancellationToken);
         return _subscriptionManager.Subscribe(consumer);
     }
@@ -82,7 +82,7 @@ internal sealed class AgentSubscriptionManager<T>(
             var properties = CurrentNodeState!.PropertyByBrowseName!;
             if (!properties.TryGetValue(item.DisplayName, out var property))
             {
-                logger.LogInformation("Agent does not have any property named {Item}", item.DisplayName);
+                logger.LogInformation("Entity does not have any property named {Item}", item.DisplayName);
                 return;
             }
 

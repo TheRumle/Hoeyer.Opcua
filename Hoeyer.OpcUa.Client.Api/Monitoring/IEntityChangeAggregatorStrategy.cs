@@ -2,7 +2,7 @@
 
 namespace Hoeyer.OpcUa.Client.Api.Monitoring;
 
-internal interface IAgentChangeAggregatorStrategy<T>
+internal interface IEntityChangeAggregatorStrategy<T>
 {
     public void Register(MonitoredItemNotification item);
 }

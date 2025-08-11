@@ -19,7 +19,7 @@ public sealed class RemoteMethodCallerGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var decoratedRecordsProvider = context
-            .GetAgentMethodInterfaces()
+            .GetEntityMethodInterfaces()
             .Select(static (ctx, ct) => CreateRemoteMethodCallerModel(ctx.interfaceNode, ctx.model))
             .Where(static model => model.HasValue);
 
@@ -46,9 +46,9 @@ public sealed class RemoteMethodCallerGenerator : IIncrementalGenerator
         InterfaceDeclarationSyntax interfaceDeclaration, SemanticModel model)
     {
         //for instance Task MyMethod(int a, int b, TypeFromNamespaceQ value) --> System.Threading.Task MyMethod(System.Int32 a, System.Int32 b, Q.TypeFromNamespaceQ value)
-        INamedTypeSymbol? agentParameter = GetAgentFromGenericArgument(interfaceDeclaration, model);
+        INamedTypeSymbol? entityParameter = GetEntityFromGenericArgument(interfaceDeclaration, model);
         INamedTypeSymbol? declaredSymbol = model.GetDeclaredSymbol(interfaceDeclaration);
-        if (agentParameter is null || declaredSymbol is null) return null;
+        if (entityParameter is null || declaredSymbol is null) return null;
         List<MethodDeclarationSyntax> methods = interfaceDeclaration.Members.OfType<MethodDeclarationSyntax>().ToList();
 
         var rewriter = new FullyQualifyTypeNamesRewriter(model);
@@ -57,7 +57,7 @@ public sealed class RemoteMethodCallerGenerator : IIncrementalGenerator
             .ToList();
 
 
-        return new RemoteMethodCallerModel(declaredSymbol, agentParameter,
+        return new RemoteMethodCallerModel(declaredSymbol, entityParameter,
             interfaceDeclaration.WithMembers(List(rewrittenMethods)));
     }
 
@@ -74,13 +74,13 @@ public sealed class RemoteMethodCallerGenerator : IIncrementalGenerator
         builder.WriteLine("namespace " + @namespace + ".Generated");
         builder.WriteLine("{");
 
-        builder.Write("[").Write(WellKnown.FullyQualifiedAttribute.OpcUaAgentServiceAttribute.WithGlobalPrefix)
+        builder.Write("[").Write(WellKnown.FullyQualifiedAttribute.OpcUaEntityServiceAttribute.WithGlobalPrefix)
             .Write("(typeof(").Write(model.InterfaceName.WithGlobalPrefix)
             .Write("), global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped)]");
         builder.WriteLine();
         builder.WriteLine("public sealed class " + classIdentifier);
         builder.Write(
-            $"({WellKnown.FullyQualifiedInterface.MethodCallerType.WithGlobalPrefix}<{model.RelatedAgentName.WithGlobalPrefix}> caller)");
+            $"({WellKnown.FullyQualifiedInterface.MethodCallerType.WithGlobalPrefix}<{model.RelatedEntityName.WithGlobalPrefix}> caller)");
         builder.WriteLine(" : " + model.InterfaceName.WithGlobalPrefix);
         builder.WriteLine("{");
 
@@ -112,13 +112,13 @@ public sealed class RemoteMethodCallerGenerator : IIncrementalGenerator
         return (Identifier: classIdentifier, SourceCode: builder.ToString());
     }
 
-    private static INamedTypeSymbol? GetAgentFromGenericArgument(InterfaceDeclarationSyntax interfaceDeclaration,
+    private static INamedTypeSymbol? GetEntityFromGenericArgument(InterfaceDeclarationSyntax interfaceDeclaration,
         SemanticModel model)
     {
         IEnumerable<AttributeSyntax> attributes =
             interfaceDeclaration.AttributeLists.SelectMany(attrList => attrList.Attributes);
         return attributes
-            .Select(attr => attr.GetAgentFromGenericArgument(model))
+            .Select(attr => attr.GetEntityFromGenericArgument(model))
             .FirstOrDefault(a => a is not null);
     }
 }

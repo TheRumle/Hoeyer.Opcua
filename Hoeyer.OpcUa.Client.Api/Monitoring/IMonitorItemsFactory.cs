@@ -11,24 +11,24 @@ namespace Hoeyer.OpcUa.Client.Api.Monitoring;
 
 public interface IMonitorItemsFactory<T>
 {
-    ValueTask<(AgentSubscription subscription, IReadOnlyList<MonitoredItem> variableMonitoring)> CreateAndMonitorAll(
-        IAgentSession session,
+    ValueTask<(EntitySubscription subscription, IReadOnlyList<MonitoredItem> variableMonitoring)> CreateAndMonitorAll(
+        IEntitySession session,
         IAgent node,
         Action<MonitoredItem, MonitoredItemNotificationEventArgs> callback,
         CancellationToken cancel = default);
 
-    ValueTask<IReadOnlyList<MonitoredAgentItem>> MonitorAllProperties(AgentSubscription subscription,
+    ValueTask<IReadOnlyList<MonitoredEntityItem>> MonitorAllProperties(EntitySubscription subscription,
         IAgent node, CancellationToken cancel = default);
 
-    ValueTask<AgentSubscription> GetOrCreateSubscriptionWithCallback(
-        IAgentSession session,
+    ValueTask<EntitySubscription> GetOrCreateSubscriptionWithCallback(
+        IEntitySession session,
         string subscriptionName,
         Action<MonitoredItem, MonitoredItemNotificationEventArgs> callback,
         CancellationToken cancel = default);
 
-    ValueTask<IReadOnlyList<MonitoredAgentItem>> MonitorProperties(AgentSubscription subscription,
+    ValueTask<IReadOnlyList<MonitoredEntityItem>> MonitorProperties(EntitySubscription subscription,
         IEnumerable<(NodeId Id, string Name)> nodesToMonitor, CancellationToken cancel = default);
 
-    ValueTask<MonitoredAgentItem> MonitorProperty(AgentSubscription subscription,
+    ValueTask<MonitoredEntityItem> MonitorProperty(EntitySubscription subscription,
         (NodeId Id, string Name) nodeToMonitor, CancellationToken cancel = default);
 }

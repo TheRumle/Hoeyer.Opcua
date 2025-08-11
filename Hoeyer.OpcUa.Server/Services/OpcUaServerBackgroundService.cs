@@ -10,7 +10,7 @@ public sealed class OpcUaServerBackgroundService(IServiceProvider serviceProvide
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var factory = serviceProvider.GetRequiredService<OpcUaAgentServerFactory>();
+        var factory = serviceProvider.GetRequiredService<OpcUaEntityServerFactory>();
         var server = factory.CreateServer();
         await server.StartAsync();
         await Task.Delay(Timeout.Infinite, stoppingToken);

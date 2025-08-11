@@ -4,17 +4,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Simulation.Services;
 
-public sealed record OnGoingOpcAgentServiceRegistrationWithSimulation(
+public sealed record OnGoingOpcEntityServiceRegistrationWithSimulation(
     IServiceCollection Collection,
-    SimulationServicesConfig Config) : OnGoingOpcAgentServiceRegistration(Collection)
+    SimulationServicesConfig Config) : OnGoingOpcEntityServiceRegistration(Collection)
 {
     public SimulationServicesContainer SimulationServices { get; } = Config.SimulationServices;
     public SimulationServicesConfig Config { get; } = Config;
 
-    public OnGoingOpcAgentServiceRegistrationWithSimulation CreateReconfigured(
+    public OnGoingOpcEntityServiceRegistrationWithSimulation CreateReconfigured(
         Action<SimulationServicesConfig> reconfigure)
     {
         reconfigure(new SimulationServicesConfig(Config));
-        return new OnGoingOpcAgentServiceRegistrationWithSimulation(Collection, Config);
+        return new OnGoingOpcEntityServiceRegistrationWithSimulation(Collection, Config);
     }
 }

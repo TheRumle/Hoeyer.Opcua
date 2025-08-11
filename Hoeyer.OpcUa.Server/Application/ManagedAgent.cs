@@ -9,12 +9,12 @@ internal sealed record ManagedAgent<T> : IManagedAgent<T>
     private readonly object _lock = new();
     private readonly IAgent _managedNode;
 
-    public ManagedAgent(IAgent node, string agentNamespace, ushort agentNamespaceIndex)
+    public ManagedAgent(IAgent node, string entityNamespace, ushort entityNamespaceIndex)
     {
         _managedNode = node;
-        AgentNameSpaceIndex = agentNamespaceIndex;
-        Namespace = agentNamespace;
-        AgentName = _managedNode.BaseObject.BrowseName.Name;
+        EntityNameSpaceIndex = entityNamespaceIndex;
+        Namespace = entityNamespace;
+        EntityName = _managedNode.BaseObject.BrowseName.Name;
     }
 
     /// <inheritdoc />
@@ -27,9 +27,9 @@ internal sealed record ManagedAgent<T> : IManagedAgent<T>
     }
 
     public string Namespace { get; }
-    public ushort AgentNameSpaceIndex { get; }
+    public ushort EntityNameSpaceIndex { get; }
 
-    public string AgentName { get; set; }
+    public string EntityName { get; set; }
 
     public void ChangeState(Action<IAgent> stateChanges)
     {

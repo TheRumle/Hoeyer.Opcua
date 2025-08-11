@@ -12,19 +12,19 @@ namespace Hoeyer.OpcUa.Client.Application.Connection;
 
 internal class ReusableSessionFactory(
     ILogger<ReusableSessionFactory> logger,
-    IOpcUaAgentServerInfo applicationOptions,
+    IOpcUaEntityServerInfo applicationOptions,
     ISubscriptionTransferStrategy subscriptionTransferStrategy,
     IReconnectionStrategy reconnectionStrategy)
-    : IAgentSessionFactory
+    : IEntitySessionFactory
 {
     private readonly ApplicationConfiguration _configuration = CreateApplicationConfig();
 
-    private readonly ConcurrentDictionary<string, AgentSession> _sessions = new();
+    private readonly ConcurrentDictionary<string, EntitySession> _sessions = new();
     private ConfiguredEndpoint _endpoint => CreateEndpoint();
 
-    public async Task<IAgentSession> GetSessionForAsync(string clientKey, CancellationToken token = default)
+    public async Task<IEntitySession> GetSessionForAsync(string clientKey, CancellationToken token = default)
     {
-        if (!_sessions.TryGetValue(clientKey, out AgentSession? existingSession))
+        if (!_sessions.TryGetValue(clientKey, out EntitySession? existingSession))
         {
             return _sessions[clientKey] = await CreateSession(clientKey, token);
         }
@@ -40,13 +40,13 @@ internal class ReusableSessionFactory(
         }
 
 
-        AgentSession newSession = await CreateSession(clientKey, token);
+        EntitySession newSession = await CreateSession(clientKey, token);
         await subscriptionTransferStrategy.TransferSubscriptionsBetween(existingSession, newSession);
         _sessions[clientKey] = newSession;
         return newSession;
     }
 
-    public IAgentSession GetSessionFor(string client) => GetSessionForAsync(client).Result;
+    public IEntitySession GetSessionFor(string client) => GetSessionForAsync(client).Result;
 
 
     private ConfiguredEndpoint CreateEndpoint()
@@ -56,7 +56,7 @@ internal class ReusableSessionFactory(
         return new ConfiguredEndpoint(null, CoreClientUtils.SelectEndpoint(opcServerUrl, false), endpointConfiguration);
     }
 
-    private async Task<AgentSession> CreateSession(string client, CancellationToken token)
+    private async Task<EntitySession> CreateSession(string client, CancellationToken token)
     {
         var session = await Session.Create(
             _configuration,
@@ -69,13 +69,13 @@ internal class ReusableSessionFactory(
             token);
 
         logger.LogInformation("Session created for client '{Client}'.", client);
-        return new AgentSession(session);
+        return new EntitySession(session);
     }
 
     private static bool SessionIsHealthy(ISession session) =>
         session is { Disposed: false, Connected: true, KeepAliveStopped: false };
 
-    private static bool SessionIsHealthy(IAgentSession session) => SessionIsHealthy(session.Session);
+    private static bool SessionIsHealthy(IEntitySession session) => SessionIsHealthy(session.Session);
 
     private static ApplicationConfiguration CreateApplicationConfig()
     {

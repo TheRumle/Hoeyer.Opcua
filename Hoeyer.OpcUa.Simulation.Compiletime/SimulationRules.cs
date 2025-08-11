@@ -16,15 +16,15 @@ public static class SimulationRules
         DesignCategory,
         "The simulated method does not returns a value and must be configured as an action simulator");
 
-    public static readonly DiagnosticDescriptor TArgsMustBeAnnotatedWithOpcAgentMethodArgs = CreateErrorDescriptor(
+    public static readonly DiagnosticDescriptor TArgsMustBeAnnotatedWithOpcEntityMethodArgs = CreateErrorDescriptor(
         "HOEYERSIMULATION0003",
         DesignCategory,
-        "TArgs must be a type annotated with OpcAgentMethodArgsAttribute");
+        "TArgs must be a type annotated with OpcEntityMethodArgsAttribute");
 
-    public static readonly DiagnosticDescriptor TAgentMustBeAnAgent = CreateErrorDescriptor(
+    public static readonly DiagnosticDescriptor TEntityMustBeAnEntity = CreateErrorDescriptor(
         "HOEYERSIMULATION0004",
         DesignCategory,
-        "TAgent must be a type annotated with OpcUaAgentAttribute");
+        "TEntity must be a type annotated with OpcUaEntityAttribute");
 
     public static readonly DiagnosticDescriptor ReturnTypeMustMatchReturnTypeOfSimulatedMethod = CreateErrorDescriptor(
         "HOEYERSIMULATION0005",

@@ -10,13 +10,13 @@ public record struct SimulationPatternTypeDetails
         Type InstantiatedSimulatorInterface,
         Type MethodArgType,
         MethodInfo MethodBeingSimulated,
-        Type Agent)
+        Type Entity)
     {
         this.Implementor = Implementor;
         this.InstantiatedSimulatorInterface = InstantiatedSimulatorInterface;
         this.MethodArgType = MethodArgType;
         this.MethodBeingSimulated = MethodBeingSimulated;
-        this.Agent = Agent;
+        this.Entity = Entity;
         UnwrappedReturnType = MethodBeingSimulated.ReturnType.GetGenericArguments().FirstOrDefault();
     }
 
@@ -26,15 +26,15 @@ public record struct SimulationPatternTypeDetails
     public Type InstantiatedSimulatorInterface { get; set; }
     public Type MethodArgType { get; set; }
     public MethodInfo MethodBeingSimulated { get; set; }
-    public Type Agent { get; set; }
+    public Type Entity { get; set; }
 
     public readonly void Deconstruct(out Type Implementor, out Type InstantiatedSimulatorInterface,
-        out Type MethodArgType, out Type? UnwrappedReturnType, out Type Agent)
+        out Type MethodArgType, out Type? UnwrappedReturnType, out Type Entity)
     {
         Implementor = this.Implementor;
         InstantiatedSimulatorInterface = this.InstantiatedSimulatorInterface;
         MethodArgType = this.MethodArgType;
         UnwrappedReturnType = this.UnwrappedReturnType;
-        Agent = this.Agent;
+        Entity = this.Entity;
     }
 }

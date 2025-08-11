@@ -2,7 +2,7 @@
 
 namespace Playground.Models.Methods;
 
-[OpcUaAgentMethods<Gantry>]
+[OpcUaEntityMethods<Gantry>]
 public interface IGantryMethods
 {
     Task ChangePosition(Position position);

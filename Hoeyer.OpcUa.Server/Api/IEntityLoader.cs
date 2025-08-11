@@ -2,7 +2,7 @@
 
 namespace Hoeyer.OpcUa.Server.Api;
 
-public interface IAgentLoader<T>
+public interface IEntityLoader<T>
 {
     public ValueTask<T> LoadCurrentState();
 }

@@ -7,5 +7,5 @@ public interface IAgentManagerFactory<in T> : IAgentManagerFactory;
 
 public interface IAgentManagerFactory
 {
-    Task<IAgentManager> CreateAgentManager(IServerInternal server);
+    Task<IAgentManager> CreateEntityManager(IServerInternal server);
 }

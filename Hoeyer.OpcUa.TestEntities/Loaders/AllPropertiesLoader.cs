@@ -2,11 +2,11 @@
 
 namespace Hoeyer.OpcUa.TestEntities.Loaders;
 
-public class AllPropertiesLoader : IAgentLoader<AllPropertyTypesAgent>
+public class AllPropertiesLoader : IEntityLoader<AllPropertyTypesEntity>
 {
     /// <inheritdoc />
-    public ValueTask<AllPropertyTypesAgent> LoadCurrentState() =>
-        new(new AllPropertyTypesAgent
+    public ValueTask<AllPropertyTypesEntity> LoadCurrentState() =>
+        new(new AllPropertyTypesEntity
         {
             Bool = true,
             Double = 2.123,

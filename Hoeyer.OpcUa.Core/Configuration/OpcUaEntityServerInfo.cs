@@ -5,9 +5,9 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Configuration;
 
-internal record OpcUaAgentServerInfo : IOpcUaAgentServerInfo
+internal record OpcUaEntityServerInfo : IOpcUaEntityServerInfo
 {
-    public OpcUaAgentServerInfo(string ServerId, string ServerName, Uri Host, ISet<Uri> Endpoints,
+    public OpcUaEntityServerInfo(string ServerId, string ServerName, Uri Host, ISet<Uri> Endpoints,
         Uri ApplicationNamespace)
     {
         ValidateSupportedProtocol([Host, ..Endpoints]);

@@ -7,31 +7,31 @@ using Opc.Ua.Configuration;
 
 namespace Hoeyer.OpcUa.Server;
 
-internal sealed class StartableAgentServer(
+internal sealed class StartableEntityServer(
     ApplicationInstance applicationInstance,
-    OpcAgentServer agentServer,
-    AgentServerStartedMarker marker)
-    : IStartableAgentServer, IStartedAgentServer
+    OpcEntityServer entityServer,
+    EntityServerStartedMarker marker)
+    : IStartableEntityServer, IStartedEntityServer
 {
     private readonly ApplicationInstance _applicationInstance =
         applicationInstance ?? throw new ArgumentNullException(nameof(applicationInstance));
 
-    private readonly OpcAgentServer _agentServer =
-        agentServer ?? throw new ArgumentNullException(nameof(agentServer));
+    private readonly OpcEntityServer _entityServer =
+        entityServer ?? throw new ArgumentNullException(nameof(entityServer));
 
     private bool _disposed;
 
-    public async Task<IStartedAgentServer> StartAsync()
+    public async Task<IStartedEntityServer> StartAsync()
     {
         if (_disposed)
         {
-            throw new ObjectDisposedException(nameof(StartableAgentServer));
+            throw new ObjectDisposedException(nameof(StartableEntityServer));
         }
 
         if (marker.IsServerStarted) return this;
         try
         {
-            await _applicationInstance.Start(_agentServer);
+            await _applicationInstance.Start(_entityServer);
             marker.MarkCompleted();
         }
         catch (ServiceResultException e)
@@ -44,7 +44,7 @@ internal sealed class StartableAgentServer(
     }
 
     /// <inheritdoc />
-    public IOpcUaAgentServerInfo ServerInfo => _agentServer.ServerInfo;
+    public IOpcUaEntityServerInfo ServerInfo => _entityServer.ServerInfo;
 
     public void Dispose()
     {
@@ -61,15 +61,15 @@ internal sealed class StartableAgentServer(
 
         if (disposing)
         {
-            _agentServer.Stop();
+            _entityServer.Stop();
             _applicationInstance.Stop();
-            _agentServer.Dispose();
+            _entityServer.Dispose();
         }
 
         _disposed = true;
     }
 
-    ~StartableAgentServer()
+    ~StartableEntityServer()
     {
         Dispose(false);
     }

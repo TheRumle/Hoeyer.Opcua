@@ -62,6 +62,6 @@ public abstract class ConcurrentTreeTraversalStrategy(
             return referenceDescription;
         }
 
-        throw new AgentBrowseException("No reference matching the predicate was found");
+        throw new EntityBrowseException("No reference matching the predicate was found");
     }
 }

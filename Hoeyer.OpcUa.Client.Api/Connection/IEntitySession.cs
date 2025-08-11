@@ -5,8 +5,8 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Api.Connection;
 
-public interface IAgentSession : IDisposable
+public interface IEntitySession : IDisposable
 {
     public ISession Session { get; }
-    public IEnumerable<AgentSubscription> AgentSubscriptions { get; }
+    public IEnumerable<EntitySubscription> EntitySubscriptions { get; }
 }

@@ -19,7 +19,7 @@ public sealed class MethodArgumentsStructureGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         UnloadedIncrementalValuesProvider<(string identifier, string code)> argumentStructures = context
-            .GetAgentMethodInterfaces()
+            .GetEntityMethodInterfaces()
             .Select(static (ctx, ct) => CreateMethodArgumentStructures(ctx))
             .Where(static e => e != null)
             .SelectMany(static (ctx, cs) => CreateSourceCode(ctx!.Value));
@@ -38,14 +38,14 @@ public sealed class MethodArgumentsStructureGenerator : IIncrementalGenerator
     {
         (InterfaceDeclarationSyntax? interfaceDeclaration, SemanticModel? model) = ctx;
 
-        INamedTypeSymbol? agentParameter = interfaceDeclaration
+        INamedTypeSymbol? entityParameter = interfaceDeclaration
             .AttributeLists
             .SelectMany(attrList => attrList.Attributes)
-            .Select(attr => attr.GetAgentFromGenericArgument(model))
+            .Select(attr => attr.GetEntityFromGenericArgument(model))
             .FirstOrDefault(a => a is not null);
 
         INamedTypeSymbol? interfaceSymbol = model.GetDeclaredSymbol(interfaceDeclaration);
-        if (agentParameter is null || interfaceSymbol is null) return null;
+        if (entityParameter is null || interfaceSymbol is null) return null;
 
 
         List<IMethodSymbol> methods = interfaceDeclaration
@@ -55,13 +55,13 @@ public sealed class MethodArgumentsStructureGenerator : IIncrementalGenerator
             .OfType<IMethodSymbol>()
             .ToList();
 
-        return new MethodArgumentsStructureModel(agentParameter, interfaceSymbol, methods);
+        return new MethodArgumentsStructureModel(entityParameter, interfaceSymbol, methods);
     }
 
     private static IEnumerable<(string identifier, string code)> CreateSourceCode(MethodArgumentsStructureModel model)
     {
         var results = new List<(string identifier, string code)>();
-        var agent = model.Agent.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
+        var entity = model.Entity.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
         var @interface = model.InterfaceSymbol.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
         var @namespace = model.InterfaceSymbol.GetFullNamespace();
 
@@ -86,7 +86,7 @@ public sealed class MethodArgumentsStructureGenerator : IIncrementalGenerator
 
             //method arg attribute
             var attrName = WellKnown.FullyQualifiedAttribute.OpcMethodArgumentsAttribute.WithGlobalPrefix;
-            builder.WriteLine($"[{attrName}<{agent}, {@interface}>(\"{methodSymbol.Name}\")]");
+            builder.WriteLine($"[{attrName}<{entity}, {@interface}>(\"{methodSymbol.Name}\")]");
             builder.WriteLine($"public sealed record {className} : " +
                               WellKnown.FullyQualifiedInterface.IArgsContainer.WithGlobalPrefix);
             builder.WriteLine("{");

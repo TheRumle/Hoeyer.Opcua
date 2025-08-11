@@ -22,7 +22,7 @@ public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourc
     private static IServiceCollection CreateServiceCollection()
     {
         OpcUaCoreServicesFixture fixture = new();
-        fixture.OnGoingOpcAgentServiceRegistration
+        fixture.OnGoingOpcEntityServiceRegistration
             .WithOpcUaClientServices()
             .WithOpcUaServer()
             .WithOpcUaSimulationServices(configure =>

@@ -40,8 +40,8 @@ public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
         if (_isInitialized) return;
         ServiceProvider = _collection.BuildServiceProvider();
         Scope = ServiceProvider.CreateAsyncScope();
-        await Scope.ServiceProvider.GetRequiredService<IStartableAgentServer>().StartAsync();
-        var serverStarted = Scope.ServiceProvider.GetService<AgentServerStartedMarker>()!;
+        await Scope.ServiceProvider.GetRequiredService<IStartableEntityServer>().StartAsync();
+        var serverStarted = Scope.ServiceProvider.GetService<EntityServerStartedMarker>()!;
         await serverStarted;
         _isInitialized = true;
     }
@@ -63,7 +63,7 @@ public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
     public async Task<ISession> CreateSession(string sessionId)
     {
         await InitializeAsync();
-        return await Scope.ServiceProvider.GetService<IAgentSessionFactory>()!.GetSessionForAsync(sessionId, Token)
+        return await Scope.ServiceProvider.GetService<IEntitySessionFactory>()!.GetSessionForAsync(sessionId, Token)
             .ThenAsync(e => e.Session);
     }
 

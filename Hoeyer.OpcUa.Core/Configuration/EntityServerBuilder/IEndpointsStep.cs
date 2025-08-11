@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Hoeyer.OpcUa.Core.Configuration.AgentServerBuilder;
+namespace Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
 
-public interface IEndpointsStep : IAgentServerConfigurationBuildable
+public interface IEndpointsStep : IEntityServerConfigurationBuildable
 {
-    IAgentServerConfigurationBuildable WithEndpoints(List<string> endpoints);
+    IEntityServerConfigurationBuildable WithEndpoints(List<string> endpoints);
 }

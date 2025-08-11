@@ -8,16 +8,16 @@ public record struct RemoteMethodCallerModel
     public readonly InterfaceDeclarationSyntax GlobalizedMethodCaller;
     public readonly FullyQualifiedTypeName InterfaceName;
     public readonly INamedTypeSymbol InterfaceSymbol;
-    public readonly FullyQualifiedTypeName RelatedAgentName;
+    public readonly FullyQualifiedTypeName RelatedEntityName;
 
     public RemoteMethodCallerModel(
         INamedTypeSymbol interfaceSymbol,
-        INamedTypeSymbol relatedAgent,
+        INamedTypeSymbol relatedEntity,
         InterfaceDeclarationSyntax globalizedMethodCaller)
     {
         InterfaceSymbol = interfaceSymbol;
         GlobalizedMethodCaller = globalizedMethodCaller;
-        RelatedAgentName = new FullyQualifiedTypeName(relatedAgent);
+        RelatedEntityName = new FullyQualifiedTypeName(relatedEntity);
         InterfaceName = new FullyQualifiedTypeName(interfaceSymbol);
     }
 }

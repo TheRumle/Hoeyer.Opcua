@@ -7,29 +7,29 @@ using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
 
 namespace Hoeyer.OpcUa.Simulation.Configuration;
 
-internal sealed class CompositeActionSimulationBuilder<TAgent, TArguments, TBuilder>(
+internal sealed class CompositeActionSimulationBuilder<TEntity, TArguments, TBuilder>(
     TBuilder builder,
-    IAgentTranslator<TAgent> translator,
+    IEntityTranslator<TEntity> translator,
     Queue<ISimulationStep> queue)
 {
     /// <inheritdoc />
-    public TBuilder ChangeState(Action<SimulationStepContext<TAgent, TArguments>> stateChange)
+    public TBuilder ChangeState(Action<SimulationStepContext<TEntity, TArguments>> stateChange)
     {
-        queue.Enqueue(new MutateStateStep<TAgent, TArguments>(stateChange, translator.Copy));
+        queue.Enqueue(new MutateStateStep<TEntity, TArguments>(stateChange, translator.Copy));
         return builder;
     }
 
     /// <inheritdoc />
-    public TBuilder ChangeStateAsync(Func<SimulationStepContext<TAgent, TArguments>, ValueTask> stateChange)
+    public TBuilder ChangeStateAsync(Func<SimulationStepContext<TEntity, TArguments>, ValueTask> stateChange)
     {
-        queue.Enqueue(new AsyncActionStep<TAgent, TArguments>(stateChange, translator.Copy));
+        queue.Enqueue(new AsyncActionStep<TEntity, TArguments>(stateChange, translator.Copy));
         return builder;
     }
 
     /// <inheritdoc />
-    public TBuilder SideEffect(Action<SimulationStepContext<TAgent, TArguments>> sideEffect)
+    public TBuilder SideEffect(Action<SimulationStepContext<TEntity, TArguments>> sideEffect)
     {
-        queue.Enqueue(new SideEffectActionStep<TAgent, TArguments>(sideEffect, translator.Copy));
+        queue.Enqueue(new SideEffectActionStep<TEntity, TArguments>(sideEffect, translator.Copy));
         return builder;
     }
 

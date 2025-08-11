@@ -5,15 +5,15 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Services.Configuration;
 
-public sealed record OpcUaAgentServerSetup(
+public sealed record OpcUaEntityServerSetup(
     string ServerId,
     string ApplicationName,
     Uri Host,
     ISet<Uri> Endpoints,
     Uri ApplicationNamespace,
-    Action<ServerConfiguration>? AdditionalConfiguration) : IOpcUaAgentServerInfo
+    Action<ServerConfiguration>? AdditionalConfiguration) : IOpcUaEntityServerInfo
 {
-    public OpcUaAgentServerSetup(IOpcUaAgentServerInfo root, Action<ServerConfiguration> additionalConfiguration)
+    public OpcUaEntityServerSetup(IOpcUaEntityServerInfo root, Action<ServerConfiguration> additionalConfiguration)
         : this(root.ServerId, root.ApplicationName, root.Host, root.Endpoints, root.ApplicationNamespace,
             additionalConfiguration)
     {

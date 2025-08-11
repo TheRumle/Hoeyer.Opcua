@@ -12,32 +12,32 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Client.Application.Writing;
 
-[OpcUaAgentService(typeof(IAgentWriter<>))]
-public sealed class AgentWriter<TAgent>(
-    ILogger<IAgentWriter<TAgent>> logger,
-    IAgentTranslator<TAgent> translator,
-    IAgentSessionFactory factory,
-    IAgentBrowser<TAgent> browser) : IAgentWriter<TAgent>
+[OpcUaEntityService(typeof(IEntityWriter<>))]
+public sealed class EntityWriter<TEntity>(
+    ILogger<IEntityWriter<TEntity>> logger,
+    IEntityTranslator<TEntity> translator,
+    IEntitySessionFactory factory,
+    IEntityBrowser<TEntity> browser) : IEntityWriter<TEntity>
 {
-    private static string SessionId = typeof(TAgent).Name + "Writer";
+    private static string SessionId = typeof(TEntity).Name + "Writer";
 
 
-    public async Task AssignAgentValues(TAgent agent, CancellationToken cancellationToken = default)
+    public async Task AssignEntityValues(TEntity entity, CancellationToken cancellationToken = default)
     {
         var valuesToWrite = await browser.GetNodeStructure(cancellationToken);
-        translator.AssignToStructure(agent, (name, value) => valuesToWrite.Properties[name].Value = value);
+        translator.AssignToStructure(entity, (name, value) => valuesToWrite.Properties[name].Value = value);
         IEnumerable<WriteValue> values = valuesToWrite.Properties.Values.Select(CreateWriteValue);
         await WriteValues(cancellationToken, values);
     }
 
     /// <inheritdoc />
-    public async Task AssignAgentProperties(IEnumerable<(string propertyName, object propertyValue)> agentState,
+    public async Task AssignEntityProperties(IEnumerable<(string propertyName, object propertyValue)> entityState,
         CancellationToken cancellationToken = default)
     {
         var structure = await browser.GetNodeStructure(cancellationToken);
         Dictionary<string, WriteValue> toWrite = new();
 
-        foreach (var (key, value) in agentState)
+        foreach (var (key, value) in entityState)
         {
             var s = structure.Properties[key]!;
             s.Value = value;
@@ -50,7 +50,7 @@ public sealed class AgentWriter<TAgent>(
     private async Task WriteValues(CancellationToken cancellationToken,
         IEnumerable<WriteValue> valuesToWrite)
     {
-        IAgentSession session = await factory.GetSessionForAsync(SessionId, cancellationToken);
+        IEntitySession session = await factory.GetSessionForAsync(SessionId, cancellationToken);
         WriteResponse? res =
             await session.Session.WriteAsync(null, new WriteValueCollection(valuesToWrite), cancellationToken);
         foreach (DiagnosticInfo? s in res.DiagnosticInfos.Where(e => !e.IsNullDiagnosticInfo))

@@ -3,4 +3,4 @@
 namespace Hoeyer.OpcUa.Core;
 
 [AttributeUsage(AttributeTargets.Class)]
-public sealed class OpcUaAgentAttribute : Attribute;
+public sealed class OpcUaEntityAttribute : Attribute;

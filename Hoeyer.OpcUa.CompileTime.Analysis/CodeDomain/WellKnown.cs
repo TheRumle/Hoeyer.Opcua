@@ -4,10 +4,9 @@ public static class WellKnown
 {
     public static class FullyQualifiedAttribute
     {
-        public static readonly FullyQualifiedTypeName AgentAttribute = GetTypeName("OpcUaAgentAttribute");
-
-        public static readonly FullyQualifiedTypeName AgentBehaviourAttribute =
-            GetTypeName("OpcUaAgentMethodsAttribute");
+        public static readonly FullyQualifiedTypeName EntityAttribute = GetTypeName("OpcUaEntityAttribute");
+        
+        public static readonly FullyQualifiedTypeName EntityBehaviourAttribute = GetTypeName("OpcUaEntityMethodsAttribute");
 
         private static FullyQualifiedTypeName GetTypeName(string className)
         {

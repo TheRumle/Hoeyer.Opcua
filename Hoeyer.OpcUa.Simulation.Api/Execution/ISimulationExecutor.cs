@@ -11,7 +11,7 @@ public interface ISimulationExecutor<TState, in TArgs>
     /// <param name="initialState"></param>
     /// <param name="args"></param>
     /// <param name="steps"></param>
-    /// <returns>Async enumerable with the results of the simulation, except side-effects <see cref="SideEffectActionStep{TAgent,TArguments}"/></returns>
+    /// <returns>Async enumerable with the results of the simulation, except side-effects <see cref="SideEffectActionStep{TEntity,TArguments}"/></returns>
     IAsyncEnumerable<SimulationResult<TState>> ExecuteSimulation(TState initialState, TArgs args,
         IEnumerable<ISimulationStep> steps);
 }

@@ -9,16 +9,16 @@ using Opc.Ua.Server;
 namespace Hoeyer.OpcUa.Server.Application;
 
 internal sealed class AgentManager<T>(
-    IManagedAgent<T> managedAgent,
+    IManagedAgent<T> managedEntity,
     IServerInternal server,
     ILogger logger)
-    : CustomNodeManager(server, managedAgent.Namespace), IAgentManager<T>
+    : CustomNodeManager(server, managedEntity.Namespace), IAgentManager<T>
 {
-    public IManagedAgent ManagedAgent { get; } = managedAgent;
+    public IManagedAgent ManagedEntity { get; } = managedEntity;
 
     public override void CreateAddressSpace(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
-        using IDisposable? scope = logger.BeginScope(ManagedAgent.Select(e => e.ToLoggingObject()));
+        using IDisposable? scope = logger.BeginScope(ManagedEntity.Select(e => e.ToLoggingObject()));
         logger.Log(LogLevel.Information, "Creating address space");
         try
         {
@@ -26,7 +26,7 @@ internal sealed class AgentManager<T>(
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Failed to create address space for agent");
+            logger.LogError(e, "Failed to create address space for entity");
         }
     }
 
@@ -34,7 +34,7 @@ internal sealed class AgentManager<T>(
     {
         lock (Lock)
         {
-            BaseObjectState node = ManagedAgent.Select(e => e.BaseObject);
+            BaseObjectState node = ManagedEntity.Select(e => e.BaseObject);
             AddPredefinedNode(SystemContext, node);
             if (!externalReferences.TryGetValue(ObjectIds.ObjectsFolder, out IList<IReference>? references))
             {

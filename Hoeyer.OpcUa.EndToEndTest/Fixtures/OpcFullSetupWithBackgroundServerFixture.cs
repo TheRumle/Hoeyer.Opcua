@@ -12,7 +12,7 @@ public class OpcFullSetupWithBackgroundServerFixture : OpcUaCoreServicesFixture
 {
     public OpcFullSetupWithBackgroundServerFixture()
     {
-        OnGoingOpcAgentServiceRegistration
+        OnGoingOpcEntityServiceRegistration
             .WithOpcUaServer()
             .WithOpcUaClientServices()
             .WithOpcUaSimulationServices(configure =>

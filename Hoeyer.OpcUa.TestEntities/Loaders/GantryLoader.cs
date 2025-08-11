@@ -3,7 +3,7 @@ using Hoeyer.OpcUa.TestEntities.Methods;
 
 namespace Hoeyer.OpcUa.TestEntities.Loaders;
 
-public class GantryLoader : IAgentLoader<Gantry>
+public class GantryLoader : IEntityLoader<Gantry>
 {
     /// <inheritdoc />
     public ValueTask<Gantry> LoadCurrentState()

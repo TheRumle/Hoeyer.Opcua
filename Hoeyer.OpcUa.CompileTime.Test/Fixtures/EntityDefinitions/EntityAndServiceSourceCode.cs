@@ -1,17 +1,17 @@
-﻿namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.AgentDefinitions;
+﻿namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
 
 /// <summary>
-/// Represent source code for both an Agent and an accompagnying service that depends on the source code definition of the Agent. 
+/// Represent source code for both an Entity and an accompagnying service that depends on the source code definition of the Entity. 
 /// </summary>
 /// <param name="ServiceName">The name of the interface</param>
-/// <param name="AgentName">The name of the agent</param>
+/// <param name="EntityName">The name of the entity</param>
 /// <param name="CombinedSourceCode"></param>
-public sealed record AgentAndServiceSourceCode(
+public sealed record EntityAndServiceSourceCode(
     string ServiceName,
-    string AgentName,
-    string AgentSourceCode,
+    string EntityName,
+    string EntitySourceCode,
     string ServiceSourceCode)
 {
     /// <inheritdoc />
-    public override string ToString() => ServiceName + " and " + AgentName;
+    public override string ToString() => ServiceName + " and " + EntityName;
 }

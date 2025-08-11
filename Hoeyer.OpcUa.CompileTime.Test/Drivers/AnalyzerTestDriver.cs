@@ -1,6 +1,6 @@
 ﻿using Hoeyer.Common.Extensions;
 using Hoeyer.OpcUa.CompileTime.Test.Fixtures.CodeLoading;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.AgentDefinitions;
+using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -12,9 +12,9 @@ public sealed class AnalyzerTestDriver<T>(T analyzer, Action<string>? logger = n
 {
     private readonly CompilationFactory _compilationFactory = new(nameof(AnalyzerTestDriver<T>));
 
-    public Task<AnalyzerResult> RunAnalyzerOn(AgentSourceCode agentSourceCode,
+    public Task<AnalyzerResult> RunAnalyzerOn(EntitySourceCode entitySourceCode,
         CancellationToken cancellationToken = default) => CreateAnalyzerResultTask(
-        [CSharpSyntaxTree.ParseText(agentSourceCode.SourceCodeString)],
+        [CSharpSyntaxTree.ParseText(entitySourceCode.SourceCodeString)],
         cancellationToken
     );
 
@@ -25,10 +25,10 @@ public sealed class AnalyzerTestDriver<T>(T analyzer, Action<string>? logger = n
     );
 
     public Task<AnalyzerResult> RunAnalyzerOn(
-        AgentAndServiceSourceCode sourceCode,
+        EntityAndServiceSourceCode sourceCode,
         CancellationToken cancellationToken = default)
     {
-        var left = CSharpSyntaxTree.ParseText(sourceCode.AgentSourceCode);
+        var left = CSharpSyntaxTree.ParseText(sourceCode.EntitySourceCode);
         var right = CSharpSyntaxTree.ParseText(sourceCode.ServiceSourceCode);
 
         return CreateAnalyzerResultTask([left, right], cancellationToken);

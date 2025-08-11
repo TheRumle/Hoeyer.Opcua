@@ -6,18 +6,18 @@ namespace Hoeyer.OpcUa.Client.SourceGeneration;
 
 public static class TypeSymbolExtensions
 {
-    public static bool IsAnnotatedAsOpcUaAgent(this ISymbol? symbol)
+    public static bool IsAnnotatedAsOpcUaEntity(this ISymbol? symbol)
     {
         var isAnnotated = symbol?
             .GetAttributes()
-            .Any(IsOpcAgentAttributeSymbol);
+            .Any(IsOpcEntityAttributeSymbol);
 
         return isAnnotated != null && isAnnotated.Value;
     }
 
-    public static bool IsOpcAgentAttributeSymbol(AttributeData x) =>
+    public static bool IsOpcEntityAttributeSymbol(AttributeData x) =>
         WellKnown.FullyQualifiedAttribute
-            .AgentAttribute
+            .EntityAttribute
             .WithGlobalPrefix.Equals(x.AttributeClass?.GloballyQualifiedNonGeneric());
 
     public static string GloballyQualifiedNonGeneric(this ISymbol typeSymbol) =>

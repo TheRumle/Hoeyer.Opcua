@@ -4,11 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-[OpcUaAgentService(typeof(MaybeInitializedAgentManager<>), ServiceLifetime.Singleton)]
-public sealed class MaybeInitializedAgentManager<T> : IMaybeInitializedAgentManager
+[OpcUaEntityService(typeof(MaybeInitializedEntityManager<>), ServiceLifetime.Singleton)]
+public sealed class MaybeInitializedEntityManager<T> : IMaybeInitializedEntityManager
 {
     /// <inheritdoc />
-    public string AgentName { get; } = typeof(T).Name;
+    public string EntityName { get; } = typeof(T).Name;
 
     public bool HasValue => Manager != null;
     public IAgentManager? Manager { get; internal set; }

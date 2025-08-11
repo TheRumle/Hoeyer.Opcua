@@ -8,15 +8,15 @@ using Opc.Ua.Configuration;
 
 namespace Hoeyer.OpcUa.Server;
 
-internal sealed class OpcUaAgentServerFactory(
-    AgentServerStartedMarker marker,
-    OpcUaAgentServerSetup serverSetup,
-    IEnumerable<IAgentManagerFactory> agentManagerFactories,
-    ILoggerFactory loggerFactory) : IOpcUaAgentServerFactory
+internal sealed class OpcUaEntityServerFactory(
+    EntityServerStartedMarker marker,
+    OpcUaEntityServerSetup serverSetup,
+    IEnumerable<IAgentManagerFactory> entityManagerFactories,
+    ILoggerFactory loggerFactory) : IOpcUaEntityServerFactory
 {
-    private StartableAgentServer startable;
+    private StartableEntityServer startable;
 
-    public IStartableAgentServer CreateServer()
+    public IStartableEntityServer CreateServer()
     {
         if (startable != null) return startable;
         ApplicationConfiguration configuration =
@@ -31,9 +31,9 @@ internal sealed class OpcUaAgentServerFactory(
 
         application.LoadApplicationConfiguration(false);
 
-        var server = new OpcAgentServer(serverSetup, agentManagerFactories,
-            loggerFactory.CreateLogger<OpcAgentServer>());
-        startable = new StartableAgentServer(application, server, marker);
+        var server = new OpcEntityServer(serverSetup, entityManagerFactories,
+            loggerFactory.CreateLogger<OpcEntityServer>());
+        startable = new StartableEntityServer(application, server, marker);
         return startable;
     }
 }

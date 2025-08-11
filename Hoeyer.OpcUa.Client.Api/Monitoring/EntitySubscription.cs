@@ -6,44 +6,44 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Api.Monitoring;
 
-public sealed class AgentSubscription : Subscription, IAgentSubscription
+public sealed class EntitySubscription : Subscription, IEntitySubscription
 {
-    private readonly List<MonitoredAgentItem> _agentItems = new();
+    private readonly List<MonitoredEntityItem> _entityItems = new();
     public readonly MonitoredItemNotificationEventHandler Callback;
 
-    public AgentSubscription(IAgentSession session,
+    public EntitySubscription(IEntitySession session,
         Action<MonitoredItem, MonitoredItemNotificationEventArgs> callback) : base(session.Session.DefaultSubscription)
     {
         Callback = new MonitoredItemNotificationEventHandler(callback);
     }
 
-    public AgentSubscription(IAgentSession session, MonitoredItemNotificationEventHandler callback) : base(
+    public EntitySubscription(IEntitySession session, MonitoredItemNotificationEventHandler callback) : base(
         session.Session.DefaultSubscription)
     {
         Callback = callback;
     }
 
-    public IReadOnlyList<MonitoredAgentItem> AgentItems => _agentItems.AsReadOnly();
+    public IReadOnlyList<MonitoredEntityItem> EntityItems => _entityItems.AsReadOnly();
 
-    public void AddAgentItem(MonitoredAgentItem item)
+    public void AddEntityItem(MonitoredEntityItem item)
     {
         AddItem(item);
-        _agentItems.Add(item);
+        _entityItems.Add(item);
         item.Notification += Callback;
     }
 
-    public void AddAgentItems(IEnumerable<MonitoredAgentItem> items)
+    public void AddEntityItems(IEnumerable<MonitoredEntityItem> items)
     {
-        foreach (MonitoredAgentItem? item in items)
+        foreach (MonitoredEntityItem? item in items)
         {
-            AddAgentItem(item);
+            AddEntityItem(item);
         }
     }
 
-    public void RemoveAgentItem(MonitoredAgentItem item)
+    public void RemoveEntityItem(MonitoredEntityItem item)
     {
         RemoveItem(item);
-        _agentItems.Remove(item);
+        _entityItems.Remove(item);
         item.Notification -= Callback;
     }
 

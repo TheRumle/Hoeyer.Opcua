@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Configuration.AgentServerBuilder;
+namespace Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
 
-internal class AgentServerConfigurationBuilder : IAgentServerConfigurationBuilder, IServerNameStep, IHostStep,
+internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuilder, IServerNameStep, IHostStep,
     IEndpointsStep, IAdditionalConfigurationStep
 {
     private readonly HashSet<Uri> _endpoints = new();
@@ -13,24 +13,24 @@ internal class AgentServerConfigurationBuilder : IAgentServerConfigurationBuilde
     private string _serverId = string.Empty;
     private string _serverName = string.Empty;
 
-    private AgentServerConfigurationBuilder()
+    private EntityServerConfigurationBuilder()
     {
     }
 
     /// <inheritdoc />
-    public IAgentServerConfigurationBuildable WithAdditionalConfiguration(
+    public IEntityServerConfigurationBuildable WithAdditionalConfiguration(
         Action<ServerConfiguration> additionalConfigurations)
     {
         return this;
     }
 
-    public IAgentServerConfigurationBuildable WithEndpoints(List<string> endpoints)
+    public IEntityServerConfigurationBuildable WithEndpoints(List<string> endpoints)
     {
         foreach (var e in endpoints) _endpoints.Add(new Uri(e));
         return this;
     }
 
-    public IOpcUaAgentServerInfo Build()
+    public IOpcUaEntityServerInfo Build()
     {
         var validuri = Uri.TryCreate(string.Format(CultureInfo.InvariantCulture, "{0}", _host),
             UriKind.RelativeOrAbsolute, out var uri);
@@ -39,7 +39,7 @@ internal class AgentServerConfigurationBuilder : IAgentServerConfigurationBuilde
             throw new ArgumentException($"Host and serverId could not form a valid URI: {uri}");
         }
 
-        return new OpcUaAgentServerInfo(_serverId, _serverName, _host, _endpoints, uri);
+        return new OpcUaEntityServerInfo(_serverId, _serverName, _host, _endpoints, uri);
     }
 
     public IServerNameStep WithServerId(string serverId)
@@ -69,8 +69,8 @@ internal class AgentServerConfigurationBuilder : IAgentServerConfigurationBuilde
         return this;
     }
 
-    public static IAgentServerConfigurationBuilder Create()
+    public static IEntityServerConfigurationBuilder Create()
     {
-        return new AgentServerConfigurationBuilder();
+        return new EntityServerConfigurationBuilder();
     }
 }

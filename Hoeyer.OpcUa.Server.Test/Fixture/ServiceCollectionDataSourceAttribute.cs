@@ -18,20 +18,20 @@ public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourc
 
     private static IServiceProvider CreateSharedServiceProvider()
     {
-        IServiceCollection services = new OpcUaServerServiceFixture().OnGoingOpcAgentServiceRegistration.Collection;
+        IServiceCollection services = new OpcUaServerServiceFixture().OnGoingOpcEntityServiceRegistration.Collection;
         services.AddSingleton(services);
-        services.AddSingleton<IEnumerable<IMaybeInitializedAgentManager>>((p) =>
+        services.AddSingleton<IEnumerable<IMaybeInitializedEntityManager>>((p) =>
         {
             var collection = p.GetService<IServiceCollection>()!;
             IEnumerable<Type> wanted = collection
-                .Where(e => e.ServiceType.IsAssignableTo(typeof(IMaybeInitializedAgentManager)))
+                .Where(e => e.ServiceType.IsAssignableTo(typeof(IMaybeInitializedEntityManager)))
                 .Select(e => e.ImplementationType!);
 
-            return wanted.Select(p.GetService).Select(value => (IMaybeInitializedAgentManager)value!);
+            return wanted.Select(p.GetService).Select(value => (IMaybeInitializedEntityManager)value!);
         });
 
-        services.AddSingleton<List<IMaybeInitializedAgentManager>>(p =>
-            p.GetService<IEnumerable<IMaybeInitializedAgentManager>>()!.ToList());
+        services.AddSingleton<List<IMaybeInitializedEntityManager>>(p =>
+            p.GetService<IEnumerable<IMaybeInitializedEntityManager>>()!.ToList());
 
         return services.BuildServiceProvider();
     }

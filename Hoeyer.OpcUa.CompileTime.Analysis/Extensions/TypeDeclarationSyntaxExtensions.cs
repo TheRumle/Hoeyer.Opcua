@@ -7,52 +7,52 @@ namespace Hoeyer.OpcUa.CompileTime.Analysis.Extensions;
 
 public static class TypeDeclarationSyntaxExtensions
 {
-    public static bool IsAnnotatedAsOpcUaAgent(this TypeDeclarationSyntax typeSyntax, SemanticModel semanticModel)
+    public static bool IsAnnotatedAsOpcUaEntity(this TypeDeclarationSyntax typeSyntax, SemanticModel semanticModel)
     {
         var symbol = semanticModel.GetDeclaredSymbol(typeSyntax);
         var isAnnotated = symbol?
             .GetAttributes()
-            .Any(IsOpcAgentAttributeSymbol);
+            .Any(IsOpcEntityAttributeSymbol);
 
         return isAnnotated != null && isAnnotated.Value;
     }
 
-    public static bool IsAnnotatedAsOpcUaAgent(this ISymbol? symbol)
+    public static bool IsAnnotatedAsOpcUaEntity(this ISymbol? symbol)
     {
         var isAnnotated = symbol?
             .GetAttributes()
-            .Any(IsOpcAgentAttributeSymbol);
+            .Any(IsOpcEntityAttributeSymbol);
 
         return isAnnotated != null && isAnnotated.Value;
     }
 
 
-    public static bool IsAnnotatedAsOpcUaAgentBehaviour(this TypeDeclarationSyntax typeSyntax,
+    public static bool IsAnnotatedAsOpcUaEntityBehaviour(this TypeDeclarationSyntax typeSyntax,
         SemanticModel semanticModel)
     {
         var symbol = semanticModel.GetDeclaredSymbol(typeSyntax);
         var isAnnotated = symbol?
             .GetAttributes()
-            .Any(IsOpcAgentBehaviourAttributeSymbol);
+            .Any(IsOpcEntityBehaviourAttributeSymbol);
 
         return isAnnotated != null && isAnnotated.Value;
     }
 
-    public static AttributeData? GetOpcUaAgentBehaviourAttribute(this TypeDeclarationSyntax typeSyntax,
+    public static AttributeData? GetOpcUaEntityBehaviourAttribute(this TypeDeclarationSyntax typeSyntax,
         SemanticModel semanticModel) =>
         semanticModel
             .GetDeclaredSymbol(typeSyntax)
             ?.GetAttributes()
-            .FirstOrDefault(IsOpcAgentBehaviourAttributeSymbol);
+            .FirstOrDefault(IsOpcEntityBehaviourAttributeSymbol);
 
 
-    private static bool IsOpcAgentBehaviourAttributeSymbol(AttributeData x) =>
+    private static bool IsOpcEntityBehaviourAttributeSymbol(AttributeData x) =>
         WellKnown.FullyQualifiedAttribute
-            .AgentBehaviourAttribute
+            .EntityBehaviourAttribute
             .WithGlobalPrefix.Equals(x.AttributeClass?.GloballyQualifiedNonGeneric());
 
-    private static bool IsOpcAgentAttributeSymbol(AttributeData x) =>
+    private static bool IsOpcEntityAttributeSymbol(AttributeData x) =>
         WellKnown.FullyQualifiedAttribute
-            .AgentAttribute
+            .EntityAttribute
             .WithGlobalPrefix.Equals(x.AttributeClass?.GloballyQualifiedNonGeneric());
 }

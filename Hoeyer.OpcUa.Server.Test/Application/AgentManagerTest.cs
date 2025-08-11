@@ -16,16 +16,16 @@ public sealed class AgentManagerTest
     [Test]
     [ServiceCollectionDataSource]
     public async Task GantryManager_When_BrowsingFor_AList_PropertyIsStatusGood(
-        IStartableAgentServer startableServer,
-        MaybeInitializedAgentManager<Gantry> initializedAgentManagers)
+        IStartableEntityServer startableServer,
+        MaybeInitializedEntityManager<Gantry> initializedEntityManagers)
     {
         using IDisposable asserts = Assert.Multiple();
         await startableServer.StartAsync();
 
-        var manager = initializedAgentManagers.Manager!;
+        var manager = initializedEntityManagers.Manager!;
         OperationContext context = CreateOperationContext(RequestType.Read);
 
-        var nodeToRead = manager.ManagedAgent.Select(node => node.PropertyByBrowseName[nameof(Gantry.AList)]);
+        var nodeToRead = manager.ManagedEntity.Select(node => node.PropertyByBrowseName[nameof(Gantry.AList)]);
         var value = new ReadValueId
         {
             NodeId = nodeToRead.NodeId,
@@ -63,19 +63,19 @@ public sealed class AgentManagerTest
     [ServiceCollectionDataSource]
     [DisplayName("When server is started all properties have good statuscode")]
     public async Task WhenServerIsStarted_NoNodeHasNotGoodStatus(
-        IStartableAgentServer startableServer,
-        List<IMaybeInitializedAgentManager> maybeInitializedAgentManagers)
+        IStartableEntityServer startableServer,
+        List<IMaybeInitializedEntityManager> maybeInitializedEntityManagers)
     {
         await startableServer.StartAsync();
 
-        if (!maybeInitializedAgentManagers.Any()) Assert.Fail("No managers were initialized.");
+        if (!maybeInitializedEntityManagers.Any()) Assert.Fail("No managers were initialized.");
 
         using IDisposable a = Assert.Multiple();
-        foreach (IMaybeInitializedAgentManager maybeInitializedManager in maybeInitializedAgentManagers)
+        foreach (IMaybeInitializedEntityManager maybeInitializedManager in maybeInitializedEntityManagers)
         {
             if (maybeInitializedManager.Manager == null)
             {
-                Assert.Fail($"The manager for Agent '{maybeInitializedManager.AgentName}' was null");
+                Assert.Fail($"The manager for Entity '{maybeInitializedManager.EntityName}' was null");
                 continue;
             }
 
@@ -83,17 +83,17 @@ public sealed class AgentManagerTest
         }
     }
 
-    private static async Task AssertNoBadStatusOrNull(IMaybeInitializedAgentManager maybeInitializedManager)
+    private static async Task AssertNoBadStatusOrNull(IMaybeInitializedEntityManager maybeInitializedManager)
     {
         using IDisposable assertScope = Assert.Multiple();
         var badProperties =
-            maybeInitializedManager.Manager!.ManagedAgent.Select(node => node.PropertyByBrowseName);
+            maybeInitializedManager.Manager!.ManagedEntity.Select(node => node.PropertyByBrowseName);
 
         foreach ((var name, PropertyState value) in badProperties)
         {
             if (StatusCode.IsNotGood(value.StatusCode))
             {
-                Assert.Fail($"{maybeInitializedManager.AgentName}.{name} should not have a bad status code");
+                Assert.Fail($"{maybeInitializedManager.EntityName}.{name} should not have a bad status code");
                 continue;
             }
 

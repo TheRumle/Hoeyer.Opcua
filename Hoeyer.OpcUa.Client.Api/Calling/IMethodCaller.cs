@@ -9,4 +9,4 @@ public interface IMethodCaller
     public Task<T> CallMethod<T>(string methodName, CancellationToken token = default, params object[] args);
 }
 
-public interface IMethodCaller<TAgent> : IMethodCaller;
+public interface IMethodCaller<TEntity> : IMethodCaller;

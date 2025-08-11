@@ -4,8 +4,8 @@ using Hoeyer.OpcUa.Core;
 
 namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
 
-[OpcUaAgentService(typeof(ICurrentAgentStateChannel<>))]
-public sealed class CurrentAgentStateChannel<T> : ICurrentAgentStateChannel<T>
+[OpcUaEntityService(typeof(ICurrentEntityStateChannel<>))]
+public sealed class CurrentEntityStateChannel<T> : ICurrentEntityStateChannel<T>
 {
     private readonly Channel<IMessage<T>> _channel;
 
@@ -16,7 +16,7 @@ public sealed class CurrentAgentStateChannel<T> : ICurrentAgentStateChannel<T>
         SingleWriter = true
     };
 
-    public CurrentAgentStateChannel()
+    public CurrentEntityStateChannel()
     {
         _channel = Channel.CreateBounded<IMessage<T>>(_options);
     }

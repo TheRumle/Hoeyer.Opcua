@@ -6,16 +6,16 @@ namespace Hoeyer.OpcUa.Simulation.SourceGeneration;
 
 public static class TypeSymbolExtensions
 {
-    public static bool IsAnnotatedAsOpcUaAgent(this ISymbol symbol) =>
+    public static bool IsAnnotatedAsOpcUaEntity(this ISymbol symbol) =>
         symbol.GetAttributes()
-            .Any(IsOpcAgentAttributeSymbol);
+            .Any(IsOpcEntityAttributeSymbol);
 
     public static bool IsAnnotatedAsOpcMethodArgs(this ITypeSymbol symbol) => GetOpcArgsAttribute(symbol) != null;
 
-    public static AttributeData? GetOpcAgentAttribute(this ITypeSymbol? symbol) =>
+    public static AttributeData? GetOpcEntityAttribute(this ITypeSymbol? symbol) =>
         symbol?
             .GetAttributes()
-            .FirstOrDefault(IsOpcAgentAttributeSymbol);
+            .FirstOrDefault(IsOpcEntityAttributeSymbol);
 
 
     public static AttributeData? GetOpcArgsAttribute(this ITypeSymbol? symbol) =>
@@ -23,9 +23,9 @@ public static class TypeSymbolExtensions
             .GetAttributes()
             .FirstOrDefault(IsOpcMethodArgsAttributeSymbol);
 
-    public static bool IsOpcAgentAttributeSymbol(AttributeData x) =>
+    public static bool IsOpcEntityAttributeSymbol(AttributeData x) =>
         WellKnown.FullyQualifiedAttribute
-            .AgentAttribute
+            .EntityAttribute
             .WithGlobalPrefix.Equals(x.AttributeClass?.GloballyQualifiedNonGeneric());
 
     public static bool IsOpcMethodArgsAttributeSymbol(AttributeData x) =>

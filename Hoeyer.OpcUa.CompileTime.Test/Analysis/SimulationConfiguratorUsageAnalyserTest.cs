@@ -8,53 +8,53 @@ namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
 
 public sealed class SimulationConfiguratorUsageAnalyserTest
 {
-    public const string AgentWithGeneratorClasses = """
-                                                    using System;
-                                                    using System.Collections.Generic;
-                                                    using System.Threading.Tasks;
-                                                    using Hoeyer.OpcUa.Core;
-                                                    using Hoeyer.OpcUa.Simulation.Api;
-                                                    using Hoeyer.OpcUa.Simulation.Api.Configuration;
-                                                    using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
+    public const string EntityWithGeneratorClasses = """
+                                                     using System;
+                                                     using System.Collections.Generic;
+                                                     using System.Threading.Tasks;
+                                                     using Hoeyer.OpcUa.Core;
+                                                     using Hoeyer.OpcUa.Simulation.Api;
+                                                     using Hoeyer.OpcUa.Simulation.Api.Configuration;
+                                                     using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
 
-                                                    namespace Hoeyer.OpcUa.AgentDefinitions;
+                                                     namespace Hoeyer.OpcUa.EntityDefinitions;
 
-                                                    [OpcUaAgent]
-                                                    public sealed class Gantry
-                                                    {
-                                                        public int IntValue { get; set; }
-                                                        public string StringValue { get; set; }
-                                                        public List<string> AList { get; set; }
-                                                        public List<string> AAginList { get; set; }
-                                                    }
+                                                     [OpcUaEntity]
+                                                     public sealed class Gantry
+                                                     {
+                                                         public int IntValue { get; set; }
+                                                         public string StringValue { get; set; }
+                                                         public List<string> AList { get; set; }
+                                                         public List<string> AAginList { get; set; }
+                                                     }
 
 
-                                                    [OpcUaAgentMethods<Gantry>]
-                                                    public interface IGantryMethods
-                                                    {
-                                                        public Task NoReturnValue(int q);
-                                                        public Task<int> IntReturnValue();
-                                                    }
+                                                     [OpcUaEntityMethods<Gantry>]
+                                                     public interface IGantryMethods
+                                                     {
+                                                         public Task NoReturnValue(int q);
+                                                         public Task<int> IntReturnValue();
+                                                     }
 
-                                                    [OpcMethodArguments<Gantry, IGantryMethods>("NoReturnValue")]
-                                                    public sealed record NoReturnValueArgs
-                                                    {
-                                                    	public int Q { get; }
-                                                    	public NoReturnValueArgs(int q)
-                                                    	{
-                                                    		this.Q = q;
-                                                    	}
-                                                    }
+                                                     [OpcMethodArguments<Gantry, IGantryMethods>("NoReturnValue")]
+                                                     public sealed record NoReturnValueArgs
+                                                     {
+                                                     	public int Q { get; }
+                                                     	public NoReturnValueArgs(int q)
+                                                     	{
+                                                     		this.Q = q;
+                                                     	}
+                                                     }
 
-                                                    [OpcMethodArgumentsAttribute<Gantry, IGantryMethods>("IntReturnValue")]
-                                                    public sealed record IntReturnValueArgs
-                                                    {
-                                                    	public IntReturnValueArgs()
-                                                    	{
-                                                    	}
-                                                    }
+                                                     [OpcMethodArgumentsAttribute<Gantry, IGantryMethods>("IntReturnValue")]
+                                                     public sealed record IntReturnValueArgs
+                                                     {
+                                                     	public IntReturnValueArgs()
+                                                     	{
+                                                     	}
+                                                     }
 
-                                                    """;
+                                                     """;
 
     private static readonly string ActionSimulationInterface = typeof(ISimulation<,>).Name.Split('`')[0];
     private static readonly string FunctionSimulationInterface = typeof(ISimulation<,,>).Name.Split('`')[0];
@@ -128,7 +128,7 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
     [Test]
     public async Task WhenAnalysing_ActionSimulatorFor_MethodWith_NoReturn_ShouldNotProduceDiagnostics()
     {
-        var sourceCode = AgentWithGeneratorClasses + ActionSimulator_NoReturnValue;
+        var sourceCode = EntityWithGeneratorClasses + ActionSimulator_NoReturnValue;
         AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
         await Assert.That(result.Diagnostics).IsEmpty().Because(result.Diagnostics.ToCommaSeparatedString() +
                                                                 " should not be present after running the analyser");
@@ -137,7 +137,7 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
     [Test]
     public async Task WhenAnalysing_FuncSimulatorFor_CorrectGenericReturnValueArg_ShouldNotProduceDiagnostics()
     {
-        var sourceCode = AgentWithGeneratorClasses + FuncSimulatorForIntTask_CorrectReturnType;
+        var sourceCode = EntityWithGeneratorClasses + FuncSimulatorForIntTask_CorrectReturnType;
         AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
         await Assert.That(result.Diagnostics).IsEmpty().Because(result.Diagnostics.ToCommaSeparatedString() +
                                                                 " should not be present after running the analyser");
@@ -146,7 +146,7 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
     [Test]
     public async Task WhenAnalysing_FuncSimulatorFor_MethodWith_IntReturn_ShouldNotProduceDiagnostics()
     {
-        var sourceCode = AgentWithGeneratorClasses + FuncSimulatorFor_IntReturnValue;
+        var sourceCode = EntityWithGeneratorClasses + FuncSimulatorFor_IntReturnValue;
         AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
         await Assert.That(result.Diagnostics).IsEmpty().Because(result.Diagnostics.ToCommaSeparatedString() +
                                                                 " should not be present after running the analyser");
@@ -156,7 +156,7 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
     [Test]
     public async Task WhenAnalysing_ActionSimulatorFor_MethodWith_IntReturn_ShouldProduceDiagnostics()
     {
-        var sourceCode = AgentWithGeneratorClasses + ActionSimulatorFor_IntReturnValue;
+        var sourceCode = EntityWithGeneratorClasses + ActionSimulatorFor_IntReturnValue;
         AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
         await Assert.That(result.Diagnostics).IsNotEmpty().Because(" the code should produce diagnostics");
     }
@@ -164,7 +164,7 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
     [Test]
     public async Task WhenAnalysing_FuncSimulatorFor_MethodWith_NoReturnValue_ShouldProduceDiagnostics()
     {
-        var sourceCode = AgentWithGeneratorClasses + FuncSimulatorFor_NoReturnValue;
+        var sourceCode = EntityWithGeneratorClasses + FuncSimulatorFor_NoReturnValue;
         AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
         await Assert.That(result.Diagnostics).IsNotEmpty().Because(" the code should produce diagnostics");
     }
@@ -172,7 +172,7 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
     [Test]
     public async Task WhenAnalysing_FuncSimulator_IncorrectGenericReturnValueArg_ShouldProduceDiagnostics()
     {
-        var sourceCode = AgentWithGeneratorClasses + FuncSimulatorForIntTask_WrongReturnType;
+        var sourceCode = EntityWithGeneratorClasses + FuncSimulatorForIntTask_WrongReturnType;
         AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
         await Assert.That(result.Diagnostics).IsNotEmpty().Because(" the code should produce diagnostics");
     }

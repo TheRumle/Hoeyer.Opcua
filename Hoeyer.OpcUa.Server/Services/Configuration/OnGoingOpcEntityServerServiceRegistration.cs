@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Server.Services.Configuration;
 
-public record OnGoingOpcAgentServerServiceRegistration(IServiceCollection Collection)
-    : OnGoingOpcAgentServiceRegistration(Collection)
+public record OnGoingOpcEntityServerServiceRegistration(IServiceCollection Collection)
+    : OnGoingOpcEntityServiceRegistration(Collection)
 {
 }

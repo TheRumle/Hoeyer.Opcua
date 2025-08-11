@@ -2,8 +2,8 @@
 
 namespace Hoeyer.OpcUa.Simulation.Api.PostProcessing;
 
-public interface IFunctionSimulationProcessor<TAgent, TArgs, in TReturn>
-    : IStateChangeSimulationProcessor<TAgent>
+public interface IFunctionSimulationProcessor<TEntity, TArgs, in TReturn>
+    : IStateChangeSimulationProcessor<TEntity>
 {
     IMessageConsumer<TReturn> ReturnValueConsumer { get; }
 }

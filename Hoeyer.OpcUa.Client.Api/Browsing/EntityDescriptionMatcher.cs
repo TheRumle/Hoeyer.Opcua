@@ -2,4 +2,4 @@
 
 namespace Hoeyer.OpcUa.Client.Api.Browsing;
 
-public delegate bool AgentDescriptionMatcher<TAgent>(ReferenceDescription reference);
+public delegate bool EntityDescriptionMatcher<TEntity>(ReferenceDescription reference);

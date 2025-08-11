@@ -1,10 +1,10 @@
 ﻿using System;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Configuration.AgentServerBuilder;
+namespace Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
 
-public interface IAdditionalConfigurationStep : IAgentServerConfigurationBuildable
+public interface IAdditionalConfigurationStep : IEntityServerConfigurationBuildable
 {
-    public IAgentServerConfigurationBuildable WithAdditionalConfiguration(
+    public IEntityServerConfigurationBuildable WithAdditionalConfiguration(
         Action<ServerConfiguration> additionalConfigurations);
 }

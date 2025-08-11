@@ -2,7 +2,7 @@
 
 namespace Playground.Models.Methods;
 
-[OpcUaAgentMethods<MyLittleRobot>]
+[OpcUaEntityMethods<MyLittleRobot>]
 public interface ILittleRobotMethods
 {
     Task MoveToPosition(Position position);

@@ -6,8 +6,8 @@ using Playground.Models.Methods;
 namespace Playground.Reactants;
 
 public sealed class MyLittleRobotReactant(
-    IAgentSubscriptionManager<MyLittleRobot> subManager,
-    ICurrentAgentStateChannel<MyLittleRobot> stateChannel,
+    IEntitySubscriptionManager<MyLittleRobot> subManager,
+    ICurrentEntityStateChannel<MyLittleRobot> stateChannel,
     ILittleRobotMethods methods)
     : BackgroundService
 {

@@ -50,7 +50,7 @@ public static class LoggingExtensions
     {
         return new
         {
-            Agent = node.BaseObject.ToLoggingObject(),
+            Entity = node.BaseObject.ToLoggingObject(),
             Properties = node.PropertyStates.Select(e => e.CoreInfoObject()).ToArray(),
         };
     }

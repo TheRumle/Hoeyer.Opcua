@@ -6,16 +6,16 @@ namespace Hoeyer.OpcUa.Simulation.SourceGeneration.Models;
 
 public record struct MethodArgumentsStructureModel
 {
-    public readonly INamedTypeSymbol Agent;
+    public readonly INamedTypeSymbol Entity;
     public readonly INamedTypeSymbol InterfaceSymbol;
     public readonly IReadOnlyCollection<IMethodSymbol> Methods;
 
     public MethodArgumentsStructureModel(
-        INamedTypeSymbol agent,
+        INamedTypeSymbol entity,
         INamedTypeSymbol interfaceSymbol,
         IEnumerable<IMethodSymbol> methods)
     {
-        Agent = agent;
+        Entity = entity;
         InterfaceSymbol = interfaceSymbol;
         Methods = methods.ToList();
     }

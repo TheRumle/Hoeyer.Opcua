@@ -9,20 +9,20 @@ using Opc.Ua;
 namespace Hoeyer.OpcUa.Core.Test.Application;
 
 [GeneratedClassTest]
-[TestSubject(typeof(IAgentTranslator<>))]
-public class AgentTranslatorTest
+[TestSubject(typeof(IEntityTranslator<>))]
+public class EntityTranslatorTest
 {
     [Test]
     [ServiceCollectionDataSource]
     public async Task WhenAssigningValues_ToAgent_MethodsDoesNotDisappear(
-        IAgentTranslator<AllPropertyTypesAgent> translator,
-        IAgentStructureFactory<AllPropertyTypesAgent> structure)
+        IEntityTranslator<AllPropertyTypesEntity> translator,
+        IAgentStructureFactory<AllPropertyTypesEntity> structure)
     {
         var node = structure.Create(2);
-        var agent = AllPropertyTypesAgent.CreateRandom();
+        var entity = AllPropertyTypesEntity.CreateRandom();
         HashSet<MethodState> before = node.Methods.ToHashSet();
 
-        translator.AssignToNode(agent, node);
+        translator.AssignToNode(entity, node);
         IEnumerable<MethodState> after = node.Methods;
 
         await Assert.That(before.SetEquals(after)).IsTrue();
@@ -31,13 +31,13 @@ public class AgentTranslatorTest
     [Test]
     [ServiceCollectionDataSource]
     public async Task WhenAssigningValues_ToAgent_PropertiesDoesNotDisappear(
-        IAgentTranslator<AllPropertyTypesAgent> translator,
-        IAgentStructureFactory<AllPropertyTypesAgent> structure)
+        IEntityTranslator<AllPropertyTypesEntity> translator,
+        IAgentStructureFactory<AllPropertyTypesEntity> structure)
     {
         var node = structure.Create(2);
-        var agent = AllPropertyTypesAgent.CreateRandom();
+        var entity = AllPropertyTypesEntity.CreateRandom();
         HashSet<PropertyState> before = node.PropertyStates.ToHashSet();
-        translator.AssignToNode(agent, node);
+        translator.AssignToNode(entity, node);
         IEnumerable<PropertyState> after = node.PropertyStates;
         await Assert.That(before.SetEquals(after)).IsTrue();
     }
@@ -45,7 +45,7 @@ public class AgentTranslatorTest
     [Test]
     [ServiceCollectionDataSource]
     public async Task WhenTranslating_ToAgent_ListValuesAreTranslatedTo_Arrays(
-        IAgentTranslator<Gantry> translator,
+        IEntityTranslator<Gantry> translator,
         IAgentStructureFactory<Gantry> structure)
     {
         var node = structure.Create(2);
@@ -78,50 +78,50 @@ public class AgentTranslatorTest
     [Test]
     [ServiceCollectionDataSource]
     public async Task WhenTranslating_MultipleTimes_StateIsPreserved(
-        IAgentTranslator<AllPropertyTypesAgent> translator,
-        IAgentStructureFactory<AllPropertyTypesAgent> structure)
+        IEntityTranslator<AllPropertyTypesEntity> translator,
+        IAgentStructureFactory<AllPropertyTypesEntity> structure)
     {
         var node = structure.Create(2);
-        var agent = AllPropertyTypesAgent.CreateRandom();
+        var entity = AllPropertyTypesEntity.CreateRandom();
 
-        translator.AssignToNode(agent, node);
-        await AssertPropertiesEqual(agent, node);
+        translator.AssignToNode(entity, node);
+        await AssertPropertiesEqual(entity, node);
 
-        AllPropertyTypesAgent newAgent = translator.Translate(node);
-        translator.AssignToNode(newAgent, node);
-        await AssertPropertiesEqual(agent, node);
+        AllPropertyTypesEntity newEntity = translator.Translate(node);
+        translator.AssignToNode(newEntity, node);
+        await AssertPropertiesEqual(entity, node);
     }
 
 
     [Test]
     [ServiceCollectionDataSource]
     public async Task When_AssigningToNode_ValuesAre_Equal(
-        IAgentTranslator<AllPropertyTypesAgent> translator,
-        IAgentStructureFactory<AllPropertyTypesAgent> structure)
+        IEntityTranslator<AllPropertyTypesEntity> translator,
+        IAgentStructureFactory<AllPropertyTypesEntity> structure)
     {
         //Arrange
         var node = structure.Create(2);
-        var agent = AllPropertyTypesAgent.CreateRandom();
+        var entity = AllPropertyTypesEntity.CreateRandom();
 
         //Act
-        translator.AssignToNode(agent, node);
+        translator.AssignToNode(entity, node);
 
         //Assert
-        await AssertPropertiesEqual(agent, node);
+        await AssertPropertiesEqual(entity, node);
     }
 
-    private static async Task AssertPropertiesEqual(AllPropertyTypesAgent agent, IAgent node)
+    private static async Task AssertPropertiesEqual(AllPropertyTypesEntity entity, IAgent node)
     {
         using (Assert.Multiple())
         {
-            await Assert.That((object)agent.Integer).IsEqualTo(node.PropertyByBrowseName["Integer"].Value);
-            await Assert.That((object)agent.Long).IsEqualTo(node.PropertyByBrowseName["Long"].Value);
-            await Assert.That((object)agent.String).IsEqualTo(node.PropertyByBrowseName["String"].Value);
-            await Assert.That((object)agent.Guid).IsEqualTo(node.PropertyByBrowseName["Guid"].Value);
-            await Assert.That((object)agent.Double).IsEqualTo(node.PropertyByBrowseName["Double"].Value);
-            await Assert.That((object)agent.Float).IsEqualTo(node.PropertyByBrowseName["Float"].Value);
-            await Assert.That((object)agent.Bool).IsEqualTo(node.PropertyByBrowseName["Bool"].Value);
-            await Assert.That(agent.IntList).IsEquivalentTo((int[])node.PropertyByBrowseName["IntList"].Value);
+            await Assert.That((object)entity.Integer).IsEqualTo(node.PropertyByBrowseName["Integer"].Value);
+            await Assert.That((object)entity.Long).IsEqualTo(node.PropertyByBrowseName["Long"].Value);
+            await Assert.That((object)entity.String).IsEqualTo(node.PropertyByBrowseName["String"].Value);
+            await Assert.That((object)entity.Guid).IsEqualTo(node.PropertyByBrowseName["Guid"].Value);
+            await Assert.That((object)entity.Double).IsEqualTo(node.PropertyByBrowseName["Double"].Value);
+            await Assert.That((object)entity.Float).IsEqualTo(node.PropertyByBrowseName["Float"].Value);
+            await Assert.That((object)entity.Bool).IsEqualTo(node.PropertyByBrowseName["Bool"].Value);
+            await Assert.That(entity.IntList).IsEquivalentTo((int[])node.PropertyByBrowseName["IntList"].Value);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Hoeyer.OpcUa.Simulation.Api.Execution;
 /// Orchestrates simulations of action executions. Is responsible for coordinating the execution of a simulated action and maintaining a pipeline for plug-in side-effects defined by implementations of <see cref="IStateChangeSimulationProcessor{TState}"/>. A new pipeline and plug-in instances are created for each invocation of the simulation execution.  
 /// <list type="bullet">
 ///   <item>
-///     <description>The simulated behaviour is defined through an implementation of <see cref="ISimulation{TAgent,TArgs}"/></description>
+///     <description>The simulated behaviour is defined through an implementation of <see cref="ISimulation{TEntity,TArgs}"/></description>
 ///   </item>
 ///   <item>
 ///     <description>The defined simulation is then executed using an <see cref="ISimulationExecutor{TState,TArgs}"/>, and a <see cref="ISimulationProcessorPipeline{TState,TArgs}"/> is called at the beginning of the simulation, for each successful execution of a <see cref="ISimulationStep"/> as well as when the simulation is finished</description>
@@ -33,13 +33,13 @@ public interface ISimulationOrchestrator<in TState, in TArgs>
 }
 
 /// <summary>
-/// Orchestrates simulations of function executions. Is responsible for coordinating the execution of a simulated function and maintaining a pipeline for plug-in side-effects defined by implementations of <see cref="IFunctionSimulationProcessor{TAgent,TArgs,TReturn}"/>. A new pipeline and plug-in instances are created for each invocation of the simulation execution.  
+/// Orchestrates simulations of function executions. Is responsible for coordinating the execution of a simulated function and maintaining a pipeline for plug-in side-effects defined by implementations of <see cref="IFunctionSimulationProcessor{TEntity,TArgs,TReturn}"/>. A new pipeline and plug-in instances are created for each invocation of the simulation execution.  
 /// <list type="bullet">
 ///   <item>
-///     <description>The simulated behaviour is defined through an implementation of <see cref="ISimulation{TAgent,TArgs,TReturn}"/></description>
+///     <description>The simulated behaviour is defined through an implementation of <see cref="ISimulation{TEntity,TArgs,TReturn}"/></description>
 ///   </item>
 ///   <item>
-///     <description>The defined simulation is then executed using an <see cref="Hoeyer.OpcUa.Simulation.Api.Execution.ISimulationExecutor{TAgent, TArgs, TResult}"/>, and a <see cref="ISimulationProcessorPipeline{TState,TArgs,TReturn}"/> is called at the beginning of the simulation, for each successful execution of a <see cref="ISimulationStep"/> as well as when the simulation is finished and when a return value can be provided</description>
+///     <description>The defined simulation is then executed using an <see cref="Hoeyer.OpcUa.Simulation.Api.Execution.ISimulationExecutor{TEntity, TArgs, TResult}"/>, and a <see cref="ISimulationProcessorPipeline{TState,TArgs,TReturn}"/> is called at the beginning of the simulation, for each successful execution of a <see cref="ISimulationStep"/> as well as when the simulation is finished and when a return value can be provided</description>
 ///   </item>
 /// </list>
 /// </summary>

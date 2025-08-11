@@ -3,8 +3,8 @@ using Hoeyer.OpcUa.Core.Configuration;
 
 namespace Hoeyer.OpcUa.Server.Api;
 
-public interface IStartableAgentServer
+public interface IStartableEntityServer
 {
-    IOpcUaAgentServerInfo ServerInfo { get; }
-    Task<IStartedAgentServer> StartAsync();
+    IOpcUaEntityServerInfo ServerInfo { get; }
+    Task<IStartedEntityServer> StartAsync();
 }

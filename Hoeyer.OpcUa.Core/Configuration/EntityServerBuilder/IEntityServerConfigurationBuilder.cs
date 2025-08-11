@@ -1,6 +1,6 @@
-﻿namespace Hoeyer.OpcUa.Core.Configuration.AgentServerBuilder;
+﻿namespace Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
 
-public interface IAgentServerConfigurationBuilder
+public interface IEntityServerConfigurationBuilder
 {
     /// <summary>
     /// Sets the target server ID to <paramref name="serverId"/>.
