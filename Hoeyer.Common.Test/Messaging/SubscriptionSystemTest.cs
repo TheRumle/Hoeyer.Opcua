@@ -76,9 +76,8 @@ public abstract class SubscriptionSystemTest(IMessageSubscriptionFactory<int> fa
 
     [Test]
     [MethodDataSource(nameof(IncreasingLoad))]
-    public void CanHandleManyRequests_With_Changing_Subscribers((int consumers, int requests) state)
+    public void CanHandleManyRequests_With_Changing_Subscribers(int consumers, int requests)
     {
-        var (consumers, requests) = state;
         List<TestSubscriber> subscribers = new();
         for (int i = 0; i < consumers; i++)
         {
