@@ -21,6 +21,23 @@ public sealed class ServerSimulationAdapter : ILayerAdapter<SimulationServicesCo
     {
         var simulationServiceContainer = adaptionSource.SimulationServices;
 
+        ExtractInputArgumentTranslation(simulationServiceContainer);
+
+        foreach (var (entityType, methodArgs) in adaptionSource.ActionSimulationPatterns)
+        {
+            ExecuteLocalGenericRegistration(nameof(AdaptActionSimulationToTarget), [entityType, methodArgs],
+                simulationServiceContainer, adaptionTarget);
+        }
+
+        foreach (var (entityType, methodArgs, returnType) in adaptionSource.FunctionSimulationPatterns)
+        {
+            ExecuteLocalGenericRegistration(nameof(AdaptFunctionSimulationToTarget),
+                [entityType, methodArgs, returnType], simulationServiceContainer, adaptionTarget);
+        }
+    }
+
+    private static void ExtractInputArgumentTranslation(SimulationServicesContainer simulationServiceContainer)
+    {
         var argTranslators = typeof(IEntityMethodArgTranslator<>)
             .GetTypesFromConsumingAssemblies()
             .Select(e => (Implementor: e,
@@ -38,28 +55,6 @@ public sealed class ServerSimulationAdapter : ILayerAdapter<SimulationServicesCo
             simulationServiceContainer.AddScoped(typeof(IMethodArgumentParser<>).MakeGenericType(argContainer),
                 typeof(MethodArgumentParser<>).MakeGenericType(argContainer));
         }
-
-        foreach (var (entityType, methodArgs) in adaptionSource.ActionSimulationPatterns)
-        {
-            ExecuteLocalGenericRegistration(nameof(AddActionAdapterServices), [entityType, methodArgs],
-                simulationServiceContainer);
-        }
-
-        foreach (var (entityType, methodArgs, returnType) in adaptionSource.FunctionSimulationPatterns)
-        {
-            ExecuteLocalGenericRegistration(nameof(AddFunctionAdapterServices), [entityType, methodArgs, returnType],
-                simulationServiceContainer);
-        }
-
-        var entities = adaptionSource
-            .ActionSimulationPatterns.Select(e => e.entityType)
-            .Union(adaptionSource.FunctionSimulationPatterns.Select(e => e.entityType));
-        foreach (var entity in entities)
-        {
-            ExecuteLocalGenericRegistration(nameof(RegisterPerEntityServices), [entity], simulationServiceContainer);
-            ExecuteLocalGenericRegistration(nameof(AdaptToServerLayer), [entity], simulationServiceContainer,
-                adaptionTarget);
-        }
     }
 
     [SuppressMessage("Design", "S3011",
@@ -72,22 +67,41 @@ public sealed class ServerSimulationAdapter : ILayerAdapter<SimulationServicesCo
         info.MakeGenericMethod(generics).Invoke(null, arguments);
     }
 
-    private static void RegisterPerEntityServices<TEntity>(SimulationServicesContainer simulationServicesContainer)
+    private static void BuildSingletonAdapterInstance<TEntity>(
+        SimulationServicesContainer simulationServicesContainer, IServiceCollection targetCollection)
     {
-        simulationServicesContainer
-            .AddSingleton<
-                EntityStateChangedNotifier<TEntity>,
-                EntityStateChangedNotifier<TEntity>
-            >();
-
+        simulationServicesContainer.AddSingleton<EntityStateChangedNotifier<TEntity>>();
         simulationServicesContainer.AddSingleton<IStateChangeSimulationProcessor<TEntity>>(p =>
             p.GetRequiredService<EntityStateChangedNotifier<TEntity>>());
         simulationServicesContainer.AddSingleton<INodeConfigurator<TEntity>>(p =>
             p.GetRequiredService<EntityStateChangedNotifier<TEntity>>());
+        var adapters = simulationServicesContainer.BuildServiceProvider().GetServices<INodeConfigurator<TEntity>>();
+        foreach (var adapter in adapters)
+        {
+            targetCollection.AddSingleton(adapter);
+        }
     }
 
-    private static void AddActionAdapterServices<TEntity, TMethodArgs>(
-        SimulationServicesContainer simulationServicesContainer)
+    private static void AdaptFunctionSimulationToTarget<TEntity, TMethodArgs, TReturnType>(
+        SimulationServicesContainer source, IServiceCollection target)
+    {
+        source.AddTransient<
+            IAdaptionContextTranslator<(IList<object>, IManagedEntityNode), TEntity, TMethodArgs, TReturnType>,
+            AdaptionContextTranslator<TEntity, TMethodArgs, TReturnType>
+        >();
+
+
+        source.AddSingleton<
+            INodeConfigurator<TEntity>,
+            FunctionSimulationAdapter<TEntity, TMethodArgs, TReturnType>
+        >();
+
+        BuildSingletonAdapterInstance<TEntity>(source, target);
+    }
+
+
+    private static void AdaptActionSimulationToTarget<TEntity, TMethodArgs>(
+        SimulationServicesContainer simulationServicesContainer, IServiceCollection targetCollection)
     {
         simulationServicesContainer.AddTransient<
             IAdaptionContextTranslator<(IList<object>, IManagedEntityNode), TEntity, TMethodArgs>,
@@ -98,30 +112,7 @@ public sealed class ServerSimulationAdapter : ILayerAdapter<SimulationServicesCo
             INodeConfigurator<TEntity>,
             ActionSimulationAdapter<TEntity, TMethodArgs>
         >();
-    }
 
-    private static void AddFunctionAdapterServices<TEntity, TMethodArgs, TReturnType>(
-        SimulationServicesContainer simulationServicesContainer)
-    {
-        simulationServicesContainer.AddTransient<
-            IAdaptionContextTranslator<(IList<object>, IManagedEntityNode), TEntity, TMethodArgs, TReturnType>,
-            AdaptionContextTranslator<TEntity, TMethodArgs, TReturnType>
-        >();
-
-
-        simulationServicesContainer.AddSingleton<
-            INodeConfigurator<TEntity>,
-            FunctionSimulationAdapter<TEntity, TMethodArgs, TReturnType>
-        >();
-    }
-
-    private static void AdaptToServerLayer<TEntity>(SimulationServicesContainer simulationServicesContainer,
-        IServiceCollection serviceCollection)
-    {
-        var adapters = simulationServicesContainer.BuildServiceProvider().GetServices<INodeConfigurator<TEntity>>();
-        foreach (var adapter in adapters)
-        {
-            serviceCollection.AddSingleton(adapter);
-        }
+        BuildSingletonAdapterInstance<TEntity>(simulationServicesContainer, targetCollection);
     }
 }

@@ -3,7 +3,6 @@ using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Simulation.Api.Execution;
 using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
-using Microsoft.Extensions.Logging;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter;
@@ -14,8 +13,7 @@ namespace Hoeyer.OpcUa.Simulation.ServerAdapter;
 /// <param name="translator"></param>
 /// <typeparam name="TEntity"></typeparam>
 internal class EntityStateChangedNotifier<TEntity>(
-    IEntityTranslator<TEntity> translator,
-    ILogger<EntityStateChangedNotifier<TEntity>> logger) : INodeConfigurator<TEntity>,
+    IEntityTranslator<TEntity> translator) : INodeConfigurator<TEntity>,
     IStateChangeSimulationProcessor<TEntity>
 {
     private ISystemContext Context { get; set; } = null!;
