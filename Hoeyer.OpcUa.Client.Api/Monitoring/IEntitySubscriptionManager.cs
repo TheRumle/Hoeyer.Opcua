@@ -9,7 +9,12 @@ public interface IEntitySubscriptionManager<out T>
 {
     public Subscription? Subscription { get; }
 
-    Task<IMessageSubscription> SubscribeToChange(
+    Task<IMessageSubscription> SubscribeToAllPropertyChanges(
         IMessageConsumer<T> consumer,
+        CancellationToken cancellationToken = default);
+
+    Task<IMessageSubscription> SubscribeToProperty(
+        IMessageConsumer<T> consumer,
+        string propertyName,
         CancellationToken cancellationToken = default);
 }

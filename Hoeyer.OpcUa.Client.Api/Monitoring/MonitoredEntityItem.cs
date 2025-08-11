@@ -19,7 +19,6 @@ public sealed class MonitoredEntityItem(MonitoredItem inner) : MonitoredItem(inn
         }
     }
 
-    // Hide base Notification event with `new` keyword
     public new event MonitoredItemNotificationEventHandler Notification
     {
         add
