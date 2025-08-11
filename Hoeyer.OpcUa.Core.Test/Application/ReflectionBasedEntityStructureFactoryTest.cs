@@ -2,11 +2,12 @@
 using Hoeyer.OpcUa.Core.Application.NodeStructureFactory;
 using Hoeyer.OpcUa.TestEntities;
 using JetBrains.Annotations;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Test.Application;
 
 [TestSubject(typeof(ReflectionBasedEntityStructureFactory<>))]
-[TestSubject(typeof(IAgentStructureFactory<>))]
+[TestSubject(typeof(IEntityNodeStructureFactory<>))]
 public sealed class ReflectionBasedEntityStructureFactoryTest
 {
     private readonly Type _entityType = typeof(AllPropertyTypesEntity);

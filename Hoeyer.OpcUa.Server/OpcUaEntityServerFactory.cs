@@ -11,7 +11,7 @@ namespace Hoeyer.OpcUa.Server;
 internal sealed class OpcUaEntityServerFactory(
     EntityServerStartedMarker marker,
     OpcUaEntityServerSetup serverSetup,
-    IEnumerable<IAgentManagerFactory> entityManagerFactories,
+    IEnumerable<IEntityNodeManagerFactory> entityManagerFactories,
     ILoggerFactory loggerFactory) : IOpcUaEntityServerFactory
 {
     private StartableEntityServer startable;

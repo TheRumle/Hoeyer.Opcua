@@ -11,13 +11,13 @@ internal sealed class DomainMasterNodeManager : MasterNodeManager
 {
     /// <inheritdoc />
     public DomainMasterNodeManager(IServerInternal server, ApplicationConfiguration applicationConfiguration,
-        IAgentManager[] additionalManagers) : base(server, applicationConfiguration,
+        IEntityNodeManager[] additionalManagers) : base(server, applicationConfiguration,
         applicationConfiguration.ApplicationUri, additionalManagers)
     {
         Nodes = additionalManagers.Select(e => e.ManagedEntity);
     }
 
-    public IEnumerable<IManagedAgent> Nodes { get; set; }
+    public IEnumerable<IManagedEntityNode> Nodes { get; set; }
 
-    public IEnumerable<IAgent> ManagedEntities => Nodes.Select(e => e.Select(node => node));
+    public IEnumerable<IEntityNode> ManagedEntities => Nodes.Select(e => e.Select(node => node));
 }

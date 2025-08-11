@@ -4,9 +4,9 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Api;
 
-public sealed record Agent : IAgent
+public sealed record EntityNode : IEntityNode
 {
-    public Agent(BaseObjectState baseObject,
+    public EntityNode(BaseObjectState baseObject,
         ISet<PropertyState> propertyStates,
         ISet<MethodState> methods)
     {

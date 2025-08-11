@@ -9,7 +9,7 @@ namespace Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 public static class DataTypeToTypeTranslator
 {
     public static T? TranslateToSingle<T>(
-        IAgent node, string name)
+        IEntityNode node, string name)
     {
         var p = node.PropertyByBrowseName.TryGetValue(name, out var value) ? value : null;
         if (p == null)
@@ -20,7 +20,7 @@ public static class DataTypeToTypeTranslator
         return (T)OpcToCSharpValueParser.ParseOpcValue(p.WrappedValue)!;
     }
 
-    public static TCollection? TranslateToCollection<TCollection, T>(IAgent node, string name)
+    public static TCollection? TranslateToCollection<TCollection, T>(IEntityNode node, string name)
         where TCollection : ICollection<T>, new()
     {
         var p = node.PropertyByBrowseName.GetValueOrDefault(name);

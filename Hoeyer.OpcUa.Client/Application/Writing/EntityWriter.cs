@@ -24,7 +24,7 @@ public sealed class EntityWriter<TEntity>(
 
     public async Task AssignEntityValues(TEntity entity, CancellationToken cancellationToken = default)
     {
-        var valuesToWrite = await browser.GetNodeStructure(cancellationToken);
+        EntityNodeStructure valuesToWrite = await browser.GetNodeStructure(cancellationToken);
         translator.AssignToStructure(entity, (name, value) => valuesToWrite.Properties[name].Value = value);
         IEnumerable<WriteValue> values = valuesToWrite.Properties.Values.Select(CreateWriteValue);
         await WriteValues(cancellationToken, values);

@@ -6,6 +6,7 @@ using Hoeyer.OpcUa.Client.Api.Calling;
 using Hoeyer.OpcUa.Client.Api.Calling.Exception;
 using Hoeyer.OpcUa.Client.Api.Connection;
 using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 using Opc.Ua;
 
@@ -36,12 +37,12 @@ public class MethodCaller<TEntity>(IEntityBrowser<TEntity> browser, IEntitySessi
     private async Task<IList<object>> CallNode(string methodName, CancellationToken token = default,
         params object[] args)
     {
-        var Agent = await browser.GetNodeStructure(token);
-        var methodNodesByName = Agent.Methods;
+        EntityNodeStructure entityNode = await browser.GetNodeStructure(token);
+        IReadOnlyDictionary<string, NodeId> methodNodesByName = entityNode.Methods;
         NodeId methodToCall = methodNodesByName[methodName] ??
-                              throw new NoSuchEntityMethodException(Agent.EntityName, methodName);
+                              throw new NoSuchEntityMethodException(entityNode.EntityName, methodName);
 
         IEntitySession session = await factory.GetSessionForAsync(SessionClientId, token);
-        return await session.Session.CallAsync(Agent.NodeId, methodToCall, token, args);
+        return await session.Session.CallAsync(entityNode.NodeId, methodToCall, token, args);
     }
 }

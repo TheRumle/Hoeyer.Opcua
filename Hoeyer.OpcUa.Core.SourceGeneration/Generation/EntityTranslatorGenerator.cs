@@ -44,7 +44,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         writer.WriteLine("{");
 
         writer.WriteLine("public void AssignToNode( " + entityName + " state, " +
-                         WellKnown.FullyQualifiedInterface.IAgent.WithGlobalPrefix + " node)");
+                         WellKnown.FullyQualifiedInterface.IEntityNode.WithGlobalPrefix + " node)");
 
         writer.WriteLine("{");
         WriteAssignments(writer, typeContext.Node, typeContext.SemanticModel);
@@ -59,7 +59,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
 
 
         writer.WriteLine("public " + entityName + " Translate( " +
-                         WellKnown.FullyQualifiedInterface.IAgent.WithGlobalPrefix + " state)");
+                         WellKnown.FullyQualifiedInterface.IEntityNode.WithGlobalPrefix + " state)");
         writer.WriteLine("{");
 
         WriteTranslations(writer, typeContext.Node, typeContext.SemanticModel);

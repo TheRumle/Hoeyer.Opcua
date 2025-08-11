@@ -9,14 +9,14 @@ using Opc.Ua;
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter;
 
 internal sealed class FunctionSimulationAdapter<TEntity, TMethodArgs, TReturnType>(
-    IAdaptionContextTranslator<(IList<object>, IManagedAgent), TEntity, TMethodArgs, TReturnType>
+    IAdaptionContextTranslator<(IList<object>, IManagedEntityNode), TEntity, TMethodArgs, TReturnType>
         contextTranslator,
     ISimulationOrchestrator<TEntity, TMethodArgs, TReturnType> orchestrator,
     ISimulationExecutorErrorHandler errorHandler,
     IOpcMethodArgumentsAttributeUsageValidator argsTypeAnnotationValidator)
     : INodeConfigurator<TEntity>
 {
-    public void Configure(IManagedAgent managed, ISystemContext context)
+    public void Configure(IManagedEntityNode managed, ISystemContext context)
     {
         var method = managed.Select(argsTypeAnnotationValidator.ValidateAndGetMethodState<TMethodArgs>);
         method.OnCallMethod += (context,

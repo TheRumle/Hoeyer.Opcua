@@ -2,5 +2,5 @@
 
 public interface INodeHolder<T>
 {
-    public void TakeSharedNode(IManagedAgent<T> managedNode);
+    public void TakeSharedNode(IManagedEntityNode<T> managedNode);
 }

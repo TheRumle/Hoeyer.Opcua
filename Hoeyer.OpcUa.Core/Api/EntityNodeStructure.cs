@@ -4,14 +4,14 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Api;
 
-public readonly record struct AgentStructure
+public readonly record struct EntityNodeStructure
 {
     public readonly string EntityName;
     public readonly IReadOnlyDictionary<string, NodeId> Methods;
     public readonly NodeId NodeId;
     public readonly IReadOnlyDictionary<string, ValueProperty> Properties;
 
-    public AgentStructure(IAgent node)
+    public EntityNodeStructure(IEntityNode node)
     {
         NodeId = node.BaseObject.NodeId;
         EntityName = node.BaseObject.BrowseName.Name;

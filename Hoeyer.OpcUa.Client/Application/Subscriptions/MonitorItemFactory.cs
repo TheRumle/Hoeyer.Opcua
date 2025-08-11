@@ -32,7 +32,7 @@ public sealed class MonitorItemFactory<T>(
 
     public async ValueTask<(EntitySubscription subscription, IReadOnlyList<MonitoredItem> variableMonitoring)>
         CreateAndMonitorAll(IEntitySession session,
-            IAgent node,
+            IEntityNode node,
             Action<MonitoredItem, MonitoredItemNotificationEventArgs> callback,
             CancellationToken cancel = default)
     {
@@ -43,7 +43,7 @@ public sealed class MonitorItemFactory<T>(
 
 
     public async ValueTask<IReadOnlyList<MonitoredEntityItem>> MonitorAllProperties(EntitySubscription subscription,
-        IAgent node, CancellationToken cancel = default)
+        IEntityNode node, CancellationToken cancel = default)
     {
         IEnumerable<(NodeId Id, string Name)> nodes =
         [

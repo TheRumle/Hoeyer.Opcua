@@ -1,5 +1,6 @@
 ﻿using Hoeyer.Common.Extensions;
 using Hoeyer.OpcUa.Server.Api;
+using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.IntegrationTest.Fixture;
 using Hoeyer.OpcUa.TestEntities;
@@ -9,9 +10,9 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.IntegrationTest.Application;
 
-[TestSubject(typeof(AgentManager<>))]
+[TestSubject(typeof(EntityNodeManager<>))]
 [NotInParallel]
-public sealed class AgentManagerTest
+public sealed class EntityNodeManagerTest
 {
     [Test]
     [ServiceCollectionDataSource]
@@ -22,7 +23,7 @@ public sealed class AgentManagerTest
         using IDisposable asserts = Assert.Multiple();
         await startableServer.StartAsync();
 
-        var manager = initializedEntityManagers.Manager!;
+        IEntityNodeManager manager = initializedEntityManagers.Manager!;
         OperationContext context = CreateOperationContext(RequestType.Read);
 
         var nodeToRead = manager.ManagedEntity.Select(node => node.PropertyByBrowseName[nameof(Gantry.AList)]);
@@ -88,7 +89,7 @@ public sealed class AgentManagerTest
         using IDisposable assertScope = Assert.Multiple();
         var badProperties =
             maybeInitializedManager.Manager!.ManagedEntity.Select(node => node.PropertyByBrowseName);
-
+        
         foreach ((var name, PropertyState value) in badProperties)
         {
             if (StatusCode.IsNotGood(value.StatusCode))

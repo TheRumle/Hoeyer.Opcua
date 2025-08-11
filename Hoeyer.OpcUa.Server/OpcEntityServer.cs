@@ -17,7 +17,7 @@ namespace Hoeyer.OpcUa.Server;
 
 internal sealed class OpcEntityServer(
     IOpcUaEntityServerInfo applicationProductDetails,
-    IEnumerable<IAgentManagerFactory> entityManagerFactories,
+    IEnumerable<IEntityNodeManagerFactory> entityManagerFactories,
     ILogger<OpcEntityServer> logger)
     : StandardServer
 {
@@ -42,7 +42,7 @@ internal sealed class OpcEntityServer(
     {
         return logger.Try(() =>
         {
-            Task<IAgentManager>[] managerCreationTasks = entityManagerFactories
+            Task<IEntityNodeManager>[] managerCreationTasks = entityManagerFactories
                 .Select(async factory => await factory.CreateEntityManager(server))
                 .ToArray();
 

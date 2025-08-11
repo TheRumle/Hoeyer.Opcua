@@ -10,10 +10,10 @@ namespace Hoeyer.OpcUa.Simulation;
 
 public sealed class OpcMethodArgumentsAttributeUsageValidator : IOpcMethodArgumentsAttributeUsageValidator
 {
-    public MethodState ValidateAndGetMethodState<TMethodArgs>(IAgent managed) =>
+    public MethodState ValidateAndGetMethodState<TMethodArgs>(IEntityNode managed) =>
         GetOrThrow<TMethodArgs>(managed);
 
-    private static MethodState GetOrThrow<TMethodArgs>(IAgent managed)
+    private static MethodState GetOrThrow<TMethodArgs>(IEntityNode managed)
     {
         var argsName = typeof(TMethodArgs).Name;
         var attrName = nameof(IOpcMethodArgumentsAttribute);
@@ -36,7 +36,7 @@ public sealed class OpcMethodArgumentsAttributeUsageValidator : IOpcMethodArgume
         return method;
     }
 
-    private static void AssertConfigurators(IAgent node, IOpcMethodArgumentsAttribute annotation, string argsName)
+    private static void AssertConfigurators(IEntityNode node, IOpcMethodArgumentsAttribute annotation, string argsName)
     {
         if (annotation is null)
         {

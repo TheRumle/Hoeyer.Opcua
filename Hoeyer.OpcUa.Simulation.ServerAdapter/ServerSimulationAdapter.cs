@@ -86,7 +86,7 @@ public sealed class ServerSimulationAdapter : ILayerAdapter<SimulationServicesCo
         SimulationServicesContainer source, IServiceCollection target)
     {
         source.AddTransient<
-            IAdaptionContextTranslator<(IList<object>, IManagedAgent), TEntity, TMethodArgs, TReturnType>,
+            IAdaptionContextTranslator<(IList<object>, IManagedEntityNode), TEntity, TMethodArgs, TReturnType>,
             AdaptionContextTranslator<TEntity, TMethodArgs, TReturnType>
         >();
 
@@ -104,7 +104,7 @@ public sealed class ServerSimulationAdapter : ILayerAdapter<SimulationServicesCo
         SimulationServicesContainer simulationServicesContainer, IServiceCollection targetCollection)
     {
         simulationServicesContainer.AddTransient<
-            IAdaptionContextTranslator<(IList<object>, IManagedAgent), TEntity, TMethodArgs>,
+            IAdaptionContextTranslator<(IList<object>, IManagedEntityNode), TEntity, TMethodArgs>,
             AdaptionContextTranslator<TEntity, TMethodArgs>
         >();
 

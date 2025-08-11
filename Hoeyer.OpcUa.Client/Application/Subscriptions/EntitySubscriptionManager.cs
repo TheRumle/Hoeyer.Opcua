@@ -34,7 +34,7 @@ internal sealed class EntitySubscriptionManager<T>(
         new(new ChannelSubscriptionFactory<T>());
 
     private IReadOnlyList<MonitoredItem> MonitoredItems { get; set; } = [];
-    private IAgent? CurrentNodeState { get; set; }
+    private IEntityNode? CurrentNodeState { get; set; }
     private EntitySubscription? EntitySubscription { get; set; }
     public Subscription? Subscription => EntitySubscription;
 
@@ -42,7 +42,7 @@ internal sealed class EntitySubscriptionManager<T>(
     public async Task<IMessageSubscription> SubscribeToAllPropertyChanges(
         IMessageConsumer<T> consumer, CancellationToken cancellationToken = default)
     {
-        CurrentNodeState ??= await browser.BrowseAgent(cancellationToken);
+        CurrentNodeState ??= await browser.BrowseEntityNode(cancellationToken);
         var session = await sessionFactory.GetSessionForAsync(SessionClientId, cancellationToken);
         (EntitySubscription, MonitoredItems) =
             await monitorFactory.CreateAndMonitorAll(session, CurrentNodeState, HandleChange, cancellationToken);
@@ -56,7 +56,7 @@ internal sealed class EntitySubscriptionManager<T>(
         string propertyName,
         CancellationToken cancellationToken = default)
     {
-        CurrentNodeState ??= await browser.BrowseAgent(cancellationToken);
+        CurrentNodeState ??= await browser.BrowseEntityNode(cancellationToken);
         var session = await sessionFactory.GetSessionForAsync(SessionClientId, cancellationToken);
         EntitySubscription ??= await monitorFactory.GetOrCreateSubscriptionWithCallback(
             session,

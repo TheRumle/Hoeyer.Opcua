@@ -4,8 +4,8 @@ namespace Hoeyer.OpcUa.Core.Api;
 
 public interface IEntityTranslator<T>
 {
-    public T Translate(IAgent state);
-    public void AssignToNode(T state, IAgent node);
+    public T Translate(IEntityNode state);
+    public void AssignToNode(T state, IEntityNode node);
 
     /// <summary>
     /// Providing a property name and its value and invokes <see cref="assignment"/> using it.

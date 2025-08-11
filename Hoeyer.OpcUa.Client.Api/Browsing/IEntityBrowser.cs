@@ -15,12 +15,12 @@ public interface IEntityBrowser
     ///     has already been found previously - instead traversal will begin from the root of the node representing the entity.
     /// </summary>
     /// <param name="cancellationToken">Token to cancel the browse</param>
-    /// <returns>An IAgent representing the structure of the entity.</returns>
-    Task<IAgent> BrowseAgent(CancellationToken cancellationToken = default);
+    /// <returns>An IEntityNode representing the structure of the entity.</returns>
+    Task<IEntityNode> BrowseEntityNode(CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Creates a copy of the node structure. Browses the node to discover the structure if this has not been done before.
     /// </summary>
     /// <returns></returns>
-    ValueTask<AgentStructure> GetNodeStructure(CancellationToken token = default);
+    ValueTask<EntityNodeStructure> GetNodeStructure(CancellationToken token = default);
 }

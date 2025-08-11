@@ -3,7 +3,7 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Api;
 
-public interface IAgent
+public interface IEntityNode
 {
     public BaseObjectState BaseObject { get; }
     public IEnumerable<PropertyState> PropertyStates { get; }

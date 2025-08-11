@@ -3,13 +3,13 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-internal sealed class NoAccessRestrictionsConfigurator : IAgentAccessConfigurator
+internal sealed class NoAccessRestrictionsConfigurator : IEntityNodeAccessConfigurator
 {
-    public void Configure(IManagedAgent managed, ISystemContext context)
+    public void Configure(IManagedEntityNode managed, ISystemContext context)
     {
-        managed.ChangeState(Agent =>
+        managed.ChangeState(entityNode =>
         {
-            foreach (var managedEntityPropertyState in Agent.PropertyStates)
+            foreach (var managedEntityPropertyState in entityNode.PropertyStates)
             {
                 managedEntityPropertyState.UserAccessLevel = AccessLevels.CurrentRead | AccessLevels.CurrentWrite;
                 managedEntityPropertyState.AccessLevel = AccessLevels.CurrentRead | AccessLevels.CurrentWrite;

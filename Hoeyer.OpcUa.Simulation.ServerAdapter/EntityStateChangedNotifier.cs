@@ -17,10 +17,10 @@ internal class EntityStateChangedNotifier<TEntity>(
     IStateChangeSimulationProcessor<TEntity>
 {
     private ISystemContext Context { get; set; } = null!;
-    public IManagedAgent ManagedNode { get; set; } = null!;
+    public IManagedEntityNode ManagedNode { get; set; } = null!;
     public IMessageSubscription Subscription { get; set; } = null!;
 
-    public void Configure(IManagedAgent managed, ISystemContext context)
+    public void Configure(IManagedEntityNode managed, ISystemContext context)
     {
         Context = context;
         ManagedNode = managed;

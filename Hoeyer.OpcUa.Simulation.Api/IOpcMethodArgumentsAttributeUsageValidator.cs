@@ -5,5 +5,5 @@ namespace Hoeyer.OpcUa.Simulation.Api;
 
 public interface IOpcMethodArgumentsAttributeUsageValidator
 {
-    MethodState ValidateAndGetMethodState<TMethodArgs>(IAgent managed);
+    MethodState ValidateAndGetMethodState<TMethodArgs>(IEntityNode managed);
 }

@@ -16,9 +16,9 @@ public sealed class EntityBrowserTest
 {
     [Test]
     [ApplicationFixtureGenerator<IEntityBrowser>]
-    public async Task EntityBrowser_CanCreateAgent_AndTranslateIt(ApplicationFixture<IEntityBrowser> services)
+    public async Task EntityBrowser_CanCreateEntityNode_AndTranslateIt(ApplicationFixture<IEntityBrowser> services)
     {
-        var entity = await services.ExecuteAsync(browser => browser.BrowseAgent(CancellationToken.None));
+        var entity = await services.ExecuteAsync(browser => browser.BrowseEntityNode(CancellationToken.None));
 
         await Assert.That(entity).IsNotDefault();
         await Assert.That(entity.PropertyStates).IsNotEmpty();
@@ -29,7 +29,7 @@ public sealed class EntityBrowserTest
     [ApplicationFixtureGenerator<IEntityBrowser>]
     public async Task EntityBrowser_BrowsedEntity_DoesNotHaveNullValues(ApplicationFixture<IEntityBrowser> services)
     {
-        var entity = await services.ExecuteAsync(browser => browser.BrowseAgent(CancellationToken.None));
+        var entity = await services.ExecuteAsync(browser => browser.BrowseEntityNode(CancellationToken.None));
         Dictionary<string, object?> propertyValue = GetNullPropertyValues(entity);
 
         using (Assert.Multiple())
@@ -49,7 +49,7 @@ public sealed class EntityBrowserTest
     {
         var browser = services.GetService<IEntityBrowser<Gantry>>();
         var translator = services.GetService<IEntityTranslator<Gantry>>();
-        var node = await browser.BrowseAgent();
+        var node = await browser.BrowseEntityNode();
         var gantry = translator.Translate(node);
 
         var propsWithNullValue = gantry
@@ -69,15 +69,15 @@ public sealed class EntityBrowserTest
     public void CanBrowseOnSimultaneousThreads(ApplicationFixture<IEntityBrowser> fixture)
     {
         IEntityBrowser browser = fixture.TestedService;
-        var first = new Thread(() => browser.BrowseAgent(CancellationToken.None).GetAwaiter().GetResult());
-        var second = new Thread(() => browser.BrowseAgent(CancellationToken.None).GetAwaiter().GetResult());
+        var first = new Thread(() => browser.BrowseEntityNode(CancellationToken.None).GetAwaiter().GetResult());
+        var second = new Thread(() => browser.BrowseEntityNode(CancellationToken.None).GetAwaiter().GetResult());
         first.Start();
         second.Start();
         first.Join();
         second.Join();
     }
 
-    private static Dictionary<string, object?> GetNullPropertyValues(IAgent entity)
+    private static Dictionary<string, object?> GetNullPropertyValues(IEntityNode entity)
     {
         return entity.PropertyStates
             .Where(e => e.Value is null or Variant { Value: null })

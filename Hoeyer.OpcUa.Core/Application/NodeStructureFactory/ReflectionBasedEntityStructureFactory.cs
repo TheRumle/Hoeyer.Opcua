@@ -10,13 +10,13 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Application.NodeStructureFactory;
 
-[OpcUaEntityService(typeof(IAgentStructureFactory<>), ServiceLifetime.Singleton)]
-public class ReflectionBasedEntityStructureFactory<T> : IAgentStructureFactory<T>
+[OpcUaEntityService(typeof(IEntityNodeStructureFactory<>), ServiceLifetime.Singleton)]
+public class ReflectionBasedEntityStructureFactory<T> : IEntityNodeStructureFactory<T>
 {
     private readonly Type _type = typeof(T);
 
     /// <inheritdoc />
-    public IAgent Create(ushort applicationNamespaceIndex)
+    public IEntityNode Create(ushort applicationNamespaceIndex)
     {
         var type = typeof(T);
         var entityName = type.Name;
@@ -38,7 +38,7 @@ public class ReflectionBasedEntityStructureFactory<T> : IAgentStructureFactory<T
         AssignReferences(properties, entity);
         AssignMethods(methods, entity);
 
-        return new Agent(entity,
+        return new EntityNode(entity,
             new HashSet<PropertyState>(properties.Select(e => e.OpcProperty)),
             new HashSet<MethodState>(methods.Select(e => e.Method)));
     }

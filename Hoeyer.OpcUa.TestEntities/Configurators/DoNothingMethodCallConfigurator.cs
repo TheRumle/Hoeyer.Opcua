@@ -11,7 +11,7 @@ namespace Hoeyer.OpcUa.TestEntities.Configurators;
 public sealed class DoNothingMethodCallConfigurator<TEntity> : INodeConfigurator<TEntity>
 {
     /// <inheritdoc />
-    public void Configure(IManagedAgent managed, ISystemContext context)
+    public void Configure(IManagedEntityNode managed, ISystemContext context)
     {
         managed.Examine(node =>
         {
