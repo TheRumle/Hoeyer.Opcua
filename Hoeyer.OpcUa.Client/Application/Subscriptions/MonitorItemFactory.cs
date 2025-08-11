@@ -17,7 +17,6 @@ namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
 [OpcUaEntityService(typeof(IMonitorItemsFactory<>))]
 public sealed class MonitorItemFactory<T>(
     ILogger<MonitorItemFactory<T>> logger,
-    IEntityPropertyCollection<T> propertyCollection,
     EntityMonitoringConfiguration entityMonitoringConfiguration) : IMonitorItemsFactory<T>
 {
     private static readonly int NumberOfProperties = typeof(T).GetProperties().Length;
