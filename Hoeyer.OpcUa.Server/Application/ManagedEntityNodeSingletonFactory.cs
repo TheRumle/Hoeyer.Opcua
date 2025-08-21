@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-[OpcUaEntityService(typeof(IManagedEntityNodeSingletonFactory<>), ServiceLifetime.Singleton)]
 internal sealed class ManagedEntityNodeSingletonFactory<T>(
     IOpcUaEntityServerInfo info,
     IEntityLoader<T> value,

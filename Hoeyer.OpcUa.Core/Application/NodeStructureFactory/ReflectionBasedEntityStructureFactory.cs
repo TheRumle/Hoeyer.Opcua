@@ -5,12 +5,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
-using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Application.NodeStructureFactory;
 
-[OpcUaEntityService(typeof(IEntityNodeStructureFactory<>), ServiceLifetime.Singleton)]
 public class ReflectionBasedEntityStructureFactory<T> : IEntityNodeStructureFactory<T>
 {
     private readonly Type _type = typeof(T);

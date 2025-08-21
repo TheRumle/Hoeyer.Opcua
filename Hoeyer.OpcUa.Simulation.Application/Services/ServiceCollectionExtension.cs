@@ -10,6 +10,7 @@ using Hoeyer.Common.Messaging.Subscriptions;
 using Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Simulation.Api;
 using Hoeyer.OpcUa.Simulation.Api.Configuration;
 using Hoeyer.OpcUa.Simulation.Api.Configuration.Exceptions;
@@ -44,10 +45,12 @@ public static class ServiceCollectionExtension
         var simulationServices = new SimulationServicesContainer(collection);
         simulationServices.AddRange(originalCollection);
         originalCollection
-            .AddTransient<IOpcMethodArgumentsAttributeUsageValidator, OpcMethodArgumentsAttributeUsageValidator>();
+            .AddServiceAndImplTransient<IOpcMethodArgumentsAttributeUsageValidator,
+                OpcMethodArgumentsAttributeUsageValidator>();
         simulationServices
-            .AddTransient<IOpcMethodArgumentsAttributeUsageValidator, OpcMethodArgumentsAttributeUsageValidator>();
-        simulationServices.AddTransient<ITimeScaler, IdentityTimeScaler>();
+            .AddServiceAndImplTransient<IOpcMethodArgumentsAttributeUsageValidator,
+                OpcMethodArgumentsAttributeUsageValidator>();
+        simulationServices.AddServiceAndImplTransient<ITimeScaler, IdentityTimeScaler>();
 
 
         //Used as marker

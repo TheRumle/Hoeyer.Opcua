@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-[OpcUaEntityService(typeof(IEntityNodeManagerFactory), ServiceLifetime.Singleton)]
-[OpcUaEntityService(typeof(IEntityNodeManagerFactory<>), ServiceLifetime.Singleton)]
 internal sealed class EntityNodeManagerSingletonFactory<T>(
     ILoggerFactory factory,
     IManagedEntityNodeSingletonFactory<T> nodeFactory,

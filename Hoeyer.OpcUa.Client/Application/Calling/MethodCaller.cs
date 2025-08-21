@@ -5,14 +5,12 @@ using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Calling;
 using Hoeyer.OpcUa.Client.Api.Calling.Exception;
 using Hoeyer.OpcUa.Client.Api.Connection;
-using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Client.Application.Calling;
 
-[OpcUaEntityService(typeof(IMethodCaller<>))]
 public class MethodCaller<TEntity>(IEntityBrowser<TEntity> browser, IEntitySessionFactory factory)
     : IMethodCaller<TEntity>
 {

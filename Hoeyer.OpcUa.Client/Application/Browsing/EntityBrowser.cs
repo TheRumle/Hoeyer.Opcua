@@ -10,7 +10,6 @@ using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
 using Hoeyer.OpcUa.Client.Api.Connection;
 using Hoeyer.OpcUa.Client.Extensions;
-using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
@@ -27,7 +26,6 @@ namespace Hoeyer.OpcUa.Client.Application.Browsing;
 /// <param name="traversalStrategy">A strategy for traversing the node tree</param>
 /// <param name="identityMatcher">True if the provided <see cref="ReferenceDescription" /> is a description for the entity</param>
 /// <typeparam name="TEntity">The entity the EntityBrowser is assigned to</typeparam>
-[OpcUaEntityService(typeof(IEntityBrowser<>))]
 public sealed class EntityBrowser<TEntity>(
     ILogger<EntityBrowser<TEntity>> logger,
     INodeTreeTraverser traversalStrategy,

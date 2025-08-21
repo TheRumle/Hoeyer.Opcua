@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Hoeyer.Common.Reflection;
+using Hoeyer.OpcUa.Core.Api;
+using Hoeyer.OpcUa.Core.Application.NodeStructureFactory;
 using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
@@ -20,20 +24,26 @@ public static class ServiceExtensions
     {
         IServiceCollection collection = serviceRegistration.Collection;
 
+        collection.AddSingleton(typeof(IEntityNodeStructureFactory<>), typeof(ReflectionBasedEntityStructureFactory<>));
         collection.AddSingleton<OpcUaEntityServerSetup>(p =>
         {
             var standardConfig = p.GetService<IOpcUaEntityServerInfo>();
             if (standardConfig == null)
             {
                 throw new InvalidOperationException(
-                    $"No {nameof(IOpcUaEntityServerInfo)} has been registered! This should be prevented using builder pattern. Are you using the library as intended and using the {nameof(Core.Services.Services.AddOpcUaServerConfiguration)} {nameof(IServiceCollection)} extension method?");
+                    $"No {nameof(IOpcUaEntityServerInfo)} has been registered! This should be prevented using builder pattern. Are you using the library as intended and using the {nameof(ServiceCollectionExtensions.AddOpcUaServerConfiguration)} {nameof(IServiceCollection)} extension method?");
             }
 
             return new OpcUaEntityServerSetup(standardConfig, additionalConfiguration ?? (value => { }));
         });
 
+        var registration = typeof(ServiceExtensions).InvokeStaticEntityRegistration(nameof(AddServices), collection);
+        foreach (var entity in OpcUaEntityTypes.Entities)
+        {
+            registration.Invoke(entity);
+        }
 
-        collection.AddSingleton<IEntityNodeAccessConfigurator, NoAccessRestrictionsConfigurator>();
+        collection.AddServiceAndImplSingleton<IEntityNodeAccessConfigurator, NoAccessRestrictionsConfigurator>();
         collection.AddSingleton<EntityServerStartedMarker>();
         collection.AddSingleton<OpcUaEntityServerFactory>();
         collection.AddSingleton<OpcEntityServer>();
@@ -46,6 +56,23 @@ public static class ServiceExtensions
 
 
         return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
+    }
+
+    public static void AddServices<TEntity>(IServiceCollection collection)
+    {
+        collection.AddServiceAndImplSingleton<IManagedEntityNodeSingletonFactory<TEntity>>(
+            typeof(ManagedEntityNodeSingletonFactory<TEntity>));
+        collection
+            .AddServiceAndImplSingleton<IEntityNodeManagerFactory<TEntity>,
+                EntityNodeManagerSingletonFactory<TEntity>>();
+
+        collection.AddServiceAndImplSingleton(typeof(IEntityNodeManagerFactory),
+            typeof(EntityNodeManagerSingletonFactory<TEntity>));
+
+        collection
+            .AddServiceAndImplSingleton<IMaybeInitializedEntityManager<TEntity>,
+                MaybeInitializedEntityManager<TEntity>>();
+        collection.AddSingleton(typeof(IMaybeInitializedEntityManager), typeof(MaybeInitializedEntityManager<TEntity>));
     }
 
     public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServerAsBackgroundService(
@@ -83,7 +110,7 @@ public static class ServiceExtensions
 
         foreach ((Type service, Type implementation) in loaders)
         {
-            collection.AddSingleton(service, implementation);
+            collection.AddServiceAndImplSingleton(service, implementation);
         }
     }
 }

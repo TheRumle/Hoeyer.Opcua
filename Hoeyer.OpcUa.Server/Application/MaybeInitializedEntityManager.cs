@@ -1,11 +1,8 @@
-﻿using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.Server.Api.NodeManagement;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Hoeyer.OpcUa.Server.Api.NodeManagement;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-[OpcUaEntityService(typeof(MaybeInitializedEntityManager<>), ServiceLifetime.Singleton)]
-public sealed class MaybeInitializedEntityManager<T> : IMaybeInitializedEntityManager
+public sealed class MaybeInitializedEntityManager<T> : IMaybeInitializedEntityManager<T>
 {
     /// <inheritdoc />
     public string EntityName { get; } = typeof(T).Name;

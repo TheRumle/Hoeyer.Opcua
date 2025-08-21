@@ -25,19 +25,19 @@ public static class TypeExtensions
         return t.GetInterfaces().FirstOrDefault(i => i == @interface);
     }
 
-    public static bool IsGenericImplementationOf(this Type t, Type target)
+    public static bool IsGenericImplementationOf(this Type source, Type target)
     {
-        if (!target.IsGenericType)
+        if (!target.IsGenericType || !target.IsGenericTypeDefinition)
         {
             throw new ArgumentException(nameof(target) + " is not a generic type");
         }
 
-        if (!t.IsGenericType)
+        if (!source.IsConstructedGenericType)
         {
             return false;
         }
 
-        var wanted = t.IsGenericTypeDefinition ? t : t.GetGenericTypeDefinition();
+        var wanted = source.IsGenericTypeDefinition ? source : source.GetGenericTypeDefinition();
         return target == wanted;
     }
 

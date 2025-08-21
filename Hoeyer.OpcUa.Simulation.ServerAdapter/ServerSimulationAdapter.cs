@@ -6,6 +6,7 @@ using System.Reflection;
 using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.Common.Reflection;
+using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
 using Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
@@ -103,12 +104,12 @@ public sealed class ServerSimulationAdapter : ILayerAdapter<SimulationServicesCo
     private static void AdaptActionSimulationToTarget<TEntity, TMethodArgs>(
         SimulationServicesContainer simulationServicesContainer, IServiceCollection targetCollection)
     {
-        simulationServicesContainer.AddTransient<
+        simulationServicesContainer.AddServiceAndImplTransient<
             IAdaptionContextTranslator<(IList<object>, IManagedEntityNode), TEntity, TMethodArgs>,
             AdaptionContextTranslator<TEntity, TMethodArgs>
         >();
 
-        simulationServicesContainer.AddSingleton<
+        simulationServicesContainer.AddServiceAndImplSingleton<
             INodeConfigurator<TEntity>,
             ActionSimulationAdapter<TEntity, TMethodArgs>
         >();

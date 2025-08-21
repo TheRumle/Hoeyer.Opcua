@@ -1,10 +1,8 @@
 ﻿using System.Threading.Channels;
 using Hoeyer.Common.Messaging.Api;
-using Hoeyer.OpcUa.Core;
 
 namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
 
-[OpcUaEntityService(typeof(ICurrentEntityStateChannel<>))]
 public sealed class CurrentEntityStateChannel<T> : ICurrentEntityStateChannel<T>
 {
     private readonly Channel<IMessage<T>> _channel;

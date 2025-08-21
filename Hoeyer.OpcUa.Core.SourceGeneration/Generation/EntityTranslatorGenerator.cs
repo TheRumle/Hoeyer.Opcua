@@ -34,10 +34,6 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
 
         var writer = new SourceCodeWriter();
         writer.WriteLine("namespace " + WellKnown.CoreServiceName + ".Generated {");
-        writer.Write("[")
-            .Write(WellKnown.FullyQualifiedAttribute.OpcUaEntityServiceAttribute.WithGlobalPrefix)
-            .Write("(typeof(").Write(WellKnown.FullyQualifiedInterface.EntityTranslatorInterfaceOf().WithGlobalPrefix)
-            .Write("))").Write("]");
 
         writer.WriteLine("public sealed class " + symbol.Name + "Translator" + " : " + WellKnown.FullyQualifiedInterface
             .EntityTranslatorInterfaceOf(entityName).WithGlobalPrefix);

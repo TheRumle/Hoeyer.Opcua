@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Hoeyer.Common.Extensions;
 using Hoeyer.OpcUa.Client.Api.Connection;
 using Hoeyer.OpcUa.Client.Api.Monitoring;
-using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
@@ -14,7 +13,6 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
 
-[OpcUaEntityService(typeof(IMonitorItemsFactory<>))]
 public sealed class MonitorItemFactory<T>(
     ILogger<MonitorItemFactory<T>> logger,
     EntityMonitoringConfiguration entityMonitoringConfiguration) : IMonitorItemsFactory<T>

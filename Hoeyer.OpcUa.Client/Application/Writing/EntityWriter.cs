@@ -5,14 +5,12 @@ using System.Threading.Tasks;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Connection;
 using Hoeyer.OpcUa.Client.Api.Writing;
-using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Client.Application.Writing;
 
-[OpcUaEntityService(typeof(IEntityWriter<>))]
 public sealed class EntityWriter<TEntity>(
     ILogger<IEntityWriter<TEntity>> logger,
     IEntityTranslator<TEntity> translator,

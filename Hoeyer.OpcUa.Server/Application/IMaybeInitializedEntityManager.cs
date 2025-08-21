@@ -11,3 +11,5 @@ public interface IMaybeInitializedEntityManager
     bool HasValue { get; }
     IEntityNodeManager? Manager { get; }
 }
+
+public interface IMaybeInitializedEntityManager<T> : IMaybeInitializedEntityManager;

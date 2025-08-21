@@ -73,11 +73,6 @@ public sealed class RemoteMethodCallerGenerator : IIncrementalGenerator
         var @namespace = model.InterfaceSymbol.GetFullNamespace();
         builder.WriteLine("namespace " + @namespace + ".Generated");
         builder.WriteLine("{");
-
-        builder.Write("[").Write(WellKnown.FullyQualifiedAttribute.OpcUaEntityServiceAttribute.WithGlobalPrefix)
-            .Write("(typeof(").Write(model.InterfaceName.WithGlobalPrefix)
-            .Write("), global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped)]");
-        builder.WriteLine();
         builder.WriteLine("public sealed class " + classIdentifier);
         builder.Write(
             $"({WellKnown.FullyQualifiedInterface.MethodCallerType.WithGlobalPrefix}<{model.RelatedEntityName.WithGlobalPrefix}> caller)");

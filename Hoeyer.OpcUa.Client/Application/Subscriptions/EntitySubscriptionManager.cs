@@ -10,16 +10,13 @@ using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Connection;
 using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Client.Extensions;
-using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
 
-[OpcUaEntityService(typeof(IEntitySubscriptionManager<>), ServiceLifetime.Singleton)]
 internal sealed class EntitySubscriptionManager<T>(
     ILogger<EntitySubscriptionManager<T>> logger,
     IEntitySessionFactory sessionFactory,

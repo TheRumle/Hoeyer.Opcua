@@ -1,12 +1,24 @@
 ﻿using System;
+using System.Collections.Frozen;
+using System.Linq;
+using System.Reflection;
+using Hoeyer.Common.Extensions.Types;
+using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
+using Hoeyer.OpcUa.Client.Api.Calling;
 using Hoeyer.OpcUa.Client.Api.Connection;
+using Hoeyer.OpcUa.Client.Api.Monitoring;
+using Hoeyer.OpcUa.Client.Api.Writing;
 using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Client.Application.Browsing.Reading;
+using Hoeyer.OpcUa.Client.Application.Calling;
 using Hoeyer.OpcUa.Client.Application.Connection;
 using Hoeyer.OpcUa.Client.Application.Subscriptions;
+using Hoeyer.OpcUa.Client.Application.Writing;
+using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,27 +26,60 @@ namespace Hoeyer.OpcUa.Client.Services;
 
 public static class ClientServices
 {
+    private static readonly FrozenSet<(Type ServiceInterface, Type ClientImplementation)> MethodCallerImplementations
+        = OpcUaEntityTypes.TypesFromReferencingAssemblies
+            .SelectMany(impl => impl
+                .GetInterfaces()
+                .Where(IsOpcEntityMethodInterface)
+                .Select(entityMethodService => (ServiceInterface: entityMethodService, ClientImplementation: impl)))
+            .ToFrozenSet();
+
+    private static bool IsOpcEntityMethodInterface(Type interfaceType)
+    {
+        return interfaceType
+            .GetCustomAttributes()
+            .Any(attr => attr.GetType().IsGenericImplementationOf(typeof(OpcUaEntityMethodsAttribute<>)));
+    }
+
     public static OnGoingOpcEntityServiceRegistration WithOpcUaClientServices(
         this OnGoingOpcEntityServiceRegistration registration)
     {
         IServiceCollection services = registration.Collection;
-        services.AddTransient<BreadthFirstStrategy, BreadthFirstStrategy>();
-        services.AddTransient<DepthFirstStrategy, DepthFirstStrategy>();
-        services.AddTransient<INodeTreeTraverser, BreadthFirstStrategy>(); //Default strategy
-        services.AddTransient<INodeBrowser, NodeBrowser>();
-        services.AddTransient<INodeReader, NodeReader>();
-        services.AddTransient<IEntitySessionFactory, ReusableSessionFactory>();
-        services.AddTransient<ISubscriptionTransferStrategy, CopySubscriptionTransferStrategy>();
-        services.AddTransient<IReconnectionStrategy, DefaultReconnectStrategy>();
+        foreach (var (service, impl) in MethodCallerImplementations)
+        {
+            services.AddServiceAndImplSingleton(service, impl);
+        }
+
+        services.AddLogging();
+        services.AddServiceAndImplTransient<BreadthFirstStrategy, BreadthFirstStrategy>();
+        services.AddServiceAndImplTransient<DepthFirstStrategy, DepthFirstStrategy>();
+        services.AddServiceAndImplTransient<INodeTreeTraverser, BreadthFirstStrategy>(); //Default strategy
+        services.AddServiceAndImplTransient<INodeBrowser, NodeBrowser>();
+        services.AddServiceAndImplTransient<INodeReader, NodeReader>();
+        services.AddServiceAndImplTransient<IEntitySessionFactory, ReusableSessionFactory>();
+        services.AddServiceAndImplTransient<ISubscriptionTransferStrategy, CopySubscriptionTransferStrategy>();
+        services.AddServiceAndImplTransient<IReconnectionStrategy, DefaultReconnectStrategy>();
         services.AddSingleton<EntityMonitoringConfiguration>();
 
-        Type genericMatcher = typeof(EntityDescriptionMatcher<>);
-        foreach (Type? m in OpcUaEntityTypes.Entities)
+
+        var builder = typeof(ClientServices).InvokeStaticEntityRegistration(nameof(RegisterEntityGenerics), services);
+        foreach (var entity in OpcUaEntityTypes.Entities)
         {
-            Type instantiatedMatcher = genericMatcher.MakeGenericType(m);
-            services.AddTransient(instantiatedMatcher, _ => DefaultMatcherFactory.CreateMatcher(m));
+            builder.Invoke(entity);
         }
 
         return registration;
+    }
+
+    private static void RegisterEntityGenerics<TEntity>(IServiceCollection services)
+    {
+        var genericMatcher = typeof(EntityDescriptionMatcher<TEntity>);
+        services.AddServiceAndImplTransient<IEntityBrowser<TEntity>, EntityBrowser<TEntity>>();
+        services.AddServiceAndImplTransient<IMonitorItemsFactory<TEntity>, MonitorItemFactory<TEntity>>();
+        services.AddServiceAndImplTransient<IEntityWriter<TEntity>, EntityWriter<TEntity>>();
+        services.AddServiceAndImplSingleton<IEntitySubscriptionManager<TEntity>, EntitySubscriptionManager<TEntity>>();
+        services.AddServiceAndImplTransient<ICurrentEntityStateChannel<TEntity>, CurrentEntityStateChannel<TEntity>>();
+        services.AddServiceAndImplTransient(typeof(IMethodCaller<>), typeof(MethodCaller<>));
+        services.AddTransient(genericMatcher, _ => DefaultMatcherFactory.CreateMatcher(typeof(TEntity)));
     }
 }
