@@ -1,7 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.TestEntities.Methods;
 
-namespace Hoeyer.OpcUa.TestEntities;
+namespace Hoeyer.OpcUa.TestEntities.Models;
 
 [OpcUaEntity]
 public sealed class Gantry

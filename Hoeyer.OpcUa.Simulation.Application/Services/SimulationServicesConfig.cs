@@ -66,6 +66,12 @@ public class SimulationServicesConfig
         return this;
     }
 
+    public SimulationServicesConfig WithTimeScaling(ITimeScaler scalerProvider)
+    {
+        SimulationServices.AddTransient<ITimeScaler>(p => scalerProvider);
+        return this;
+    }
+
     public SimulationServicesConfig WithSubscriptionFactory(Type factoryType)
     {
         var factoryInterface = typeof(IMessageSubscriptionFactory<>);

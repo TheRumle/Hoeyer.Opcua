@@ -1,4 +1,4 @@
-﻿namespace Playground.Models;
+﻿namespace Hoeyer.OpcUa.TestEntities.Models;
 
 public enum Position
 {

@@ -33,7 +33,7 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
                                                      public interface IGantryMethods
                                                      {
                                                          public Task NoReturnValue(int q);
-                                                         public Task<int> IntReturnValue();
+                                                         public Task<int> GetCurrentContainerId();
                                                      }
 
                                                      [OpcMethodArguments<Gantry, IGantryMethods>("NoReturnValue")]
@@ -46,7 +46,7 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
                                                      	}
                                                      }
 
-                                                     [OpcMethodArgumentsAttribute<Gantry, IGantryMethods>("IntReturnValue")]
+                                                     [OpcMethodArgumentsAttribute<Gantry, IGantryMethods>("GetCurrentContainerId")]
                                                      public sealed record IntReturnValueArgs
                                                      {
                                                      	public IntReturnValueArgs()

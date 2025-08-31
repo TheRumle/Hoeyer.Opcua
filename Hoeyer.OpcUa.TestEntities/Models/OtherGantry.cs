@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core;
 
-namespace Playground.Models;
+namespace Hoeyer.OpcUa.TestEntities.Models;
 
 [OpcUaEntity]
 public sealed class OtherGantry

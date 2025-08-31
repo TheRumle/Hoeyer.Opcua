@@ -1,8 +1,7 @@
 ﻿using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Application.NodeStructureFactory;
-using Hoeyer.OpcUa.TestEntities;
+using Hoeyer.OpcUa.TestEntities.Models;
 using JetBrains.Annotations;
-using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Test.Application;
 

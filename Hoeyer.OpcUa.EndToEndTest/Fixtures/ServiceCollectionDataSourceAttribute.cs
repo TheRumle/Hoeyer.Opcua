@@ -34,6 +34,8 @@ public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourc
                 configure.AdaptToRuntime<ServerSimulationAdapter>();
             })
             .Collection.AddLogging(e => e.AddSimpleConsole());
+
+
         fixtureAttribute.ServiceCollection.AddSingleton(fixtureAttribute.ServiceCollection);
         fixtureAttribute.ServiceCollection.AddScoped<IServiceProvider>(p => p);
         return fixtureAttribute.ServiceCollection;

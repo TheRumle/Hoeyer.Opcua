@@ -12,6 +12,7 @@ using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Services;
+using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.Simulation.Api;
 using Hoeyer.OpcUa.Simulation.Api.Configuration;
 using Hoeyer.OpcUa.Simulation.Api.Configuration.Exceptions;
@@ -64,6 +65,7 @@ public static class ServiceCollectionExtension
         var typeReferences = typeof(SimulationApiAssemblyMarker)
             .GetTypesFromConsumingAssemblies()
             .Union(typeof(ServiceCollectionExtension).GetTypesFromConsumingAssemblies())
+            .Union(OpcUaEntityTypes.TypesFromReferencingAssemblies)
             .AsParallel()
             .ToImmutableHashSet();
 

@@ -1,4 +1,5 @@
 ﻿using Hoeyer.OpcUa.Server.Api;
+using Hoeyer.OpcUa.TestEntities.Models;
 
 namespace Hoeyer.OpcUa.TestEntities.Loaders;
 

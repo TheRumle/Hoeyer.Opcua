@@ -1,6 +1,7 @@
 ﻿using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.EndToEndTest.Generators;
 using Hoeyer.OpcUa.TestEntities.Methods;
+using Hoeyer.OpcUa.TestEntities.Models;
 
 namespace Hoeyer.OpcUa.EndToEndTest.ClientTests;
 

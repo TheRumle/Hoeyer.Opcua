@@ -1,10 +1,8 @@
 using System.Configuration;
 using System.Text.Json;
-using Hoeyer.OpcUa.Client.Services;
-using Hoeyer.OpcUa.Core.Services;
-using Hoeyer.OpcUa.Server.Services;
+using Hoeyer.OpcUa.Simulation.Api.Services;
 using Hoeyer.OpcUa.Simulation.ServerAdapter;
-using Hoeyer.OpcUa.Simulation.Services;
+using Hoeyer.OpcUa.TestEntities;
 using Playground.Configuration;
 using Playground.Reactants;
 
@@ -32,20 +30,19 @@ if (opcUaConfig is null || opcUaConfig.Port == 0)
     throw new ConfigurationErrorsException("OpcUa configuration is missing");
 
 builder.Services
-    .AddOpcUaServerConfiguration(conf => conf
-        .WithServerId("MyServer")
-        .WithServerName("My Server")
-        .WithOpcTcpHost("localhost", opcUaConfig.Port)
-        .WithEndpoints([$"opc.tcp://localhost:{opcUaConfig.Port}"])
-        .Build())
-    .WithEntityServices()
-    .WithOpcUaSimulationServices(config =>
-    {
-        config.WithTimeScaling(0.1);
-        config.AdaptToRuntime<ServerSimulationAdapter>();
-    })
-    .WithOpcUaServerAsBackgroundService()
-    .WithOpcUaClientServices();
+    .AddTestEntityServices(
+        serverSetup => serverSetup
+            .WithServerId("MyServer")
+            .WithServerName("My Server")
+            .WithOpcTcpHost("localhost", opcUaConfig.Port)
+            .WithEndpoints([$"opc.tcp://localhost:{opcUaConfig.Port}"])
+            .Build(),
+        simulationSetup =>
+        {
+            simulationSetup.WithTimeScaling(TimeScaler.Identity);
+            simulationSetup.AdaptToRuntime<ServerSimulationAdapter>();
+        }
+    );
 
 var app = builder.Build();
 

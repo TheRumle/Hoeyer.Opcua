@@ -1,6 +1,7 @@
 ﻿using Hoeyer.OpcUa.Server.Api;
+using Hoeyer.OpcUa.TestEntities.Models;
 
-namespace Playground.Models.Loaders;
+namespace Hoeyer.OpcUa.TestEntities.Loaders;
 
 public class GantryLoaderNumberTwo : IEntityLoader<GantryNumberTwo>
 {

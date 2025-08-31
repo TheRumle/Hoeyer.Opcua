@@ -15,7 +15,6 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Hoeyer.OpcUa.EndToEndTest;
 
 [ServiceCollectionDataSource]
-[InheritsTests]
 public sealed class ServiceConfigurationTest(IServiceCollection collection, IServiceProvider provider)
 {
     [Test]

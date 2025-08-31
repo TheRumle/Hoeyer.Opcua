@@ -1,8 +1,8 @@
 ﻿using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Client.Application.Subscriptions;
 using Hoeyer.OpcUa.Server.Api;
-using Playground.Models;
-using Playground.Models.Methods;
+using Hoeyer.OpcUa.TestEntities.Methods;
+using Hoeyer.OpcUa.TestEntities.Models;
 
 namespace Playground.Reactants;
 

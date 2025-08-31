@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core;
 
-namespace Hoeyer.OpcUa.TestEntities;
+namespace Hoeyer.OpcUa.TestEntities.Models;
 
 [OpcUaEntity]
 public sealed record AllPropertyTypesEntity
@@ -35,7 +35,7 @@ public sealed record AllPropertyTypesEntity
             IntList = Enumerable.Range(1, _random.Next(1, 10)).Select(e => _random.Next()).ToList(),
             Double = _random.NextDouble() * 1000,
             Float = (float)(_random.NextDouble() * 1000),
-            Bool = _random.Next(2) == 1,
+            Bool = _random.Next(2) == 1
         };
     }
 }

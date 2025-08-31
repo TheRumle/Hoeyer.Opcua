@@ -1,8 +1,7 @@
 ﻿using Hoeyer.Opc.Ua.Test.TUnit;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Test.Fixtures;
-using Hoeyer.OpcUa.TestEntities;
-using Hoeyer.OpcUa.TestEntities.Methods;
+using Hoeyer.OpcUa.TestEntities.Models;
 using JetBrains.Annotations;
 using Opc.Ua;
 

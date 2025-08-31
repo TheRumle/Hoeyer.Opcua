@@ -4,6 +4,7 @@ namespace Hoeyer.OpcUa.Simulation.Api.Services;
 
 public sealed class TimeScaler : ITimeScaler
 {
+    public static readonly ITimeScaler Identity = new IdentityTimeScaler();
     private readonly double _scale;
 
     public TimeScaler(double scale)
