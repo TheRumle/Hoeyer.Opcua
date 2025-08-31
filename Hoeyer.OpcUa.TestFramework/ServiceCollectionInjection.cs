@@ -10,5 +10,5 @@ public abstract class ServiceCollectionInjectionAttribute(IServiceCollection? co
     public override IServiceScope CreateScope(DataGeneratorMetadata dataGeneratorMetadata) =>
         ServiceCollection.BuildServiceProvider().CreateAsyncScope();
 
-    public override object Create(IServiceScope scope, Type type) => scope.ServiceProvider.GetService(type)!;
+    public override object Create(IServiceScope scope, Type type) => scope.ServiceProvider.GetRequiredService(type)!;
 }

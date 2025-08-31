@@ -53,17 +53,14 @@ public static class ServiceCollectionExtension
                 OpcMethodArgumentsAttributeUsageValidator>();
         simulationServices.AddServiceAndImplTransient<ITimeScaler, IdentityTimeScaler>();
 
-        foreach (var original in originalCollection.Where(descriptor => descriptor
-                                                                            .ServiceType.IsGenericType &&
-                                                                        descriptor.ServiceType
-                                                                            .GetGenericTypeDefinition() ==
-                                                                        typeof(IEntityTranslator<>)))
+        var translators = originalCollection.Where(descriptor =>
+            descriptor.ServiceType.IsGenericType
+            && descriptor.ServiceType.GetGenericTypeDefinition() == typeof(IEntityTranslator<>));
+        foreach (var original in translators)
         {
             simulationServices.Add(original);
         }
 
-
-        //Used as marker
         var typeReferences = typeof(SimulationApiAssemblyMarker)
             .GetTypesFromConsumingAssemblies()
             .AsParallel()
