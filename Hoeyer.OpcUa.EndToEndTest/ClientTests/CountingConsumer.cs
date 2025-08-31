@@ -1,6 +1,6 @@
 ﻿using Hoeyer.Common.Messaging.Api;
 
-namespace Hoeyer.OpcUa.EndToEndTest;
+namespace Hoeyer.OpcUa.EndToEndTest.ClientTests;
 
 public sealed class CountingConsumer<T> : IMessageConsumer<T>
 {

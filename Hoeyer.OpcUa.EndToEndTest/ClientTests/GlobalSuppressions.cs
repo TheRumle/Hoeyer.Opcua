@@ -6,3 +6,5 @@
         Justification =
             "This is a test class and method consuming code will not accidentally call wrong method due to similar signatures.")
 ]
+
+namespace Hoeyer.OpcUa.EndToEndTest.ClientTests;

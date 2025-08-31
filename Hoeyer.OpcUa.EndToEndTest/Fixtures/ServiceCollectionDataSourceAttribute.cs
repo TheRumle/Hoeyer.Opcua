@@ -4,12 +4,15 @@ using Hoeyer.OpcUa.Server.Services;
 using Hoeyer.OpcUa.Simulation.ServerAdapter;
 using Hoeyer.OpcUa.Simulation.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.OpcUa.EndToEndTest.Fixtures;
 
 public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourceAttribute<IServiceScope>
 {
     private static readonly IServiceProvider ServiceProvider = CreateSharedServiceProvider();
+
+    public IEnumerable<ServiceDescriptor> Services => CreateServiceCollection();
 
     public override IServiceScope CreateScope(DataGeneratorMetadata dataGeneratorMetadata)
         =>
@@ -29,8 +32,14 @@ public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourc
             {
                 configure.WithTimeScaling(double.Epsilon);
                 configure.AdaptToRuntime<ServerSimulationAdapter>();
-            });
+            })
+            .Collection.AddLogging(e => e.AddSimpleConsole());
         fixtureAttribute.ServiceCollection.AddSingleton(fixtureAttribute.ServiceCollection);
+        fixtureAttribute.ServiceCollection.AddScoped<IServiceProvider>(p => p);
         return fixtureAttribute.ServiceCollection;
     }
+
+    public static implicit operator List<ServiceDescriptor>(
+        ServiceCollectionDataSourceAttribute servicesServerFixtureAttribute) =>
+        servicesServerFixtureAttribute.Services.ToList();
 }

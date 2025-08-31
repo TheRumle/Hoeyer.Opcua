@@ -9,6 +9,7 @@ public abstract class ServiceInjectionTest(
 {
     private readonly IServiceScope _asyncScope = collection.BuildServiceProvider().CreateScope();
     private readonly IServiceProvider _provider = collection.BuildServiceProvider();
+    protected IServiceCollection Collection => collection;
 
     public IEnumerable<ServiceDescriptor> TransientServices() =>
         GetMatchingDescriptors(MatchersWithLifetime(ServiceLifetime.Transient));

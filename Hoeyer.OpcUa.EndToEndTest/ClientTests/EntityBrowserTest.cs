@@ -8,7 +8,7 @@ using Hoeyer.OpcUa.TestEntities;
 using JetBrains.Annotations;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.EndToEndTest;
+namespace Hoeyer.OpcUa.EndToEndTest.ClientTests;
 
 [TestSubject(typeof(IEntityBrowser<>))]
 [TestSubject(typeof(INodeReader))]

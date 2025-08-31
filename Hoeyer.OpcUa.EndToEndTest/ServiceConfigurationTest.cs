@@ -1,11 +1,17 @@
-﻿using Hoeyer.Opc.Ua.Test.TUnit.DependencyInjection.ServiceDescriptors;
+﻿using Hoeyer.Common.Messaging.Api;
+using Hoeyer.Common.Messaging.Subscriptions;
+using Hoeyer.Opc.Ua.Test.TUnit;
+using Hoeyer.Opc.Ua.Test.TUnit.DependencyInjection.ServiceDescriptors;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
+using Hoeyer.OpcUa.Simulation.Api.Configuration;
+using Hoeyer.OpcUa.Simulation.Api.Execution;
 using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
+using Hoeyer.OpcUa.Simulation.Execution;
 using Hoeyer.OpcUa.Simulation.ServerAdapter;
 using Hoeyer.OpcUa.Simulation.Services;
 using Hoeyer.OpcUa.TestEntities.Methods;
@@ -14,29 +20,52 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.EndToEndTest;
 
-[ClassDataSource<OpcFullSetupWithBackgroundServerFixtureAttribute>]
-public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFixtureAttribute fixture)
+[ServiceCollectionDataSource]
+public sealed class ServiceConfigurationTest : ServiceInjectionTest
 {
-    private readonly IEnumerable<ServiceDescriptor> _descriptors = fixture.Services;
+    private readonly IServiceProvider _provider;
+
+    public ServiceConfigurationTest(IServiceCollection collection, IServiceProvider provider) : base(collection,
+        TestData)
+    {
+        _provider = provider;
+    }
+
+    public static IEnumerable<IPartialServiceMatcher> TestData =>
+    [
+        new GenericMatcher(typeof(ISubscriptionManager<>), ServiceLifetime.Singleton),
+        new GenericMatcher(typeof(IMessageSubscriptionFactory<>), ServiceLifetime.Singleton),
+        new GenericMatcher(typeof(ISimulationBuilderFactory<,>), ServiceLifetime.Singleton),
+        new GenericMatcher(typeof(ISimulationBuilderFactory<,,>), ServiceLifetime.Singleton),
+        new ConcreteServiceWithGenericImplMatcher<ISimulationStepValidator>(
+            typeof(ReturnValueOrderValidator<,,>), ServiceLifetime.Transient),
+        new GenericMatcher(typeof(ISimulationExecutor<,,>), ServiceLifetime.Transient),
+        new GenericMatcher(typeof(ISimulationExecutor<,>), ServiceLifetime.Transient),
+        new GenericMatcher(typeof(ISimulationOrchestrator<,,>), ServiceLifetime.Singleton),
+        new GenericMatcher(typeof(ISimulationOrchestrator<,>), ServiceLifetime.Singleton),
+        new GenericMatcher(typeof(ISimulationProcessorPipeline<,,>), ServiceLifetime.Singleton),
+        new GenericMatcher(typeof(ISimulationProcessorPipeline<,>), ServiceLifetime.Singleton)
+    ];
+
 
     [Test]
     [TestSubject(typeof(IEntityBrowser<>))]
     [DisplayName("Entity browser is registered per entity")]
     public async Task EntityBrowser_IsRegistered()
-        => await AssertNumberEntitiesMatchesNumberServices(fixture.Services, typeof(IEntityBrowser<>));
+        => await AssertNumberEntitiesMatchesNumberServices(Collection, typeof(IEntityBrowser<>));
 
     [Test]
     [TestSubject(typeof(IEntityTranslator<>))]
     [DisplayName("Entity translator is registered per entity")]
     public async Task EntityTranslator_IsRegistered()
-        => await AssertNumberEntitiesMatchesNumberServices(fixture.Services, typeof(IEntityTranslator<>));
+        => await AssertNumberEntitiesMatchesNumberServices(Collection, typeof(IEntityTranslator<>));
 
 
     [Test]
     [TestSubject(typeof(IManagedEntityNodeSingletonFactory<>))]
     [DisplayName("Managed entity node singleton factory is registered per entity")]
     public async Task IManagedEntityNodeSingletonFactory_IsRegistered()
-        => await AssertNumberEntitiesMatchesNumberServices(fixture.Services,
+        => await AssertNumberEntitiesMatchesNumberServices(Collection,
             typeof(IManagedEntityNodeSingletonFactory<>));
 
 
@@ -44,7 +73,7 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     [TestSubject(typeof(IEntitySubscriptionManager<>))]
     [DisplayName("Entity monitor (subscription manager) is registered per entity")]
     public async Task EntityMonitor_IsRegistered()
-        => await AssertNumberEntitiesMatchesNumberServices(fixture.Services,
+        => await AssertNumberEntitiesMatchesNumberServices(Collection,
             typeof(IEntitySubscriptionManager<>));
 
 
@@ -54,7 +83,7 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     public async Task EntityMonitor_IsOnlyRegisteredAsSingleton()
     {
         IEnumerable<ServiceDescriptor> services =
-            await AssertNumberEntitiesMatchesNumberServices(_descriptors, typeof(IEntitySubscriptionManager<>));
+            await AssertNumberEntitiesMatchesNumberServices(Collection, typeof(IEntitySubscriptionManager<>));
         await Assert.That(services.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
     }
 
@@ -64,7 +93,7 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     public async Task EntityNodeManagerFactory_Generic_AreSingleton()
     {
         IEnumerable<ServiceDescriptor> services =
-            await AssertNumberEntitiesMatchesNumberServices(_descriptors, typeof(IEntityNodeManagerFactory<>));
+            await AssertNumberEntitiesMatchesNumberServices(Collection, typeof(IEntityNodeManagerFactory<>));
         await Assert.That(services.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
     }
 
@@ -73,16 +102,16 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     [DisplayName("Entity node manager factory (non-generic) is registered as singleton")]
     public async Task EntityNodeManagerFactory_NonGeneric_AreSingleton()
     {
-        var services = await AssertNumberEntitiesMatchesNumberServices(_descriptors, typeof(IEntityNodeManagerFactory));
+        var services = await AssertNumberEntitiesMatchesNumberServices(Collection, typeof(IEntityNodeManagerFactory));
         await Assert.That(services.Where(e => e.Lifetime != ServiceLifetime.Singleton)).IsEmpty();
     }
 
     [Test]
-    [ServiceCollectionDataSource]
     [TestSubject(typeof(IGantryMethods))]
     [DisplayName("Gantry methods interface is registered")]
-    public async Task GantryMethodsInterface_ShouldBeRegistered(IGantryMethods methodInterface)
-        => await Assert.That(methodInterface).IsNotNull().Because(" the interface definition should be wired.");
+    public async Task GantryMethodsInterface_ShouldBeRegistered()
+        => await Assert.That(_provider.GetRequiredService(typeof(IGantryMethods))).IsNotNull()
+            .Because(" the interface definition should be wired.");
 
     [Test]
     [TestSubject(typeof(ServiceCollectionExtension))]
@@ -90,7 +119,6 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     [DisplayName("Simulation server adapters are registered and resolvable")]
     public async Task CanProvide_SimulationServerAdapters_SimulationNoReturn()
     {
-        var collection = fixture.ServiceCollection;
         IPartialServiceMatcher functionMatcher = new DoubleGenericPredicateMatcher(
             typeof(INodeConfigurator<>),
             typeof(FunctionSimulationAdapter<,,>));
@@ -99,8 +127,8 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
             typeof(INodeConfigurator<>),
             typeof(ActionSimulationAdapter<,>));
 
-        var functionAdapters = collection.Where(functionMatcher).ToList();
-        var actionAdapters = collection.Where(actionMatcher).ToList();
+        var functionAdapters = Collection.Where(functionMatcher).ToList();
+        var actionAdapters = Collection.Where(actionMatcher).ToList();
 
         using (Assert.Multiple())
         {
@@ -109,9 +137,9 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
 
             await Assert.That(actionAdapters).IsNotEmpty()
                 .Because(
-                    "At least one SimulationAdapter<T,T> adapter between simulation and service collection should exist");
+                    "At least one SimulationAdapter<T,T> adapter between simulation and service Collection should exist");
 
-            var provider = collection.BuildServiceProvider().CreateAsyncScope().ServiceProvider;
+            var provider = Collection.BuildServiceProvider().CreateAsyncScope().ServiceProvider;
             var adaptersByService = functionAdapters.Union(actionAdapters).GroupBy(s => s.ServiceType);
             foreach (var serviceGroup in adaptersByService.Where(e => e.Count() > 1))
             {
@@ -130,7 +158,7 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
     [DisplayName("Entity state changed notifier is registered as scoped action simulation processor")]
     public async Task EntityStateChangedNotifier_IsRegisteredAs_ScopedIActionSimulationProcessor()
     {
-        var foundDescriptor = _descriptors.FirstOrDefault(e =>
+        var foundDescriptor = Collection.FirstOrDefault(e =>
             e is { Lifetime: ServiceLifetime.Scoped, ImplementationType: not null }
             && e.ImplementationType.GetGenericTypeDefinition() != typeof(EntityStateChangedNotifier<>));
 

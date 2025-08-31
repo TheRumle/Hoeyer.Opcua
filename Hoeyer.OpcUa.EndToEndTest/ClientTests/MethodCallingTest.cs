@@ -2,7 +2,7 @@
 using Hoeyer.OpcUa.EndToEndTest.Generators;
 using Hoeyer.OpcUa.TestEntities.Methods;
 
-namespace Hoeyer.OpcUa.EndToEndTest;
+namespace Hoeyer.OpcUa.EndToEndTest.ClientTests;
 
 [ApplicationFixtureGenerator<IGantryMethods>]
 public class MethodCallingTest(ApplicationFixture<IGantryMethods> appFixture)

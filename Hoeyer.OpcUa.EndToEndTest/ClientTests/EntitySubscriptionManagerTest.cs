@@ -7,7 +7,7 @@ using Hoeyer.OpcUa.TestEntities;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hoeyer.OpcUa.EndToEndTest;
+namespace Hoeyer.OpcUa.EndToEndTest.ClientTests;
 
 [TestSubject(typeof(EntitySubscriptionManager<>))]
 [TestSubject(typeof(CurrentEntityStateChannel<>))]

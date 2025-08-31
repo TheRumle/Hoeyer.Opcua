@@ -9,7 +9,7 @@ using JetBrains.Annotations;
 using Opc.Ua;
 using EntityBrowseException = Hoeyer.OpcUa.Client.Api.Browsing.Exceptions.EntityBrowseException;
 
-namespace Hoeyer.OpcUa.EndToEndTest;
+namespace Hoeyer.OpcUa.EndToEndTest.ClientTests;
 
 [TestSubject(typeof(INodeTreeTraverser))]
 [TestSubject(typeof(ConcurrentBrowse))]
@@ -60,7 +60,8 @@ public abstract class NodeTreeTraverserTest<T>(ApplicationFixture<T> fixture) wh
             => strategy.TraverseFrom(ObjectIds.RootFolder, session, token).Collect());
 
         IEnumerable<NodeId> ids =
-            await traversalResult.ThenAsync(nodeReferences => nodeReferences.Select(n => n.NodeId));
+            await traversalResult.ThenAsync(nodeReferences =>
+                nodeReferences.Select<ReferenceWithId, NodeId>(n => n.NodeId));
 
         List<IGrouping<NodeId, NodeId>> duplicates = ids.GroupBy(x => x).Where(g => g.Count() > 1).ToList();
         using (Assert.Multiple())
