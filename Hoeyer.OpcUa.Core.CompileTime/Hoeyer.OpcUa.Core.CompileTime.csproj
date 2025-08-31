@@ -8,6 +8,7 @@
         <IsRoslynComponent>true</IsRoslynComponent>
         <PackageId>Hoeyer.OpcUa.CompileTime</PackageId>
         <NoWarn>RS2003</NoWarn>
+        <RootNamespace>Hoeyer.OpcUa.Core.CompileTime</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
