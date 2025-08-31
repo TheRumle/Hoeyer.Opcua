@@ -22,7 +22,7 @@ internal sealed class ReturnValueOrderValidator<TState, TArgs, TReturnValue> : I
     private static IEnumerable<SimulationConfigurationException> OnlyOneReturnValue(
         List<ISimulationStep> executionSteps)
     {
-        var earlyReturns = executionSteps.Skip(1)
+        var earlyReturns = executionSteps.SkipLast(1)
             .Select((step, index) => (step, index))
             .Where(e => e.step is ReturnValueStep<TState, TArgs, TReturnValue>)
             .ToList();
