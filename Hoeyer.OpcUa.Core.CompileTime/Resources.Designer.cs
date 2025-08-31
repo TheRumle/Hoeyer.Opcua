@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Hoeyer.OpcUa.CompileTime.Analysis {
+namespace Hoeyer.OpcUa.Core.CompileTime {
     using System;
     
     
@@ -38,7 +38,7 @@ namespace Hoeyer.OpcUa.CompileTime.Analysis {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Hoeyer.OpcUa.CompileTime.Analysis.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Hoeyer.OpcUa.Core.CompileTime.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

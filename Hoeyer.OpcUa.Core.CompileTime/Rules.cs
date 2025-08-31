@@ -1,8 +1,8 @@
-﻿using Hoeyer.OpcUa.CompileTime.Analysis.CodeDomain;
+﻿using Hoeyer.OpcUa.Core.CompileTime.CodeDomain;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.CompileTime.Analysis;
+namespace Hoeyer.OpcUa.Core.CompileTime;
 
 public static class Rules
 {

@@ -16,7 +16,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.Client.Compiletime\Hoeyer.OpcUa.Client.Compiletime.csproj"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.Analysis\Hoeyer.OpcUa.CompileTime.Analysis.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Core.CompileTime\Hoeyer.OpcUa.Core.CompileTime.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core.SourceGeneration\Hoeyer.OpcUa.Core.SourceGeneration.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Application\Hoeyer.OpcUa.Simulation.Application.csproj"/>

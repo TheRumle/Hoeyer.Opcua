@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.CompileTime.Analysis.Extensions;
+namespace Hoeyer.OpcUa.Core.CompileTime.Extensions;
 
 public static class MemberDeclarationSyntaxExtensions
 {
@@ -11,9 +11,12 @@ public static class MemberDeclarationSyntaxExtensions
         string? name = member switch
         {
             PropertyDeclarationSyntax field => field.Identifier.Text,
-            EventFieldDeclarationSyntax field => string.Join(", ", field.Declaration.Variables.Select(e => e.Identifier.Text)),
-            FieldDeclarationSyntax field => string.Join(", ", field.Declaration.Variables.Select(e => e.Identifier.Text)),
-            BaseFieldDeclarationSyntax field => string.Join(", ", field.Declaration.Variables.Select(e => e.Identifier.Text)),
+            EventFieldDeclarationSyntax field => string.Join(", ",
+                field.Declaration.Variables.Select(e => e.Identifier.Text)),
+            FieldDeclarationSyntax field => string.Join(", ",
+                field.Declaration.Variables.Select(e => e.Identifier.Text)),
+            BaseFieldDeclarationSyntax field => string.Join(", ",
+                field.Declaration.Variables.Select(e => e.Identifier.Text)),
             MethodDeclarationSyntax field => field.Identifier.Text,
             ConstructorDeclarationSyntax field => field.Identifier.Text,
             DestructorDeclarationSyntax field => field.Identifier.Text,

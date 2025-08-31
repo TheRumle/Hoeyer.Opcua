@@ -1,7 +1,7 @@
-﻿using Hoeyer.OpcUa.CompileTime.Analysis.CodeDomain;
+﻿using Hoeyer.OpcUa.Core.CompileTime.CodeDomain;
 using Microsoft.CodeAnalysis;
 
-namespace Hoeyer.OpcUa.CompileTime.Analysis.Extensions;
+namespace Hoeyer.OpcUa.Core.CompileTime.Extensions;
 
 public static class SymbolExtensions
 {

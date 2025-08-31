@@ -1,6 +1,6 @@
-﻿using Hoeyer.OpcUa.CompileTime.Analysis;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
+﻿using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
 using Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;
+using Hoeyer.OpcUa.Core.CompileTime;
 using JetBrains.Annotations;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;

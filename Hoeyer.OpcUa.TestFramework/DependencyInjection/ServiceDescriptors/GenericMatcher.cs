@@ -24,7 +24,8 @@ public sealed record GenericMatcher : IPartialServiceMatcher
         }
 
         var lifeTimeEquality = Lifetime == other.Lifetime;
-        var implementationEquality = Implementation == null || Implementation == other.ImplementationType;
+        var implType = other.ImplementationInstance?.GetType() ?? Implementation;
+        var implementationEquality = implType == null || implType == other.ImplementationType;
         var serviceEquality = ServiceType == other.ServiceType ||
                               (other.ServiceType.IsConstructedGenericType &&
                                ServiceType == other.ServiceType.GetGenericTypeDefinition());

@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Hoeyer.OpcUa.CompileTime.Analysis;
+namespace Hoeyer.OpcUa.Core.CompileTime;
 
 public abstract class ConcurrentAnalyzer(ImmutableArray<DiagnosticDescriptor> descriptors) : DiagnosticAnalyzer
 {

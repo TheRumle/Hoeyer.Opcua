@@ -63,6 +63,7 @@ public static class ServiceCollectionExtension
 
         var typeReferences = typeof(SimulationApiAssemblyMarker)
             .GetTypesFromConsumingAssemblies()
+            .Union(typeof(ServiceCollectionExtension).GetTypesFromConsumingAssemblies())
             .AsParallel()
             .ToImmutableHashSet();
 

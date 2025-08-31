@@ -2,14 +2,13 @@
 using System.Composition;
 using System.Linq;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.CompileTime.Analysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.CompileTime.CodeFix;
+namespace Hoeyer.OpcUa.Core.CompileTime.CodeFix;
 
 /// <summary>
 ///     Provides fixes for HOEYERUA0001 - OpcUa entities' properties must be fully public./>

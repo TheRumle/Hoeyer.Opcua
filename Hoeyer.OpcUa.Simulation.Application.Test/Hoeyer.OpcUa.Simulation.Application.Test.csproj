@@ -13,7 +13,6 @@
         <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
         <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Application\Hoeyer.OpcUa.Simulation.Application.csproj"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Api\Hoeyer.OpcUa.Simulation.Api.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.TestFramework\Hoeyer.OpcUa.TestFramework.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.TestEntities\Hoeyer.OpcUa.TestEntities.csproj"/>
     </ItemGroup>
@@ -21,7 +20,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core.SourceGeneration\Hoeyer.OpcUa.Core.SourceGeneration.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.Analysis\Hoeyer.OpcUa.CompileTime.Analysis.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Core.CompileTime\Hoeyer.OpcUa.Core.CompileTime.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Compiletime\Hoeyer.OpcUa.Simulation.Compiletime.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
 

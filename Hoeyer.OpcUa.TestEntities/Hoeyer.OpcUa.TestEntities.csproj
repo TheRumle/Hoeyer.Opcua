@@ -12,12 +12,13 @@
         <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Client\Hoeyer.OpcUa.Client.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Application\Hoeyer.OpcUa.Simulation.Application.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Api\Hoeyer.OpcUa.Simulation.Api.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.ServerAdapter\Hoeyer.OpcUa.Simulation.ServerAdapter.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.OpcUa.CompileTime.Analysis\Hoeyer.OpcUa.CompileTime.Analysis.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Core.CompileTime\Hoeyer.OpcUa.Core.CompileTime.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core.SourceGeneration\Hoeyer.OpcUa.Core.SourceGeneration.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Client.Compiletime\Hoeyer.OpcUa.Client.Compiletime.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Compiletime\Hoeyer.OpcUa.Simulation.Compiletime.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>

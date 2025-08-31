@@ -1,11 +1,11 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
-using Hoeyer.OpcUa.CompileTime.Analysis.Extensions;
+using Hoeyer.OpcUa.Core.CompileTime.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.CompileTime.Analysis;
+namespace Hoeyer.OpcUa.Core.CompileTime;
 
 public static class SupportedTypes
 {

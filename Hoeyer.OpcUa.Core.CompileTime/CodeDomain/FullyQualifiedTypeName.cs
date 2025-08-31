@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.OpcUa.CompileTime.Analysis.CodeDomain;
+﻿namespace Hoeyer.OpcUa.Core.CompileTime.CodeDomain;
 
 public record FullyQualifiedTypeName
 {

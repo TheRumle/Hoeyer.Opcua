@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Hoeyer.Common.Messaging.Api;
+﻿using Hoeyer.Common.Messaging.Api;
 using Hoeyer.Common.Messaging.Subscriptions;
 using Hoeyer.Opc.Ua.Test.TUnit;
 using Hoeyer.Opc.Ua.Test.TUnit.DependencyInjection.ServiceDescriptors;

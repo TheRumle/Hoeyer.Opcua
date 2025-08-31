@@ -1,9 +1,9 @@
 ﻿using System.Linq;
-using Hoeyer.OpcUa.CompileTime.Analysis.CodeDomain;
+using Hoeyer.OpcUa.Core.CompileTime.CodeDomain;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.CompileTime.Analysis.Extensions;
+namespace Hoeyer.OpcUa.Core.CompileTime.Extensions;
 
 public static class TypeDeclarationSyntaxExtensions
 {

@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.CompileTime.Analysis;
+﻿using Hoeyer.OpcUa.Core.CompileTime;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures;
