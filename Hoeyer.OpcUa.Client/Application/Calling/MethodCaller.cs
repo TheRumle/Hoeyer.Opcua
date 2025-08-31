@@ -3,9 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Calling;
-using Hoeyer.OpcUa.Client.Api.Calling.Exception;
+using Hoeyer.OpcUa.Client.Api.Calling.Exceptions;
 using Hoeyer.OpcUa.Client.Api.Connection;
-using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 using Opc.Ua;
 
@@ -18,10 +17,8 @@ public class MethodCaller<TEntity>(IEntityBrowser<TEntity> browser, IEntitySessi
 
     public async Task CallMethod(string methodName,
         CancellationToken token = default,
-        params object[] args)
-    {
+        params object[] args) =>
         await CallNode(methodName, token, args);
-    }
 
     /// <inheritdoc />
     public async Task<T> CallMethod<T>(string methodName, CancellationToken token = default, params object[] args)
@@ -35,12 +32,19 @@ public class MethodCaller<TEntity>(IEntityBrowser<TEntity> browser, IEntitySessi
     private async Task<IList<object>> CallNode(string methodName, CancellationToken token = default,
         params object[] args)
     {
-        EntityNodeStructure entityNode = await browser.GetNodeStructure(token);
-        IReadOnlyDictionary<string, NodeId> methodNodesByName = entityNode.Methods;
-        NodeId methodToCall = methodNodesByName[methodName] ??
-                              throw new NoSuchEntityMethodException(entityNode.EntityName, methodName);
+        try
+        {
+            var entityNode = await browser.GetNodeStructure(token);
+            var methodNodesByName = entityNode.Methods;
+            var methodToCall = methodNodesByName[methodName] ??
+                               throw new NoSuchEntityMethodException(entityNode.EntityName, methodName);
 
-        IEntitySession session = await factory.GetSessionForAsync(SessionClientId, token);
-        return await session.Session.CallAsync(entityNode.NodeId, methodToCall, token, args);
+            var session = await factory.GetSessionForAsync(SessionClientId, token);
+            return await session.Session.CallAsync(entityNode.NodeId, methodToCall, token, args);
+        }
+        catch (ServiceResultException e) when (e.StatusCode == StatusCodes.BadNotImplemented)
+        {
+            throw NoSuchEntityMethodException.NotImplementedOnServer(methodName, e, args);
+        }
     }
 }
