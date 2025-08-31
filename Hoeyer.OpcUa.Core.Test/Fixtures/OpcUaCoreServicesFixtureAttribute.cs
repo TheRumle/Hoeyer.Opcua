@@ -6,11 +6,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.OpcUa.Core.Test.Fixtures;
 
-public class OpcUaCoreServicesFixture
+public class OpcUaCoreServicesFixtureAttribute : DependencyInjectionDataSourceAttribute<IServiceScope>
 {
     public readonly OnGoingOpcEntityServiceRegistration OnGoingOpcEntityServiceRegistration;
 
-    public OpcUaCoreServicesFixture()
+    public OpcUaCoreServicesFixtureAttribute()
     {
         ReservedPort reservedPort = new();
         var services = new ServiceCollection();
@@ -25,4 +25,10 @@ public class OpcUaCoreServicesFixture
     }
 
     public IServiceCollection ServiceCollection => OnGoingOpcEntityServiceRegistration.Collection;
+
+    public override IServiceScope CreateScope(DataGeneratorMetadata dataGeneratorMetadata) =>
+        ServiceCollection.BuildServiceProvider().CreateScope();
+
+    public override object? Create(IServiceScope scope, Type type) =>
+        ServiceCollection.BuildServiceProvider().GetService(type);
 }

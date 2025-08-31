@@ -1,5 +1,4 @@
 ﻿using Hoeyer.OpcUa.EndToEndTest.Fixtures;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.EndToEndTest.Generators;
 
@@ -10,7 +9,7 @@ public sealed class ApplicationFixtureGeneratorAttribute<T> : DataSourceGenerato
     protected override IEnumerable<Func<ApplicationFixture<T>>> GenerateDataSources(
         DataGeneratorMetadata dataGeneratorMetadata)
     {
-        IServiceCollection allServices = new OpcFullSetupWithBackgroundServerFixture().ServiceCollection;
+        var allServices = new OpcFullSetupWithBackgroundServerFixtureAttribute().ServiceCollection;
         var serviceMatches = new FilteredCollection(allServices, typeof(T))
             .Descriptors
             .DistinctBy(e => e.ImplementationType)
@@ -18,7 +17,8 @@ public sealed class ApplicationFixtureGeneratorAttribute<T> : DataSourceGenerato
         if (serviceMatches.Count == 0) throw new ArgumentException("There were no services to test!");
         foreach (var service in serviceMatches)
         {
-            var f = new ApplicationFixture<T>(service, new OpcFullSetupWithBackgroundServerFixture().ServiceCollection);
+            var f = new ApplicationFixture<T>(service,
+                new OpcFullSetupWithBackgroundServerFixtureAttribute().ServiceCollection);
             yield return () => f;
         }
     }

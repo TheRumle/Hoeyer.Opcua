@@ -21,8 +21,8 @@ public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourc
 
     private static IServiceCollection CreateServiceCollection()
     {
-        OpcUaCoreServicesFixture fixture = new();
-        fixture.OnGoingOpcEntityServiceRegistration
+        OpcUaCoreServicesFixtureAttribute fixtureAttribute = new();
+        fixtureAttribute.OnGoingOpcEntityServiceRegistration
             .WithOpcUaClientServices()
             .WithOpcUaServer()
             .WithOpcUaSimulationServices(configure =>
@@ -30,7 +30,7 @@ public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourc
                 configure.WithTimeScaling(double.Epsilon);
                 configure.AdaptToRuntime<ServerSimulationAdapter>();
             });
-        fixture.ServiceCollection.AddSingleton(fixture.ServiceCollection);
-        return fixture.ServiceCollection;
+        fixtureAttribute.ServiceCollection.AddSingleton(fixtureAttribute.ServiceCollection);
+        return fixtureAttribute.ServiceCollection;
     }
 }

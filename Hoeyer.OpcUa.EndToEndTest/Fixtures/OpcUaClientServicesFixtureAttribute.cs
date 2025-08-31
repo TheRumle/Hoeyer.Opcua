@@ -3,9 +3,9 @@ using Hoeyer.OpcUa.Core.Test.Fixtures;
 
 namespace Hoeyer.OpcUa.EndToEndTest.Fixtures;
 
-public class OpcUaClientServicesFixture : OpcUaCoreServicesFixture
+public class OpcUaClientServicesFixtureAttribute : OpcUaCoreServicesFixtureAttribute
 {
-    public OpcUaClientServicesFixture()
+    public OpcUaClientServicesFixtureAttribute()
     {
         OnGoingOpcEntityServiceRegistration.WithOpcUaClientServices();
     }

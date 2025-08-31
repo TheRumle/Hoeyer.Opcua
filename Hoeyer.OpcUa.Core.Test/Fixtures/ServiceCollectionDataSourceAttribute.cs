@@ -15,7 +15,7 @@ public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourc
 
     private static IServiceCollection CreateServiceCollection()
     {
-        OpcUaCoreServicesFixture fixture = new();
-        return fixture.ServiceCollection;
+        OpcUaCoreServicesFixtureAttribute fixtureAttribute = new();
+        return fixtureAttribute.ServiceCollection;
     }
 }

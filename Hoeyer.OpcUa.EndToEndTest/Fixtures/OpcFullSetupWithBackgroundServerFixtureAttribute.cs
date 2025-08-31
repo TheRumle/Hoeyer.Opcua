@@ -8,9 +8,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.OpcUa.EndToEndTest.Fixtures;
 
-public class OpcFullSetupWithBackgroundServerFixture : OpcUaCoreServicesFixture
+public sealed class OpcFullSetupWithBackgroundServerFixtureAttribute : OpcUaCoreServicesFixtureAttribute
 {
-    public OpcFullSetupWithBackgroundServerFixture()
+    public OpcFullSetupWithBackgroundServerFixtureAttribute()
     {
         OnGoingOpcEntityServiceRegistration
             .WithOpcUaClientServices()
@@ -24,8 +24,9 @@ public class OpcFullSetupWithBackgroundServerFixture : OpcUaCoreServicesFixture
             .Collection.AddLogging(e => e.AddSimpleConsole());
     }
 
-    public virtual IEnumerable<ServiceDescriptor> Services => ServiceCollection;
+    public IEnumerable<ServiceDescriptor> Services => ServiceCollection;
 
     public static implicit operator List<ServiceDescriptor>(
-        OpcFullSetupWithBackgroundServerFixture servicesServerFixture) => servicesServerFixture.Services.ToList();
+        OpcFullSetupWithBackgroundServerFixtureAttribute servicesServerFixtureAttribute) =>
+        servicesServerFixtureAttribute.Services.ToList();
 }

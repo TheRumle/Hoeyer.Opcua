@@ -33,9 +33,9 @@ public sealed record DoubleGenericPredicateMatcher : IPartialServiceMatcher
             throw new ArgumentNullException(nameof(genericService) + " must be a generic type");
         }
 
-        Implementation = genericService.IsConstructedGenericType
-            ? genericService.GetGenericTypeDefinition()
-            : genericService;
+        Implementation = genericImplementation.IsConstructedGenericType
+            ? genericImplementation.GetGenericTypeDefinition()
+            : genericImplementation;
     }
 
     public Type ServiceType { get; init; }
@@ -53,7 +53,8 @@ public sealed record DoubleGenericPredicateMatcher : IPartialServiceMatcher
             return false;
         }
 
-        if (other.ImplementationType is { IsGenericType: false })
+        var otherImplType = other.ImplementationType ?? other.ImplementationInstance?.GetType();
+        if (otherImplType is { IsGenericType: false })
         {
             return false;
         }
@@ -64,16 +65,16 @@ public sealed record DoubleGenericPredicateMatcher : IPartialServiceMatcher
         }
 
         var exactImplMatch =
-            (other.ImplementationType is { IsConstructedGenericType: true } &&
-             other.ImplementationType.GetGenericTypeDefinition() == Implementation) ||
-            (other.ImplementationType is { IsGenericTypeDefinition: true } &&
-             other.ImplementationType == Implementation);
+            (otherImplType is { IsConstructedGenericType: true } &&
+             otherImplType.GetGenericTypeDefinition() == Implementation) ||
+            (otherImplType is { IsGenericTypeDefinition: true } &&
+             otherImplType == Implementation);
 
         var exactServiceMatch =
-            (other.ImplementationType is { IsConstructedGenericType: true } &&
-             other.ImplementationType.GetGenericTypeDefinition() == Implementation) ||
-            (other.ImplementationType is { IsGenericTypeDefinition: true } &&
-             other.ImplementationType == Implementation);
+            (other.ServiceType is { IsConstructedGenericType: true } &&
+             other.ServiceType.GetGenericTypeDefinition() == ServiceType) ||
+            (other.ServiceType is { IsGenericTypeDefinition: true } &&
+             other.ServiceType == ServiceType);
 
         return exactServiceMatch && exactImplMatch;
     }

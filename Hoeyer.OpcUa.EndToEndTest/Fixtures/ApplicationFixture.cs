@@ -18,7 +18,7 @@ public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
         _collection = collection;
     }
 
-    public ApplicationFixture() : this(new OpcFullSetupWithBackgroundServerFixture().ServiceCollection)
+    public ApplicationFixture() : this(new OpcFullSetupWithBackgroundServerFixtureAttribute().ServiceCollection)
     {
     }
 
