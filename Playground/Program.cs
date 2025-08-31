@@ -31,7 +31,8 @@ var opcUaConfig = builder.Configuration.GetSection("OpcUa").Get<OpcUaOptions>();
 if (opcUaConfig is null || opcUaConfig.Port == 0)
     throw new ConfigurationErrorsException("OpcUa configuration is missing");
 
-builder.Services.AddOpcUaServerConfiguration(conf => conf
+builder.Services
+    .AddOpcUaServerConfiguration(conf => conf
         .WithServerId("MyServer")
         .WithServerName("My Server")
         .WithOpcTcpHost("localhost", opcUaConfig.Port)

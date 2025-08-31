@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Frozen;
-using System.Linq;
-using System.Reflection;
-using Hoeyer.Common.Extensions.Types;
-using Hoeyer.Common.Reflection;
+﻿using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
 using Hoeyer.OpcUa.Client.Api.Calling;
@@ -16,7 +11,6 @@ using Hoeyer.OpcUa.Client.Application.Calling;
 using Hoeyer.OpcUa.Client.Application.Connection;
 using Hoeyer.OpcUa.Client.Application.Subscriptions;
 using Hoeyer.OpcUa.Client.Application.Writing;
-using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
@@ -26,26 +20,11 @@ namespace Hoeyer.OpcUa.Client.Services;
 
 public static class ClientServices
 {
-    private static readonly FrozenSet<(Type ServiceInterface, Type ClientImplementation)> MethodCallerImplementations
-        = OpcUaEntityTypes.TypesFromReferencingAssemblies
-            .SelectMany(impl => impl
-                .GetInterfaces()
-                .Where(IsOpcEntityMethodInterface)
-                .Select(entityMethodService => (ServiceInterface: entityMethodService, ClientImplementation: impl)))
-            .ToFrozenSet();
-
-    private static bool IsOpcEntityMethodInterface(Type interfaceType)
-    {
-        return interfaceType
-            .GetCustomAttributes()
-            .Any(attr => attr.GetType().IsGenericImplementationOf(typeof(OpcUaEntityMethodsAttribute<>)));
-    }
-
     public static OnGoingOpcEntityServiceRegistration WithOpcUaClientServices(
         this OnGoingOpcEntityServiceRegistration registration)
     {
         IServiceCollection services = registration.Collection;
-        foreach (var (service, impl) in MethodCallerImplementations)
+        foreach (var (service, impl, _) in OpcUaEntityTypes.EntityBehaviours)
         {
             services.AddServiceAndImplSingleton(service, impl);
         }

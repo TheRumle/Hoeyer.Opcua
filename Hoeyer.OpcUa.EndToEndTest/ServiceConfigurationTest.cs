@@ -27,7 +27,9 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
 
 
     [Test]
-    public async Task EntityInitializer_IsRegistered()
+    [DisplayName(nameof(IManagedEntityNodeSingletonFactory<object>) + " is registered per entity")]
+    [ServiceCollectionDataSource]
+    public async Task IManagedEntityNodeSingletonFactory_IsRegistered()
         => await AssertNumberEntitiesMatchesNumberServices(serverFixture.Services,
             typeof(IManagedEntityNodeSingletonFactory<>));
 
@@ -75,11 +77,11 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
         => await Assert.That(methodInterface).IsNotNull().Because(" the interface definition should be wired.");
 
     [Test]
-    [ServiceCollectionDataSource]
     [TestSubject(typeof(ServiceCollectionExtension))]
     [TestSubject(typeof(ServerSimulationAdapter))]
-    public async Task CanProvide_SimulationServerAdapters_SimulationNoReturn(IServiceCollection collection)
+    public async Task CanProvide_SimulationServerAdapters_SimulationNoReturn()
     {
+        var collection = serverFixture.ServiceCollection;
         IPartialServiceMatcher functionMatcher = new DoubleGenericPredicateMatcher(
             typeof(INodeConfigurator<>),
             typeof(FunctionSimulationAdapter<,,>));
@@ -94,7 +96,7 @@ public sealed class ServiceConfigurationTest(OpcFullSetupWithBackgroundServerFix
         using (Assert.Multiple())
         {
             await Assert.That(functionAdapters).IsNotEmpty()
-                .Because("At least one function adapter between simulation and service collection should exist");
+                .Because("At least one " + "FunctionSimulationAdapter<T,T,T>" + " should be registered");
 
             await Assert.That(actionAdapters).IsNotEmpty()
                 .Because("At least one action adapter between simulation and service collection should exist");

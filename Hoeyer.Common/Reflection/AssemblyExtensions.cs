@@ -34,8 +34,8 @@ public static class AssemblyExtensions
             {
                 try
                 {
-                    if (a.GetReferencedAssemblies()
-                        .Any(r => r.FullName == marker.Assembly.FullName))
+                    var referenced = a.GetReferencedAssemblies();
+                    if (referenced is not null && referenced.Any(r => r.FullName == marker.Assembly.FullName))
                     {
                         return a.GetTypes();
                     }
@@ -75,29 +75,6 @@ public static class AssemblyExtensions
         }
 
         return false;
-    }
-
-    public static Type? GetAnnotationInstance(this Type type, Type annotation)
-    {
-        if (!typeof(Attribute).IsAssignableFrom(annotation))
-            throw new ArgumentException(annotation.FullName + " is not an Attribute");
-        if (type == null) throw new ArgumentNullException(nameof(type));
-
-        foreach (Type attributeType in type.GetCustomAttributes().Select(e => e.GetType()))
-        {
-            //exactly the same type
-            if (attributeType.IsAssignableFrom(annotation)) return attributeType;
-
-            //input is generic definition - the attribute must be of that type
-            if (annotation.IsGenericTypeDefinition
-                && attributeType.IsGenericType && attributeType.GetGenericTypeDefinition() == annotation)
-                return attributeType;
-
-            //input is instantiated generic - all args match
-            if (HasSameGenericArgs(annotation, attributeType)) return attributeType;
-        }
-
-        return null;
     }
 
     private static bool HasSameGenericArgs(Type annotation, Type attributeType)

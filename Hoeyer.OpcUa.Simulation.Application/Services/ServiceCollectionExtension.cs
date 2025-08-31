@@ -9,6 +9,7 @@ using Hoeyer.Common.Messaging.Api;
 using Hoeyer.Common.Messaging.Subscriptions;
 using Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 using Hoeyer.Common.Reflection;
+using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Simulation.Api;
@@ -51,6 +52,15 @@ public static class ServiceCollectionExtension
             .AddServiceAndImplTransient<IOpcMethodArgumentsAttributeUsageValidator,
                 OpcMethodArgumentsAttributeUsageValidator>();
         simulationServices.AddServiceAndImplTransient<ITimeScaler, IdentityTimeScaler>();
+
+        foreach (var original in originalCollection.Where(descriptor => descriptor
+                                                                            .ServiceType.IsGenericType &&
+                                                                        descriptor.ServiceType
+                                                                            .GetGenericTypeDefinition() ==
+                                                                        typeof(IEntityTranslator<>)))
+        {
+            simulationServices.Add(original);
+        }
 
 
         //Used as marker

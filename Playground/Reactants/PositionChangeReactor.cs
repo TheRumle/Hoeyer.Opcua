@@ -39,8 +39,8 @@ public class PositionChangeReactor(
                     Position.OverHere => Position.OnTheMoon,
                     Position.OnTheMoon => Position.SanDiego,
                     Position.SanDiego => Position.Mexico,
-                    Position.Mexico => Position.Aalborg,
-                    Position.Aalborg => Position.TheSecretUndergroundLab,
+                    Position.Mexico => Position.Submarine,
+                    Position.Submarine => Position.TheSecretUndergroundLab,
                     Position.TheSecretUndergroundLab => Position.OverThere,
                     var _ => throw new ArgumentOutOfRangeException(newPosition + " is not handled.")
                 };

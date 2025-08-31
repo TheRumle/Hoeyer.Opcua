@@ -15,15 +15,34 @@ public static class ServiceCollectionExtensions
 {
     private static readonly Type NonGenericTranslatorInterface = typeof(IEntityTranslator<>);
 
-    public static readonly FrozenSet<(Type Service, Type Impl)> TranslatorImplementations
-        = OpcUaEntityTypes.TypesFromReferencingAssemblies
+    public static readonly FrozenSet<(Type Service, Type Impl)> TranslatorImplementations =
+        OpcUaEntityTypes.TypesFromReferencingAssemblies
             .Where(type => type is { IsInterface: false, IsAbstract: false, IsGenericTypeDefinition: false })
-            .Select(type => (
-                Services: type.GetInterfaces()
-                    .FirstOrDefault(@interface => @interface.IsGenericImplementationOf(NonGenericTranslatorInterface)),
-                Impl: type))
+            .Select(ConstructServiceImplTuple)
             .Where(e => e.Services is not null)
             .ToFrozenSet();
+
+    public static FrozenSet<(Type Service, Type Impl)> TranslatorImplementationsUsingMarker(this Type marker) =>
+        OpcUaEntityTypes.TypesFromReferencingAssembliesUsingMarker(marker)
+            .Where(type => type is { IsInterface: false, IsAbstract: false, IsGenericTypeDefinition: false })
+            .Select(ConstructServiceImplTuple)
+            .Where(e => e.Services is not null)
+            .ToFrozenSet();
+
+    private static (Type Services, Type Impl) ConstructServiceImplTuple(Type type)
+    {
+        try
+        {
+            return (
+                Services: type.GetInterfaces()
+                    .FirstOrDefault(@interface => @interface.IsGenericImplementationOf(NonGenericTranslatorInterface)),
+                Impl: type);
+        }
+        catch (Exception e)
+        {
+            throw new InvalidOperationException("constructing tuple for type " + type.FullName + " threw exception");
+        }
+    }
 
 
     public static OnGoingOpcEntityServiceRegistration AddOpcUaServerConfiguration(this IServiceCollection services,
@@ -34,9 +53,12 @@ public static class ServiceCollectionExtensions
         return new OnGoingOpcEntityServiceRegistration(services);
     }
 
-    public static IServiceCollection WithEntityServices(this IServiceCollection services)
+    public static IServiceCollection WithEntityServices(this IServiceCollection services) =>
+        services.WithEntityServices(typeof(ServiceCollectionExtensions));
+
+    public static IServiceCollection WithEntityServices(this IServiceCollection services, Type marker)
     {
-        foreach (var (service, impl) in TranslatorImplementations)
+        foreach (var (service, impl) in TranslatorImplementationsUsingMarker(marker))
         {
             services.AddServiceAndImplSingleton(service, impl);
         }

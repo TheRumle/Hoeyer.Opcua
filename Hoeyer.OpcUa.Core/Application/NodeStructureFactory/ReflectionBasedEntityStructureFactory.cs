@@ -92,8 +92,8 @@ public class ReflectionBasedEntityStructureFactory<T> : IEntityNodeStructureFact
     {
         return OpcUaEntityTypes
             .EntityBehaviours
-            .Where(behaviourService => behaviourService.entity == entityType)
-            .SelectMany(behaviourService => behaviourService.service
+            .Where(behaviourService => behaviourService.Entity == entityType)
+            .SelectMany(behaviourService => behaviourService.ServiceInterface
                 .GetMembers()
                 .OfType<MethodInfo>())
             .Select(method => new OpcMethodTypeInfo(

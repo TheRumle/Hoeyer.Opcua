@@ -30,13 +30,6 @@ internal sealed class OpcEntityServer(
     public int a;
     public DomainMasterNodeManager DomainManager { get; } = null!;
 
-    /// <inheritdoc />
-    protected override void OnServerStarted(IServerInternal server)
-    {
-        base.OnServerStarted(server);
-    }
-
-
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server,
         ApplicationConfiguration configuration)
     {

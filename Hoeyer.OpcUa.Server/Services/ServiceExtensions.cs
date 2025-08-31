@@ -60,8 +60,9 @@ public static class ServiceExtensions
 
     public static void AddServices<TEntity>(IServiceCollection collection)
     {
-        collection.AddServiceAndImplSingleton<IManagedEntityNodeSingletonFactory<TEntity>>(
-            typeof(ManagedEntityNodeSingletonFactory<TEntity>));
+        collection
+            .AddSingleton<IManagedEntityNodeSingletonFactory<TEntity>, ManagedEntityNodeSingletonFactory<TEntity>>();
+
         collection
             .AddServiceAndImplSingleton<IEntityNodeManagerFactory<TEntity>,
                 EntityNodeManagerSingletonFactory<TEntity>>();

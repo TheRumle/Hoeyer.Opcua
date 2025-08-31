@@ -7,6 +7,6 @@ public enum Position
     OnTheMoon,
     SanDiego,
     Mexico,
-    Aalborg,
+    Submarine,
     TheSecretUndergroundLab
 }
