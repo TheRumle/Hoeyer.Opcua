@@ -30,7 +30,7 @@ if (opcUaConfig is null || opcUaConfig.Port == 0)
     throw new ConfigurationErrorsException("OpcUa configuration is missing");
 
 builder.Services
-    .AddTestEntityServices(
+    .AddRunningTestEntityServices(
         serverSetup => serverSetup
             .WithServerId("MyServer")
             .WithServerName("My Server")
