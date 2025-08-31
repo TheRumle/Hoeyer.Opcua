@@ -12,6 +12,25 @@ namespace Hoeyer.OpcUa.TestEntities;
 
 public static class ServiceConfiguration
 {
+    public static IServiceCollection AddRunningTestEntityServices(
+        this IServiceCollection collection, Func<IEntityServerConfigurationBuilder, IOpcUaEntityServerInfo> serverSetup,
+        Action<SimulationServicesConfig>? simulationSetup = null)
+    {
+        var simSetup = simulationSetup ?? (configure =>
+        {
+            configure.WithTimeScaling(double.Epsilon);
+            configure.AdaptToRuntime<ServerSimulationAdapter>();
+        });
+
+        collection.AddOpcUaServerConfiguration(serverSetup)
+            .WithEntityServices()
+            .WithOpcUaClientServices()
+            .WithOpcUaSimulationServices(simSetup)
+            .WithOpcUaServerAsBackgroundService()
+            .Collection.AddLogging(e => e.AddSimpleConsole());
+        return collection;
+    }
+
     public static IServiceCollection AddTestEntityServices(
         this IServiceCollection collection, Func<IEntityServerConfigurationBuilder, IOpcUaEntityServerInfo> serverSetup,
         Action<SimulationServicesConfig>? simulationSetup = null)
@@ -27,7 +46,6 @@ public static class ServiceConfiguration
             .WithOpcUaClientServices()
             .WithOpcUaServer()
             .WithOpcUaSimulationServices(simSetup)
-            .WithOpcUaServerAsBackgroundService()
             .Collection.AddLogging(e => e.AddSimpleConsole());
         return collection;
     }

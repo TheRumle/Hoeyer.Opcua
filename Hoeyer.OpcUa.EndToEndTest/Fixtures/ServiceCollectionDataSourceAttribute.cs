@@ -1,8 +1,4 @@
-﻿using Hoeyer.OpcUa.Client.Services;
-using Hoeyer.OpcUa.Core.Test.Fixtures;
-using Hoeyer.OpcUa.Server.Services;
-using Hoeyer.OpcUa.Simulation.ServerAdapter;
-using Hoeyer.OpcUa.Simulation.Services;
+﻿using Hoeyer.OpcUa.TestEntities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -15,8 +11,7 @@ public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourc
     public IEnumerable<ServiceDescriptor> Services => CreateServiceCollection();
 
     public override IServiceScope CreateScope(DataGeneratorMetadata dataGeneratorMetadata)
-        =>
-            ServiceProvider.CreateAsyncScope();
+        => ServiceProvider.CreateAsyncScope();
 
     public override object Create(IServiceScope scope, Type type) => scope.ServiceProvider.GetService(type)!;
 
@@ -24,21 +19,19 @@ public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourc
 
     private static IServiceCollection CreateServiceCollection()
     {
-        OpcUaCoreServicesFixtureAttribute fixtureAttribute = new();
-        fixtureAttribute.OnGoingOpcEntityServiceRegistration
-            .WithOpcUaClientServices()
-            .WithOpcUaServer()
-            .WithOpcUaSimulationServices(configure =>
-            {
-                configure.WithTimeScaling(double.Epsilon);
-                configure.AdaptToRuntime<ServerSimulationAdapter>();
-            })
-            .Collection.AddLogging(e => e.AddSimpleConsole());
+        var services = new ServiceCollection()
+            .AddTestEntityServices(conf => conf
+                .WithServerId("MyServer")
+                .WithServerName("My Server")
+                .WithHttpsHost("localhost", 5)
+                .WithEndpoints(["opc.tcp://localhost:5"])
+                .Build())
+            .AddLogging(e => e.AddSimpleConsole());
 
 
-        fixtureAttribute.ServiceCollection.AddSingleton(fixtureAttribute.ServiceCollection);
-        fixtureAttribute.ServiceCollection.AddScoped<IServiceProvider>(p => p);
-        return fixtureAttribute.ServiceCollection;
+        services.AddSingleton(services);
+        services.AddScoped<IServiceProvider>(p => p);
+        return services;
     }
 
     public static implicit operator List<ServiceDescriptor>(

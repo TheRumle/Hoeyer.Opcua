@@ -4,25 +4,27 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.EndToEndTest.Fixtures;
 
-public sealed class EndToEndServicesAttribute : DependencyInjectionDataSourceAttribute<IServiceScope>
+public sealed class RunningSimulationServicesAttribute : DependencyInjectionDataSourceAttribute<IServiceScope>
 {
-    public EndToEndServicesAttribute()
+    private readonly ReservedPort _reservedPort;
+
+    public RunningSimulationServicesAttribute()
     {
-        ReservedPort reservedPort = new();
+        _reservedPort = new ReservedPort();
         ServiceCollection = new ServiceCollection()
-            .AddTestEntityServices(conf => conf
+            .AddRunningTestEntityServices(conf => conf
                 .WithServerId("MyServer")
                 .WithServerName("My Server")
-                .WithHttpsHost("localhost", reservedPort.Port)
-                .WithEndpoints([$"opc.tcp://localhost:{reservedPort.Port}"])
+                .WithHttpsHost("localhost", _reservedPort.Port)
+                .WithEndpoints([$"opc.tcp://localhost:{_reservedPort.Port}"])
                 .Build());
     }
 
     public IServiceCollection ServiceCollection { get; }
 
     public static implicit operator List<ServiceDescriptor>(
-        EndToEndServicesAttribute servicesServerFixtureAttribute) =>
-        servicesServerFixtureAttribute.ServiceCollection.ToList();
+        RunningSimulationServicesAttribute servicesAttributeServerFixture) =>
+        servicesAttributeServerFixture.ServiceCollection.ToList();
 
     public override IServiceScope CreateScope(DataGeneratorMetadata dataGeneratorMetadata) =>
         ServiceCollection.BuildServiceProvider().CreateScope();

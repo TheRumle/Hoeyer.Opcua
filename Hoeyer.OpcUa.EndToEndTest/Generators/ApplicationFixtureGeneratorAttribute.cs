@@ -9,7 +9,7 @@ public sealed class ApplicationFixtureGeneratorAttribute<T> : DataSourceGenerato
     protected override IEnumerable<Func<ApplicationFixture<T>>> GenerateDataSources(
         DataGeneratorMetadata dataGeneratorMetadata)
     {
-        var allServices = new EndToEndServicesAttribute().ServiceCollection;
+        var allServices = new RunningSimulationServicesAttribute().ServiceCollection;
         var serviceMatches = new FilteredCollection(allServices, typeof(T))
             .Descriptors
             .DistinctBy(e => e.ImplementationType)
@@ -18,7 +18,7 @@ public sealed class ApplicationFixtureGeneratorAttribute<T> : DataSourceGenerato
 
         foreach (var service in serviceMatches)
         {
-            var f = new ApplicationFixture<T>(service, new EndToEndServicesAttribute().ServiceCollection);
+            var f = new ApplicationFixture<T>(service, new RunningSimulationServicesAttribute().ServiceCollection);
             yield return () => f;
         }
     }
