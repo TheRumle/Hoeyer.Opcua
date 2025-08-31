@@ -37,14 +37,18 @@ public class MethodCaller<TEntity>(IEntityBrowser<TEntity> browser, IEntitySessi
             var entityNode = await browser.GetNodeStructure(token);
             var methodNodesByName = entityNode.Methods;
             var methodToCall = methodNodesByName[methodName] ??
-                               throw new NoSuchEntityMethodException(entityNode.EntityName, methodName);
+                               throw new EntityMethodCallException(entityNode.EntityName, methodName);
 
             var session = await factory.GetSessionForAsync(SessionClientId, token);
             return await session.Session.CallAsync(entityNode.NodeId, methodToCall, token, args);
         }
         catch (ServiceResultException e) when (e.StatusCode == StatusCodes.BadNotImplemented)
         {
-            throw NoSuchEntityMethodException.NotImplementedOnServer(methodName, e, args);
+            throw EntityMethodCallException.NotImplementedOnServer(methodName, e, args);
+        }
+        catch (ServiceResultException e) when (e.StatusCode == StatusCodes.BadInternalError)
+        {
+            throw EntityMethodCallException.InternalServerError(methodName, e);
         }
     }
 }
