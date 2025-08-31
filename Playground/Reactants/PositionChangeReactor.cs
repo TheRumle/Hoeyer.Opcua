@@ -22,9 +22,14 @@ public class PositionChangeReactor(
         var values = Enum.GetValues(typeof(Position));
         var startPosition = (Position)values.GetValue(new Random().Next(values.Length))!;
         await marker;
-        await subs.SubscribeToAllPropertyChanges(currentEntityStateChannel, stoppingToken);
+        await subs.SubscribeToProperty(currentEntityStateChannel, nameof(Gantry.Position), stoppingToken);
+        await gantryMethods.ChangePosition(startPosition); //initialize the whole sha-bang by changing a position
+        await ReactToPositionChanges(stoppingToken);
+    }
+
+    private async Task ReactToPositionChanges(CancellationToken stoppingToken)
+    {
         var reader = currentEntityStateChannel.Reader;
-        await gantryMethods.ChangePosition(startPosition);
         while (await reader.WaitToReadAsync(stoppingToken))
         {
             var message = await reader.ReadAsync(stoppingToken);
