@@ -1,5 +1,7 @@
 ﻿@using System.Collections
 @using System.Reflection
+@typeparam T
+
 @if (Item is null)
 {
     <em>null</em>
@@ -8,7 +10,7 @@ else if (Item is string str)
 {
     <span>@str</span>
 }
-else if (Item is IEnumerable enumerable && Item is not string)
+else if (Item is IEnumerable enumerable && !(Item is string))
 {
     <ul>
         @foreach (var element in enumerable)
@@ -16,38 +18,38 @@ else if (Item is IEnumerable enumerable && Item is not string)
             <li>
                 <ObjectViewer Item="@element"/>
             </li>
-            }
+        }
     </ul>
-    }
+}
 else
 {
     var type = Item.GetType();
 
-    if (.IsPrimitive || type.IsEnum || type == typeof() || type == typeof())
+    if (type.IsPrimitive || type.IsEnum || type == typeof(decimal))
     {
         <span>@Item</span>
-        }
+    }
     else
     {
         <table class="table table-sm table-bordered">
             <tbody>
-            @foreach (prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            @foreach (var prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
                 <tr>
                     <td><strong>@prop.Name</strong></td>
                     <td>
                         @{
                             var value = prop.GetValue(Item);
-                            }
+                        }
                         <ObjectViewer Item="@value"/>
                     </td>
                 </tr>
-                }
+            }
             </tbody>
         </table>
-        }
     }
+}
 
 @code {
-    []object? Item {set; }
-    }
+    [Parameter] public T? Item { get; set; }
+}
