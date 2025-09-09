@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
+using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
 
-public interface IAdaptionContextTranslator<TContext, TEntity, TMethodArgs>
+public interface IAdaptionContextTranslator<TEntity, TMethodArgs>
 {
-    public (TEntity currentState, TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps)
-        CreateSimulationContext(TContext cont);
+    public (TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps)
+        CreateSimulationContext(IList<object> inputArguments, IManagedEntityNode entity);
 }
 
-public interface IAdaptionContextTranslator<in TContext, TEntity, TMethodArgs, TReturn>
+public interface IAdaptionContextTranslator<TEntity, TMethodArgs, TReturn>
 {
-    public (TEntity currentState, TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps)
-        CreateSimulationContext(TContext context);
+    public (TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps) CreateSimulationContext(
+        IList<object> inputArguments, IManagedEntityNode entity);
 }

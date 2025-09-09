@@ -1,7 +1,7 @@
 ﻿using Hoeyer.Opc.Ua.Test.TUnit;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Test.Fixtures;
-using Hoeyer.OpcUa.TestEntities.Models;
+using Hoeyer.OpcUa.EntityModelling.Models;
 using JetBrains.Annotations;
 using Opc.Ua;
 
@@ -50,15 +50,10 @@ public class EntityTranslatorTest
         IEntityNode node = structure.Create(2);
         translator.AssignToNode(new Gantry
         {
-            AAginList =
+            ListValue =
             [
                 "stneriao",
                 "tnserio"
-            ],
-            AList =
-            [
-                "These",
-                " values failed before"
             ],
             IntValue = 21,
             StringValue = "hello",
@@ -69,8 +64,7 @@ public class EntityTranslatorTest
 
         Func<string, object> propertyFor = name => node.PropertyByBrowseName[name].Value;
         using IDisposable assertion = Assert.Multiple();
-        await Assert.That(propertyFor(nameof(Gantry.AAginList))).IsTypeOf<string[]>();
-        await Assert.That(propertyFor(nameof(Gantry.AList))).IsTypeOf<string[]>();
+        await Assert.That(propertyFor(nameof(Gantry.ListValue))).IsTypeOf<string[]>();
     }
 
 

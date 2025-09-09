@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hoeyer.Common.Utilities.Threading;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Simulation.Api.Configuration;
 using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
 
 namespace Hoeyer.OpcUa.Simulation.Configuration;
 
-internal sealed class SimulationBuilder<TEntity, TArguments> : ISimulationBuilder<TEntity, TArguments>
+public class SimulationBuilder<TEntity, TArguments> : ISimulationBuilder<TEntity, TArguments>
 {
     private readonly
         CompositeActionSimulationBuilder<TEntity, TArguments, SimulationBuilder<TEntity, TArguments>>
@@ -16,10 +17,12 @@ internal sealed class SimulationBuilder<TEntity, TArguments> : ISimulationBuilde
 
     private readonly Queue<ISimulationStep> _simulationSteps;
 
-    public SimulationBuilder(IEntityTranslator<TEntity> translator)
+    public SimulationBuilder(IEntityTranslator<TEntity> translator, ILocked<TEntity> lockedEntity)
     {
         _simulationSteps = new Queue<ISimulationStep>();
-        _commonOperations = new(this, translator, _simulationSteps);
+        _commonOperations =
+            new CompositeActionSimulationBuilder<TEntity, TArguments, SimulationBuilder<TEntity, TArguments>>(this,
+                lockedEntity, translator, _simulationSteps);
     }
 
     public IEnumerable<ISimulationStep> Build() => _simulationSteps.ToArray();
@@ -37,20 +40,26 @@ internal sealed class SimulationBuilder<TEntity, TArguments> : ISimulationBuilde
     public ISimulationBuilder<TEntity, TArguments> Wait(TimeSpan timeSpan) => _commonOperations.Wait(timeSpan);
 }
 
-internal sealed class
-    SimulationBuilder<TEntity, TArguments, TReturn> : ISimulationBuilder<TEntity, TArguments, TReturn>
+public sealed class SimulationBuilder<TEntity, TArguments, TReturn>
+    : SimulationBuilder<TEntity, TArguments>, ISimulationBuilder<TEntity, TArguments, TReturn>
 {
     private readonly CompositeActionSimulationBuilder<TEntity, TArguments,
             ISimulationBuilder<TEntity, TArguments, TReturn>>
         _commonOperations;
 
+    private readonly ILocked<TEntity> _lockedEntity;
+
     private readonly Queue<ISimulationStep> _simulationSteps = new();
     private readonly IEntityTranslator<TEntity> _translator;
 
-    public SimulationBuilder(IEntityTranslator<TEntity> translator)
+    public SimulationBuilder(IEntityTranslator<TEntity> translator, ILocked<TEntity> lockedEntity) : base(translator,
+        lockedEntity)
     {
-        this._translator = translator;
-        _commonOperations = new(this, translator, _simulationSteps);
+        _lockedEntity = lockedEntity;
+        _translator = translator;
+        _commonOperations =
+            new CompositeActionSimulationBuilder<TEntity, TArguments, ISimulationBuilder<TEntity, TArguments, TReturn>>(
+                this, lockedEntity, translator, _simulationSteps);
     }
 
 
@@ -58,7 +67,7 @@ internal sealed class
         Func<SimulationStepContext<TEntity, TArguments>, TReturn> returnValueFactory)
     {
         _simulationSteps.Enqueue(
-            new ReturnValueStep<TEntity, TArguments, TReturn>(returnValueFactory, _translator.Copy));
+            new ReturnValueStep<TEntity, TArguments, TReturn>(_lockedEntity, returnValueFactory, _translator.Copy));
         return _simulationSteps.ToArray();
     }
 

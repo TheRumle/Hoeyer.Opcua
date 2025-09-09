@@ -6,6 +6,7 @@ using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Extensions.Logging;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
+using Hoeyer.OpcUa.Server.Api.Exceptions;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Extensions;
@@ -29,6 +30,28 @@ internal sealed class OpcEntityServer(
 
     public int a;
     public DomainMasterNodeManager DomainManager { get; } = null!;
+
+    /// <inheritdoc />
+    public override ResponseHeader Call(RequestHeader requestHeader, CallMethodRequestCollection methodsToCall,
+        out CallMethodResultCollection results, out DiagnosticInfoCollection diagnosticInfos)
+    {
+        try
+        {
+            var response = base.Call(requestHeader, methodsToCall, out results, out diagnosticInfos);
+            var errs = diagnosticInfos?.Any(e => StatusCode.IsBad(e.InnerStatusCode));
+            if (errs is true)
+            {
+                logger.LogError("Errors occured while calling methods: {Errors}", string.Join(", ", errs));
+            }
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Errors occured while calling methods");
+            throw new MethodCallFailureException(ex);
+        }
+    }
 
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server,
         ApplicationConfiguration configuration)

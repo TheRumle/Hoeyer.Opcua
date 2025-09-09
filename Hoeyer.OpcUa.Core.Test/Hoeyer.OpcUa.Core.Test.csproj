@@ -15,7 +15,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.TestFramework\Hoeyer.OpcUa.TestFramework.csproj"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa.TestEntities\Hoeyer.OpcUa.TestEntities.csproj"/>
+        <ProjectReference Include="..\Playground.Modelling\Playground.Modelling.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

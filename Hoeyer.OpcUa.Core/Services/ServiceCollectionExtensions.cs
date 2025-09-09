@@ -159,12 +159,12 @@ public static class ServiceCollectionExtensions
         switch (descriptor)
         {
             case ServiceLifetime.Singleton:
-                collection.AddSingleton(service, impl);
-                collection.AddTransient(impl, impl);
+                collection.AddSingleton(impl, impl);
+                collection.AddSingleton(service, p => p.GetService(impl));
                 break;
             case ServiceLifetime.Scoped:
                 collection.AddScoped(service, impl);
-                collection.AddTransient(impl, impl);
+                collection.AddScoped(impl, impl);
                 break;
             case ServiceLifetime.Transient:
                 collection.AddTransient(service, impl);

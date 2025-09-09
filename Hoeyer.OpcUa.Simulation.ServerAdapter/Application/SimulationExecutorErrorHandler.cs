@@ -18,6 +18,7 @@ internal sealed class SimulationExecutorErrorHandler(ILogger<SimulationExecutorE
 
     private ServiceResult HandleError(Exception exception)
     {
+        errorLogger.LogError(exception, "Error occured during simulation.");
         return exception switch
         {
             AggregateException { InnerExceptions.Count: 1 } aggregate => HandleError(aggregate.InnerException!),

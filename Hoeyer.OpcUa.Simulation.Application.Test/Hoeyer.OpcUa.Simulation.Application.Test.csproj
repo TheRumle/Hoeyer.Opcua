@@ -12,7 +12,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core.Test\Hoeyer.OpcUa.Core.Test.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Client\Hoeyer.OpcUa.Client.csproj"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa.TestEntities\Hoeyer.OpcUa.TestEntities.csproj"/>
+        <ProjectReference Include="..\Playground.Modelling\Playground.Modelling.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Api\Hoeyer.OpcUa.Simulation.Api.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Application\Hoeyer.OpcUa.Simulation.Application.csproj"/>
     </ItemGroup>

@@ -1,5 +1,5 @@
 ﻿using Hoeyer.Opc.Ua.Test.TUnit;
-using Hoeyer.OpcUa.TestEntities;
+using Hoeyer.OpcUa.EntityModelling;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.EndToEndTest.Fixtures;

@@ -3,44 +3,42 @@ using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Simulation.Api.Configuration;
 using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
+using Hoeyer.OpcUa.Simulation.Configuration;
 using Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter;
 
 public sealed class AdaptionContextTranslator<TEntity, TMethodArgs>(
-    IEntityTranslator<TEntity> entityTranslator,
-    ISimulationBuilderFactory<TEntity, TMethodArgs> simulationBuilderFactory,
+    IEntityTranslator<TEntity> translator,
     ISimulation<TEntity, TMethodArgs> simulator,
     IMethodArgumentParser<TMethodArgs> argsParser
-) : IAdaptionContextTranslator<(IList<object>, IManagedEntityNode), TEntity, TMethodArgs>
+) : IAdaptionContextTranslator<TEntity, TMethodArgs>
 {
-    public (TEntity currentState, TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps)
-        CreateSimulationContext((IList<object>, IManagedEntityNode) context)
+    public (TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps) CreateSimulationContext(
+        IList<object> inputArguments, IManagedEntityNode entity)
     {
-        var (inputArguments, managedEntity) = context;
-        var builder = simulationBuilderFactory.CreateSimulationBuilder();
+        var builder =
+            new SimulationBuilder<TEntity, TMethodArgs>(translator, new LockedEntityState<TEntity>(entity, translator));
         var simulationSteps = simulator.ConfigureSimulation(builder);
         var args = argsParser.ParseToArgsStructure(inputArguments);
-        var currentState = managedEntity.Select(entityTranslator.Translate);
-        return (currentState, args, simulationSteps);
+        return (args, simulationSteps);
     }
 }
 
 public sealed class AdaptionContextTranslator<TEntity, TMethodArgs, TReturn>(
-    IEntityTranslator<TEntity> entityTranslator,
-    ISimulationBuilderFactory<TEntity, TMethodArgs, TReturn> simulationBuilderFactory,
+    IEntityTranslator<TEntity> translator,
     ISimulation<TEntity, TMethodArgs, TReturn> simulator,
     IMethodArgumentParser<TMethodArgs> argsParser
-) : IAdaptionContextTranslator<(IList<object>, IManagedEntityNode), TEntity, TMethodArgs, TReturn>
+) : IAdaptionContextTranslator<TEntity, TMethodArgs, TReturn>
 {
-    public (TEntity currentState, TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps)
-        CreateSimulationContext((IList<object>, IManagedEntityNode) context)
+    public (TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps) CreateSimulationContext(
+        IList<object> inputArguments, IManagedEntityNode entity)
     {
-        var (inputArguments, managedEntity) = context;
-        var builder = simulationBuilderFactory.CreateSimulationBuilder();
+        var builder =
+            new SimulationBuilder<TEntity, TMethodArgs, TReturn>(translator,
+                new LockedEntityState<TEntity>(entity, translator));
         var simulationSteps = simulator.ConfigureSimulation(builder);
         var args = argsParser.ParseToArgsStructure(inputArguments);
-        var currentState = managedEntity.Select(entityTranslator.Translate);
-        return (currentState, args, simulationSteps);
+        return (args, simulationSteps);
     }
 }

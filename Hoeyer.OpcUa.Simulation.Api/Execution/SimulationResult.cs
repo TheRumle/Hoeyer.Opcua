@@ -3,7 +3,7 @@ using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
 
 namespace Hoeyer.OpcUa.Simulation.Api.Execution;
 
-public readonly record struct SimulationResult<TState>(
+public record SimulationResult<TState>(
     TState Previous,
     DateTime Time,
     TState Reached,

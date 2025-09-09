@@ -10,11 +10,10 @@ internal class PipelineExecutionLoop<TState, TArgs>(
     ISimulationProcessorPipeline<TState, TArgs> pipeline,
     ISimulationExecutor<TState, TArgs> executor)
 {
-    public async Task ExecutePipelineMainLoop(TState initialState, TArgs inputArguments,
-        IEnumerable<ISimulationStep> simulationSteps)
+    public async Task ExecutePipelineMainLoop(TArgs inputArguments, IEnumerable<ISimulationStep> simulationSteps)
     {
         await pipeline.OnSimulationBegin(inputArguments);
-        await foreach (var step in executor.ExecuteSimulation(initialState, inputArguments, simulationSteps))
+        await foreach (var step in executor.ExecuteSimulation(inputArguments, simulationSteps))
         {
             if (step.Action is ActionType.StateMutation)
             {

@@ -1,7 +1,7 @@
 ﻿using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.EndToEndTest.Generators;
-using Hoeyer.OpcUa.TestEntities.Methods;
-using Hoeyer.OpcUa.TestEntities.Models;
+using Hoeyer.OpcUa.EntityModelling.Methods;
+using Hoeyer.OpcUa.EntityModelling.Models;
 
 namespace Hoeyer.OpcUa.EndToEndTest.ClientTests;
 
@@ -14,6 +14,6 @@ public class MethodCallingTest(ApplicationFixture<IGantryMethods> appFixture)
 
 
     [Test]
-    public async Task<Guid> WhenCalling_TaskWithGuidReturn_DoesNotThrow() =>
-        await appFixture.TestedService.GetCurrentContainerId();
+    public async Task<int> WhenCalling_TaskWithGuidReturn_DoesNotThrow() =>
+        await appFixture.TestedService.PlaceContainer(Position.OnTheMoon);
 }

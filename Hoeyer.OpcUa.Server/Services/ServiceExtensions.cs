@@ -44,7 +44,7 @@ public static class ServiceExtensions
         }
 
         collection.AddServiceAndImplSingleton<IEntityNodeAccessConfigurator, NoAccessRestrictionsConfigurator>();
-        collection.AddSingleton<EntityServerStartedMarker>();
+        collection.AddServiceAndImplSingleton<IEntityServerStartedMarker, EntityServerStartedMarker>();
         collection.AddSingleton<OpcUaEntityServerFactory>();
         collection.AddSingleton<OpcEntityServer>();
         collection.AddSingleton<IStartableEntityServer>(p =>

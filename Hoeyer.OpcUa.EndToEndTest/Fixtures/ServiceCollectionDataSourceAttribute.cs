@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.TestEntities;
+﻿using Hoeyer.OpcUa.EntityModelling;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

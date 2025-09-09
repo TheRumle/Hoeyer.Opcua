@@ -41,7 +41,7 @@ public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
         ServiceProvider = _collection.BuildServiceProvider();
         Scope = ServiceProvider.CreateAsyncScope();
         await Scope.ServiceProvider.GetRequiredService<IStartableEntityServer>().StartAsync();
-        var serverStarted = Scope.ServiceProvider.GetService<EntityServerStartedMarker>()!;
+        var serverStarted = Scope.ServiceProvider.GetService<IEntityServerStartedMarker>()!;
         await serverStarted;
         _isInitialized = true;
     }

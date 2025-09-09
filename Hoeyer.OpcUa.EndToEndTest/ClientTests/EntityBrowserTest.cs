@@ -4,7 +4,7 @@ using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.EndToEndTest.Generators;
-using Hoeyer.OpcUa.TestEntities.Models;
+using Hoeyer.OpcUa.EntityModelling.Models;
 using JetBrains.Annotations;
 using Opc.Ua;
 

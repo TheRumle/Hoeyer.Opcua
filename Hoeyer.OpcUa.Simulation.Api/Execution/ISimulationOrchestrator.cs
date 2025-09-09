@@ -24,12 +24,10 @@ public interface ISimulationOrchestrator<in TState, in TArgs>
     /// <summary>
     /// Executes the 
     /// </summary>
-    /// <param name="initialState">The initial state when the simulation begins</param>
     /// <param name="inputArguments">A container containing the arguments of the simulated action</param>
     /// <param name="simulationSteps">The steps that must be executed before the simulation is finished - <see cref="ISimulationStep"/></param>
     /// <returns></returns>
-    Task ExecuteMethodSimulation(TState initialState, TArgs inputArguments,
-        IEnumerable<ISimulationStep> simulationSteps);
+    Task ExecuteMethodSimulation(TArgs inputArguments, IEnumerable<ISimulationStep> simulationSteps);
 }
 
 /// <summary>
@@ -49,6 +47,5 @@ public interface ISimulationOrchestrator<in TState, in TArgs>
 /// <inheritdoc />
 public interface ISimulationOrchestrator<in TState, in TArgs, TReturn> : ISimulationOrchestrator<TState, TArgs>
 {
-    new Task<TReturn> ExecuteMethodSimulation(TState initialState, TArgs inputArguments,
-        IEnumerable<ISimulationStep> simulationSteps);
+    new Task<TReturn> ExecuteMethodSimulation(TArgs inputArguments, IEnumerable<ISimulationStep> simulationSteps);
 }

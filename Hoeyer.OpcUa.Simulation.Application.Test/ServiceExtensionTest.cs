@@ -2,7 +2,6 @@
 using Hoeyer.Common.Messaging.Subscriptions;
 using Hoeyer.Opc.Ua.Test.TUnit;
 using Hoeyer.Opc.Ua.Test.TUnit.DependencyInjection.ServiceDescriptors;
-using Hoeyer.OpcUa.Simulation.Api.Configuration;
 using Hoeyer.OpcUa.Simulation.Api.Execution;
 using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
 using Hoeyer.OpcUa.Simulation.Execution;
@@ -23,8 +22,6 @@ public sealed class ServiceExtensionTest()
     [
         new GenericMatcher(typeof(ISubscriptionManager<>), ServiceLifetime.Singleton),
         new GenericMatcher(typeof(IMessageSubscriptionFactory<>), ServiceLifetime.Singleton),
-        new GenericMatcher(typeof(ISimulationBuilderFactory<,>), ServiceLifetime.Singleton),
-        new GenericMatcher(typeof(ISimulationBuilderFactory<,,>), ServiceLifetime.Singleton),
         new ConcreteServiceWithGenericImplMatcher<ISimulationStepValidator>(
             typeof(ReturnValueOrderValidator<,,>), ServiceLifetime.Transient),
         new GenericMatcher(typeof(ISimulationExecutor<,,>), ServiceLifetime.Transient),

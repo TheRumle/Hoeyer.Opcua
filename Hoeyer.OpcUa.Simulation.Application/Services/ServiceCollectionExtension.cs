@@ -19,7 +19,6 @@ using Hoeyer.OpcUa.Simulation.Api.Configuration.Exceptions;
 using Hoeyer.OpcUa.Simulation.Api.Execution;
 using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
 using Hoeyer.OpcUa.Simulation.Api.Services;
-using Hoeyer.OpcUa.Simulation.Configuration;
 using Hoeyer.OpcUa.Simulation.Execution;
 using Hoeyer.OpcUa.Simulation.PostProcessing;
 using Microsoft.Extensions.DependencyInjection;
@@ -158,11 +157,6 @@ public static class ServiceCollectionExtension
     {
         foreach (var serviceCollection in collections)
         {
-            serviceCollection.AddScoped<ISimulationBuilder<TEntity, TArgs>>
-                (p => p.GetRequiredService<ISimulationBuilderFactory<TEntity, TArgs>>().CreateSimulationBuilder());
-
-            serviceCollection
-                .AddSingleton<ISimulationBuilderFactory<TEntity, TArgs>, SimulationBuilderFactory<TEntity, TArgs>>();
             serviceCollection.AddTransient(typeof(ISimulation<TEntity, TArgs>), impl);
             serviceCollection.AddTransient(impl, impl);
         }
@@ -173,13 +167,6 @@ public static class ServiceCollectionExtension
     {
         foreach (var serviceCollection in collections)
         {
-            serviceCollection.AddScoped<ISimulationBuilder<TEntity, TArgs, TReturn>>
-            (p => p.GetRequiredService<ISimulationBuilderFactory<TEntity, TArgs, TReturn>>()
-                .CreateSimulationBuilder());
-
-            serviceCollection
-                .AddSingleton<ISimulationBuilderFactory<TEntity, TArgs, TReturn>,
-                    SimulationBuilderFactory<TEntity, TArgs, TReturn>>();
             serviceCollection.AddTransient(typeof(ISimulation<TEntity, TArgs, TReturn>), impl);
             serviceCollection.AddTransient(impl, impl);
         }

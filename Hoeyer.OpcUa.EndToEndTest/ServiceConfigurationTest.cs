@@ -4,11 +4,11 @@ using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
+using Hoeyer.OpcUa.EntityModelling.Methods;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
 using Hoeyer.OpcUa.Simulation.ServerAdapter;
 using Hoeyer.OpcUa.Simulation.Services;
-using Hoeyer.OpcUa.TestEntities.Methods;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -84,17 +84,17 @@ public sealed class ServiceConfigurationTest(IServiceCollection collection, ISer
 
     [Test]
     [TestSubject(typeof(ServiceCollectionExtension))]
-    [TestSubject(typeof(ServerSimulationAdapter))]
+    [TestSubject(typeof(ServerLayerAdapter))]
     [DisplayName("Simulation server adapters are registered and resolvable")]
     public async Task CanProvide_SimulationServerAdapters_SimulationNoReturn()
     {
         IPartialServiceMatcher functionMatcher = new DoubleGenericPredicateMatcher(
             typeof(INodeConfigurator<>),
-            typeof(FunctionSimulationAdapter<,,>));
+            typeof(SimulationNodeConfigurator<,,>));
 
         IPartialServiceMatcher actionMatcher = new DoubleGenericPredicateMatcher(
             typeof(INodeConfigurator<>),
-            typeof(ActionSimulationAdapter<,>));
+            typeof(SimulationNodeConfigurator<,>));
 
         var functionAdapters = collection.Where(functionMatcher).ToList();
         var actionAdapters = collection.Where(actionMatcher).ToList();
@@ -122,7 +122,7 @@ public sealed class ServiceConfigurationTest(IServiceCollection collection, ISer
 
     [Test]
     [TestSubject(typeof(ServiceCollectionExtension))]
-    [TestSubject(typeof(ServerSimulationAdapter))]
+    [TestSubject(typeof(ServerLayerAdapter))]
     [DisplayName("Entity state changed notifier is registered as scoped action simulation processor")]
     public async Task EntityStateChangedNotifier_IsRegisteredAs_ScopedIActionSimulationProcessor()
     {

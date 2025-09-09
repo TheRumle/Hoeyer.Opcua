@@ -1,5 +1,5 @@
 ﻿using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.Server.Api;
+using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Simulation.Api;
 using Hoeyer.OpcUa.Simulation.Api.Configuration;
 using Microsoft.CodeAnalysis;

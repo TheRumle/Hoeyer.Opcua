@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.Common.Reflection;
+using Hoeyer.Common.Utilities.Threading;
+using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
@@ -16,7 +17,40 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter;
 
-public sealed class ServerSimulationAdapter : ILayerAdapter<SimulationServicesConfig>
+public sealed class LockedEntityState<TState>(
+    ILocked<IEntityNode> node,
+    IEntityTranslator<TState> translator) : ILocked<TState>
+{
+    private readonly object _lock = new();
+
+    public void Examine(Action<TState> effect)
+    {
+        node.Examine(e => effect(translator.Translate(e)));
+    }
+
+    public void ChangeState(Action<TState> stateChanges)
+    {
+        lock (_lock)
+        {
+            node.ChangeState(e =>
+            {
+                var state = translator.Translate(e);
+                stateChanges(state);
+                translator.AssignToNode(state, e);
+            });
+        }
+    }
+
+    public TOut Select<TOut>(Func<TState, TOut> computation)
+    {
+        lock (_lock)
+        {
+            return node.Select(e => computation(translator.Translate(e)));
+        }
+    }
+}
+
+public sealed class ServerLayerAdapter : ILayerAdapter<SimulationServicesConfig>
 {
     public void Adapt(SimulationServicesConfig adaptionSource, IServiceCollection adaptionTarget)
     {
@@ -63,7 +97,7 @@ public sealed class ServerSimulationAdapter : ILayerAdapter<SimulationServicesCo
             "This makes type safety easier to manage as compiletime information about generic arguments is present.")]
     private static void ExecuteLocalGenericRegistration(string methodName, Type[] generics, params object[] arguments)
     {
-        var info = typeof(ServerSimulationAdapter).GetMethod(methodName,
+        var info = typeof(ServerLayerAdapter).GetMethod(methodName,
             BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Public)!;
         info.MakeGenericMethod(generics).Invoke(null, arguments);
     }
@@ -71,6 +105,7 @@ public sealed class ServerSimulationAdapter : ILayerAdapter<SimulationServicesCo
     private static void BuildSingletonAdapterInstance<TEntity>(
         SimulationServicesContainer simulationServicesContainer, IServiceCollection targetCollection)
     {
+        simulationServicesContainer.AddSingleton<ISimulationExecutorErrorHandler, SimulationExecutorErrorHandler>();
         simulationServicesContainer.AddSingleton<EntityStateChangedNotifier<TEntity>>();
         simulationServicesContainer.AddSingleton<IStateChangeSimulationProcessor<TEntity>>(p =>
             p.GetRequiredService<EntityStateChangedNotifier<TEntity>>());
@@ -87,14 +122,13 @@ public sealed class ServerSimulationAdapter : ILayerAdapter<SimulationServicesCo
         SimulationServicesContainer source, IServiceCollection target)
     {
         source.AddTransient<
-            IAdaptionContextTranslator<(IList<object>, IManagedEntityNode), TEntity, TMethodArgs, TReturnType>,
+            IAdaptionContextTranslator<TEntity, TMethodArgs, TReturnType>,
             AdaptionContextTranslator<TEntity, TMethodArgs, TReturnType>
         >();
 
-
         source.AddSingleton<
             INodeConfigurator<TEntity>,
-            FunctionSimulationAdapter<TEntity, TMethodArgs, TReturnType>
+            SimulationNodeConfigurator<TEntity, TMethodArgs, TReturnType>
         >();
 
         BuildSingletonAdapterInstance<TEntity>(source, target);
@@ -105,13 +139,13 @@ public sealed class ServerSimulationAdapter : ILayerAdapter<SimulationServicesCo
         SimulationServicesContainer simulationServicesContainer, IServiceCollection targetCollection)
     {
         simulationServicesContainer.AddServiceAndImplTransient<
-            IAdaptionContextTranslator<(IList<object>, IManagedEntityNode), TEntity, TMethodArgs>,
+            IAdaptionContextTranslator<TEntity, TMethodArgs>,
             AdaptionContextTranslator<TEntity, TMethodArgs>
         >();
 
         simulationServicesContainer.AddServiceAndImplSingleton<
             INodeConfigurator<TEntity>,
-            ActionSimulationAdapter<TEntity, TMethodArgs>
+            SimulationNodeConfigurator<TEntity, TMethodArgs>
         >();
 
         BuildSingletonAdapterInstance<TEntity>(simulationServicesContainer, targetCollection);

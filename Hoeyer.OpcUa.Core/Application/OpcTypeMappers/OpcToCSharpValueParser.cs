@@ -61,5 +61,5 @@ public static class OpcToCSharpValueParser
         };
     }
 
-    public static Guid ParseUuid(Uuid uuid) => Guid.Parse(uuid.GuidString);
+    public static Guid ParseUuid(Uuid uuid) => uuid;
 }
