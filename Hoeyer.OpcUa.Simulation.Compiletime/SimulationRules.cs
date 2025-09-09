@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Hoeyer.OpcUa.Simulation.SourceGeneration.Constants;
+using Microsoft.CodeAnalysis;
 
 namespace Hoeyer.OpcUa.Simulation.SourceGeneration;
 
@@ -9,12 +10,12 @@ public static class SimulationRules
     public static readonly DiagnosticDescriptor MustBeFunctionSimulation = CreateErrorDescriptor(
         "HOEYERSIMULATION0001",
         DesignCategory,
-        "The simulated method returns a value and must be configured as a function simulator");
+        $"The simulated method returns a value. Implement {WellKnown.FullyQualifiedInterface.SIMULATION_INTERFACE_NAME}<TEntity, TArgs, TReturn> instead");
 
     public static readonly DiagnosticDescriptor MustBeActionSimulation = CreateErrorDescriptor(
         "HOEYERSIMULATION0002",
         DesignCategory,
-        "The simulated method does not returns a value and must be configured as an action simulator");
+        $"The simulated method does not returns a value.   Implement {WellKnown.FullyQualifiedInterface.SIMULATION_INTERFACE_NAME}<TEntity, TArgs> instead");
 
     public static readonly DiagnosticDescriptor TArgsMustBeAnnotatedWithOpcEntityMethodArgs = CreateErrorDescriptor(
         "HOEYERSIMULATION0003",
@@ -29,7 +30,7 @@ public static class SimulationRules
     public static readonly DiagnosticDescriptor ReturnTypeMustMatchReturnTypeOfSimulatedMethod = CreateErrorDescriptor(
         "HOEYERSIMULATION0005",
         DesignCategory,
-        "The configurator is configured to return '{0}' but the simulated method '{1}.{2}' has return type '{3}'"
+        "The simulated method must return '{0}' but '{1}.{2}' has return type '{3}'"
     );
 
 

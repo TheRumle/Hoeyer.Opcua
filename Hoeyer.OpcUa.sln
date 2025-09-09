@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Core", "Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj", "{83F13633-73EC-4FF5-83E3-96C660BB5A1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "Playground\Playground.csproj", "{6D779225-B797-4173-90B6-0CB428C2FA6F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground.Application", "Playground.Application\Playground.Application.csproj", "{6D779225-B797-4173-90B6-0CB428C2FA6F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.Common", "Hoeyer.Common\Hoeyer.Common.csproj", "{870B9A54-BD11-469A-A8D4-7B727C0B5B43}"
 EndProject
@@ -34,7 +34,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Core.Test", "H
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Client.Compiletime", "Hoeyer.OpcUa.Client.Compiletime\Hoeyer.OpcUa.Client.Compiletime.csproj", "{D3B0519A-8C35-47F9-AF56-5AB5C4B954AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.TestEntities", "Hoeyer.OpcUa.TestEntities\Hoeyer.OpcUa.TestEntities.csproj", "{CB86AEB9-A556-42B0-942F-9D5A8A5A440F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground.Modelling", "Playground.Modelling\Playground.Modelling.csproj", "{CB86AEB9-A556-42B0-942F-9D5A8A5A440F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Simulation.Application", "Hoeyer.OpcUa.Simulation.Application\Hoeyer.OpcUa.Simulation.Application.csproj", "{89ED9BD7-A94C-43CF-92C1-D470EFF9AD91}"
 EndProject
@@ -51,8 +51,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Client.Api", "Hoeyer.OpcUa.Client.Api\Hoeyer.OpcUa.Client.Api.csproj", "{C4D01B85-FB21-49D2-8004-B18006DB4056}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Simulation.Application.Test", "Hoeyer.OpcUa.Simulation.Application.Test\Hoeyer.OpcUa.Simulation.Application.Test.csproj", "{99003488-4C63-4AE6-AC79-A316FB758E45}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Core.Typescript.Compiletime", "Hoeyer.OpcUa.Core.Typescript.Compiletime\Hoeyer.OpcUa.Core.Typescript.Compiletime.csproj", "{ABEF28AD-F89E-404F-94A7-7EFFF7D4AC43}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -140,10 +138,6 @@ Global
 		{99003488-4C63-4AE6-AC79-A316FB758E45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99003488-4C63-4AE6-AC79-A316FB758E45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99003488-4C63-4AE6-AC79-A316FB758E45}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ABEF28AD-F89E-404F-94A7-7EFFF7D4AC43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ABEF28AD-F89E-404F-94A7-7EFFF7D4AC43}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ABEF28AD-F89E-404F-94A7-7EFFF7D4AC43}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ABEF28AD-F89E-404F-94A7-7EFFF7D4AC43}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{870B9A54-BD11-469A-A8D4-7B727C0B5B43} = {A89A920F-FE1F-41A1-A62D-7E11250B5576}
@@ -158,7 +152,6 @@ Global
 		{99A97AC7-B06E-4877-A8AC-131F08BCA45D} = {E8FFFC47-3286-4B5E-B95C-1025F8E36D50}
 		{D3B0519A-8C35-47F9-AF56-5AB5C4B954AB} = {BDF28345-C176-4EF1-887D-12F7EDECF811}
 		{A1954529-18C3-4C42-A881-0DA8E8C3BF21} = {E8FFFC47-3286-4B5E-B95C-1025F8E36D50}
-		{CB86AEB9-A556-42B0-942F-9D5A8A5A440F} = {592D1AA6-E902-4D44-BDDA-CF54EA15B5A0}
 		{65351C5D-1F5C-4961-A839-8BE668BA089B} = {592D1AA6-E902-4D44-BDDA-CF54EA15B5A0}
 		{809988AB-7F2A-4E8D-8A0E-16E3DCA76B04} = {BDF28345-C176-4EF1-887D-12F7EDECF811}
 		{BD7E6EA4-E920-48E1-A527-7763B994EB3A} = {A89A920F-FE1F-41A1-A62D-7E11250B5576}
@@ -169,6 +162,5 @@ Global
 		{A2AF7699-D5CB-4062-8715-A9B1BDC08F25} = {A2247354-5DC4-4F65-B235-A7F3B5170165}
 		{C4D01B85-FB21-49D2-8004-B18006DB4056} = {A2247354-5DC4-4F65-B235-A7F3B5170165}
 		{99003488-4C63-4AE6-AC79-A316FB758E45} = {E8FFFC47-3286-4B5E-B95C-1025F8E36D50}
-		{ABEF28AD-F89E-404F-94A7-7EFFF7D4AC43} = {BDF28345-C176-4EF1-887D-12F7EDECF811}
 	EndGlobalSection
 EndGlobal

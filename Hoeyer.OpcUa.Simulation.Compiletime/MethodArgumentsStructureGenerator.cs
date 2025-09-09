@@ -119,7 +119,10 @@ public sealed class MethodArgumentsStructureGenerator : IIncrementalGenerator
         List<(string Type, string UpperName, string LowerName, int Index)> paramList)
     {
         var translatorInterface = WellKnown.FullyQualifiedInterface.IObjectArgsToTypedArgs(className).WithGlobalPrefix;
-        var toArgsStructure = string.Join(",\n ", paramList.Select(e => $"({e.Type})args[{e.Index}]"));
+        var toArgsStructure = string.Join(",\n ",
+            paramList.Select(e =>
+                WellKnown.FullyQualifiedInterfaceMethodName.TypeTranslatorMethodCall(e.Type, $"args[{e.Index}]")
+                    .WithGlobalPrefix));
         var toObjectArray = string.Join(",\n ", paramList.Select(e => $"args.{e.UpperName}"));
 
         var converterIdentifier = className + "Translator";

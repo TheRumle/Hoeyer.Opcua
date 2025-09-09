@@ -7,6 +7,8 @@ internal static class WellKnown
     private static FullyQualifiedTypeName SimulationApiName(string className) =>
         new("Hoeyer.OpcUa.Simulation.Api" + className);
 
+    private static FullyQualifiedTypeName CoreTypeName(string className) => new("Hoeyer.OpcUa.Core." + className);
+
     public static class FullyQualifiedAttribute
     {
         public static readonly FullyQualifiedTypeName EntityAttribute = CoreTypeName("OpcUaEntityAttribute");
@@ -23,12 +25,12 @@ internal static class WellKnown
 
         public static readonly FullyQualifiedTypeName OpcMethodArgumentsAttribute =
             SimulationApiName(".OpcMethodArgumentsAttribute");
-
-        private static FullyQualifiedTypeName CoreTypeName(string className) => new("Hoeyer.OpcUa.Core." + className);
     }
 
     public static class FullyQualifiedInterface
     {
+        public const string SIMULATION_INTERFACE_NAME = "ISimulation";
+
         public static readonly FullyQualifiedTypeName MethodCallerType =
             new("Hoeyer.OpcUa.Client.Api.Calling.IMethodCaller");
 
@@ -36,10 +38,10 @@ internal static class WellKnown
             SimulationApiName(".IArgsContainer");
 
         public static FullyQualifiedTypeName IActionSimulationConfigurator =>
-            SimulationApiName($".Configuration.ISimulation`2");
+            SimulationApiName($".Configuration.{SIMULATION_INTERFACE_NAME}`2");
 
         public static FullyQualifiedTypeName IFunctionSimulationConfigurator =>
-            SimulationApiName($".Configuration.ISimulation`3");
+            SimulationApiName($".Configuration.{SIMULATION_INTERFACE_NAME}`3");
 
         public static FullyQualifiedTypeName IObjectArgsToTypedArgs(string attributeClassName) =>
             SimulationServerAdapterApiName($".IEntityMethodArgTranslator<{attributeClassName}>");
@@ -62,5 +64,8 @@ internal static class WellKnown
 
         public static FullyQualifiedTypeName IObjectArgsToTypedArgs(string attributeClassName) =>
             SimulationApiName($"IEntityMethodArgTranslator<{attributeClassName}>");
+
+        public static FullyQualifiedTypeName TypeTranslatorMethodCall(string genericArg, string arg) =>
+            CoreTypeName($"Application.OpcTypeMappers.OpcToCSharpValueParser.ParseTo<{genericArg}>({arg})");
     }
 }

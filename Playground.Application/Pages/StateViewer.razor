@@ -1,0 +1,29 @@
+﻿@typeparam T
+@inject StateService<T> StateService
+
+<div>
+    <h3>Current State:</h3>
+    <ObjectViewer Item="State"/>
+</div>
+
+@code {
+    private T? State;
+
+    protected override void OnInitialized()
+    {
+        StateService.OnStateChanged += HandleStateChanged;
+        State = StateService.Current;
+    }
+
+    private void HandleStateChanged(T newState)
+    {
+        State = newState;
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        StateService.OnStateChanged -= HandleStateChanged;
+    }
+
+}

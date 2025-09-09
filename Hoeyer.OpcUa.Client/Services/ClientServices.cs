@@ -1,4 +1,7 @@
-﻿using Hoeyer.Common.Reflection;
+﻿using System;
+using System.Threading.Tasks;
+using Hoeyer.Common.Messaging.Api;
+using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
 using Hoeyer.OpcUa.Client.Api.Calling;
@@ -58,6 +61,18 @@ public static class ClientServices
         services.AddServiceAndImplTransient<IEntityWriter<TEntity>, EntityWriter<TEntity>>();
         services.AddServiceAndImplSingleton<IEntitySubscriptionManager<TEntity>, EntitySubscriptionManager<TEntity>>();
         services.AddServiceAndImplTransient<ICurrentEntityStateChannel<TEntity>, CurrentEntityStateChannel<TEntity>>();
+        services.AddTransient<IStateChangeObserver<TEntity>>(provider =>
+        {
+            return new StateChangeObserver<TEntity>(
+                new Lazy<(Task<IMessageSubscription> subscriptionTask, ICurrentEntityStateChannel<TEntity>
+                    currentEntityStateChannel)>(() =>
+                {
+                    var currentEntityStateChannel = provider.GetRequiredService<ICurrentEntityStateChannel<TEntity>>();
+                    var subscriptionManager = provider.GetRequiredService<IEntitySubscriptionManager<TEntity>>();
+                    var subscription = subscriptionManager.SubscribeToAllPropertyChanges(currentEntityStateChannel);
+                    return (subscription, currentEntityStateChannel);
+                }));
+        });
         services.AddServiceAndImplTransient(typeof(IMethodCaller<>), typeof(MethodCaller<>));
         services.AddTransient(genericMatcher, _ => DefaultMatcherFactory.CreateMatcher(typeof(TEntity)));
     }
