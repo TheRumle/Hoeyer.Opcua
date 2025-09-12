@@ -38,7 +38,7 @@ public static class ClientServices
         services.AddServiceAndImplTransient<INodeTreeTraverser, BreadthFirstStrategy>(); //Default strategy
         services.AddServiceAndImplTransient<INodeBrowser, NodeBrowser>();
         services.AddServiceAndImplTransient<INodeReader, NodeReader>();
-        services.AddServiceAndImplTransient<IEntitySessionFactory, ReusableSessionFactory>();
+        services.AddServiceAndImplSingleton<IEntitySessionFactory, ReusableSessionFactory>();
         services.AddServiceAndImplTransient<ISubscriptionTransferStrategy, CopySubscriptionTransferStrategy>();
         services.AddServiceAndImplTransient<IReconnectionStrategy, DefaultReconnectStrategy>();
         services.AddSingleton<EntityMonitoringConfiguration>();
