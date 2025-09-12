@@ -1,0 +1,38 @@
+﻿
+@page "/{EntityName}"
+@using Hoeyer.OpcUa.Core.Services.OpcUaServices
+
+<h1>@EntityName</h1>
+
+@if (EntityType is not null)
+{
+    <DynamicComponent Type="@StateViewerType"/>
+}
+else
+{
+    <p class="text-red-600">Unknown entity: @EntityName</p>
+}
+
+@code {
+    [Parameter] public string EntityName { get; set; } = string.Empty;
+
+    private Type? EntityType { get; set; }
+    private Type? StateViewerType { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        // Find the matching type in your registry
+        EntityType = OpcUaEntityTypes.Entities
+            .FirstOrDefault(t => t.Name.Equals(EntityName, StringComparison.OrdinalIgnoreCase));
+
+        if (EntityType is not null)
+        {
+            StateViewerType = typeof(StateViewer<>).MakeGenericType(EntityType);
+        }
+        else
+        {
+            StateViewerType = null;
+        }
+    }
+
+}

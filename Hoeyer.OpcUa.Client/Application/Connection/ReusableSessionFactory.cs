@@ -68,7 +68,7 @@ internal class ReusableSessionFactory(
             null,
             token);
 
-        logger.LogInformation("Session created for client '{Client}'.", client);
+        logger.LogInformation("Session created for client '{Client}'", client);
         session.ReturnDiagnostics = DiagnosticsMasks.LocalizedText |
                                     DiagnosticsMasks.InnerDiagnostics;
         return new EntitySession(session);

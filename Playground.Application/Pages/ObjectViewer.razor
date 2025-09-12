@@ -25,7 +25,7 @@ else
 {
     var type = Item.GetType();
 
-    if (type.IsPrimitive || type.IsEnum || type == typeof(decimal))
+    @if (HasPrettyToString(type))
     {
         <span>@Item</span>
     }
@@ -48,6 +48,28 @@ else
             </tbody>
         </table>
     }
+}
+
+@functions {
+
+    private static bool HasPrettyToString(Type type)
+    {
+        if (type.IsPrimitive || type.IsEnum || type == typeof(decimal))
+            return true;
+
+        // Whitelist types with good ToString()
+        if (type == typeof(Guid) || type == typeof(DateTime) || type == typeof(DateTimeOffset) || type == typeof(TimeSpan))
+            return true;
+
+        // Many structs have meaningful ToString()
+        if (type.IsValueType && type != typeof(ValueType))
+            return true;
+
+        // Detect if ToString is overridden
+        var toStringMethod = type.GetMethod(nameof(ToString), Type.EmptyTypes);
+        return toStringMethod?.DeclaringType != typeof(object);
+    }
+
 }
 
 @code {
