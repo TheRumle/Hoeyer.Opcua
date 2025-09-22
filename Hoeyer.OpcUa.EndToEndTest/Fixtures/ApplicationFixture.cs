@@ -55,8 +55,12 @@ public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
     public T GetService<T>(Type t) where T : notnull
     {
         InitializeAsync().Wait(Token);
-        var s = ServiceProvider.GetService<T>();
-        if (!Equals(s, default(T))) return s;
+        var service = ServiceProvider.GetService<T>();
+        if (!Equals(service, default(T)))
+        {
+            return service!;
+        }
+
         return (T)Scope.ServiceProvider.GetService(t)!;
     }
 

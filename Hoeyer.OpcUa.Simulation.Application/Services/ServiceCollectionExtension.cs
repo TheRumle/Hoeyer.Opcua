@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.Common.Messaging.Api;
 using Hoeyer.Common.Messaging.Subscriptions;
@@ -11,8 +12,6 @@ using Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Configuration;
-using Hoeyer.OpcUa.Core.Services;
-using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.Simulation.Api;
 using Hoeyer.OpcUa.Simulation.Api.Configuration;
 using Hoeyer.OpcUa.Simulation.Api.Configuration.Exceptions;
@@ -34,12 +33,15 @@ public static class ServiceCollectionExtension
     }
 
     public static OnGoingOpcEntityServiceRegistrationWithSimulation WithOpcUaSimulationServices(
-        this IServiceCollection registration, Action<SimulationServicesConfig> configure) =>
-        WithOpcUaSimulationServices(new OnGoingOpcEntityServiceRegistration(registration), configure);
+        this IServiceCollection registration, Action<SimulationServicesConfig> configure,
+        Assembly? assemblyContainingSimulators = null) =>
+        WithOpcUaSimulationServices(new OnGoingOpcEntityServiceRegistration(registration), configure,
+            assemblyContainingSimulators);
 
 
     public static OnGoingOpcEntityServiceRegistrationWithSimulation WithOpcUaSimulationServices(
-        this OnGoingOpcEntityServiceRegistration registration, Action<SimulationServicesConfig> configure)
+        this OnGoingOpcEntityServiceRegistration registration, Action<SimulationServicesConfig> configure,
+        Assembly? assemblyContainingSimulators = null)
     {
         var originalCollection = registration.Collection;
         var collection = new ServiceCollection();
@@ -63,8 +65,8 @@ public static class ServiceCollectionExtension
 
         var typeReferences = typeof(SimulationApiAssemblyMarker)
             .GetTypesFromConsumingAssemblies()
+            .Union(assemblyContainingSimulators?.GetTypes() ?? [])
             .Union(typeof(ServiceCollectionExtension).GetTypesFromConsumingAssemblies())
-            .Union(OpcUaEntityTypes.TypesFromReferencingAssemblies)
             .AsParallel()
             .ToImmutableHashSet();
 
@@ -99,7 +101,8 @@ public static class ServiceCollectionExtension
 
     private static (List<SimulationPatternTypeDetails> ActionsServices, List<SimulationPatternTypeDetails>
         FunctionServices)
-        AddCoreServices(ImmutableHashSet<Type> typeReferences, SimulationServicesContainer simulationServicesContainer)
+        AddCoreServices(ImmutableHashSet<Type> typeReferences,
+            SimulationServicesContainer simulationServicesContainer)
     {
         var actionSimulatorInterface = typeof(ISimulation<,>).GetGenericTypeDefinition();
         var actionSimulators = GetSimulatorConfiguratorsImplementing(typeReferences, actionSimulatorInterface).ToList();

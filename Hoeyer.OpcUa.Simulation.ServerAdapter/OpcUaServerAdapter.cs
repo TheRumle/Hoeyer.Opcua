@@ -7,7 +7,6 @@ using Hoeyer.Common.Extensions.Types;
 using Hoeyer.Common.Reflection;
 using Hoeyer.Common.Utilities.Threading;
 using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
 using Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
@@ -50,7 +49,7 @@ public sealed class LockedEntityState<TState>(
     }
 }
 
-public sealed class ServerLayerAdapter : ILayerAdapter<SimulationServicesConfig>
+public sealed class OpcUaServerAdapter : ILayerAdapter<SimulationServicesConfig>
 {
     public void Adapt(SimulationServicesConfig adaptionSource, IServiceCollection adaptionTarget)
     {
@@ -97,21 +96,21 @@ public sealed class ServerLayerAdapter : ILayerAdapter<SimulationServicesConfig>
             "This makes type safety easier to manage as compiletime information about generic arguments is present.")]
     private static void ExecuteLocalGenericRegistration(string methodName, Type[] generics, params object[] arguments)
     {
-        var info = typeof(ServerLayerAdapter).GetMethod(methodName,
+        var info = typeof(OpcUaServerAdapter).GetMethod(methodName,
             BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Public)!;
         info.MakeGenericMethod(generics).Invoke(null, arguments);
     }
 
     private static void BuildSingletonAdapterInstance<TEntity>(
-        SimulationServicesContainer simulationServicesContainer, IServiceCollection targetCollection)
+        SimulationServicesContainer servicesContainer, IServiceCollection targetCollection)
     {
-        simulationServicesContainer.AddSingleton<ISimulationExecutorErrorHandler, SimulationExecutorErrorHandler>();
-        simulationServicesContainer.AddSingleton<EntityStateChangedNotifier<TEntity>>();
-        simulationServicesContainer.AddSingleton<IStateChangeSimulationProcessor<TEntity>>(p =>
+        servicesContainer.AddSingleton<ISimulationExecutorErrorHandler, SimulationExecutorErrorHandler>();
+        servicesContainer.AddSingleton<EntityStateChangedNotifier<TEntity>>();
+        servicesContainer.AddSingleton<IStateChangeSimulationProcessor<TEntity>>(p =>
             p.GetRequiredService<EntityStateChangedNotifier<TEntity>>());
-        simulationServicesContainer.AddSingleton<INodeConfigurator<TEntity>>(p =>
+        servicesContainer.AddSingleton<INodeConfigurator<TEntity>>(p =>
             p.GetRequiredService<EntityStateChangedNotifier<TEntity>>());
-        var adapters = simulationServicesContainer.BuildServiceProvider().GetServices<INodeConfigurator<TEntity>>();
+        var adapters = servicesContainer.BuildServiceProvider().GetServices<INodeConfigurator<TEntity>>();
         foreach (var adapter in adapters)
         {
             targetCollection.AddSingleton(adapter);
@@ -121,12 +120,12 @@ public sealed class ServerLayerAdapter : ILayerAdapter<SimulationServicesConfig>
     private static void AdaptFunctionSimulationToTarget<TEntity, TMethodArgs, TReturnType>(
         SimulationServicesContainer source, IServiceCollection target)
     {
-        source.AddTransient<
+        source.AddServiceAndImplTransient<
             IAdaptionContextTranslator<TEntity, TMethodArgs, TReturnType>,
             AdaptionContextTranslator<TEntity, TMethodArgs, TReturnType>
         >();
 
-        source.AddSingleton<
+        source.AddServiceAndImplSingleton<
             INodeConfigurator<TEntity>,
             SimulationNodeConfigurator<TEntity, TMethodArgs, TReturnType>
         >();

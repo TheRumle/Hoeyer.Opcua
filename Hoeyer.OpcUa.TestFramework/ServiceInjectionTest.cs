@@ -33,19 +33,19 @@ public abstract class ServiceInjectionTest(
 
 
     [Test]
-    [DisplayName("The service '$descriptor.ServiceType' can be provided as singleton.")]
+    [DisplayName("The service '$descriptor ServiceType' can be provided as singleton.")]
     [InstanceMethodDataSource(nameof(SingletonServices))]
     public async Task ServiceCanBeCreatedAsSingleton(ServiceDescriptor descriptor) =>
         await AssertServiceCanBeCreated(descriptor);
 
     [Test]
-    [DisplayName("The service '$descriptor.ServiceType' can be provided as singleton.")]
+    [DisplayName("The service '$descriptor ServiceType' can be provided as transient.")]
     [InstanceMethodDataSource(nameof(TransientServices))]
     public async Task ServiceCanBeCreatedAsTransient(ServiceDescriptor descriptor) =>
         await AssertServiceCanBeCreated(descriptor);
 
     [Test]
-    [DisplayName("The service '$descriptor.ServiceType' can be provided as scoped.")]
+    [DisplayName("The service '$descriptor ServiceType' can be provided as scoped.")]
     [InstanceMethodDataSource(nameof(ScopedServices))]
     public async Task ServiceCanBeCreatedAsScoped(ServiceDescriptor descriptor) =>
         await AssertServiceCanBeCreatedScoped(descriptor);

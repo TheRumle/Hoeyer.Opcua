@@ -1,6 +1,11 @@
 ﻿using Hoeyer.Opc.Ua.Test.TUnit;
-using Hoeyer.OpcUa.EntityModelling;
+using Hoeyer.OpcUa.Client.Services;
+using Hoeyer.OpcUa.Core.Services;
+using Hoeyer.OpcUa.Server.Services;
+using Hoeyer.OpcUa.Simulation.ServerAdapter;
+using Hoeyer.OpcUa.Simulation.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.OpcUa.EndToEndTest.Fixtures;
 
@@ -12,12 +17,21 @@ public sealed class RunningSimulationServicesAttribute : DependencyInjectionData
     {
         _reservedPort = new ReservedPort();
         ServiceCollection = new ServiceCollection()
-            .AddRunningTestEntityServices(conf => conf
+            .AddOpcUa(conf => conf
                 .WithServerId("MyServer")
                 .WithServerName("My Server")
                 .WithHttpsHost("localhost", _reservedPort.Port)
                 .WithEndpoints([$"opc.tcp://localhost:{_reservedPort.Port}"])
-                .Build());
+                .Build())
+            .WithEntityServices()
+            .WithOpcUaClientServices()
+            .WithOpcUaSimulationServices(configure =>
+            {
+                configure.WithTimeScaling(double.Epsilon);
+                configure.AdaptToRuntime<OpcUaServerAdapter>();
+            })
+            .WithOpcUaServerAsBackgroundService()
+            .Collection.AddLogging(e => e.AddSimpleConsole());
     }
 
     public IServiceCollection ServiceCollection { get; }

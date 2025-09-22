@@ -9,7 +9,7 @@ public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourc
     public override IServiceScope CreateScope(DataGeneratorMetadata dataGeneratorMetadata) =>
         ServiceProvider.CreateAsyncScope();
 
-    public override object Create(IServiceScope scope, Type type) => scope.ServiceProvider.GetService(type);
+    public override object Create(IServiceScope scope, Type type) => scope.ServiceProvider.GetService(type)!;
 
     private static IServiceProvider CreateSharedServiceProvider() => CreateServiceCollection().BuildServiceProvider();
 

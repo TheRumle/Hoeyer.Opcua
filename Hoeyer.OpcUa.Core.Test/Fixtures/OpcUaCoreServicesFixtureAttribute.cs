@@ -15,7 +15,7 @@ public class OpcUaCoreServicesFixtureAttribute : DependencyInjectionDataSourceAt
         ReservedPort reservedPort = new();
         var services = new ServiceCollection();
         OnGoingOpcEntityServiceRegistration = services.AddLogging(c => c.SetMinimumLevel(LogLevel.Warning))
-            .AddOpcUaServerConfiguration(conf => conf
+            .AddOpcUa(conf => conf
                 .WithServerId("MyServer")
                 .WithServerName("My Server")
                 .WithHttpsHost("localhost", reservedPort.Port)

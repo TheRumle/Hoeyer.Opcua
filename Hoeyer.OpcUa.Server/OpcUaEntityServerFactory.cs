@@ -15,13 +15,16 @@ internal sealed class OpcUaEntityServerFactory(
     IEnumerable<IEntityNodeManagerFactory> entityManagerFactories,
     ILoggerFactory loggerFactory) : IOpcUaEntityServerFactory
 {
-    private StartableEntityServer startable;
+    private StartableEntityServer? _startable;
 
     public IStartableEntityServer CreateServer()
     {
-        if (startable != null) return startable;
-        ApplicationConfiguration configuration =
-            ServerApplicationConfigurationFactory.CreateServerConfiguration(serverSetup);
+        if (_startable != null)
+        {
+            return _startable;
+        }
+
+        var configuration = ServerApplicationConfigurationFactory.CreateServerConfiguration(serverSetup);
 
         var application = new ApplicationInstance
         {
@@ -34,7 +37,7 @@ internal sealed class OpcUaEntityServerFactory(
 
         var server = new OpcEntityServer(serverSetup, entityManagerFactories,
             loggerFactory.CreateLogger<OpcEntityServer>());
-        startable = new StartableEntityServer(application, server, marker);
-        return startable;
+        _startable = new StartableEntityServer(application, server, marker);
+        return _startable;
     }
 }

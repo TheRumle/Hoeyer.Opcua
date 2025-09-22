@@ -1,5 +1,5 @@
 ﻿@typeparam T
-@inject StateService<T> StateService
+@inject EntityStateService<T> EntityStateService
 
 <div>
     <h3>Current State:</h3>
@@ -11,11 +11,11 @@
 
     protected override void OnInitialized()
     {
-        StateService.OnStateChanged += HandleStateChanged;
-        State = StateService.Current;
+        EntityStateService.OnStateChanged += HandleEntityStateChanged;
+        State = EntityStateService.Current;
     }
 
-    private void HandleStateChanged(T newState)
+    private void HandleEntityStateChanged(T newState)
     {
         State = newState;
         InvokeAsync(StateHasChanged);
@@ -23,7 +23,7 @@
 
     public void Dispose()
     {
-        StateService.OnStateChanged -= HandleStateChanged;
+        EntityStateService.OnStateChanged -= HandleEntityStateChanged;
     }
 
 }

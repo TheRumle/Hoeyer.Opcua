@@ -28,7 +28,6 @@ internal sealed class OpcEntityServer(
 
     private bool _disposed;
 
-    public int a;
     public DomainMasterNodeManager DomainManager { get; } = null!;
 
     /// <inheritdoc />

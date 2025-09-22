@@ -10,7 +10,7 @@ public sealed class OpcToCSharpValueParserTest
     [Test]
     public async Task CanParseGuidToGuid()
     {
-        var value = new Uuid();
+        var value = new Uuid(Guid.NewGuid());
         var guid = OpcToCSharpValueParser.ParseTo<Guid>(value);
         await Assert.That(guid).IsNotEqualTo(Guid.Empty);
     }

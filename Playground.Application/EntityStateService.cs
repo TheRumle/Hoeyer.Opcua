@@ -2,12 +2,12 @@
 
 namespace Playground.Application;
 
-public class StateService<T>
+public class EntityStateService<T>
 {
     private readonly CancellationTokenSource _cts = new();
     private readonly IStateChangeObserver<T> _observer;
 
-    public StateService(IStateChangeObserver<T> observer)
+    public EntityStateService(IStateChangeObserver<T> observer)
     {
         _observer = observer;
         _ = ListenAsync();

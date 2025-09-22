@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Application.NodeStructureFactory;
 using Hoeyer.OpcUa.Core.Configuration;
-using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
@@ -13,6 +12,7 @@ using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Services.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua;
+using ServiceCollectionExtensions = Hoeyer.OpcUa.Core.Services.ServiceCollectionExtensions;
 
 namespace Hoeyer.OpcUa.Server.Services;
 
@@ -25,19 +25,11 @@ public static class ServiceExtensions
         IServiceCollection collection = serviceRegistration.Collection;
 
         collection.AddSingleton(typeof(IEntityNodeStructureFactory<>), typeof(ReflectionBasedEntityStructureFactory<>));
-        collection.AddSingleton<OpcUaEntityServerSetup>(p =>
-        {
-            var standardConfig = p.GetService<IOpcUaEntityServerInfo>();
-            if (standardConfig == null)
-            {
-                throw new InvalidOperationException(
-                    $"No {nameof(IOpcUaEntityServerInfo)} has been registered! This should be prevented using builder pattern. Are you using the library as intended and using the {nameof(ServiceCollectionExtensions.AddOpcUaServerConfiguration)} {nameof(IServiceCollection)} extension method?");
-            }
+        collection.AddSingleton<OpcUaEntityServerSetup>(provider => AddServerSetup(additionalConfiguration, provider));
 
-            return new OpcUaEntityServerSetup(standardConfig, additionalConfiguration ?? (value => { }));
-        });
+        var registration = typeof(ServiceExtensions)
+            .InvokeStaticEntityRegistration(nameof(AddServices), collection);
 
-        var registration = typeof(ServiceExtensions).InvokeStaticEntityRegistration(nameof(AddServices), collection);
         foreach (var entity in OpcUaEntityTypes.Entities)
         {
             registration.Invoke(entity);
@@ -56,6 +48,19 @@ public static class ServiceExtensions
 
 
         return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
+    }
+
+    private static OpcUaEntityServerSetup AddServerSetup(Action<ServerConfiguration>? additionalConfiguration,
+        IServiceProvider p)
+    {
+        var standardConfig = p.GetService<IOpcUaEntityServerInfo>();
+        if (standardConfig == null)
+        {
+            throw new InvalidOperationException(
+                $"No {nameof(IOpcUaEntityServerInfo)} has been registered! This should be prevented using builder pattern. Are you using the library as intended and using the {nameof(ServiceCollectionExtensions.AddOpcUa)} {nameof(IServiceCollection)} extension method?");
+        }
+
+        return new OpcUaEntityServerSetup(standardConfig, additionalConfiguration ?? (value => { }));
     }
 
     public static void AddServices<TEntity>(IServiceCollection collection)
@@ -94,7 +99,7 @@ public static class ServiceExtensions
     private static void AddLoaders(IServiceCollection collection)
     {
         Type loaderType = typeof(IEntityLoader<>);
-        IEnumerable<(Type Service, Type Implementation)> loaders = OpcUaEntityTypes
+        var loaders = OpcUaEntityTypes
             .TypesFromReferencingAssemblies
             .Select(type =>
             {

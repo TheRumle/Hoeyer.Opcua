@@ -1,10 +1,12 @@
 using System.Configuration;
 using System.Text.Json;
 using Hoeyer.OpcUa.Client.Services;
-using Hoeyer.OpcUa.EntityModelling;
+using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.EntityModelling.Reactants;
+using Hoeyer.OpcUa.Server.Services;
 using Hoeyer.OpcUa.Simulation.Api.Services;
 using Hoeyer.OpcUa.Simulation.ServerAdapter;
+using Hoeyer.OpcUa.Simulation.Services;
 using Playground.Application;
 using Playground.Application.Configuration;
 
@@ -32,27 +34,27 @@ var opcUaConfig = builder.Configuration.GetSection("OpcUa").Get<OpcUaOptions>();
 if (opcUaConfig is null || opcUaConfig.Port == 0)
     throw new ConfigurationErrorsException("OpcUa configuration is missing");
 
-builder.Services
-    .AddRunningTestEntityServices(
-        serverSetup => serverSetup
-            .WithServerId("MyServer")
-            .WithServerName("My Server")
-            .WithOpcTcpHost("localhost", opcUaConfig.Port)
-            .WithEndpoints([$"opc.tcp://localhost:{opcUaConfig.Port}"])
-            .Build(),
-        simulationSetup =>
-        {
-            simulationSetup.WithTimeScaling(TimeScaler.Identity);
-            simulationSetup.AdaptToRuntime<ServerLayerAdapter>();
-        }
-    );
+builder.Services.AddLogging(e => e.AddSimpleConsole());
+builder.Services.AddOpcUa(serverSetup => serverSetup
+        .WithServerId("MyServer")
+        .WithServerName("My Server")
+        .WithOpcTcpHost("localhost", opcUaConfig.Port)
+        .WithEndpoints([$"opc.tcp://localhost:{opcUaConfig.Port}"])
+        .Build())
+    .WithEntityServices()
+    .WithOpcUaClientServices()
+    .WithOpcUaServerAsBackgroundService()
+    .WithOpcUaSimulationServices(configure =>
+    {
+        configure.WithTimeScaling(TimeScaler.Identity);
+        configure.AdaptToRuntime<OpcUaServerAdapter>();
+    });
 
 
-builder.Services.AddSingleton<EntitiesContainer>();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton(typeof(IStateChangeObserver<>), typeof(StateChangeObserver<>));
-builder.Services.AddScoped(typeof(StateService<>));
+builder.Services.AddScoped(typeof(EntityStateService<>));
 var app = builder.Build();
 
 app.UseStaticFiles();

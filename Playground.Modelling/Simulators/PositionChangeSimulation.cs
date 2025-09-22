@@ -18,23 +18,3 @@ public sealed class PositionChangeSimulation(ILogger<PositionChangeSimulation> l
             .Build();
     }
 }
-
-public sealed class ContainerSimulation : ISimulation<Gantry, PlaceContainerArgs, int>,
-    ISimulation<Gantry, AssignContainerArgs>
-{
-    private readonly Random _random = new();
-
-    /// <inheritdoc />
-    public IEnumerable<ISimulationStep> ConfigureSimulation(
-        ISimulationBuilder<Gantry, AssignContainerArgs> onMethodCall)
-    {
-        return onMethodCall
-            .ChangeState(e => e.State.HeldContainer = e.Arguments.Guid)
-            .Build();
-    }
-
-    public IEnumerable<ISimulationStep> ConfigureSimulation(ISimulationBuilder<Gantry, PlaceContainerArgs, int> config)
-    {
-        return config.WithReturnValue(state => _random.Next());
-    }
-}

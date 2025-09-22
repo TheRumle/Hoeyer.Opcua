@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Messaging.Api;
 using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Client.Api.Browsing;
@@ -15,7 +16,6 @@ using Hoeyer.OpcUa.Client.Application.Connection;
 using Hoeyer.OpcUa.Client.Application.Subscriptions;
 using Hoeyer.OpcUa.Client.Application.Writing;
 using Hoeyer.OpcUa.Core.Configuration;
-using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Microsoft.Extensions.DependencyInjection;
 

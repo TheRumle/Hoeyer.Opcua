@@ -84,7 +84,7 @@ public sealed class ServiceConfigurationTest(IServiceCollection collection, ISer
 
     [Test]
     [TestSubject(typeof(ServiceCollectionExtension))]
-    [TestSubject(typeof(ServerLayerAdapter))]
+    [TestSubject(typeof(OpcUaServerAdapter))]
     [DisplayName("Simulation server adapters are registered and resolvable")]
     public async Task CanProvide_SimulationServerAdapters_SimulationNoReturn()
     {
@@ -111,18 +111,17 @@ public sealed class ServiceConfigurationTest(IServiceCollection collection, ISer
             var adaptersByService = functionAdapters.Union(actionAdapters).GroupBy(s => s.ServiceType);
             foreach (var serviceGroup in adaptersByService.Where(e => e.Count() > 1))
             {
-                var castedAdapters =
-                    provider.GetService(typeof(IEnumerable<>).MakeGenericType(serviceGroup.Key)) as IEnumerable<object>;
-                var wantedAdapters = castedAdapters == null ? [] : castedAdapters.ToList();
-                await Assert.That(wantedAdapters).IsNotEmpty()
-                    .Because("adapters with same service registration should be registered as IEnumerable.");
+                var wantedAdapters = provider.GetServices(serviceGroup.Key);
+                await Assert.That(wantedAdapters)
+                    .IsNotEmpty()
+                    .Because("adapters with same service registration should be registered as IEnumerable");
             }
         }
     }
 
     [Test]
     [TestSubject(typeof(ServiceCollectionExtension))]
-    [TestSubject(typeof(ServerLayerAdapter))]
+    [TestSubject(typeof(OpcUaServerAdapter))]
     [DisplayName("Entity state changed notifier is registered as scoped action simulation processor")]
     public async Task EntityStateChangedNotifier_IsRegisteredAs_ScopedIActionSimulationProcessor()
     {

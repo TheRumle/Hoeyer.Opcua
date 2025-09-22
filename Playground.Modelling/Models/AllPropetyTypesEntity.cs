@@ -15,12 +15,14 @@ public sealed record AllPropertyTypesEntity
 
     public int Integer { get; set; }
     public long Long { get; set; }
-    public string String { get; set; }
     public Guid Guid { get; set; }
-    public List<int> IntList { get; set; }
+    public required string String { get; set; }
+    public required List<int> IntList { get; set; }
     public double Double { get; set; }
     public float Float { get; set; }
     public bool Bool { get; set; }
+
+    public EnumValue EnumVal { get; set; }
 
 
     public static AllPropertyTypesEntity CreateRandom()

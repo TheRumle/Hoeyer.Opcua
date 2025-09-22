@@ -1,4 +1,8 @@
-﻿using Hoeyer.OpcUa.EntityModelling;
+﻿using Hoeyer.OpcUa.Client.Services;
+using Hoeyer.OpcUa.Core.Services;
+using Hoeyer.OpcUa.Server.Services;
+using Hoeyer.OpcUa.Simulation.ServerAdapter;
+using Hoeyer.OpcUa.Simulation.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -19,15 +23,17 @@ public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourc
 
     private static IServiceCollection CreateServiceCollection()
     {
-        var services = new ServiceCollection()
-            .AddTestEntityServices(conf => conf
+        var services = new ServiceCollection().AddOpcUa(conf => conf
                 .WithServerId("MyServer")
                 .WithServerName("My Server")
                 .WithHttpsHost("localhost", 5)
                 .WithEndpoints(["opc.tcp://localhost:5"])
                 .Build())
-            .AddLogging(e => e.AddSimpleConsole());
-
+            .WithEntityServices()
+            .WithOpcUaClientServices()
+            .WithOpcUaServer()
+            .WithOpcUaSimulationServices(c => c.AdaptToRuntime<OpcUaServerAdapter>())
+            .Collection.AddLogging(e => e.AddSimpleConsole());
 
         services.AddSingleton(services);
         services.AddScoped<IServiceProvider>(p => p);

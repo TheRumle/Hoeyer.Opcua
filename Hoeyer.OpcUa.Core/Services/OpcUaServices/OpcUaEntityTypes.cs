@@ -35,13 +35,6 @@ public static class OpcUaEntityTypes
             .GetTypesFromConsumingAssemblies()
             .Union(marke.GetTypesFromConsumingAssemblies());
 
-    private static bool IsOpcEntityMethodInterface(Type interfaceType)
-    {
-        return interfaceType
-            .GetCustomAttributes()
-            .Any(attr => attr.GetType().IsGenericImplementationOf(typeof(OpcUaEntityMethodsAttribute<>)));
-    }
-
     private static Attribute? GetOpcUaEntityMethodAttributeData(Type interfaceType)
     {
         return interfaceType

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
-using Hoeyer.OpcUa.Core.CompileTime.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -118,30 +117,6 @@ public static class SupportedTypes
             }
 
             return false;
-            var iListImplementations = named
-                .AllInterfaces
-                .Where(i =>
-                {
-                    if (i.OriginalDefinition.SpecialType == SpecialType.System_Collections_Generic_IList_T) return true;
-
-                    if (i.OriginalDefinition.GloballyQualifiedNonGeneric()
-                        .Equals("global::System.Collections.Generic.IList"))
-                    {
-                        return true;
-                    }
-
-                    return false;
-                }).ToList();
-
-            if (iListImplementations.Count == 0) return false;
-
-            return iListImplementations.Any(interfaceSymbol =>
-            {
-                return interfaceSymbol.TypeArguments.All(Simple.Supports)
-                       && named.Constructors.Any(c =>
-                           c.Parameters.Length == 0 && // Check for no parameters
-                           c.DeclaredAccessibility == Accessibility.Public);
-            });
         }
     }
 }
