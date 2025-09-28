@@ -74,6 +74,5 @@ public static class ClientServices
                 }));
         });
         services.AddServiceAndImplTransient(typeof(IMethodCaller<>), typeof(MethodCaller<>));
-        services.AddTransient(genericMatcher, _ => DefaultMatcherFactory.CreateMatcher(typeof(TEntity)));
     }
 }

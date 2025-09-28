@@ -11,24 +11,23 @@ internal sealed record OpcPropertyTypeInfo : IOpcTypeInfo
     public readonly NodeId? TypeId;
     public readonly int ValueRank;
 
-    public OpcPropertyTypeInfo(PropertyInfo PropertyInfo, BaseInstanceState parent)
+    public OpcPropertyTypeInfo(string browseName, PropertyInfo PropertyInfo, BaseInstanceState parent)
     {
         this.PropertyInfo = PropertyInfo;
         (TypeId, ValueRank) = PropertyInfo.PropertyType.GetOpcTypeInfo();
-        var propertyName = PropertyInfo.Name;
         OpcProperty = new PropertyState(parent)
         {
             NodeId = new NodeId(parent.BrowseName.Name + "." + PropertyInfo.Name, parent.NodeId.NamespaceIndex),
-            BrowseName = propertyName,
+            BrowseName = browseName,
             DataType = TypeId,
             ValueRank = ValueRank,
             TypeDefinitionId = VariableTypeIds.PropertyType,
-            SymbolicName = propertyName,
+            SymbolicName = browseName,
             AccessLevel = AccessLevels.CurrentReadOrWrite,
             UserAccessLevel = AccessLevels.CurrentReadOrWrite,
             MinimumSamplingInterval = MinimumSamplingIntervals.Indeterminate,
             ReferenceTypeId = ReferenceTypes.HasProperty,
-            DisplayName = propertyName
+            DisplayName = browseName
         };
     }
 

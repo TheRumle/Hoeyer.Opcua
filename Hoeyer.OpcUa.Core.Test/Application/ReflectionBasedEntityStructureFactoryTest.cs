@@ -10,7 +10,9 @@ namespace Hoeyer.OpcUa.Core.Test.Application;
 public sealed class ReflectionBasedEntityStructureFactoryTest
 {
     private readonly Type _entityType = typeof(AllPropertyTypesEntity);
-    private readonly ReflectionBasedEntityStructureFactory<AllPropertyTypesEntity> _testSubject = new();
+
+    private readonly ReflectionBasedEntityStructureFactory<AllPropertyTypesEntity> _testSubject =
+        new(new BrowseNameCollection<AllPropertyTypesEntity>());
 
     [Test]
     public async Task BaseObjectNameMatchesTypeName()

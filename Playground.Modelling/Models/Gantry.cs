@@ -5,7 +5,8 @@ namespace Hoeyer.OpcUa.EntityModelling.Models;
 [OpcUaEntity]
 public sealed class Gantry
 {
-    public required Position Position { get; set; }
+    [BrowseName("GantryPosition")] public required Position Position { get; set; }
+
     public required int IntValue { get; set; }
     public required Guid HeldContainer { get; set; }
     public required bool Occupied { get; set; }

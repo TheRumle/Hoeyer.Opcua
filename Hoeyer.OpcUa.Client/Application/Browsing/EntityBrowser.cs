@@ -19,25 +19,22 @@ namespace Hoeyer.OpcUa.Client.Application.Browsing;
 
 /// <summary>
 ///     A client for browsing an entity - traverses the node tree from root using the <paramref name="traversalStrategy" />
-///     and until a match is found using <paramref name="identityMatcher" /> - the match is deemed to be the entity node.
+///     and until a match is found using the browse name of the entity.
 ///     If the node has already been found previously, the tree is not traversed again.
 /// </summary>
 /// <param name="logger">A logger to log browse exceptions and diagnostics</param>
 /// <param name="traversalStrategy">A strategy for traversing the node tree</param>
-/// <param name="identityMatcher">True if the provided <see cref="ReferenceDescription" /> is a description for the entity</param>
 /// <typeparam name="TEntity">The entity the EntityBrowser is assigned to</typeparam>
 public sealed class EntityBrowser<TEntity>(
+    IBrowseNameCollection<TEntity> browseNameCollection,
     ILogger<EntityBrowser<TEntity>> logger,
     INodeTreeTraverser traversalStrategy,
     IEntitySessionFactory sessionFactory,
     INodeReader reader,
-    IEntityNodeStructureFactory<TEntity> nodeStructureFactory,
-    EntityDescriptionMatcher<TEntity>? identityMatcher = null) : IEntityBrowser<TEntity>
+    IEntityNodeStructureFactory<TEntity> nodeStructureFactory) : IEntityBrowser<TEntity>
 {
-    private static readonly string EntityName = typeof(TEntity).Name;
-
     private readonly EntityDescriptionMatcher<TEntity> _identityMatcher
-        = identityMatcher ?? (n => EntityName.Equals(n.BrowseName.Name));
+        = n => browseNameCollection.EntityName.Equals(n.BrowseName.Name);
 
     private readonly Lazy<ISession>
         _session = new(() => sessionFactory.GetSessionFor(typeof(TEntity).Name + "Browser").Session);
@@ -95,7 +92,7 @@ public sealed class EntityBrowser<TEntity>(
         return await logger.LogWithScopeAsync(new
         {
             Session = Session.ToLoggingObject(),
-            Entity = EntityName
+            Entity = browseNameCollection.EntityName
         }, async () =>
         {
             _entityRoot ??= await FindEntityRoot(cancellationToken);

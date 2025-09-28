@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Hoeyer.OpcUa.Core.Application.NodeStructureFactory;
 
 namespace Hoeyer.OpcUa.Simulation.Api;
 
@@ -11,10 +12,10 @@ public sealed class OpcMethodArgumentsAttribute<TEntity, TInterface> : Attribute
     {
         Entity = typeof(TEntity);
         Interface = typeof(TInterface);
-        MethodName = methodName;
         Method = Interface.GetMember(methodName)
             .OfType<MethodInfo>()
             .First();
+        MethodName = Method.GetBrowseNameOrDefault(methodName);
     }
 
     public MethodInfo Method { get; }

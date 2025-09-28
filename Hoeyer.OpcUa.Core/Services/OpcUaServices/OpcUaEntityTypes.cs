@@ -30,6 +30,17 @@ public static class OpcUaEntityTypes
                     serviceAttributeTuple.attribute!.GetType().GenericTypeArguments[0])))
             .ToFrozenSet();
 
+    public static readonly FrozenDictionary<Type, FrozenSet<MethodInfo>> MethodsByEntity =
+        Entities.ToFrozenDictionary(entityType => entityType, entityType =>
+        {
+            return EntityBehaviours
+                .Where(behaviourService => behaviourService.Entity == entityType)
+                .SelectMany(behaviourService => behaviourService.ServiceInterface
+                    .GetMembers()
+                    .OfType<MethodInfo>())
+                .ToFrozenSet();
+        });
+
     public static IEnumerable<Type> TypesFromReferencingAssembliesUsingMarker(Type marke) =>
         typeof(OpcUaEntityAttribute)
             .GetTypesFromConsumingAssemblies()

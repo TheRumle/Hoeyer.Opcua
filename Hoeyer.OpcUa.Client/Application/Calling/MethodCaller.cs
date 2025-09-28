@@ -5,12 +5,16 @@ using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Calling;
 using Hoeyer.OpcUa.Client.Api.Calling.Exceptions;
 using Hoeyer.OpcUa.Client.Api.Connection;
+using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Client.Application.Calling;
 
-public class MethodCaller<TEntity>(IEntityBrowser<TEntity> browser, IEntitySessionFactory factory)
+public class MethodCaller<TEntity>(
+    IEntityBrowser<TEntity> browser,
+    IEntitySessionFactory factory,
+    IBrowseNameCollection<TEntity> browseNameCollection)
     : IMethodCaller<TEntity>
 {
     private static readonly string SessionClientId = typeof(TEntity).Name + "MethodCaller";
@@ -18,7 +22,7 @@ public class MethodCaller<TEntity>(IEntityBrowser<TEntity> browser, IEntitySessi
     public async Task CallMethod(string methodName,
         CancellationToken token = default,
         params object[] args) =>
-        await CallNode(methodName, token, args);
+        await CallNode(browseNameCollection.MethodNames[methodName], token, args);
 
     /// <inheritdoc />
     public async Task<T> CallMethod<T>(string methodName, CancellationToken token = default, params object[] args)

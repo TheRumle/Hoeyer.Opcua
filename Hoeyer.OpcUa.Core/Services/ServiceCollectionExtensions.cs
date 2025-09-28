@@ -56,6 +56,7 @@ public static class ServiceCollectionExtensions
         }
 
         services.AddSingleton(typeof(IEntityNodeStructureFactory<>), typeof(ReflectionBasedEntityStructureFactory<>));
+        services.AddSingleton(typeof(IBrowseNameCollection<>), typeof(BrowseNameCollection<>));
         return services;
     }
 

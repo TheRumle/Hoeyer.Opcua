@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
@@ -9,24 +8,36 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Application.NodeStructureFactory;
 
-public class ReflectionBasedEntityStructureFactory<T> : IEntityNodeStructureFactory<T>
+public sealed class ReflectionBasedEntityStructureFactory<T>(IBrowseNameCollection<T> browseNameCollection)
+    : IEntityNodeStructureFactory<T>
 {
     private readonly Type _type = typeof(T);
+    private IEntityNode? _node;
 
     /// <inheritdoc />
     public IEntityNode Create(ushort applicationNamespaceIndex)
     {
+        if (_node != null)
+        {
+            return _node;
+        }
+
         var type = typeof(T);
-        var entityName = type.Name;
+        var browseName = browseNameCollection.EntityName;
+
         BaseObjectState entity = new BaseObjectState(null)
         {
-            BrowseName = new QualifiedName(entityName, applicationNamespaceIndex),
-            NodeId = new NodeId(entityName, applicationNamespaceIndex),
-            DisplayName = entityName,
+            BrowseName = new QualifiedName(browseName, applicationNamespaceIndex),
+            NodeId = new NodeId(browseName, applicationNamespaceIndex),
+            DisplayName = browseName
         };
         entity.AccessRestrictions = AccessRestrictionType.None;
 
-        List<OpcPropertyTypeInfo> properties = CreateProperties(type, entity).ToList();
+        var properties = type
+            .GetProperties()
+            .Select(e => new OpcPropertyTypeInfo(browseNameCollection.PropertyNames[e.Name], e, entity))
+            .ToList();
+
         List<OpcMethodTypeInfo> methods = CreateMethods(type, entity).ToList();
         Exception[] errors = VerifyNoDuplicateMethodNames(methods)
             .Union(VerifyProperties(properties))
@@ -36,9 +47,10 @@ public class ReflectionBasedEntityStructureFactory<T> : IEntityNodeStructureFact
         AssignReferences(properties, entity);
         AssignMethods(methods, entity);
 
-        return new EntityNode(entity,
+        _node = new EntityNode(entity,
             new HashSet<PropertyState>(properties.Select(e => e.OpcProperty)),
             new HashSet<MethodState>(methods.Select(e => e.Method)));
+        return _node;
     }
 
     private IEnumerable<Exception> VerifyProperties(IList<OpcPropertyTypeInfo> properties)
@@ -71,7 +83,6 @@ public class ReflectionBasedEntityStructureFactory<T> : IEntityNodeStructureFact
 
     private static void AssignReferences(IEnumerable<IOpcTypeInfo> values, BaseObjectState entity)
     {
-        var exceptions = new List<Exception>();
         foreach (var pr in values)
         {
             var referenceTypeid = pr switch
@@ -84,30 +95,22 @@ public class ReflectionBasedEntityStructureFactory<T> : IEntityNodeStructureFact
             entity.AddChild(pr.InstanceState);
             entity.AddReference(referenceTypeid, false, pr.InstanceState.NodeId);
         }
-
-        if (exceptions.Any()) throw new AggregateException(exceptions);
     }
 
-    private static IEnumerable<OpcMethodTypeInfo> CreateMethods(Type entityType, BaseObjectState entity)
+    private IEnumerable<OpcMethodTypeInfo> CreateMethods(Type entityType, BaseObjectState entity)
     {
-        return OpcUaEntityTypes
-            .EntityBehaviours
-            .Where(behaviourService => behaviourService.Entity == entityType)
-            .SelectMany(behaviourService => behaviourService.ServiceInterface
-                .GetMembers()
-                .OfType<MethodInfo>())
-            .Select(method => new OpcMethodTypeInfo(
-                methodName: method.Name,
-                parent: entity,
-                returnType: method.ReturnType == typeof(Task) && !method.ReturnType.IsGenericType
-                    ? null
-                    : method.ReturnType,
-                arguments: method.GetParameters()
-            ));
-    }
-
-    private static IEnumerable<OpcPropertyTypeInfo> CreateProperties(Type entityType, BaseObjectState entity)
-    {
-        return entityType.GetProperties().Select(e => new OpcPropertyTypeInfo(e, entity));
+        return OpcUaEntityTypes.MethodsByEntity[entityType]
+            .Select(method =>
+            {
+                var browseName = browseNameCollection.MethodNames[method.Name];
+                return new OpcMethodTypeInfo(
+                    methodName: browseName,
+                    parent: entity,
+                    returnType: method.ReturnType == typeof(Task) && !method.ReturnType.IsGenericType
+                        ? null
+                        : method.ReturnType,
+                    arguments: method.GetParameters()
+                );
+            });
     }
 }
