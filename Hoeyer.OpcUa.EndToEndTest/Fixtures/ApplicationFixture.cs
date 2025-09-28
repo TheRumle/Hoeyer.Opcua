@@ -16,6 +16,7 @@ public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
     public ApplicationFixture(IServiceCollection collection)
     {
         _collection = collection;
+        ServiceProvider = _collection.BuildServiceProvider();
     }
 
     public ApplicationFixture() : this(new RunningSimulationServicesAttribute().ServiceCollection)
@@ -24,7 +25,7 @@ public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
 
     public CancellationToken Token => _cancellationTokenSource.Token;
     public IServiceScope Scope { get; private set; } = null!;
-    public IServiceProvider ServiceProvider { get; private set; }
+    public IServiceProvider ServiceProvider { get; }
 
 
     /// <inheritdoc />  
@@ -38,7 +39,6 @@ public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
     public async Task InitializeAsync()
     {
         if (_isInitialized) return;
-        ServiceProvider = _collection.BuildServiceProvider();
         Scope = ServiceProvider.CreateAsyncScope();
         await Scope.ServiceProvider.GetRequiredService<IStartableEntityServer>().StartAsync();
         var serverStarted = Scope.ServiceProvider.GetService<IEntityServerStartedMarker>()!;

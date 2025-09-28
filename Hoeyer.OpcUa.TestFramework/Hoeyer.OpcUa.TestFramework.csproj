@@ -16,7 +16,7 @@
         <PackageReference Include="JetBrains.Annotations" Version="2024.3.0"/>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.1"/>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0"/>
-        <PackageReference Include="TUnit" Version="0.57.65"/>
+        <PackageReference Include="TUnit" Version="0.61.39"/>
     </ItemGroup>
 
     <ItemGroup>
