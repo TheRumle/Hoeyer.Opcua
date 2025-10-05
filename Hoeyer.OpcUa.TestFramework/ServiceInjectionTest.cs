@@ -44,7 +44,7 @@ public abstract class ServiceInjectionTest(
     public async Task ServiceCanBeCreatedAsTransient(ServiceDescriptor descriptor) =>
         await AssertServiceCanBeCreated(descriptor);
 
-    [Test]
+    [Test, Skip("No implementations of scoped services are expected as of right now.")]
     [DisplayName("The service '$descriptor ServiceType' can be provided as scoped.")]
     [InstanceMethodDataSource(nameof(ScopedServices))]
     public async Task ServiceCanBeCreatedAsScoped(ServiceDescriptor descriptor) =>

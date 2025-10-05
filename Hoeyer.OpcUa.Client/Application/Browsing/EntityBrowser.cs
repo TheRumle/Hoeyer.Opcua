@@ -73,17 +73,17 @@ public sealed class EntityBrowser<TEntity>(
     {
         var index = _entityRoot!.NodeId.NamespaceIndex;
         IEntityNode structure = nodeStructureFactory.Create(index);
-        foreach (PropertyState? state in structure.PropertyStates)
+        foreach (var variable in variables)
         {
-            VariableNode? match = variables.FirstOrDefault(n => n != null && n.NodeId.Equals(state.NodeId));
-            if (match != null)
+            var browseName = variable.BrowseName.Name;
+            var match = structure.PropertyByBrowseName.TryGetValue(browseName, out var currentValue);
+            if (match)
             {
-                state.Value = match.Value;
+                currentValue!.Value = variable.Value;
             }
         }
 
         LastState = new ValueTuple<IEntityNode, DateTime>(structure, DateTime.Now);
-
         return structure;
     }
 
