@@ -40,7 +40,7 @@ internal sealed class EntitySubscriptionManager<T>(
         IMessageConsumer<T> consumer, CancellationToken cancellationToken = default)
     {
         CurrentNodeState ??= await browser.BrowseEntityNode(cancellationToken);
-        var session = await sessionFactory.GetSessionForAsync(SessionClientId, cancellationToken);
+        var session = await sessionFactory.GetSessionForAsync<T>(cancellationToken);
         (EntitySubscription, MonitoredItems) =
             await monitorFactory.CreateAndMonitorAll(session, CurrentNodeState, HandleChange, cancellationToken);
         await session.Session.PublishAsync(null, new SubscriptionAcknowledgementCollection(), cancellationToken);
@@ -54,7 +54,7 @@ internal sealed class EntitySubscriptionManager<T>(
         CancellationToken cancellationToken = default)
     {
         CurrentNodeState ??= await browser.BrowseEntityNode(cancellationToken);
-        var session = await sessionFactory.GetSessionForAsync(SessionClientId, cancellationToken);
+        var session = await sessionFactory.GetSessionForAsync<T>(cancellationToken);
         EntitySubscription ??= await monitorFactory.GetOrCreateSubscriptionWithCallback(
             session,
             "EntitySubscriptionManagerSubscription",

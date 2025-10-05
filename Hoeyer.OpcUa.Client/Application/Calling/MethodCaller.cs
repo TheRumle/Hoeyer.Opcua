@@ -17,8 +17,6 @@ public class MethodCaller<TEntity>(
     IBrowseNameCollection<TEntity> browseNameCollection)
     : IMethodCaller<TEntity>
 {
-    private static readonly string SessionClientId = typeof(TEntity).Name + "MethodCaller";
-
     public async Task CallMethod(string methodName,
         CancellationToken token = default,
         params object[] args) =>
@@ -43,7 +41,7 @@ public class MethodCaller<TEntity>(
             var methodToCall = methodNodesByName[methodName] ??
                                throw new EntityMethodCallException(entityNode.EntityName, methodName);
 
-            var session = await factory.GetSessionForAsync(SessionClientId, token);
+            var session = await factory.GetSessionForAsync<TEntity>(token);
             return await session.Session.CallAsync(entityNode.NodeId, methodToCall, token, args);
         }
         catch (ServiceResultException e) when (e.StatusCode == StatusCodes.BadNotImplemented)

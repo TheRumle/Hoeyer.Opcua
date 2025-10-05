@@ -46,8 +46,6 @@ internal class ReusableSessionFactory(
         return newSession;
     }
 
-    public IEntitySession GetSessionFor(string client) => GetSessionForAsync(client).Result;
-
 
     private ConfiguredEndpoint CreateEndpoint()
     {

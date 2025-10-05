@@ -48,7 +48,7 @@ public sealed class EntityWriter<TEntity>(
     private async Task WriteValues(CancellationToken cancellationToken,
         IEnumerable<WriteValue> valuesToWrite)
     {
-        IEntitySession session = await factory.GetSessionForAsync(SessionId, cancellationToken);
+        var session = await factory.GetSessionForAsync<TEntity>(cancellationToken);
         WriteResponse? res =
             await session.Session.WriteAsync(null, new WriteValueCollection(valuesToWrite), cancellationToken);
         foreach (DiagnosticInfo? s in res.DiagnosticInfos.Where(e => !e.IsNullDiagnosticInfo))

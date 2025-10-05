@@ -37,7 +37,7 @@ public sealed class EntityBrowser<TEntity>(
         = n => browseNameCollection.EntityName.Equals(n.BrowseName.Name);
 
     private readonly Lazy<ISession>
-        _session = new(() => sessionFactory.GetSessionFor(typeof(TEntity).Name + "Browser").Session);
+        _session = new(() => sessionFactory.GetSessionFor<TEntity>().Session);
 
     private Node? _entityRoot;
     private ISession Session => _session.Value;
