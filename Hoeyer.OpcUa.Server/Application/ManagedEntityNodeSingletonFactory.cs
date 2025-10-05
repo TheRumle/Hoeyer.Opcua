@@ -20,7 +20,7 @@ internal sealed class ManagedEntityNodeSingletonFactory<T>(
     {
         if (_node != null) return _node;
 
-        var @namespace = info.Host + $"/{typeof(T).Name}";
+        var @namespace = info.ApplicationNamespace + $"/{typeof(T).Name}";
         var namespaceIndex = namespaceToIndex.Invoke(@namespace);
 
         var entity = await value.LoadCurrentState();

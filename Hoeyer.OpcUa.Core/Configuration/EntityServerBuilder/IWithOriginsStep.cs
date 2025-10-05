@@ -2,5 +2,5 @@
 
 public interface IWithOriginsStep
 {
-    public IEntityServerConfigurationBuildable WithWebOrigins(WebProtocol protocol, string host, int port);
+    public IWithApplicationUri WithWebOrigins(WebProtocol protocol, string host, int port);
 }

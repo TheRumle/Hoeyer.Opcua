@@ -40,6 +40,7 @@ builder.Services.AddOpcUa(serverSetup => serverSetup
         .WithServerId("MyServer")
         .WithServerName("My Server")
         .WithWebOrigins(WebProtocol.OpcTcp, "localhost", opcUaConfig.Port)
+        .WithApplicationUri("/myApplication")
         .Build())
     .WithEntityServices()
     .WithOpcUaClientServices()

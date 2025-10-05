@@ -7,25 +7,22 @@ namespace Hoeyer.OpcUa.Core.Configuration;
 
 internal record OpcUaTargetServerInfo : IOpcUaTargetServerInfo
 {
-    private readonly Uri _host;
-
-    public OpcUaTargetServerInfo(string serverId, string serverName, Uri applicationNamespace)
+    public OpcUaTargetServerInfo(string serverId, string serverName, Uri host, Uri applicationNamespace)
     {
-        Uri.TryCreate(applicationNamespace.ToString(), UriKind.Absolute, out _host);
-        ValidateSupportedProtocol([Host]);
-
+        ValidateSupportedProtocol([host, applicationNamespace]);
+        Host = host;
+        ApplicationNamespace = applicationNamespace;
         ServerId = serverId;
         ApplicationName = serverName;
-        ApplicationNamespace = applicationNamespace;
     }
 
-    public Uri Host => _host;
+    public Uri Host { get; }
 
     public string ServerId { get; }
     public string ApplicationName { get; }
 
     /// <summary>
-    ///     For instance, http://samples.org/UA/MyApplication or something else uniqely identifying the overall resource,
+    ///     For instance, http://samples.org/UA/MyApplication or something else uniquely identifying the overall resource,
     /// </summary>
     public Uri ApplicationNamespace { get; }
 

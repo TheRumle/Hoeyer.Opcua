@@ -1,30 +1,21 @@
 ﻿using System;
 using System.Globalization;
+using Hoeyer.Common.Extensions.Collection;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
 
 internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuilder, IServerNameStep, IWithOriginsStep,
-    IEntityServerConfigurationBuildable
+    IWithApplicationUri
 {
+    private Uri _applicationUri = null!;
     private Uri _host = null!;
     private string _serverId = string.Empty;
     private string _serverName = string.Empty;
 
+
     private EntityServerConfigurationBuilder()
     {
-    }
-
-    public IOpcUaTargetServerInfo Build()
-    {
-        var validuri = Uri.TryCreate(string.Format(CultureInfo.InvariantCulture, "{0}", _host),
-            UriKind.RelativeOrAbsolute, out var uri);
-        if (!validuri)
-        {
-            throw new ArgumentException($"Host and serverId could not form a valid URI: {uri}");
-        }
-
-        return new OpcUaTargetServerInfo(_serverId, _serverName, uri);
     }
 
     public IServerNameStep WithServerId(string serverId)
@@ -39,8 +30,25 @@ internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuil
         return this;
     }
 
+    public IOpcUaTargetServerInfo Build()
+    {
+        if (!_host.IsBaseOf(_applicationUri))
+        {
+            throw new ArgumentException($"The host uri {_host} is not a base of application {_applicationUri}");
+        }
+
+        return new OpcUaTargetServerInfo(_serverId, _serverName, _host, _applicationUri);
+    }
+
     /// <inheritdoc />
-    public IEntityServerConfigurationBuildable WithWebOrigins(WebProtocol protocol, string host, int port)
+    public IWithApplicationUri WithApplicationUri(string applicationNameUri)
+    {
+        _applicationUri = ParseUri(_host + ParseAdditionalPath(applicationNameUri));
+        return this;
+    }
+
+    /// <inheritdoc />
+    public IWithApplicationUri WithWebOrigins(WebProtocol protocol, string host, int port)
     {
         var protocolsString = protocol switch
         {
@@ -50,12 +58,47 @@ internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuil
             var _ => throw new ArgumentOutOfRangeException(nameof(protocol), protocol, null)
         };
 
-        _host = new Uri($"{protocolsString}://{host}:{port}");
+        var uriString = $"{protocolsString}://{host}:{port}";
+        _host = ParseUri(uriString);
+        _applicationUri = _host;
         return this;
     }
 
     public static IEntityServerConfigurationBuilder Create()
     {
         return new EntityServerConfigurationBuilder();
+    }
+
+    private static Uri ParseUri(string uriString)
+    {
+        var isValidUri = Uri.TryCreate(string.Format(CultureInfo.InvariantCulture, "{0}", uriString),
+            UriKind.RelativeOrAbsolute, out var result);
+
+        if (!isValidUri)
+        {
+            throw new ArgumentException($"Host and serverId could not form a valid URI: {uriString}");
+        }
+
+        return result;
+    }
+
+    private string ParseAdditionalPath(string additionalPath)
+    {
+        if (additionalPath.IsEmpty())
+        {
+            return additionalPath;
+        }
+
+        if (additionalPath.Length > 1 && additionalPath.StartsWith('/'))
+        {
+            return additionalPath.Substring(1);
+        }
+
+        if (additionalPath.Length >= 1 && !additionalPath.StartsWith('/'))
+        {
+            return "/" + additionalPath;
+        }
+
+        return additionalPath;
     }
 }
