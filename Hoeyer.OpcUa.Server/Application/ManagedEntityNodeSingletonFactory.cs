@@ -8,7 +8,7 @@ using Hoeyer.OpcUa.Server.Api.NodeManagement;
 namespace Hoeyer.OpcUa.Server.Application;
 
 internal sealed class ManagedEntityNodeSingletonFactory<T>(
-    IOpcUaEntityServerInfo info,
+    IOpcUaTargetServerInfo info,
     IEntityLoader<T> value,
     IEntityTranslator<T> translator,
     IEntityNodeStructureFactory<T> structureFactory) : IManagedEntityNodeSingletonFactory<T>

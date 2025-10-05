@@ -25,7 +25,7 @@ public static class ServiceExtensions
         IServiceCollection collection = serviceRegistration.Collection;
 
         collection.AddSingleton(typeof(IEntityNodeStructureFactory<>), typeof(ReflectionBasedEntityStructureFactory<>));
-        collection.AddSingleton<OpcUaEntityServerSetup>(provider => AddServerSetup(additionalConfiguration, provider));
+        collection.AddSingleton<OpcUaTargetServerSetup>(provider => AddServerSetup(additionalConfiguration, provider));
 
         var registration = typeof(ServiceExtensions)
             .InvokeStaticEntityRegistration(nameof(AddServices), collection);
@@ -50,17 +50,17 @@ public static class ServiceExtensions
         return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
     }
 
-    private static OpcUaEntityServerSetup AddServerSetup(Action<ServerConfiguration>? additionalConfiguration,
+    private static OpcUaTargetServerSetup AddServerSetup(Action<ServerConfiguration>? additionalConfiguration,
         IServiceProvider p)
     {
-        var standardConfig = p.GetService<IOpcUaEntityServerInfo>();
+        var standardConfig = p.GetService<IOpcUaTargetServerInfo>();
         if (standardConfig == null)
         {
             throw new InvalidOperationException(
-                $"No {nameof(IOpcUaEntityServerInfo)} has been registered! This should be prevented using builder pattern. Are you using the library as intended and using the {nameof(ServiceCollectionExtensions.AddOpcUa)} {nameof(IServiceCollection)} extension method?");
+                $"No {nameof(IOpcUaTargetServerInfo)} has been registered! This should be prevented using builder pattern. Are you using the library as intended and using the {nameof(ServiceCollectionExtensions.AddOpcUa)} {nameof(IServiceCollection)} extension method?");
         }
 
-        return new OpcUaEntityServerSetup(standardConfig, additionalConfiguration ?? (value => { }));
+        return new OpcUaTargetServerSetup(standardConfig, additionalConfiguration ?? (value => { }));
     }
 
     public static void AddServices<TEntity>(IServiceCollection collection)
@@ -90,11 +90,9 @@ public static class ServiceExtensions
         return serverConfig;
     }
 
-    public static OpcUaEntityServerSetup WithAdditionalServerConfiguration(IOpcUaEntityServerInfo setup,
-        Action<ServerConfiguration> additionalConfiguration)
-    {
-        return new OpcUaEntityServerSetup(setup, additionalConfiguration);
-    }
+    public static OpcUaTargetServerSetup WithAdditionalServerConfiguration(IOpcUaTargetServerInfo setup,
+        Action<ServerConfiguration> additionalConfiguration) =>
+        new(setup, additionalConfiguration);
 
     private static void AddLoaders(IServiceCollection collection)
     {

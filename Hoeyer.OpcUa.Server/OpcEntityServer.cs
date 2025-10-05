@@ -17,13 +17,13 @@ using Opc.Ua.Server;
 namespace Hoeyer.OpcUa.Server;
 
 internal sealed class OpcEntityServer(
-    IOpcUaEntityServerInfo applicationProductDetails,
+    IOpcUaTargetServerInfo applicationProductDetails,
     IEnumerable<IEntityNodeManagerFactory> entityManagerFactories,
     ILogger<OpcEntityServer> logger)
     : StandardServer
 {
     private static readonly DateTime buildDate = DateTime.UtcNow;
-    public readonly IOpcUaEntityServerInfo ServerInfo = applicationProductDetails;
+    public readonly IOpcUaTargetServerInfo ServerInfo = applicationProductDetails;
 
     private bool _disposed;
 

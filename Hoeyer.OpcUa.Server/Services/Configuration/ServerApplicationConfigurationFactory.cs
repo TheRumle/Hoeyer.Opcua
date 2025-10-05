@@ -47,7 +47,7 @@ internal static class ServerApplicationConfigurationFactory
     };
 
     /// <inheritdoc />
-    public static ApplicationConfiguration CreateServerConfiguration(OpcUaEntityServerSetup configuration)
+    public static ApplicationConfiguration CreateServerConfiguration(OpcUaTargetServerSetup configuration)
     {
         var applicationConfiguration = CreateApplicationConfiguration(configuration);
         SetupDefaultValues(applicationConfiguration.ServerConfiguration, configuration);
@@ -79,7 +79,7 @@ internal static class ServerApplicationConfigurationFactory
     }
 
 
-    private static ApplicationConfiguration CreateApplicationConfiguration(OpcUaEntityServerSetup configuration)
+    private static ApplicationConfiguration CreateApplicationConfiguration(OpcUaTargetServerSetup configuration)
     {
         var config = new ApplicationConfiguration
         {
@@ -122,7 +122,7 @@ internal static class ServerApplicationConfigurationFactory
 
 
     private static void SetupDefaultValues(ServerConfiguration serverConfiguration,
-        OpcUaEntityServerSetup opcUaEntityEntityServer)
+        OpcUaTargetServerSetup opcUaTargetTargetServer)
     {
         serverConfiguration.MinRequestThreadCount = 5;
         serverConfiguration.MaxRequestThreadCount = 100;
@@ -149,7 +149,7 @@ internal static class ServerApplicationConfigurationFactory
         serverConfiguration.MaxEventQueueSize = 10000;
         serverConfiguration.MaxTrustListSize = 0;
         serverConfiguration.MultiCastDnsEnabled = false;
-        serverConfiguration.NodeManagerSaveFile = opcUaEntityEntityServer.ServerId + ".Nodes.xml";
+        serverConfiguration.NodeManagerSaveFile = opcUaTargetTargetServer.ServerId + ".Nodes.xml";
         serverConfiguration.ShutdownDelay = 5;
     }
 }

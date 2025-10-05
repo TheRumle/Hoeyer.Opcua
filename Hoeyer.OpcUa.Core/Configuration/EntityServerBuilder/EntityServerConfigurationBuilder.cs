@@ -15,7 +15,7 @@ internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuil
     {
     }
 
-    public IOpcUaEntityServerInfo Build()
+    public IOpcUaTargetServerInfo Build()
     {
         var validuri = Uri.TryCreate(string.Format(CultureInfo.InvariantCulture, "{0}", _host),
             UriKind.RelativeOrAbsolute, out var uri);
@@ -24,7 +24,7 @@ internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuil
             throw new ArgumentException($"Host and serverId could not form a valid URI: {uri}");
         }
 
-        return new OpcUaEntityServerInfo(_serverId, _serverName, uri);
+        return new OpcUaTargetServerInfo(_serverId, _serverName, uri);
     }
 
     public IServerNameStep WithServerId(string serverId)

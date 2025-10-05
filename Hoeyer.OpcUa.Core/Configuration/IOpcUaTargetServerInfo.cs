@@ -2,7 +2,7 @@
 
 namespace Hoeyer.OpcUa.Core.Configuration;
 
-public interface IOpcUaEntityServerInfo
+public interface IOpcUaTargetServerInfo
 {
     string ServerId { get; }
     string ApplicationName { get; }
@@ -12,6 +12,4 @@ public interface IOpcUaEntityServerInfo
     ///     For instance, http://samples.org/UA/MyApplication or something else uniqely identifying the overall resource,
     /// </summary>
     Uri ApplicationNamespace { get; }
-
-    Uri OpcUri { get; }
 }

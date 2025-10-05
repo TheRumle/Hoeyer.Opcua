@@ -5,11 +5,11 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Configuration;
 
-internal record OpcUaEntityServerInfo : IOpcUaEntityServerInfo
+internal record OpcUaTargetServerInfo : IOpcUaTargetServerInfo
 {
     private readonly Uri _host;
 
-    public OpcUaEntityServerInfo(string serverId, string serverName, Uri applicationNamespace)
+    public OpcUaTargetServerInfo(string serverId, string serverName, Uri applicationNamespace)
     {
         Uri.TryCreate(applicationNamespace.ToString(), UriKind.Absolute, out _host);
         ValidateSupportedProtocol([Host]);
@@ -17,11 +17,6 @@ internal record OpcUaEntityServerInfo : IOpcUaEntityServerInfo
         ServerId = serverId;
         ApplicationName = serverName;
         ApplicationNamespace = applicationNamespace;
-        OpcUri = new UriBuilder(Host)
-        {
-            Scheme = Host.Scheme,
-            Port = Host.Port
-        }.Uri;
     }
 
     public Uri Host => _host;
@@ -33,9 +28,6 @@ internal record OpcUaEntityServerInfo : IOpcUaEntityServerInfo
     ///     For instance, http://samples.org/UA/MyApplication or something else uniqely identifying the overall resource,
     /// </summary>
     public Uri ApplicationNamespace { get; }
-
-    /// <inheritdoc />
-    public Uri OpcUri { get; }
 
     private static void ValidateSupportedProtocol(IEnumerable<Uri> addresses)
     {

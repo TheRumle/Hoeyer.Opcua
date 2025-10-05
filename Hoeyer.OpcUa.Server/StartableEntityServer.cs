@@ -45,7 +45,7 @@ internal sealed class StartableEntityServer(
     }
 
     /// <inheritdoc />
-    public IOpcUaEntityServerInfo ServerInfo => _entityServer.ServerInfo;
+    public IOpcUaTargetServerInfo ServerInfo => _entityServer.ServerInfo;
 
     public void Dispose()
     {

@@ -5,6 +5,6 @@ namespace Hoeyer.OpcUa.Server.Api;
 
 public interface IStartableEntityServer
 {
-    IOpcUaEntityServerInfo ServerInfo { get; }
+    IOpcUaTargetServerInfo ServerInfo { get; }
     Task<IStartedEntityServer> StartAsync();
 }

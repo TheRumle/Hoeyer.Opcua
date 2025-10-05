@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
 
 
     public static OnGoingOpcEntityServiceRegistration AddOpcUa(this IServiceCollection services,
-        Func<IEntityServerConfigurationBuilder, IOpcUaEntityServerInfo> configurationBuilder)
+        Func<IEntityServerConfigurationBuilder, IOpcUaTargetServerInfo> configurationBuilder)
     {
         var entityServerConfiguration = configurationBuilder.Invoke(EntityServerConfigurationBuilder.Create());
         services.AddSingleton(entityServerConfiguration);

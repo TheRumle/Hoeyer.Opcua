@@ -12,7 +12,7 @@ namespace Hoeyer.OpcUa.Client.Application.Connection;
 
 internal class ReusableSessionFactory(
     ILogger<ReusableSessionFactory> logger,
-    IOpcUaEntityServerInfo applicationOptions,
+    IOpcUaTargetServerInfo applicationOptions,
     ISubscriptionTransferStrategy subscriptionTransferStrategy,
     IReconnectionStrategy reconnectionStrategy)
     : IEntitySessionFactory
@@ -49,7 +49,7 @@ internal class ReusableSessionFactory(
 
     private ConfiguredEndpoint CreateEndpoint()
     {
-        var opcServerUrl = applicationOptions.OpcUri.ToString();
+        var opcServerUrl = applicationOptions.ApplicationNamespace.ToString();
         var endpointConfiguration = EndpointConfiguration.Create(_configuration);
         return new ConfiguredEndpoint(null, CoreClientUtils.SelectEndpoint(opcServerUrl, false), endpointConfiguration);
     }

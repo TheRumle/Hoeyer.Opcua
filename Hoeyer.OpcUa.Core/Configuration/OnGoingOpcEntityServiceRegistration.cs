@@ -3,7 +3,7 @@
 namespace Hoeyer.OpcUa.Core.Configuration;
 
 /// <summary>
-///     A service collection where an <see cref="OpcUaEntityServerInfo" /> has been registered.
+///     A service collection where an <see cref="OpcUaTargetServerInfo" /> has been registered.
 /// </summary>
 /// <param name="Collection"></param>
 public record OnGoingOpcEntityServiceRegistration(IServiceCollection Collection)
