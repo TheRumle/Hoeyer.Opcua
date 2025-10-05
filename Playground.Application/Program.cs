@@ -1,6 +1,7 @@
 using System.Configuration;
 using System.Text.Json;
 using Hoeyer.OpcUa.Client.Services;
+using Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
 using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.EntityModelling.Reactants;
 using Hoeyer.OpcUa.Server.Services;
@@ -38,8 +39,7 @@ builder.Services.AddLogging(e => e.AddSimpleConsole());
 builder.Services.AddOpcUa(serverSetup => serverSetup
         .WithServerId("MyServer")
         .WithServerName("My Server")
-        .WithOpcTcpHost("localhost", opcUaConfig.Port)
-        .WithEndpoints([$"opc.tcp://localhost:{opcUaConfig.Port}"])
+        .WithWebOrigins(WebProtocol.OpcTcp, "localhost", opcUaConfig.Port)
         .Build())
     .WithEntityServices()
     .WithOpcUaClientServices()

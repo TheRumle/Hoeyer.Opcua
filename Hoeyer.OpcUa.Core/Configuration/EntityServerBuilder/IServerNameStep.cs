@@ -7,5 +7,5 @@ public interface IServerNameStep
     /// </summary>
     /// <param name="serverName"> the name of the server</param>
     /// <returns></returns>
-    IHostStep WithServerName(string serverName);
+    IWithOriginsStep WithServerName(string serverName);
 }

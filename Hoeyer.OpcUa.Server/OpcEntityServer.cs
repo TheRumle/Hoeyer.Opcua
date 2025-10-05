@@ -23,7 +23,6 @@ internal sealed class OpcEntityServer(
     : StandardServer
 {
     private static readonly DateTime buildDate = DateTime.UtcNow;
-    public readonly IEnumerable<Uri> EndPoints = [..applicationProductDetails.Endpoints];
     public readonly IOpcUaEntityServerInfo ServerInfo = applicationProductDetails;
 
     private bool _disposed;

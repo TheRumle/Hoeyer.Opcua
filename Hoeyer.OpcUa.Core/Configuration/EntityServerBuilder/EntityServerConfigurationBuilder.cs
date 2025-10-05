@@ -1,33 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
 
-internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuilder, IServerNameStep, IHostStep,
-    IEndpointsStep, IAdditionalConfigurationStep
+internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuilder, IServerNameStep, IWithOriginsStep,
+    IEntityServerConfigurationBuildable
 {
-    private readonly HashSet<Uri> _endpoints = new();
     private Uri _host = null!;
     private string _serverId = string.Empty;
     private string _serverName = string.Empty;
 
     private EntityServerConfigurationBuilder()
     {
-    }
-
-    /// <inheritdoc />
-    public IEntityServerConfigurationBuildable WithAdditionalConfiguration(
-        Action<ServerConfiguration> additionalConfigurations)
-    {
-        return this;
-    }
-
-    public IEntityServerConfigurationBuildable WithEndpoints(List<string> endpoints)
-    {
-        foreach (var e in endpoints) _endpoints.Add(new Uri(e));
-        return this;
     }
 
     public IOpcUaEntityServerInfo Build()
@@ -39,7 +24,7 @@ internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuil
             throw new ArgumentException($"Host and serverId could not form a valid URI: {uri}");
         }
 
-        return new OpcUaEntityServerInfo(_serverId, _serverName, _host, _endpoints, uri);
+        return new OpcUaEntityServerInfo(_serverId, _serverName, uri);
     }
 
     public IServerNameStep WithServerId(string serverId)
@@ -48,24 +33,24 @@ internal class EntityServerConfigurationBuilder : IEntityServerConfigurationBuil
         return this;
     }
 
-    public IEndpointsStep WithHttpsHost(string host, int port)
+    public IWithOriginsStep WithServerName(string serverName)
     {
-        _host = new Uri("https://" + host + ":" + port);
-        _endpoints.Add(_host);
+        _serverName = serverName;
         return this;
     }
 
     /// <inheritdoc />
-    public IEndpointsStep WithOpcTcpHost(string host, int port)
+    public IEntityServerConfigurationBuildable WithWebOrigins(WebProtocol protocol, string host, int port)
     {
-        _host = new Uri("opc.tcp://" + host + ":" + port);
-        _endpoints.Add(_host);
-        return this;
-    }
+        var protocolsString = protocol switch
+        {
+            WebProtocol.OpcTcp => Utils.UriSchemeOpcTcp,
+            WebProtocol.Https => Utils.UriSchemeHttps,
+            WebProtocol.WebSocketSecure => Utils.UriSchemeOpcWss,
+            var _ => throw new ArgumentOutOfRangeException(nameof(protocol), protocol, null)
+        };
 
-    public IHostStep WithServerName(string serverName)
-    {
-        _serverName = serverName;
+        _host = new Uri($"{protocolsString}://{host}:{port}");
         return this;
     }
 

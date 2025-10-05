@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Hoeyer.Common.Utilities.Threading;
 using Hoeyer.OpcUa.Core.Api;
@@ -71,18 +70,17 @@ public sealed class SimulationBuilder<TEntity, TArguments, TReturn>
         return _simulationSteps.ToArray();
     }
 
-    public ISimulationBuilder<TEntity, TArguments, TReturn> ChangeState(
+
+    public new ISimulationBuilder<TEntity, TArguments, TReturn> ChangeState(
         Action<SimulationStepContext<TEntity, TArguments>> stateChange) => _commonOperations.ChangeState(stateChange);
 
-    public ISimulationBuilder<TEntity, TArguments, TReturn> ChangeStateAsync(
+    public new ISimulationBuilder<TEntity, TArguments, TReturn> ChangeStateAsync(
         Func<SimulationStepContext<TEntity, TArguments>, ValueTask> stateChange) =>
         _commonOperations.ChangeStateAsync(stateChange);
 
-    public ISimulationBuilder<TEntity, TArguments, TReturn> SideEffect(
+    public new ISimulationBuilder<TEntity, TArguments, TReturn> SideEffect(
         Action<SimulationStepContext<TEntity, TArguments>> sideEffect) => _commonOperations.SideEffect(sideEffect);
 
-    public ISimulationBuilder<TEntity, TArguments, TReturn> Wait(TimeSpan timeSpan) =>
+    public new ISimulationBuilder<TEntity, TArguments, TReturn> Wait(TimeSpan timeSpan) =>
         _commonOperations.Wait(timeSpan);
-
-    public IEnumerable<ISimulationStep> Build() => _simulationSteps.ToList();
 }

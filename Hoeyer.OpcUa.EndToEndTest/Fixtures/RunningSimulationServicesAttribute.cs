@@ -1,5 +1,6 @@
 ﻿using Hoeyer.Opc.Ua.Test.TUnit;
 using Hoeyer.OpcUa.Client.Services;
+using Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
 using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Server.Services;
 using Hoeyer.OpcUa.Simulation.ServerAdapter;
@@ -20,8 +21,7 @@ public sealed class RunningSimulationServicesAttribute : DependencyInjectionData
             .AddOpcUa(conf => conf
                 .WithServerId("MyServer")
                 .WithServerName("My Server")
-                .WithHttpsHost("localhost", _reservedPort.Port)
-                .WithEndpoints([$"opc.tcp://localhost:{_reservedPort.Port}"])
+                .WithWebOrigins(WebProtocol.OpcTcp, "localhost", _reservedPort.Port)
                 .Build())
             .WithEntityServices()
             .WithOpcUaClientServices()

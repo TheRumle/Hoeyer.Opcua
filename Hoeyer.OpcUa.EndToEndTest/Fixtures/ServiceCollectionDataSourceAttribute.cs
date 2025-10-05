@@ -1,4 +1,5 @@
 ﻿using Hoeyer.OpcUa.Client.Services;
+using Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
 using Hoeyer.OpcUa.Core.Services;
 using Hoeyer.OpcUa.Server.Services;
 using Hoeyer.OpcUa.Simulation.ServerAdapter;
@@ -26,8 +27,7 @@ public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourc
         var services = new ServiceCollection().AddOpcUa(conf => conf
                 .WithServerId("MyServer")
                 .WithServerName("My Server")
-                .WithHttpsHost("localhost", 5)
-                .WithEndpoints(["opc.tcp://localhost:5"])
+                .WithWebOrigins(WebProtocol.Https, "localhost", 5)
                 .Build())
             .WithEntityServices()
             .WithOpcUaClientServices()
