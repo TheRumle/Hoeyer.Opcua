@@ -26,4 +26,11 @@ internal static class WellKnown
         public static FullyQualifiedTypeName EntityBrowseNameCollection(string T) =>
             CoreApiTypeName($"IBrowseNameCollection<{T}>");
     }
+
+    public static class FullyQualifiedAttribute
+    {
+        public static readonly FullyQualifiedTypeName BrowseNameAttribute = GetTypeName("BrowseNameAttribute");
+
+        private static FullyQualifiedTypeName GetTypeName(string className) => new("Hoeyer.OpcUa.Core." + className);
+    }
 }
