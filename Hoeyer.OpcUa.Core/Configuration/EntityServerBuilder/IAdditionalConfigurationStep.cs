@@ -1,1 +1,0 @@
-﻿namespace Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;

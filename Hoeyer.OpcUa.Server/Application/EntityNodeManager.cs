@@ -32,14 +32,15 @@ internal sealed class EntityNodeManager<T>(
 
     private void InitializeNode(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
+        var wantedPlacement = ObjectIds.RootFolder;
         lock (Lock)
         {
             BaseObjectState node = ManagedEntity.Select(e => e.BaseObject);
             AddPredefinedNode(SystemContext, node);
-            if (!externalReferences.TryGetValue(ObjectIds.ObjectsFolder, out IList<IReference>? references))
+            if (!externalReferences.TryGetValue(wantedPlacement, out var references))
             {
                 references ??= new List<IReference>();
-                externalReferences[ObjectIds.ObjectsFolder] = references;
+                externalReferences[wantedPlacement] = references;
             }
 
             references.Add(new NodeStateReference(ReferenceTypeIds.Organizes, false, node.NodeId));

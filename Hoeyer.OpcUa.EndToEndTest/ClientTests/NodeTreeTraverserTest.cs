@@ -4,6 +4,7 @@ using Hoeyer.Common.Extensions.Collection;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Application.Browsing;
+using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using JetBrains.Annotations;
 using Opc.Ua;
@@ -97,5 +98,19 @@ public abstract class NodeTreeTraverserTest<T>(ApplicationFixture<T> fixture) wh
         await foreach (ReferenceWithId _ in value.TraverseFrom(ObjectIds.RootFolder, session, ct))
         {
         }
+    }
+
+    [Test]
+    [BrowseNameCollection]
+    [DisplayName("Can find entity root for $browseNameCollection")]
+    public async Task CanFindReferencesForAllNodes(BrowseNameCollection browseNameCollection, CancellationToken token)
+    {
+        var traversalStrategy = fixture.TestedService;
+        var session = await fixture.CreateSession();
+        await traversalStrategy
+            .TraverseUntil(session,
+                ObjectIds.RootFolder,
+                node => browseNameCollection.EntityName.Equals(node.BrowseName.Name),
+                token);
     }
 }

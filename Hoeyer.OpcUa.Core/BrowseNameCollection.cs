@@ -6,18 +6,16 @@ using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 
 namespace Hoeyer.OpcUa.Core;
 
-public sealed class BrowseNameCollection<T> : IBrowseNameCollection<T>
+public class BrowseNameCollection : IBrowseNameCollection
 {
-    private readonly Type _type = typeof(T);
-
-    public BrowseNameCollection()
+    public BrowseNameCollection(Type type)
     {
-        EntityName = _type.GetBrowseNameOrDefault(_type.Name);
-        PropertyNames = _type.GetProperties().ToFrozenDictionary(
+        EntityName = type.GetBrowseNameOrDefault(type.Name);
+        PropertyNames = type.GetProperties().ToFrozenDictionary(
             property => property.Name,
             property => property.GetBrowseNameOrDefault(property.Name));
 
-        MethodNames = OpcUaEntityTypes.MethodsByEntity[_type]
+        MethodNames = OpcUaEntityTypes.MethodsByEntity[type]
             .ToFrozenDictionary(e => e.Name,
                 e => e.GetBrowseNameOrDefault(e.Name));
     }
@@ -27,4 +25,9 @@ public sealed class BrowseNameCollection<T> : IBrowseNameCollection<T>
     public FrozenDictionary<string, string> PropertyNames { get; set; }
 
     public string EntityName { get; set; }
+
+    /// <inheritdoc />
+    public override string ToString() => "Browse names for " + EntityName;
 }
+
+public sealed class BrowseNameCollection<T>() : BrowseNameCollection(typeof(T)), IBrowseNameCollection<T>;
