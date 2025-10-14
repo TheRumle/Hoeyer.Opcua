@@ -39,7 +39,6 @@ internal class ReusableSessionFactory(
             return existingSession;
         }
 
-
         EntitySession newSession = await CreateSession(clientKey, token);
         await subscriptionTransferStrategy.TransferSubscriptionsBetween(existingSession, newSession);
         _sessions[clientKey] = newSession;

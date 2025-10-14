@@ -24,8 +24,11 @@ namespace Hoeyer.OpcUa.Client.Services;
 public static class ClientServices
 {
     public static OnGoingOpcEntityServiceRegistration WithOpcUaClientServices(
-        this OnGoingOpcEntityServiceRegistration registration)
+        this OnGoingOpcEntityServiceRegistration registration, Action<ClientServiceConfiguration>? configure = null)
     {
+        var conf = new ClientServiceConfiguration();
+        configure?.Invoke(conf);
+
         IServiceCollection services = registration.Collection;
         foreach (var (service, impl, _) in OpcUaEntityTypes.EntityBehaviours)
         {
@@ -35,12 +38,12 @@ public static class ClientServices
         services.AddLogging();
         services.AddServiceAndImplTransient<BreadthFirstStrategy, BreadthFirstStrategy>();
         services.AddServiceAndImplTransient<DepthFirstStrategy, DepthFirstStrategy>();
-        services.AddServiceAndImplTransient<INodeTreeTraverser, BreadthFirstStrategy>(); //Default strategy
-        services.AddServiceAndImplTransient<INodeBrowser, NodeBrowser>();
-        services.AddServiceAndImplTransient<INodeReader, NodeReader>();
+        services.AddServiceAndImplSingleton(typeof(INodeTreeTraverser), conf.TraversalStrategy);
+        services.AddServiceAndImplSingleton(typeof(INodeReader), conf.NodeReader);
+        services.AddServiceAndImplTransient(typeof(INodeBrowser), conf.Browser);
         services.AddServiceAndImplSingleton<IEntitySessionFactory, ReusableSessionFactory>();
         services.AddServiceAndImplTransient<ISubscriptionTransferStrategy, CopySubscriptionTransferStrategy>();
-        services.AddServiceAndImplTransient<IReconnectionStrategy, DefaultReconnectStrategy>();
+        services.AddServiceAndImplTransient(typeof(IReconnectionStrategy), conf.ReconnectionStrategy);
         services.AddSingleton<EntityMonitoringConfiguration>();
 
 
@@ -55,7 +58,6 @@ public static class ClientServices
 
     private static void RegisterEntityGenerics<TEntity>(IServiceCollection services)
     {
-        var genericMatcher = typeof(EntityDescriptionMatcher<TEntity>);
         services.AddServiceAndImplTransient<IEntityBrowser<TEntity>, EntityBrowser<TEntity>>();
         services.AddServiceAndImplTransient<IMonitorItemsFactory<TEntity>, MonitorItemFactory<TEntity>>();
         services.AddServiceAndImplTransient<IEntityWriter<TEntity>, EntityWriter<TEntity>>();
@@ -74,5 +76,45 @@ public static class ClientServices
                 }));
         });
         services.AddServiceAndImplTransient(typeof(IMethodCaller<>), typeof(MethodCaller<>));
+    }
+}
+
+public sealed class ClientServiceConfiguration
+{
+    public Type TraversalStrategy { get; private set; } = typeof(BreadthFirstStrategy);
+    public Type Browser { get; private set; } = typeof(NodeBrowser);
+    public Type NodeReader { get; private set; } = typeof(NodeReader);
+    public Type ReconnectionStrategy { get; private set; } = typeof(DefaultReconnectStrategy);
+    public EntityMonitoringConfiguration EntityMonitoringConfiguration { get; } = new();
+
+    public ClientServiceConfiguration WithNodeTreeTraversalStrategy<TStrategy>() where TStrategy : INodeTreeTraverser
+    {
+        TraversalStrategy = typeof(TStrategy);
+        return this;
+    }
+
+    public ClientServiceConfiguration WithNodeBrowser<TBrowser>() where TBrowser : INodeBrowser
+    {
+        Browser = typeof(TBrowser);
+        return this;
+    }
+
+    public ClientServiceConfiguration WithNodeReader<TReader>() where TReader : INodeReader
+    {
+        NodeReader = typeof(TReader);
+        return this;
+    }
+
+    public ClientServiceConfiguration WithReconnectionStrategy<TStrategy>() where TStrategy : IReconnectionStrategy
+    {
+        ReconnectionStrategy = typeof(IReconnectionStrategy);
+        return this;
+    }
+
+
+    public ClientServiceConfiguration WithMonitoringConfiguration(Action<EntityMonitoringConfiguration> configuration)
+    {
+        configuration.Invoke(EntityMonitoringConfiguration);
+        return this;
     }
 }

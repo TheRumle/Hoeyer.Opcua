@@ -39,7 +39,7 @@ builder.Services.AddLogging(e => e.AddSimpleConsole());
 builder.Services.AddOpcUa(serverSetup => serverSetup
         .WithServerId("MyServer")
         .WithServerName("My Server")
-        .WithWebOrigins(WebProtocol.OpcTcp, "localhost", opcUaConfig.Port)
+        .WithWebOrigins(WebProtocol.Https, "localhost", 8080)
         .WithApplicationUri("/myApplication")
         .Build())
     .WithEntityServices()

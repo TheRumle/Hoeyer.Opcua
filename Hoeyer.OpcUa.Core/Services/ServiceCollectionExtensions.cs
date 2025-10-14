@@ -16,6 +16,8 @@ public static class ServiceCollectionExtensions
 {
     private static readonly Type NonGenericTranslatorInterface = typeof(IEntityTranslator<>);
 
+    private static readonly FrozenSet<(Type Services, Type Impl)>? FoundServices = null;
+
     private static (Type Services, Type Impl) ConstructServiceImplTuple(Type type)
     {
         try
@@ -40,15 +42,16 @@ public static class ServiceCollectionExtensions
         return new OnGoingOpcEntityServiceRegistration(services);
     }
 
-
     public static IServiceCollection WithEntityServices(this IServiceCollection services)
     {
         var marker = typeof(ServiceCollectionExtensions);
-        var servicesAndImpls = OpcUaEntityTypes.TypesFromReferencingAssembliesUsingMarker(marker)
-            .Where(type => type is { IsInterface: false, IsAbstract: false, IsGenericTypeDefinition: false })
-            .Select(ConstructServiceImplTuple)
-            .Where(e => e.Services is not null)
-            .ToFrozenSet();
+        var servicesAndImpls = FoundServices ??
+                               OpcUaEntityTypes.TypesFromReferencingAssembliesUsingMarker(marker)
+                                   .Where(type => type is
+                                       { IsInterface: false, IsAbstract: false, IsGenericTypeDefinition: false })
+                                   .Select(ConstructServiceImplTuple)
+                                   .Where(e => e.Services is not null)
+                                   .ToFrozenSet();
 
         foreach (var (service, impl) in servicesAndImpls)
         {
