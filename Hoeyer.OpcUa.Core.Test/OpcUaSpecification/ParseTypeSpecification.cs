@@ -1,4 +1,5 @@
 ﻿using Opc.Ua;
+using TypeInfo = Opc.Ua.TypeInfo;
 
 namespace Hoeyer.OpcUa.Core.Test.OpcUaSpecification;
 

@@ -44,7 +44,7 @@ public sealed class EntitySubscriptionManagerTest(ApplicationFixture fixture)
 
         await WriteNode();
         await channel.Reader.WaitToReadAsync(token);
-        await Assert.That(observer.Count).IsZero();
+        await Assert.That(observer.Count).IsEqualTo(0);
     }
 
 
@@ -58,7 +58,7 @@ public sealed class EntitySubscriptionManagerTest(ApplicationFixture fixture)
 
         await WriteNode();
         await channel.Reader.WaitToReadAsync(token);
-        await Assert.That(observer.Count).IsZero();
+        await Assert.That(observer.Count).IsEqualTo(0);
     }
 
     private async Task<(ChannelSubscription channel, TestSubscriberSubscription testSubscriber)> CreateSubscriberPair(

@@ -35,9 +35,8 @@ public abstract class NodeTreeTraverserTest<T>(ApplicationFixture<T> fixture) wh
     [Timeout(10_0000)]
     public async Task WhenTraversingWithNoMatch_ThrowsEntityBrowseException(CancellationToken token)
     {
-        await Assert.ThrowsAsync<EntityBrowseException>(
-            fixture.ExecuteWithSessionAsync((session, strategy)
-                => strategy.TraverseUntil(session, ObjectIds.RootFolder, e => false, token)));
+        await Assert.ThrowsAsync<EntityBrowseException>(() => fixture.ExecuteWithSessionAsync((session, strategy) =>
+            strategy.TraverseUntil(session, ObjectIds.RootFolder, e => false, token)));
     }
 
     [Test]

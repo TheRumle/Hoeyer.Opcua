@@ -143,7 +143,7 @@ public sealed class ServiceConfigurationTest(IServiceCollection collection, ISer
                 serviceType.IsConstructedGenericType && serviceType.GetGenericTypeDefinition() == wantedType
             : serviceType => serviceType.IsAssignableFrom(wantedType);
 
-        await Assert.That(OpcUaEntityTypes.Entities.Count).IsNotZero()
+        await Assert.That(OpcUaEntityTypes.Entities.Count).IsNotEqualTo(0)
             .Because(" there must be entities for services to be generated");
         var services = collection.Where(e => typeFilter.Invoke(e.ServiceType)).ToList();
         await Assert.That(services).IsNotEmpty().Because(" there should be at least one service registered");

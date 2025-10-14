@@ -107,13 +107,13 @@ public class EntityTranslatorTest
     {
         using (Assert.Multiple())
         {
-            await Assert.That((object)entity.Integer).IsEqualTo(node.PropertyByBrowseName["Integer"].Value);
-            await Assert.That((object)entity.Long).IsEqualTo(node.PropertyByBrowseName["Long"].Value);
-            await Assert.That((object)entity.String).IsEqualTo(node.PropertyByBrowseName["String"].Value);
-            await Assert.That((object)entity.Guid).IsEqualTo(node.PropertyByBrowseName["Guid"].Value);
-            await Assert.That((object)entity.Double).IsEqualTo(node.PropertyByBrowseName["Double"].Value);
-            await Assert.That((object)entity.Float).IsEqualTo(node.PropertyByBrowseName["Float"].Value);
-            await Assert.That((object)entity.Bool).IsEqualTo(node.PropertyByBrowseName["Bool"].Value);
+            await Assert.That(entity.Integer).IsEquivalentTo(node.PropertyByBrowseName["Integer"].Value);
+            await Assert.That(entity.Long).IsEquivalentTo(node.PropertyByBrowseName["Long"].Value);
+            await Assert.That(entity.String).IsEquivalentTo(node.PropertyByBrowseName["String"].Value);
+            await Assert.That(entity.Guid).IsEquivalentTo(node.PropertyByBrowseName["Guid"].Value);
+            await Assert.That(entity.Double).IsEquivalentTo(node.PropertyByBrowseName["Double"].Value);
+            await Assert.That(entity.Float).IsEquivalentTo(node.PropertyByBrowseName["Float"].Value);
+            await Assert.That(entity.Bool).IsEquivalentTo(node.PropertyByBrowseName["Bool"].Value);
             await Assert.That(entity.IntList).IsEquivalentTo((int[])node.PropertyByBrowseName["IntList"].Value);
         }
     }
