@@ -86,6 +86,12 @@ public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
         ISession session = await CreateSession(Guid.NewGuid().ToString());
         return await execute(session, fixture);
     }
+
+    public async Task ExecuteActionAsync(Func<ISession, IServiceProvider, Task> action) =>
+        await action.Invoke(await CreateSession(), ServiceProvider);
+
+    public async Task<T> ExecuteFunctionAsync<T>(Func<ISession, IServiceProvider, Task<T>> action) =>
+        await action.Invoke(await CreateSession(), ServiceProvider);
 }
 
 public sealed class ApplicationFixture<T> : ApplicationFixture where T : notnull

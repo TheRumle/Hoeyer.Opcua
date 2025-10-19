@@ -20,9 +20,9 @@ public sealed class EntityBrowserTest
     {
         var entity = await services.ExecuteAsync(browser => browser.BrowseEntityNode(CancellationToken.None));
 
-        await Assert.That(entity).IsNotDefault();
+        await Assert.That(entity).IsNotNull();
         await Assert.That(entity.PropertyStates).IsNotEmpty();
-        await Assert.That(entity.BaseObject).IsNotDefault();
+        await Assert.That(entity.BaseObject).IsNotNull();
     }
 
     [Test]

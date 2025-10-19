@@ -14,14 +14,14 @@ public sealed class RunningSimulationServicesAttribute : DependencyInjectionData
 {
     private readonly ReservedPort _reservedPort;
 
-    public RunningSimulationServicesAttribute()
+    public RunningSimulationServicesAttribute(WebProtocol protocol = WebProtocol.OpcTcp)
     {
         _reservedPort = new ReservedPort();
         ServiceCollection = new ServiceCollection()
             .AddOpcUa(conf => conf
                 .WithServerId("MyServer")
                 .WithServerName("My Server")
-                .WithWebOrigins(WebProtocol.OpcTcp, "localhost", _reservedPort.Port)
+                .WithWebOrigins(protocol, "localhost", _reservedPort.Port)
                 .Build())
             .WithEntityServices()
             .WithOpcUaClientServices()

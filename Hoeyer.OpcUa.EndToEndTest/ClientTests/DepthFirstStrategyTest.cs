@@ -9,4 +9,4 @@ namespace Hoeyer.OpcUa.EndToEndTest.ClientTests;
 [TestSubject(typeof(DepthFirstStrategy))]
 [ApplicationFixtureGenerator<DepthFirstStrategy>]
 public sealed class DepthFirstStrategyTest(ApplicationFixture<DepthFirstStrategy> fixture)
-    : NodeTreeTraverserTest<DepthFirstStrategy>(fixture);
+    : NodeTreeTraverserTest(fixture, nameof(DepthFirstStrategy), () => fixture.TestedService);
