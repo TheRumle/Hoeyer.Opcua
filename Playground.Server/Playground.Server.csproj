@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <LangVersion>latestmajor</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Playground.Server</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Playground.Modelling\Playground.Modelling.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Api\Hoeyer.OpcUa.Simulation.Api.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Application\Hoeyer.OpcUa.Simulation.Application.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.ServerAdapter\Hoeyer.OpcUa.Simulation.ServerAdapter.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Compiletime\Hoeyer.OpcUa.Simulation.Compiletime.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    </ItemGroup>
+</Project>

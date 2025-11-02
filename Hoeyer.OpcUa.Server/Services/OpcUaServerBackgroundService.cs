@@ -1,16 +1,14 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+using Hoeyer.OpcUa.Server.Api;
 using Microsoft.Extensions.Hosting;
 
 namespace Hoeyer.OpcUa.Server.Services;
 
-public sealed class OpcUaServerBackgroundService(IServiceProvider serviceProvider) : BackgroundService
+public sealed class OpcUaServerBackgroundService(IOpcUaEntityServerFactory factory) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var factory = serviceProvider.GetRequiredService<OpcUaEntityServerFactory>();
         var server = factory.CreateServer();
         await server.StartAsync();
         await Task.Delay(Timeout.Infinite, stoppingToken);

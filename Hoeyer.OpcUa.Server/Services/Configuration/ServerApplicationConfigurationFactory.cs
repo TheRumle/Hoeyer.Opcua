@@ -47,7 +47,7 @@ internal static class ServerApplicationConfigurationFactory
     };
 
     /// <inheritdoc />
-    public static ApplicationConfiguration CreateServerConfiguration(OpcUaTargetServerSetup configuration)
+    public static ApplicationConfiguration CreateServerConfiguration(IOpcUaTargetServerSetup configuration)
     {
         var applicationConfiguration = CreateApplicationConfiguration(configuration);
         SetupDefaultValues(applicationConfiguration.ServerConfiguration, configuration);
@@ -79,7 +79,7 @@ internal static class ServerApplicationConfigurationFactory
     }
 
 
-    private static ApplicationConfiguration CreateApplicationConfiguration(OpcUaTargetServerSetup configuration)
+    private static ApplicationConfiguration CreateApplicationConfiguration(IOpcUaTargetServerSetup configuration)
     {
         var config = new ApplicationConfiguration
         {
@@ -122,7 +122,7 @@ internal static class ServerApplicationConfigurationFactory
 
 
     private static void SetupDefaultValues(ServerConfiguration serverConfiguration,
-        OpcUaTargetServerSetup opcUaTargetTargetServer)
+        IOpcUaTargetServerSetup opcUaTargetTargetServer)
     {
         serverConfiguration.MinRequestThreadCount = 5;
         serverConfiguration.MaxRequestThreadCount = 100;

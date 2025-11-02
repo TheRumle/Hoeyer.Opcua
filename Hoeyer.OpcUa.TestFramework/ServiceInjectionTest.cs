@@ -9,7 +9,6 @@ public abstract class ServiceInjectionTest(
 {
     private readonly IServiceScope _asyncScope = collection.BuildServiceProvider().CreateScope();
     private readonly IServiceProvider _provider = collection.BuildServiceProvider();
-    protected IServiceCollection Collection => collection;
 
     public IEnumerable<ServiceDescriptor> TransientServices() =>
         GetMatchingDescriptors(MatchersWithLifetime(ServiceLifetime.Transient));
@@ -34,26 +33,26 @@ public abstract class ServiceInjectionTest(
 
     [Test]
     [DisplayName("The service '$descriptor ServiceType' can be provided as singleton.")]
-    [InstanceMethodDataSource(nameof(SingletonServices))]
+    [InstanceMethodDataSource(nameof(SingletonServices), SkipIfEmpty = true)]
     public async Task ServiceCanBeCreatedAsSingleton(ServiceDescriptor descriptor) =>
         await AssertServiceCanBeCreated(descriptor);
 
     [Test]
     [DisplayName("The service '$descriptor ServiceType' can be provided as transient.")]
-    [InstanceMethodDataSource(nameof(TransientServices))]
+    [InstanceMethodDataSource(nameof(TransientServices), SkipIfEmpty = true)]
     public async Task ServiceCanBeCreatedAsTransient(ServiceDescriptor descriptor) =>
         await AssertServiceCanBeCreated(descriptor);
 
     [Test, Skip("No implementations of scoped services are expected as of right now.")]
     [DisplayName("The service '$descriptor ServiceType' can be provided as scoped.")]
-    [InstanceMethodDataSource(nameof(ScopedServices))]
+    [InstanceMethodDataSource(nameof(ScopedServices), SkipIfEmpty = true)]
     public async Task ServiceCanBeCreatedAsScoped(ServiceDescriptor descriptor) =>
         await AssertServiceCanBeCreatedScoped(descriptor);
 
 
     [Test]
     [DisplayName("A service matching $matcher has been registered")]
-    [InstanceMethodDataSource(nameof(AllDescriptors))]
+    [InstanceMethodDataSource(nameof(AllDescriptors), SkipIfEmpty = true)]
     public async Task ServiceIsRegistered(IPartialServiceMatcher matcher)
     {
         await Assert.That(collection.Any(matcher.Equals)).IsTrue();

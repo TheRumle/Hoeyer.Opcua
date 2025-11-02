@@ -1,9 +1,10 @@
 ﻿using System.Threading.Channels;
 using Hoeyer.Common.Messaging.Api;
+using Hoeyer.OpcUa.Client.Api.Monitoring;
 
 namespace Hoeyer.OpcUa.Client.Services;
 
-public sealed record SubscribedStateChangeMonitor<T>
+public sealed record SubscribedStateChangeMonitor<T> : ISubscribedStateChangeMonitor<T>
 {
     internal SubscribedStateChangeMonitor(ChannelReader<IMessage<T>> stateChannel, IMessageSubscription subscription)
     {

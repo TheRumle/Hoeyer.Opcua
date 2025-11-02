@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core;
 
-namespace Hoeyer.OpcUa.EntityModelling.Models;
+namespace Playground.Modelling.Models;
 
 [OpcUaEntity]
 public sealed class Gantry

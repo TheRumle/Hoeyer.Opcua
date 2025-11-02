@@ -2,7 +2,7 @@
 
 namespace Hoeyer.OpcUa.Core;
 
-[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Enum)]
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Class | AttributeTargets.Enum)]
 public sealed class BrowseNameAttribute : Attribute
 {
     public BrowseNameAttribute(string browseName)

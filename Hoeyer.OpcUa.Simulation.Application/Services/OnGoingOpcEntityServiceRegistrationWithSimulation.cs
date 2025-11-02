@@ -8,7 +8,7 @@ public sealed record OnGoingOpcEntityServiceRegistrationWithSimulation(
     IServiceCollection Collection,
     SimulationServicesConfig Config) : OnGoingOpcEntityServiceRegistration(Collection)
 {
-    public SimulationServicesContainer SimulationServices { get; } = Config.SimulationServices;
+    public SimulationServicesContainer Services { get; } = Config.SimulationServices;
     public SimulationServicesConfig Config { get; } = Config;
 
     public OnGoingOpcEntityServiceRegistrationWithSimulation CreateReconfigured(

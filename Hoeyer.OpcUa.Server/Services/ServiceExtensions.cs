@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Core.Application.NodeStructureFactory;
+using Hoeyer.OpcUa.Core.Application.NodeStructure;
 using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
@@ -12,7 +15,6 @@ using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Services.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua;
-using ServiceCollectionExtensions = Hoeyer.OpcUa.Core.Services.ServiceCollectionExtensions;
 
 namespace Hoeyer.OpcUa.Server.Services;
 
@@ -20,15 +22,27 @@ public static class ServiceExtensions
 {
     public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServer(
         this OnGoingOpcEntityServiceRegistration serviceRegistration,
+        Type fromAssembly,
         Action<ServerConfiguration>? additionalConfiguration = null)
+        => WithOpcUaServer(
+            serviceRegistration,
+            [fromAssembly.Assembly],
+            c => additionalConfiguration?.Invoke(c)
+        );
+
+    public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServer(
+        this OnGoingOpcEntityServiceRegistration serviceRegistration,
+        IEnumerable<Assembly> assembliesContainingLoaders,
+        AdditionalServerConfiguration? additionalConfiguration = null)
     {
         IServiceCollection collection = serviceRegistration.Collection;
+        collection.AddSingleton(additionalConfiguration ?? (_ => { }));
 
         collection.AddSingleton(typeof(IEntityNodeStructureFactory<>), typeof(ReflectionBasedEntityStructureFactory<>));
-        collection.AddSingleton<OpcUaTargetServerSetup>(provider => AddServerSetup(additionalConfiguration, provider));
+        collection.AddServiceAndImplSingleton<IOpcUaTargetServerSetup, OpcUaTargetServerSetup>();
 
         var registration = typeof(ServiceExtensions)
-            .InvokeStaticEntityRegistration(nameof(AddServices), collection);
+            .CreateStaticMethodInvoker(nameof(AddServices), collection);
 
         foreach (var entity in OpcUaEntityTypes.Entities)
         {
@@ -36,31 +50,17 @@ public static class ServiceExtensions
         }
 
         collection.AddServiceAndImplSingleton<IEntityNodeAccessConfigurator, NoAccessRestrictionsConfigurator>();
-        collection.AddServiceAndImplSingleton<IEntityServerStartedMarker, EntityServerStartedMarker>();
-        collection.AddSingleton<OpcUaEntityServerFactory>();
+        collection.AddServiceAndImplSingleton<IServerStartedHealthCheck, ServerStartedHealthCheck>();
+        collection.AddSingleton<IServerStartedHealthCheckMarker>(p => p.GetRequiredService<ServerStartedHealthCheck>());
+        collection.AddServiceAndImplSingleton<IOpcUaEntityServerFactory, OpcUaEntityServerFactory>();
         collection.AddSingleton<OpcEntityServer>();
         collection.AddSingleton<IStartableEntityServer>(p =>
         {
-            var factory = p.GetRequiredService<OpcUaEntityServerFactory>();
+            var factory = p.GetRequiredService<IOpcUaEntityServerFactory>();
             return factory.CreateServer();
         });
-        AddLoaders(serviceRegistration.Collection);
-
-
+        AddLoaders(serviceRegistration.Collection, assembliesContainingLoaders);
         return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
-    }
-
-    private static OpcUaTargetServerSetup AddServerSetup(Action<ServerConfiguration>? additionalConfiguration,
-        IServiceProvider p)
-    {
-        var standardConfig = p.GetService<IOpcUaTargetServerInfo>();
-        if (standardConfig == null)
-        {
-            throw new InvalidOperationException(
-                $"No {nameof(IOpcUaTargetServerInfo)} has been registered! This should be prevented using builder pattern. Are you using the library as intended and using the {nameof(ServiceCollectionExtensions.AddOpcUa)} {nameof(IServiceCollection)} extension method?");
-        }
-
-        return new OpcUaTargetServerSetup(standardConfig, additionalConfiguration ?? (value => { }));
     }
 
     public static void AddServices<TEntity>(IServiceCollection collection)
@@ -83,22 +83,30 @@ public static class ServiceExtensions
 
     public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServerAsBackgroundService(
         this OnGoingOpcEntityServiceRegistration serviceRegistration,
-        Action<ServerConfiguration>? additionalConfiguration = null)
+        Type assemblyMarker,
+        Action<ServerConfiguration>? additionalConfiguration = null
+    )
     {
-        var serverConfig = serviceRegistration.WithOpcUaServer(additionalConfiguration);
+        var serverConfig =
+            serviceRegistration.WithOpcUaServer([assemblyMarker.Assembly], c => additionalConfiguration?.Invoke(c));
         serverConfig.Collection.AddHostedService<OpcUaServerBackgroundService>();
         return serverConfig;
     }
 
-    public static OpcUaTargetServerSetup WithAdditionalServerConfiguration(IOpcUaTargetServerInfo setup,
-        Action<ServerConfiguration> additionalConfiguration) =>
-        new(setup, additionalConfiguration);
-
-    private static void AddLoaders(IServiceCollection collection)
+    private static void AddLoaders(IServiceCollection collection, IEnumerable<Assembly> assemblies)
     {
         Type loaderType = typeof(IEntityLoader<>);
-        var loaders = OpcUaEntityTypes
-            .TypesFromReferencingAssemblies
+        var loaders = assemblies.SelectMany(assembly =>
+            {
+                try
+                {
+                    return assembly.GetTypes();
+                }
+                catch (ReflectionTypeLoadException ex)
+                {
+                    return ex.Types.Where(t => t != null).ToArray();
+                }
+            })
             .Select(type =>
             {
                 Type? foundLoaderInterface = type

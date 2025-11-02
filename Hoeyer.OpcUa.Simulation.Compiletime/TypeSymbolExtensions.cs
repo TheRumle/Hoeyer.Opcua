@@ -17,6 +17,10 @@ public static class TypeSymbolExtensions
             .GetAttributes()
             .FirstOrDefault(IsOpcEntityAttributeSymbol);
 
+    public static AttributeData? GetOpcMethodAttribute(this ITypeSymbol? symbol) =>
+        symbol?
+            .GetAttributes()
+            .FirstOrDefault(IsOpcMethodAttributeSymbol);
 
     public static AttributeData? GetOpcArgsAttribute(this ITypeSymbol? symbol) =>
         symbol?
@@ -26,6 +30,11 @@ public static class TypeSymbolExtensions
     public static bool IsOpcEntityAttributeSymbol(AttributeData x) =>
         WellKnown.FullyQualifiedAttribute
             .EntityAttribute
+            .WithGlobalPrefix.Equals(x.AttributeClass?.GloballyQualifiedNonGeneric());
+
+    public static bool IsOpcMethodAttributeSymbol(this AttributeData x) =>
+        WellKnown.FullyQualifiedAttribute
+            .EntityBehaviourAttribute
             .WithGlobalPrefix.Equals(x.AttributeClass?.GloballyQualifiedNonGeneric());
 
     public static bool IsOpcMethodArgsAttributeSymbol(AttributeData x) =>

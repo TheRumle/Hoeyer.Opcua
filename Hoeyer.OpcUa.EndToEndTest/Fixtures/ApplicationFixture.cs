@@ -1,47 +1,49 @@
 ﻿using Hoeyer.Common.Extensions.Types;
+using Hoeyer.Opc.Ua.Test.TUnit;
 using Hoeyer.OpcUa.Client.Api.Connection;
+using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
 using Hoeyer.OpcUa.Server.Api;
+using Hoeyer.OpcUa.Server.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua.Client;
 using TUnit.Core.Interfaces;
 
 namespace Hoeyer.OpcUa.EndToEndTest.Fixtures;
 
-public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
+public class ApplicationFixture(WebProtocol protocol) : IAsyncDisposable, IAsyncInitializer
 {
     private readonly CancellationTokenSource _cancellationTokenSource = new();
-    private readonly IServiceCollection _collection;
     private bool _isInitialized;
+    private ReservedPort _reservedPort = null!;
 
-    public ApplicationFixture(IServiceCollection collection)
-    {
-        _collection = collection;
-        ServiceProvider = _collection.BuildServiceProvider();
-    }
-
-    public ApplicationFixture() : this(new RunningSimulationServicesAttribute().ServiceCollection)
+    public ApplicationFixture() : this(WebProtocol.OpcTcp)
     {
     }
 
     public CancellationToken Token => _cancellationTokenSource.Token;
-    public IServiceScope Scope { get; private set; } = null!;
-    public IServiceProvider ServiceProvider { get; }
+    private AsyncServiceScope Scope { get; set; }
+    public IServiceProvider ServiceProvider { get; private set; } = null!;
 
-
-    /// <inheritdoc />  
     public ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
         _cancellationTokenSource.Dispose();
+        _reservedPort.Dispose();
         return ValueTask.CompletedTask;
     }
 
     public async Task InitializeAsync()
     {
         if (_isInitialized) return;
+        _reservedPort = new ReservedPort();
+        var services = new ServiceCollection()
+            .AddTestServices(protocol, _reservedPort.Port)
+            .AddHostedService<OpcUaServerBackgroundService>();
+
+        ServiceProvider = services.BuildServiceProvider();
         Scope = ServiceProvider.CreateAsyncScope();
         await Scope.ServiceProvider.GetRequiredService<IStartableEntityServer>().StartAsync();
-        var serverStarted = Scope.ServiceProvider.GetService<IEntityServerStartedMarker>()!;
+        var serverStarted = Scope.ServiceProvider.GetService<IServerStartedHealthCheck>()!;
         await serverStarted;
         _isInitialized = true;
     }
@@ -90,22 +92,32 @@ public class ApplicationFixture : IAsyncDisposable, IAsyncInitializer
     public async Task ExecuteActionAsync(Func<ISession, IServiceProvider, Task> action) =>
         await action.Invoke(await CreateSession(), ServiceProvider);
 
+    public async Task ExecuteActionAsync(Func<ISession, Task> action) =>
+        await action.Invoke(await CreateSession());
+
     public async Task<T> ExecuteFunctionAsync<T>(Func<ISession, IServiceProvider, Task<T>> action) =>
         await action.Invoke(await CreateSession(), ServiceProvider);
+
+    public async Task<T> ExecuteFunctionAsync<T>(Func<ISession, Task<T>> action) =>
+        await action.Invoke(await CreateSession());
 }
 
 public sealed class ApplicationFixture<T> : ApplicationFixture where T : notnull
 {
-    private readonly ServiceDescriptor _valueDescriptor;
+    private readonly Type _typeUnderTest;
 
-    public ApplicationFixture(ServiceDescriptor descriptor, IServiceCollection collection) : base(collection)
+    public ApplicationFixture(Type typeUnderTest, WebProtocol protocol) : base(protocol)
     {
-        _valueDescriptor = descriptor;
+        if (!typeUnderTest.IsAssignableTo(typeof(T)))
+        {
+            throw new ArgumentException($"Type {typeUnderTest.Name} is not assignable to {typeof(T).Name}");
+        }
+
+        _typeUnderTest = typeUnderTest;
     }
 
-    public T TestedService => GetService<T>(_valueDescriptor.ImplementationType!);
+    public T TestedService => GetService<T>(_typeUnderTest);
 
-    /// <inheritdoc />
     public override string ToString() => typeof(T).Name + "Fixture";
 
     public async Task<TOut> ExecuteWithSession<TOut>(Func<ISession, T, TOut> execute)

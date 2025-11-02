@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <RootNamespace>Playground.SimulationServer.Containerized</RootNamespace>
+    </PropertyGroup>
+
+
+    <ItemGroup>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Core.Configuration\Hoeyer.OpcUa.Core.Configuration.csproj"/>
+        <ProjectReference Include="..\Playground.Modelling\Playground.Modelling.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Api\Hoeyer.OpcUa.Simulation.Api.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Application\Hoeyer.OpcUa.Simulation.Application.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.ServerAdapter\Hoeyer.OpcUa.Simulation.ServerAdapter.csproj"/>
+        <ProjectReference Include="..\Playground.Server\Playground.Server.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="InitialState\"/>
+    </ItemGroup>
+
+
+</Project>

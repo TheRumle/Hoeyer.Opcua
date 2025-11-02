@@ -1,7 +1,8 @@
 ﻿using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Core.Application.NodeStructureFactory;
-using Hoeyer.OpcUa.EntityModelling.Models;
+using Hoeyer.OpcUa.Core.Application.NodeStructure;
+using Hoeyer.OpcUa.Core.Configuration.Modelling;
 using JetBrains.Annotations;
+using Playground.Modelling.Models;
 
 namespace Hoeyer.OpcUa.Core.Test.Application;
 
@@ -9,24 +10,24 @@ namespace Hoeyer.OpcUa.Core.Test.Application;
 [TestSubject(typeof(IEntityNodeStructureFactory<>))]
 public sealed class ReflectionBasedEntityStructureFactoryTest
 {
-    private readonly Type _entityType = typeof(AllPropertyTypesEntity);
+    private static readonly Type EntityType = typeof(AllPropertyTypesEntity);
 
-    private readonly ReflectionBasedEntityStructureFactory<AllPropertyTypesEntity> _testSubject =
-        new(new BrowseNameCollection<AllPropertyTypesEntity>());
+    private static readonly ReflectionBasedEntityStructureFactory<AllPropertyTypesEntity> TestSubject =
+        new(new EntityTypeModel<AllPropertyTypesEntity>(EntityType));
 
     [Test]
     public async Task BaseObjectNameMatchesTypeName()
     {
-        var result = _testSubject.Create(2).BaseObject;
+        var result = TestSubject.Create(2).BaseObject;
         await Assert.That(result.BrowseName.Name).IsEqualTo(nameof(AllPropertyTypesEntity));
     }
 
     [Test]
     public async Task PropertyNamesMatch()
     {
-        var nodePropertyNames = _testSubject.Create(2).PropertyByBrowseName.Keys;
+        var nodePropertyNames = TestSubject.Create(2).PropertyByBrowseName.Keys;
 
-        var subjectPropertyNames = _entityType.GetProperties().Select(e => e.Name).ToHashSet();
+        var subjectPropertyNames = EntityType.GetProperties().Select(e => e.Name).ToHashSet();
         using (Assert.Multiple())
         {
             foreach (var name in nodePropertyNames)

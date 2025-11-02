@@ -8,7 +8,7 @@ public class SimulationConfigurationException(string message) : Exception(messag
 {
     public SimulationConfigurationException(IEnumerable<SimulationConfigurationException> otherExceptions)
         : this("Exceptions were encountered when trying to configure simulation framework: \n\n" +
-               string.Join("\n\n", otherExceptions.Select(e => e.Message)))
+               string.Join(",", otherExceptions.Select(e => e.Message)))
     {
     }
 }

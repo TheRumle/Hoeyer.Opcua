@@ -7,7 +7,7 @@ namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
 
 [TestSubject(typeof(EntityAnalyzer))]
 [InheritsTests]
-public sealed class EntityAnalyzerTest : DiagnosticAnalyzerTest<EntityAnalyzer>
+public sealed class EntityAnalyzerTest() : DiagnosticAnalyzerTest(new EntityAnalyzer())
 {
     [Test]
     [UnsupportedTypesSourceCodeGenerator]

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
 using Hoeyer.OpcUa.Server.Api;
-using Hoeyer.OpcUa.Server.Application;
+using Hoeyer.OpcUa.Server.Services.Configuration;
 using Opc.Ua;
 using Opc.Ua.Configuration;
 
@@ -11,7 +11,7 @@ namespace Hoeyer.OpcUa.Server;
 internal sealed class StartableEntityServer(
     ApplicationInstance applicationInstance,
     OpcEntityServer entityServer,
-    EntityServerStartedMarker marker)
+    IServerStartedHealthCheckMarker marker)
     : IStartableEntityServer, IStartedEntityServer
 {
     private readonly ApplicationInstance _applicationInstance =
@@ -45,7 +45,7 @@ internal sealed class StartableEntityServer(
     }
 
     /// <inheritdoc />
-    public IOpcUaTargetServerInfo ServerInfo => _entityServer.ServerInfo;
+    public IOpcUaTargetServerSetup ServerInfo => _entityServer.ServerInfo;
 
     public void Dispose()
     {

@@ -25,7 +25,19 @@ public static class TypeExtensions
         return t.GetInterfaces().FirstOrDefault(i => i == @interface);
     }
 
-    public static bool IsGenericImplementationOf(this Type source, Type target)
+    public static bool IsImplementationOfGeneric(this Type source, Type genericTarget)
+    {
+        if (!genericTarget.IsGenericTypeDefinition)
+        {
+            throw new ArgumentException(nameof(genericTarget) + " is not a generic type definition");
+        }
+
+        return source.GetInterfaces()
+            .Any(e => e is { IsGenericType: true } && e.GetGenericTypeDefinition() == genericTarget);
+    }
+
+
+    public static bool IsClosedGenericOf(this Type source, Type target)
     {
         if (!target.IsGenericType || !target.IsGenericTypeDefinition)
         {
@@ -37,11 +49,17 @@ public static class TypeExtensions
             return false;
         }
 
-        var wanted = source.IsGenericTypeDefinition ? source : source.GetGenericTypeDefinition();
+        var wanted = source.IsGenericTypeDefinition
+            ? source
+            : source.GetGenericTypeDefinition();
         return target == wanted;
     }
 
-    public static bool Implements(this Type t, Type @interface) => @interface.IsAssignableFrom(t);
+    public static bool Implements(this Type t, Type @interface) =>
+        t is { IsAbstract: false, IsClass: true } && @interface.IsAssignableFrom(t);
+
+    public static bool ImplementsAny(this Type t, IEnumerable<Type> interfaces) =>
+        interfaces.Any(i => i.IsAssignableFrom(t));
 
     public static string GetFriendlyTypeName(this Type type)
     {

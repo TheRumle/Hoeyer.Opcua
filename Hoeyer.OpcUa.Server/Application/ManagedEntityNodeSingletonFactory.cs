@@ -36,7 +36,7 @@ internal sealed class ManagedEntityNodeSingletonFactory<T>(
         if (_node == null)
         {
             throw new EntityNodeProviderException(typeof(T),
-                $"The node factory has not yet been provided with an namespace index used to construct the node. Have you awaited the {nameof(EntityServerStartedMarker)}?");
+                $"The node factory has not yet been provided with an namespace index used to construct the node. Have you awaited the {nameof(ServerStartedHealthCheck)}?");
         }
 
         return _node;

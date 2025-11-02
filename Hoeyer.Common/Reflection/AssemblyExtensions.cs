@@ -2,30 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Hoeyer.Common.Extensions.Types;
 
 namespace Hoeyer.Common.Reflection;
 
 public static class AssemblyExtensions
 {
-    public static ICollection<Assembly> GetConsumingAssemblies(this Type marker)
-    {
-        return AppDomain.CurrentDomain
-            .GetAssemblies()
-            .Where(a =>
-            {
-                try
-                {
-                    return a.GetReferencedAssemblies()
-                        .Any(r => r.FullName == marker.Assembly.FullName);
-                }
-                catch
-                {
-                    return false;
-                }
-            })
-            .ToList();
-    }
-
     public static IEnumerable<Type> GetTypesFromConsumingAssemblies(this Type marker)
     {
         return AppDomain.CurrentDomain
@@ -49,6 +31,11 @@ public static class AssemblyExtensions
             })
             .Union(marker.Assembly.GetTypes())
             .ToList();
+    }
+
+    public static Attribute? GetInstantiatedGenericAttribute(this Type type, Type genericAttribute)
+    {
+        return type.GetCustomAttributes().FirstOrDefault(e => e.GetType().IsClosedGenericOf(genericAttribute));
     }
 
     public static bool IsAnnotatedWith<T>(this Type type) where T : Attribute
@@ -75,19 +62,5 @@ public static class AssemblyExtensions
         }
 
         return false;
-    }
-
-    private static bool HasSameGenericArgs(Type annotation, Type attributeType)
-    {
-        if (attributeType.GenericTypeArguments.Length != annotation.GetGenericArguments().Length) return false;
-
-        for (var index = 0; index < annotation.GenericTypeArguments.Length; index++)
-        {
-            Type first = attributeType.GenericTypeArguments[index];
-            Type second = annotation.GenericTypeArguments[index];
-            if (first != second) return false;
-        }
-
-        return true;
     }
 }

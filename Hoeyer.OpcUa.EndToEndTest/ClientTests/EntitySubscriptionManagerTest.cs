@@ -3,9 +3,9 @@ using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Client.Api.Writing;
 using Hoeyer.OpcUa.Client.Application.Subscriptions;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
-using Hoeyer.OpcUa.EntityModelling.Models;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Playground.Modelling.Models;
 
 namespace Hoeyer.OpcUa.EndToEndTest.ClientTests;
 

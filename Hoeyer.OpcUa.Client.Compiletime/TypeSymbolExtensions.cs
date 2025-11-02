@@ -23,6 +23,9 @@ public static class TypeSymbolExtensions
     public static string GloballyQualifiedNonGeneric(this ISymbol typeSymbol) =>
         typeSymbol.ToDisplayString(DisplayFormats.FullyQualifiedNonGenericWithGlobalPrefix);
 
+    public static string GloballyQualifiedName(this ISymbol typeSymbol) =>
+        typeSymbol.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
+
     public static string ToFullyQualifiedTypeName(this ITypeSymbol symbol) =>
         symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
 }

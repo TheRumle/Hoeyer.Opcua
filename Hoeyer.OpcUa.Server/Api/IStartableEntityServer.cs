@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Server.Services.Configuration;
 
 namespace Hoeyer.OpcUa.Server.Api;
 
 public interface IStartableEntityServer
 {
-    IOpcUaTargetServerInfo ServerInfo { get; }
+    IOpcUaTargetServerSetup ServerInfo { get; }
     Task<IStartedEntityServer> StartAsync();
 }

@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.Client.Services;
+﻿using Hoeyer.OpcUa.Client.Api.Monitoring;
 
 namespace Playground.Application;
 

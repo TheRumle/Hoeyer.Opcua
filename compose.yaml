@@ -1,0 +1,23 @@
+﻿version: "3.9"
+name: "Hoeyer.OpcUa.Demonstrator"
+
+services:
+  simulation-server:
+    build:
+      context: .
+      dockerfile: Playground.SimulationServer.Containerized/Dockerfile
+    container_name: simulation-server
+    environment:
+      - OPCUA_PORT=4840
+      - OPCUA_PROTOCOL=OpcTcp
+      - OPCUA_SERVERID=MyServer
+      - OPCUA_SERVERNAME=My OPC Server
+      - OPCUA_APPLICATIONNAME=SimulationApp
+    ports:
+      - "4840:4840"
+    networks:
+      - simulation-net
+
+networks:
+  simulation-net:
+    driver: bridge

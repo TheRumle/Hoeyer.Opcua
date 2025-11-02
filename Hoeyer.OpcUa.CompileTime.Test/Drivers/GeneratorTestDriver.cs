@@ -6,10 +6,9 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Drivers;
 
-public sealed class GeneratorTestDriver<T>(T generator, Action<string>? logger = null)
-    where T : IIncrementalGenerator
+public sealed class GeneratorTestDriver(IIncrementalGenerator generator, Action<string>? logger = null)
 {
-    private readonly CompilationFactory _compilationFactory = new(nameof(GeneratorTestDriver<T>));
+    private readonly CompilationFactory _compilationFactory = new(generator.GetType().Name);
 
     [SuppressMessage("csharpsquid", "S3220",
         Justification = "Cannot match the suggested function which uses ISourceGenerator")]
@@ -26,14 +25,14 @@ public sealed class GeneratorTestDriver<T>(T generator, Action<string>? logger =
     }
 
 
-    private static GeneratorResult CreateResult(GeneratorDriver compilationResult,
+    private GeneratorResult CreateResult(GeneratorDriver compilationResult,
         ImmutableArray<Diagnostic> diagnostics,
         GeneratorDriverTimingInfo timingInfo)
     {
         return new GeneratorResult(
             diagnostics,
             compilationResult.GetRunResult().GeneratedTrees,
-            timingInfo.GeneratorTimes.First(e => e.Generator.GetGeneratorType() == typeof(T))
+            timingInfo.GeneratorTimes.First(e => e.Generator.GetGeneratorType() == generator.GetType())
                 .ElapsedTime);
     }
 }

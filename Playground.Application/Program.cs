@@ -1,15 +1,16 @@
-using System.Configuration;
 using System.Text.Json;
+using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Client.Services;
-using Hoeyer.OpcUa.Core.Configuration.EntityServerBuilder;
-using Hoeyer.OpcUa.Core.Services;
-using Hoeyer.OpcUa.EntityModelling.Reactants;
+using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
 using Hoeyer.OpcUa.Server.Services;
 using Hoeyer.OpcUa.Simulation.Api.Services;
 using Hoeyer.OpcUa.Simulation.ServerAdapter;
 using Hoeyer.OpcUa.Simulation.Services;
 using Playground.Application;
-using Playground.Application.Configuration;
+using Playground.Clients;
+using Playground.Modelling.Models;
+using Playground.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,20 +32,16 @@ builder.Services.Configure<HostOptions>(options =>
     options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
 });
 
-var opcUaConfig = builder.Configuration.GetSection("OpcUa").Get<OpcUaOptions>();
-if (opcUaConfig is null || opcUaConfig.Port == 0)
-    throw new ConfigurationErrorsException("OpcUa configuration is missing");
-
 builder.Services.AddLogging(e => e.AddSimpleConsole());
 builder.Services.AddOpcUa(serverSetup => serverSetup
         .WithServerId("MyServer")
         .WithServerName("My Server")
-        .WithWebOrigins(WebProtocol.Https, "localhost", 8080)
+        .WithWebOrigins(WebProtocol.OpcTcp, "localhost", 4840)
         .WithApplicationUri("/myApplication")
         .Build())
-    .WithEntityServices()
-    .WithOpcUaClientServices()
-    .WithOpcUaServerAsBackgroundService()
+    .WithEntityModelsFrom(typeof(Gantry))
+    .WithOpcUaClientServices(typeof(PositionChangeReactor))
+    .WithOpcUaServerAsBackgroundService(typeof(AllPropertiesLoader))
     .WithOpcUaSimulationServices(configure =>
     {
         configure.WithTimeScaling(TimeScaler.Identity);

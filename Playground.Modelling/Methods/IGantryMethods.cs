@@ -1,12 +1,11 @@
 ﻿using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.EntityModelling.Models;
+using Playground.Modelling.Models;
 
-namespace Hoeyer.OpcUa.EntityModelling.Methods;
+namespace Playground.Modelling.Methods;
 
 [OpcUaEntityMethods<Gantry>]
 public interface IGantryMethods
 {
-    [BrowseName("ChangeGantryPosition")]
     Task ChangePosition(Position position);
 
     Task<int> PlaceContainer(Position position);

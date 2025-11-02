@@ -4,7 +4,7 @@ using Hoeyer.Common.Extensions.Collection;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Application.Browsing;
-using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using JetBrains.Annotations;
 using Opc.Ua;
@@ -14,6 +14,7 @@ namespace Hoeyer.OpcUa.EndToEndTest.ClientTests;
 
 [TestSubject(typeof(INodeTreeTraverser))]
 [TestSubject(typeof(ConcurrentBrowse))]
+[Timeout(10_0000)]
 public abstract class NodeTreeTraverserTest(
     ApplicationFixture fixture,
     string classUnderTest,
@@ -32,10 +33,9 @@ public abstract class NodeTreeTraverserTest(
     }
 
     [Test]
-    [Timeout(10_0000)]
     public async Task WhenTraversingWithNoMatch_ThrowsEntityBrowseException(CancellationToken token)
     {
-        var action = async () => await fixture.ExecuteActionAsync(async (session, provider) =>
+        var action = async () => await fixture.ExecuteActionAsync(async session =>
         {
             var strategy = getTraversal.Invoke();
             await strategy.TraverseUntil(session, ObjectIds.RootFolder, e => false, token);
@@ -44,12 +44,10 @@ public abstract class NodeTreeTraverserTest(
     }
 
     [Test]
-    [NotInParallel(nameof(WhenTraversingWithMatch_DoesNotThrowNotFound))]
     [InstanceMethodDataSource(nameof(PresentObjects))]
-    [Timeout(10_0000)]
     public async Task WhenTraversingWithMatch_DoesNotThrowNotFound(NodeId id, CancellationToken token)
     {
-        var result = await fixture.ExecuteFunctionAsync(async (session, provider) =>
+        var result = await fixture.ExecuteFunctionAsync(async session =>
         {
             var strategy = getTraversal.Invoke();
             return await strategy.TraverseUntil(session, ObjectIds.RootFolder, e => e.NodeId.Equals(id), token);
@@ -58,12 +56,10 @@ public abstract class NodeTreeTraverserTest(
     }
 
     [Test]
-    [NotInParallel(nameof(WhenTraversing_DoesNotGiveDuplicateNodes))]
-    [Timeout(10_0000)]
     public async Task WhenTraversing_DoesNotGiveDuplicateNodes(CancellationToken token)
     {
         var ids = await fixture
-            .ExecuteFunctionAsync(async (session, provider) => await getTraversal.Invoke()
+            .ExecuteFunctionAsync(async session => await getTraversal.Invoke()
                 .TraverseFrom(ObjectIds.RootFolder, session, token)
                 .Collect())
             .ThenAsync(nodeReferences => nodeReferences.Select<ReferenceWithId, NodeId>(n => n.NodeId));
@@ -82,11 +78,9 @@ public abstract class NodeTreeTraverserTest(
 
     [Test]
     [InstanceMethodDataSource(nameof(PresentObjects))]
-    [NotInParallel(nameof(WhenLookingForSelf_DoesNotThrowNotFound))]
-    [Timeout(10_0000)]
     public async Task WhenLookingForSelf_DoesNotThrowNotFound(NodeId id, CancellationToken token)
     {
-        var result = await fixture.ExecuteFunctionAsync(async (session, provider) =>
+        var result = await fixture.ExecuteFunctionAsync(async session =>
         {
             var strategy = getTraversal.Invoke();
             return await strategy.TraverseUntil(session, id, e => e.NodeId.Equals(id), token);
@@ -96,7 +90,6 @@ public abstract class NodeTreeTraverserTest(
 
     [Test]
     [SuppressMessage("Maintainability", "S108", Justification = "The test must consume the traversal results")]
-    [Timeout(10_0000)]
     public async Task WhenTraversingFromRoot_DoesNotLoopForever(CancellationToken ct)
     {
         var value = getTraversal();
@@ -109,7 +102,7 @@ public abstract class NodeTreeTraverserTest(
     [Test]
     [BrowseNameCollection]
     [DisplayName("Can find entity root for $browseNameCollection")]
-    public async Task CanFindReferencesForAllNodes(BrowseNameCollection browseNameCollection, CancellationToken token)
+    public async Task CanFindReferencesForAllNodes(IBrowseNameCollection browseNameCollection, CancellationToken token)
     {
         var traversalStrategy = getTraversal();
         var session = await fixture.CreateSession();

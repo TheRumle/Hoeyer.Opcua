@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hoeyer.Common.Extensions.LoggingExtensions;
-using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Extensions.Logging;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.Server.Api.Exceptions;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Extensions;
+using Hoeyer.OpcUa.Server.Services.Configuration;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Server;
@@ -17,13 +17,13 @@ using Opc.Ua.Server;
 namespace Hoeyer.OpcUa.Server;
 
 internal sealed class OpcEntityServer(
-    IOpcUaTargetServerInfo applicationProductDetails,
+    IOpcUaTargetServerSetup applicationProductDetails,
     IEnumerable<IEntityNodeManagerFactory> entityManagerFactories,
     ILogger<OpcEntityServer> logger)
     : StandardServer
 {
     private static readonly DateTime buildDate = DateTime.UtcNow;
-    public readonly IOpcUaTargetServerInfo ServerInfo = applicationProductDetails;
+    public readonly IOpcUaTargetServerSetup ServerInfo = applicationProductDetails;
 
     private bool _disposed;
 

@@ -3,7 +3,7 @@
   "profiles": {
     "DebugRoslynSourceGenerator": {
       "commandName": "DebugRoslynComponent",
-      "targetProject": "../Playground/Playground.csproj"
+      "targetProject": "../Playground.Server/Playground.Server.csproj"
     }
   }
 }

@@ -10,17 +10,9 @@
 
 
     <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.OpcUa.Core.Test\Hoeyer.OpcUa.Core.Test.csproj"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa.Client\Hoeyer.OpcUa.Client.csproj"/>
-        <ProjectReference Include="..\Playground.Modelling\Playground.Modelling.csproj"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Api\Hoeyer.OpcUa.Simulation.Api.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Application\Hoeyer.OpcUa.Simulation.Application.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.TestFramework\Hoeyer.OpcUa.TestFramework.csproj"/>
+        <ProjectReference Include="..\Playground.Modelling\Playground.Modelling.csproj"/>
+        <ProjectReference Include="..\Playground.Server\Playground.Server.csproj"/>
     </ItemGroup>
-
-
-    <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.OpcUa.Core.SourceGeneration\Hoeyer.OpcUa.Core.SourceGeneration.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Compiletime\Hoeyer.OpcUa.Simulation.Compiletime.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
-    </ItemGroup>
-
 </Project>

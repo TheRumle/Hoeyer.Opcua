@@ -5,4 +5,4 @@ namespace Hoeyer.OpcUa.CompileTime.Test.Generation;
 
 [TestSubject(typeof(EntityTranslatorGenerator))]
 [InheritsTests]
-public sealed class EntityTranslatorGeneratorTest : GeneratorWithEntityTargetTest<EntityTranslatorGenerator>;
+public sealed class EntityTranslatorGeneratorTest() : GeneratorWithEntityTargetTest(new EntityTranslatorGenerator());

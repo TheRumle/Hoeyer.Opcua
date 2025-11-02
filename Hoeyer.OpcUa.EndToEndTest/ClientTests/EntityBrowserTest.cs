@@ -4,9 +4,9 @@ using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Hoeyer.OpcUa.EndToEndTest.Generators;
-using Hoeyer.OpcUa.EntityModelling.Models;
 using JetBrains.Annotations;
 using Opc.Ua;
+using Playground.Modelling.Models;
 
 namespace Hoeyer.OpcUa.EndToEndTest.ClientTests;
 
@@ -44,6 +44,7 @@ public sealed class EntityBrowserTest
 
     [Test]
     [TestSubject(typeof(IEntityTranslator<Gantry>))]
+    [TestSubject(typeof(IEntityBrowser<Gantry>))]
     [ClassDataSource<ApplicationFixture>]
     public async Task EntityBrowser_BrowsedEntity_CanBeTranslated_DoesNotHaveNullValues(ApplicationFixture services)
     {

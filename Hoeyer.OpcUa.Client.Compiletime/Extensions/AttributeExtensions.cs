@@ -31,4 +31,26 @@ public static class AttributeExtensions
 
         return null;
     }
+
+    public static AttributeData? GetOpcMethodAttribute(this ITypeSymbol? symbol) =>
+        symbol?
+            .GetAttributes()
+            .FirstOrDefault(IsOpcMethodAttributeSymbol);
+
+    public static bool IsOpcMethodAttributeSymbol(this AttributeData x) =>
+        WellKnown.FullyQualifiedAttribute
+            .EntityBehaviourAttribute
+            .WithGlobalPrefix.Equals(x.AttributeClass?.GloballyQualifiedNonGeneric());
+
+
+    public static INamedTypeSymbol? GetEntityFromGenericAttributeArgument(this INamedTypeSymbol symbol)
+    {
+        return symbol
+            .GetOpcMethodAttribute()?
+            .AttributeClass?
+            .TypeArguments
+            .Where(type => type.IsAnnotatedAsOpcUaEntity())
+            .OfType<INamedTypeSymbol>()
+            .FirstOrDefault();
+    }
 }

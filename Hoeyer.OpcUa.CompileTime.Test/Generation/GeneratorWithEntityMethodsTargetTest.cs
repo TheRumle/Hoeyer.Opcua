@@ -6,9 +6,9 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Generation;
 
-public abstract class GeneratorWithEntityMethodsTargetTest<T> where T : IIncrementalGenerator, new()
+public abstract class GeneratorWithEntityMethodsTargetTest(IIncrementalGenerator generator)
 {
-    protected readonly GeneratorTestDriver<T> TestDriver = new(new T(), Console.WriteLine);
+    private readonly GeneratorTestDriver _testDriver = new(generator, Console.WriteLine);
 
     [Test]
     [EntityServiceInterfaceGenerator]
@@ -16,7 +16,7 @@ public abstract class GeneratorWithEntityMethodsTargetTest<T> where T : IIncreme
     public async Task WhenGiven_CorrectSourceCodeInfo_ShouldGenerateValidSyntaxTrees(
         ServiceInterfaceSourceCode serviceInterface)
     {
-        GeneratorResult generationResult = TestDriver.RunGeneratorOn(serviceInterface.AllSourceCode);
+        var generationResult = _testDriver.RunGeneratorOn(serviceInterface.AllSourceCode);
         await Assert.That(generationResult.GeneratedTrees).IsNotEmpty().Because("source code should be generated.");
     }
 
@@ -25,7 +25,7 @@ public abstract class GeneratorWithEntityMethodsTargetTest<T> where T : IIncreme
     [DisplayName("Generates valid syntax tree for $serviceInterface")]
     public async Task WhenGivenValidSourceCode_ProducesValidSyntaxTree(ServiceInterfaceSourceCode serviceInterface)
     {
-        GeneratorResult generationResult = TestDriver.RunGeneratorOn(serviceInterface.AllSourceCode);
+        var generationResult = _testDriver.RunGeneratorOn(serviceInterface.AllSourceCode);
         SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(generationResult.SourceCode);
         List<Diagnostic> diagnostics = syntaxTree.GetDiagnostics().ToList();
         await Assert.That(diagnostics).IsEmpty()
@@ -39,7 +39,7 @@ public abstract class GeneratorWithEntityMethodsTargetTest<T> where T : IIncreme
     [DisplayName("Will not produce any diagnostic for valid fixtures")]
     public async Task Generator_ShouldNeverProduceDiagnostics(ServiceInterfaceSourceCode entitySourceCode)
     {
-        GeneratorResult generationResult = TestDriver.RunGeneratorOn(entitySourceCode.SourceCodeString);
+        var generationResult = _testDriver.RunGeneratorOn(entitySourceCode.SourceCodeString);
         await Assert.That(generationResult.Errors).IsEmpty().Because(
             "The generator should not be responsible for analyzing source code, only production of generated code.");
     }

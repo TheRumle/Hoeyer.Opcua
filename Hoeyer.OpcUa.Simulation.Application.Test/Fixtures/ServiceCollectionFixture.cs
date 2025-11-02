@@ -1,7 +1,9 @@
-﻿using Hoeyer.OpcUa.Core.Services;
-using Hoeyer.OpcUa.EntityModelling.Models;
+﻿using Hoeyer.OpcUa.Core.Configuration;
+using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
 using Hoeyer.OpcUa.Simulation.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Playground.Modelling.Models;
+using Playground.Server;
 
 namespace Simulation.Application.Test.Fixtures;
 
@@ -14,9 +16,12 @@ public sealed class ServiceCollectionFixture
     public ServiceCollectionFixture()
     {
         ongoingConfiguration = new ServiceCollection()
-            .WithEntityServices()
+            .AddOpcUa(e =>
+                e.WithServerId("id").WithServerName("name").WithWebOrigins(WebProtocol.OpcTcp, "localhost", 1111)
+                    .Build())
+            .WithEntityModelsFrom(typeof(Gantry))
             .WithOpcUaSimulationServices(c => { c.WithTimeScaling(float.Epsilon); },
-                typeof(Gantry).Assembly);
-        SimulationServices = ongoingConfiguration.SimulationServices;
+                typeof(GantryLoader));
+        SimulationServices = ongoingConfiguration.Services;
     }
 }

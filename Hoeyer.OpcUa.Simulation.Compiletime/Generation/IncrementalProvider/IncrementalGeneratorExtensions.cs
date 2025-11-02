@@ -20,8 +20,8 @@ internal static class IncrementalGeneratorExtensions
             interfaceDeclarations
                 .Select((contextTuple, _) =>
                 {
-                    (var interfaceNode, SemanticModel model) =
-                        ((InterfaceDeclarationSyntax)contextTuple.Node, contextTuple.SemanticModel);
+                    var (interfaceNode, model) = ((InterfaceDeclarationSyntax)contextTuple.Node,
+                        contextTuple.SemanticModel);
                     ISymbol? symbol = model.GetDeclaredSymbol(interfaceNode);
                     if (symbol is null) return default;
 

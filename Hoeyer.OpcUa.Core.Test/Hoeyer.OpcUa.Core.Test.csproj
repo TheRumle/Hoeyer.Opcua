@@ -14,6 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Core.Configuration\Hoeyer.OpcUa.Core.Configuration.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.TestFramework\Hoeyer.OpcUa.TestFramework.csproj"/>
         <ProjectReference Include="..\Playground.Modelling\Playground.Modelling.csproj"/>
     </ItemGroup>

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
 using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
-using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Services.Configuration;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
@@ -10,8 +10,8 @@ using Opc.Ua.Configuration;
 namespace Hoeyer.OpcUa.Server;
 
 internal sealed class OpcUaEntityServerFactory(
-    EntityServerStartedMarker marker,
-    OpcUaTargetServerSetup serverSetup,
+    IServerStartedHealthCheckMarker marker,
+    IOpcUaTargetServerSetup serverSetup,
     IEnumerable<IEntityNodeManagerFactory> entityManagerFactories,
     ILoggerFactory loggerFactory) : IOpcUaEntityServerFactory
 {

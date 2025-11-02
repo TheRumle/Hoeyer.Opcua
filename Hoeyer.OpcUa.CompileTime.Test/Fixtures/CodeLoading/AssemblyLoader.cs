@@ -18,7 +18,7 @@ public static class AssemblyLoader
         typeof(OpcUaEntityAttribute).Assembly,
         typeof(OpcUaEntityMethodsAttribute<>).Assembly,
         typeof(OpcMethodArgumentsAttribute<,>).Assembly,
-        typeof(EntityServerStartedMarker).Assembly,
+        typeof(ServerStartedHealthCheck).Assembly,
         typeof(ISimulation<,>).Assembly,
     ];
 

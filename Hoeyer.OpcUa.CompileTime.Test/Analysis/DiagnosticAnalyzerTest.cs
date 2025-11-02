@@ -5,10 +5,10 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
 
-public abstract class DiagnosticAnalyzerTest<TAnalyzer> where TAnalyzer : DiagnosticAnalyzer, new()
+public abstract class DiagnosticAnalyzerTest(DiagnosticAnalyzer analyzer)
 {
-    protected readonly TAnalyzer Analyzer = new();
-    protected AnalyzerTestDriver<DiagnosticAnalyzer> Driver => new(Analyzer, Console.WriteLine);
+    protected DiagnosticAnalyzer Analyzer => analyzer;
+    protected AnalyzerTestDriver<DiagnosticAnalyzer> Driver => new(analyzer, Console.WriteLine);
 
     [Test]
     [ValidEntitySourceCodeGenerator]
@@ -17,7 +17,7 @@ public abstract class DiagnosticAnalyzerTest<TAnalyzer> where TAnalyzer : Diagno
     {
         var res = await Driver.RunAnalyzerOn(entitySourceCode);
         var diagnosticsReportedByAnalyzer =
-            res.Diagnostics.Where(diagnostic => Analyzer.SupportedDiagnostics.Contains(diagnostic.Descriptor));
+            res.Diagnostics.Where(diagnostic => analyzer.SupportedDiagnostics.Contains(diagnostic.Descriptor));
         await Assert.That(diagnosticsReportedByAnalyzer).IsEmpty()
             .Because("Correct entities should not have diagnostics.");
     }

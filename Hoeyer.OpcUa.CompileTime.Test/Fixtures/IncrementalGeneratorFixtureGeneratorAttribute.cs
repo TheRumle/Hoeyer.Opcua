@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Hoeyer.OpcUa.Client.SourceGeneration;
+using Hoeyer.OpcUa.Client.SourceGeneration.Generation;
 using Hoeyer.OpcUa.Core.SourceGeneration.Generation;
 using Microsoft.CodeAnalysis;
 

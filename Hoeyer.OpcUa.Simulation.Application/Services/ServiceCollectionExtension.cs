@@ -27,21 +27,16 @@ namespace Hoeyer.OpcUa.Simulation.Services;
 public static class ServiceCollectionExtension
 {
     public static OnGoingOpcEntityServiceRegistrationWithSimulation WithOpcUaSimulationServices(
-        this OnGoingOpcEntityServiceRegistration registration)
-    {
-        return WithOpcUaSimulationServices(registration, (c) => { });
-    }
-
-    public static OnGoingOpcEntityServiceRegistrationWithSimulation WithOpcUaSimulationServices(
-        this IServiceCollection registration, Action<SimulationServicesConfig> configure,
-        Assembly? assemblyContainingSimulators = null) =>
-        WithOpcUaSimulationServices(new OnGoingOpcEntityServiceRegistration(registration), configure,
-            assemblyContainingSimulators);
+        this IServiceCollection registration,
+        Action<SimulationServicesConfig> configure,
+        params IEnumerable<Type> assemblyMarkers) =>
+        WithOpcUaSimulationServices(new OnGoingOpcEntityServiceRegistration(registration), configure, assemblyMarkers);
 
 
     public static OnGoingOpcEntityServiceRegistrationWithSimulation WithOpcUaSimulationServices(
-        this OnGoingOpcEntityServiceRegistration registration, Action<SimulationServicesConfig> configure,
-        Assembly? assemblyContainingSimulators = null)
+        this OnGoingOpcEntityServiceRegistration registration,
+        Action<SimulationServicesConfig> configure,
+        params IEnumerable<Type> assemblyMarkers)
     {
         var originalCollection = registration.Collection;
         var collection = new ServiceCollection();
@@ -65,7 +60,7 @@ public static class ServiceCollectionExtension
 
         var typeReferences = typeof(SimulationApiAssemblyMarker)
             .GetTypesFromConsumingAssemblies()
-            .Union(assemblyContainingSimulators?.GetTypes() ?? [])
+            .Union(assemblyMarkers.SelectMany(e => e.Assembly.GetTypes()))
             .Union(typeof(ServiceCollectionExtension).GetTypesFromConsumingAssemblies())
             .AsParallel()
             .ToImmutableHashSet();
@@ -80,7 +75,7 @@ public static class ServiceCollectionExtension
             functionSimulators);
 
         configure.Invoke(config);
-        return new OnGoingOpcEntityServiceRegistrationWithSimulation(registration.Collection, config);
+        return new OnGoingOpcEntityServiceRegistrationWithSimulation(originalCollection, config);
     }
 
     private static void ValidateServices(IEnumerable<SimulationPatternTypeDetails> actionSimulators)

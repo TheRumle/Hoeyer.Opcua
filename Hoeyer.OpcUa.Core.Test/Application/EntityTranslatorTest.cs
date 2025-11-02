@@ -1,9 +1,9 @@
 ﻿using Hoeyer.Opc.Ua.Test.TUnit;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Test.Fixtures;
-using Hoeyer.OpcUa.EntityModelling.Models;
 using JetBrains.Annotations;
 using Opc.Ua;
+using Playground.Modelling.Models;
 
 namespace Hoeyer.OpcUa.Core.Test.Application;
 

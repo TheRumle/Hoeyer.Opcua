@@ -7,9 +7,9 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace Hoeyer.OpcUa.CompileTime.Test.Generation;
 
 [InheritsTests]
-public abstract class GeneratorWithEntityTargetTest<T> where T : IIncrementalGenerator, new()
+public abstract class GeneratorWithEntityTargetTest(IIncrementalGenerator generator)
 {
-    protected readonly GeneratorTestDriver<T> TestDriver = new(new T(), Console.WriteLine);
+    protected readonly GeneratorTestDriver TestDriver = new(generator, Console.WriteLine);
 
     [Test]
     [ValidEntitySourceCodeGenerator]

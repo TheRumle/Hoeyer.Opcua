@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <LangVersion>latestmajor</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Playground.Clients</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Client.Api\Hoeyer.OpcUa.Client.Api.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Core.Configuration\Hoeyer.OpcUa.Core.Configuration.csproj"/>
+        <ProjectReference Include="..\Playground.Modelling\Playground.Modelling.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Client.Compiletime\Hoeyer.OpcUa.Client.Compiletime.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    </ItemGroup>
+
+</Project>
