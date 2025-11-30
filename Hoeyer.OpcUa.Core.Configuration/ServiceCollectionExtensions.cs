@@ -58,14 +58,20 @@ public static class ServiceCollectionExtensions
         params IEnumerable<Type> assemblyMarkers)
     {
         var markers = assemblyMarkers.ToList();
-        services.AddKeyedSingleton(ServiceKeys.MODELLING, markers.Select(m => new AssemblyMarker(m)));
-        services.AddSingleton<EntityTypesCollection>();
+        AddEntityModels(services, markers);
         services.AddSingleton<TranslatorTypesCollection>();
         services.AddSingleton(typeof(IBrowseNameCollection<>), typeof(EntityTypeModel<>));
         services.AddSingleton(typeof(IEntityTypeModel<>), typeof(EntityTypeModel<>));
         services.AddSingleton(typeof(IBehaviourTypeModel<>), typeof(EntityTypeModel<>));
         services.AddSingleton(typeof(IEntityNodeStructureFactory<>), typeof(ReflectionBasedEntityStructureFactory<>));
         AddTranslators(services);
+        return services;
+    }
+
+    public static IServiceCollection AddEntityModels(this IServiceCollection services, List<Type> markers)
+    {
+        services.AddKeyedSingleton(ServiceKeys.MODELLING, markers.Select(m => new AssemblyMarker(m)));
+        services.AddSingleton<EntityTypesCollection>();
         return services;
     }
 

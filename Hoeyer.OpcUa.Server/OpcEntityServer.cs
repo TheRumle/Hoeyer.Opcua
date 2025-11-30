@@ -27,7 +27,7 @@ internal sealed class OpcEntityServer(
 
     private bool _disposed;
 
-    public DomainMasterNodeManager DomainManager { get; } = null!;
+    public DomainMasterNodeManager DomainManager { get; private set; } = null!;
 
     /// <inheritdoc />
     public override ResponseHeader Call(RequestHeader requestHeader, CallMethodRequestCollection methodsToCall,
@@ -66,8 +66,9 @@ internal sealed class OpcEntityServer(
 
             if (exceptions.Any()) throw new AggregateException(exceptions);
 
-            return new DomainMasterNodeManager(server, configuration,
+            DomainManager = new DomainMasterNodeManager(server, configuration,
                 managerCreationTasks.Select(e => e.Result).ToArray());
+            return DomainManager;
         })!;
     }
 

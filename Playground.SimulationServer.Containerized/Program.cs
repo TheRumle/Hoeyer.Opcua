@@ -6,9 +6,9 @@ using Hoeyer.OpcUa.Simulation.ServerAdapter;
 using Hoeyer.OpcUa.Simulation.Services;
 using Playground.Modelling.Models;
 using Playground.Server;
+using Playground.SimulationServer.Containerized;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Logging.AddJsonConsole(options =>
 {
     options.IncludeScopes = true;
@@ -20,11 +20,7 @@ builder.Logging.AddJsonConsole(options =>
     options.TimestampFormat = "yyyy-MM-dd HH:mm:ss";
 });
 
-builder.Services.AddLogging(e => e.AddJsonConsole(c => c.JsonWriterOptions = new JsonWriterOptions
-{
-    MaxDepth = 10
-}));
-builder.AddOpcUaFromEnvironmentVariables("OpcUaServer")
+builder.AddOpcUaFromEnvironmentVariables()
     .WithEntityModelsFrom(assemblyMarkers: typeof(Gantry))
     .WithOpcUaServerAsBackgroundService(typeof(GantryLoader))
     .WithOpcUaSimulationServices(configure =>
@@ -33,6 +29,11 @@ builder.AddOpcUaFromEnvironmentVariables("OpcUaServer")
         configure.AdaptToRuntime<OpcUaServerAdapter>();
     });
 
+builder.Services
+    .AddHealthChecks()
+    .AddCheck<ServerStartedHealthCheckAdapter>("server_started");
 
 var app = builder.Build();
+
+app.MapHealthChecks("/health/server");
 await app.RunAsync();

@@ -27,7 +27,7 @@ public static class ServiceCollectionTestExtensions
                 .WithWebOrigins(protocol, "localhost", port)
                 .Build())
             .WithEntityModelsFrom(typeof(Gantry))
-            .WithOpcUaClientServices(typeof(IGantryMethods))
+            .WithOpcUaClientModelsFrom(typeof(IGantryMethods))
             .WithOpcUaServer(typeof(GantryLoader))
             .WithOpcUaSimulationServices(c => c.AdaptToRuntime<OpcUaServerAdapter>())
             .Collection.AddSingleton(services)

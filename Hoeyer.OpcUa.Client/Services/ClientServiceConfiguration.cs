@@ -11,6 +11,7 @@ namespace Hoeyer.OpcUa.Client.Services;
 
 public sealed class ClientServiceConfiguration
 {
+    public static readonly ClientServiceConfiguration Default = new();
     public Type TraversalStrategy { get; private set; } = typeof(BreadthFirstStrategy);
     public Type Browser { get; private set; } = typeof(NodeBrowser);
     public Type NodeReader { get; private set; } = typeof(NodeReader);

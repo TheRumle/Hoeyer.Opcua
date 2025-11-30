@@ -40,7 +40,7 @@ builder.Services.AddOpcUa(serverSetup => serverSetup
         .WithApplicationUri("/myApplication")
         .Build())
     .WithEntityModelsFrom(typeof(Gantry))
-    .WithOpcUaClientServices(typeof(PositionChangeReactor))
+    .WithOpcUaClientModelsFrom(typeof(PositionChangeReactor))
     .WithOpcUaServerAsBackgroundService(typeof(AllPropertiesLoader))
     .WithOpcUaSimulationServices(configure =>
     {

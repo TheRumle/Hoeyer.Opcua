@@ -12,7 +12,7 @@ services:
       - OPCUA_PROTOCOL=OpcTcp
       - OPCUA_SERVERID=MyServer
       - OPCUA_SERVERNAME=My OPC Server
-      - OPCUA_APPLICATIONNAME=SimulationApp
+      - OPCUA_APPLICATION_NAME=SimulationApp
     ports:
       - "4840:4840"
     networks:

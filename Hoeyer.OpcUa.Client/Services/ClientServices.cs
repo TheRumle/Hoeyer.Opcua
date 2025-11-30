@@ -24,11 +24,11 @@ namespace Hoeyer.OpcUa.Client.Services;
 
 public static class ClientServices
 {
-    public static OnGoingOpcEntityServiceRegistration WithOpcUaClientServices(
+    public static OnGoingOpcEntityServiceRegistration WithOpcUaClientModelsFrom(
         this OnGoingOpcEntityServiceRegistration registration,
-        Type fromAssembly) => WithOpcUaClientServices(registration, [fromAssembly]);
+        Type fromAssembly) => WithOpcUaClientModelsFrom(registration, [fromAssembly]);
 
-    public static OnGoingOpcEntityServiceRegistration WithOpcUaClientServices(
+    public static OnGoingOpcEntityServiceRegistration WithOpcUaClientModelsFrom(
         this OnGoingOpcEntityServiceRegistration registration,
         IEnumerable<Type> fromAssembly,
         Action<ClientServiceConfiguration>? configure = null
@@ -37,7 +37,15 @@ public static class ClientServices
         var conf = new ClientServiceConfiguration();
         configure?.Invoke(conf);
 
-        IServiceCollection services = registration.Collection;
+        registration.Collection.AddClientServices(fromAssembly, conf);
+        return registration;
+    }
+
+    public static IServiceCollection AddClientServices(
+        this IServiceCollection services,
+        IEnumerable<Type> fromAssembly,
+        ClientServiceConfiguration conf)
+    {
         var markers = fromAssembly.ToList();
         services.AddSingleton(conf.EntityMonitoringConfiguration);
         services.AddKeyedSingleton(ServiceKeys.CLIENT_SERVICES, markers.Select(e => new AssemblyMarker(e)));
@@ -67,7 +75,7 @@ public static class ClientServices
             behaviourImplementationRegistration.Invoke(entity);
         }
 
-        return registration;
+        return services;
     }
 
     private static void RegisterEntityBehaviour<TEntity>(IServiceCollection services, IServiceProvider provider)

@@ -6,17 +6,19 @@ ENV OPCUA_PORT=4840 \
     OPCUA_PROTOCOL=OpcTcp \
     OPCUA_SERVERID=HostedSimulation \
     OPCUA_SERVERNAME=HostedSimulation \
-    OPCUA_APPLICATIONNAME=Simulation
+    OPCUA_APPLICATION_NAME=Simulation
     
-ENV OPCUA__PORT=$OPCUA_PORT \
-    OPCUA__PROTOCOL=$OPCUA_PROTOCOL \
-    OPCUA__SERVERID=$OPCUA_SERVERID \
-    OPCUA__SERVERNAME=$OPCUA_SERVERNAME \
-    OPCUA__APPLICATIONURI=/$OPCUA_APPLICATIONNAME \
-    OPCUA__HOST=Localhost
+ENV LOG_LEVEL=DEBUG
     
-USER $APP_UID
+ENV OPCUA__SERVERID=${OPCUA_SERVERID} \
+    OPCUA__SERVERNAME=${OPCUA_SERVERNAME} \
+    OPCUA__HOST=localhost \
+    OPCUA__PORT=${OPCUA_PORT} \
+    OPCUA__PROTOCOL=${OPCUA_PROTOCOL} \
+    OPCUA__APPLICATIONURI=${OPCUA_APPLICATION_NAME}
+    Logging__LogLevel__Default=${LOGLEVEL}
 
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
@@ -29,7 +31,6 @@ WORKDIR "/src/Playground.SimulationServer.Containerized"
 RUN dotnet build "./Playground.SimulationServer.Containerized.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 
-
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./Playground.SimulationServer.Containerized.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
@@ -38,3 +39,6 @@ WORKDIR /app
 
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Playground.SimulationServer.Containerized.dll"]
+
+HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
+ CMD curl --fail http://localhost:8080/health/server || exit 1
