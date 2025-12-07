@@ -50,7 +50,23 @@ internal class ReusableSessionFactory(
     {
         var opcServerUrl = applicationOptions.ApplicationNamespace.ToString();
         var endpointConfiguration = EndpointConfiguration.Create(_configuration);
-        return new ConfiguredEndpoint(null, CoreClientUtils.SelectEndpoint(opcServerUrl, false), endpointConfiguration);
+
+        var endpoint = new EndpointDescription
+        {
+            EndpointUrl = opcServerUrl,
+            SecurityMode = MessageSecurityMode.None,
+            SecurityPolicyUri = SecurityPolicies.None,
+            UserIdentityTokens = new UserTokenPolicy[]
+            {
+                new()
+                {
+                    PolicyId = "Anonymous",
+                    TokenType = UserTokenType.Anonymous
+                }
+            }
+        };
+
+        return new ConfiguredEndpoint(null, endpoint, endpointConfiguration);
     }
 
     private async Task<EntitySession> CreateSession(string client, CancellationToken token)
