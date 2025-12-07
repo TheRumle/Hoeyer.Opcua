@@ -15,8 +15,8 @@ ENV OPCUA__SERVERID=${OPCUA_SERVERID} \
     OPCUA__HOST=localhost \
     OPCUA__PORT=${OPCUA_PORT} \
     OPCUA__PROTOCOL=${OPCUA_PROTOCOL} \
-    OPCUA__APPLICATIONURI=${OPCUA_APPLICATION_NAME}
-    Logging__LogLevel__Default=${LOGLEVEL}
+    OPCUA__APPLICATIONURI=${OPCUA_APPLICATION_NAME} \
+    Logging__LogLevel__Default=${LOG_LEVEL}
 
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
