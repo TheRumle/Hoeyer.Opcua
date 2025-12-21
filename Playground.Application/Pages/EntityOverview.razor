@@ -1,0 +1,37 @@
+﻿@page "/entities"
+@using Hoeyer.OpcUa.Core.Configuration.Modelling
+@using Microsoft.AspNetCore.Components.Routing
+@inject EntityTypesCollection EntityModels
+
+<h1 class="text-2xl font-semibold mb-4">Modelled Entities</h1>
+
+@if (EntityModels?.ModelledEntities is null || !EntityModels.ModelledEntities.Any())
+{
+    <p class="text-gray-500">No modelled entities found.</p>
+}
+else
+{
+    <table class="table-auto border-collapse border border-gray-300 w-full">
+        <thead>
+        <tr class="bg-gray-100">
+            <th class="border border-gray-300 px-4 py-2 text-left">
+                Entity Name
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var entityType in EntityModels.ModelledEntities
+                      .OrderBy(t => t.Name))
+        {
+            <tr class="hover:bg-gray-50">
+                <td class="border border-gray-300 px-4 py-2">
+                    <NavLink href="@($"/{entityType.Name}")"
+                             class="text-blue-600 hover:underline">
+                        @entityType.Name
+                    </NavLink>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
