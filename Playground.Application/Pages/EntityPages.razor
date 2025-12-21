@@ -1,6 +1,7 @@
 ﻿
 @page "/{EntityName}"
-@using Hoeyer.OpcUa.Core.Services.OpcUaServices
+@using Hoeyer.OpcUa.Core.Configuration.Modelling
+@inject EntityTypesCollection EntityModels
 
 <h1>@EntityName</h1>
 
@@ -22,7 +23,7 @@ else
     protected override void OnParametersSet()
     {
         // Find the matching type in your registry
-        EntityType = OpcUaEntityTypes.Entities
+        EntityType = EntityModels.ModelledEntities
             .FirstOrDefault(t => t.Name.Equals(EntityName, StringComparison.OrdinalIgnoreCase));
 
         if (EntityType is not null)
