@@ -1,41 +1,21 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Hoeyer.Common.Extensions.Types;
+﻿using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Core.Configuration.Modelling;
-using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
-using Hoeyer.OpcUa.EndToEndTest.Fixtures;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hoeyer.OpcUa.EndToEndTest.Generators;
+namespace Hoeyer.OpcUa.EndToEndTest.Fixtures.Simulation;
 
-[SuppressMessage("Maintainability", "S2743")]
-public sealed class ApplicationFixtureGeneratorAttribute<T> : DataSourceGeneratorAttribute<ApplicationFixture<T>>
-    where T : notnull
+/**
+ * Given a type T and an
+ * <see cref="IServiceCollection" />
+ * collection, examines the collection for all registered services that could be used for that type.
+ */
+public sealed class ServiceDescriptionMatcher(
+    Type type,
+    IEnumerable<ServiceDescriptor> collection,
+    EntityTypesCollection? entityTypesCollection)
 {
-    private readonly IServiceCollection _services = new ServiceCollection().AddTestServices();
-    private readonly EntityTypesCollection EntityTypes;
-
-    public ApplicationFixtureGeneratorAttribute()
-    {
-        EntityTypes = _services.BuildServiceProvider().GetService<EntityTypesCollection>()!;
-    }
-
-
-    protected override IEnumerable<Func<ApplicationFixture<T>>> GenerateDataSources(
-        DataGeneratorMetadata dataGeneratorMetadata)
-    {
-        var protocolList = new List<WebProtocol> { WebProtocol.OpcTcp };
-        var servicesUnderTest = FilterDescriptors()
-            .SelectMany(EntityInstantiatedVariantsOfServiceDescriptors)
-            .DistinctBy(e => e.ImplementationType)
-            .Where(e => e.ImplementationType != null)
-            .Select(e => e.ImplementationType!)
-            .ToList();
-
-        return protocolList
-            .SelectMany(protocol => servicesUnderTest
-                .Select(type => new Func<ApplicationFixture<T>>(() => new ApplicationFixture<T>(type, protocol)))
-            );
-    }
+    public IEnumerable<ServiceDescriptor> GetMatchingDescriptors() =>
+        FilterDescriptors().SelectMany(EntityInstantiatedVariantsOfServiceDescriptors);
 
     private IEnumerable<ServiceDescriptor> EntityInstantiatedVariantsOfServiceDescriptors(
         DescriptorUsage descriptionWrapper) =>
@@ -46,7 +26,7 @@ public sealed class ApplicationFixtureGeneratorAttribute<T> : DataSourceGenerato
     private IEnumerable<ServiceDescriptor> GetTypePerEntity(DescriptorUsage descriptorWrapper)
     {
         var oldDescriptor = descriptorWrapper.Descriptor;
-        foreach (var entityType in EntityTypes.ModelledEntities)
+        foreach (var entityType in entityTypesCollection.ModelledEntities)
         {
             var impl = oldDescriptor.ImplementationType!.MakeGenericType(entityType);
             var service = oldDescriptor.ServiceType.MakeGenericType(entityType);
@@ -56,19 +36,18 @@ public sealed class ApplicationFixtureGeneratorAttribute<T> : DataSourceGenerato
 
     private IEnumerable<DescriptorUsage> FilterDescriptors()
     {
-        var t = typeof(T);
-        var usage = ExamineAttributeUsage(t);
+        var usage = ExamineAttributeUsage(type);
         return usage switch
         {
-            AttributeUsage.ConcreteClass => GetDescriptorsForConcreteClass(_services, t),
-            AttributeUsage.Interface => GetDescriptorsForConcreteInterface(_services, t),
-            AttributeUsage.ClosedGenericClass => GetDescriptorsForClosedGenericInterface(_services, t),
-            AttributeUsage.ClosedGenericInterface => GetDescriptorsForClosedGenericClass(_services, t),
+            AttributeUsage.ConcreteClass => GetDescriptorsForConcreteClass(),
+            AttributeUsage.Interface => GetDescriptorsForConcreteInterface(),
+            AttributeUsage.ClosedGenericClass => GetDescriptorsForClosedGenericInterface(),
+            AttributeUsage.ClosedGenericInterface => GetDescriptorsForClosedGenericClass(),
             var _ => throw new InvalidOperationException("Attribute usage was an unexpected value")
         };
     }
 
-    private AttributeUsage ExamineAttributeUsage(Type t)
+    private static AttributeUsage ExamineAttributeUsage(Type t)
     {
         var usage = t switch
         {
@@ -90,8 +69,7 @@ public sealed class ApplicationFixtureGeneratorAttribute<T> : DataSourceGenerato
         return usage;
     }
 
-    private IEnumerable<DescriptorUsage> GetDescriptorsForClosedGenericClass(IServiceCollection collection,
-        Type type)
+    private IEnumerable<DescriptorUsage> GetDescriptorsForClosedGenericClass()
     {
         //type usage is of format MyValue<int>
         return collection.Where(e =>
@@ -99,7 +77,7 @@ public sealed class ApplicationFixtureGeneratorAttribute<T> : DataSourceGenerato
             .Select(d => new DescriptorUsage(d));
     }
 
-    private bool MatchesGenerically(Type type, Type? serviceType)
+    private static bool MatchesGenerically(Type type, Type? serviceType)
     {
         var serviceTypeMatches =
             serviceType != null && (serviceType == type ||
@@ -107,8 +85,7 @@ public sealed class ApplicationFixtureGeneratorAttribute<T> : DataSourceGenerato
         return serviceTypeMatches;
     }
 
-    private IEnumerable<DescriptorUsage> GetDescriptorsForClosedGenericInterface(IServiceCollection collection,
-        Type type)
+    private IEnumerable<DescriptorUsage> GetDescriptorsForClosedGenericInterface()
     {
         return collection.Where(e =>
         {
@@ -117,18 +94,16 @@ public sealed class ApplicationFixtureGeneratorAttribute<T> : DataSourceGenerato
         }).Select(d => new DescriptorUsage(d));
     }
 
-    private IEnumerable<DescriptorUsage> GetDescriptorsForConcreteInterface(IServiceCollection collection,
-        Type type)
+    private IEnumerable<DescriptorUsage> GetDescriptorsForConcreteInterface()
     {
-        //Type usage is IInterface
+        //Descriptors usage is IInterface
         //need to find all services that implement that interface
         return collection.Where(e =>
                 e.ServiceType == type || e.ServiceType.Implements(type) || e.ServiceType.IsAssignableTo(type))
             .Select(d => new DescriptorUsage(d));
     }
 
-    private IEnumerable<DescriptorUsage> GetDescriptorsForConcreteClass(IServiceCollection collection,
-        Type type)
+    private IEnumerable<DescriptorUsage> GetDescriptorsForConcreteClass()
     {
         return collection.Where(e => e.ServiceType == type || type == e.ImplementationType)
             .Select(d => new DescriptorUsage(d));

@@ -5,7 +5,8 @@ using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.EndToEndTest.Fixtures;
+using Hoeyer.OpcUa.Core.Configuration.Modelling;
+using Hoeyer.OpcUa.EndToEndTest.Fixtures.Simulation;
 using JetBrains.Annotations;
 using Opc.Ua;
 using EntityBrowseException = Hoeyer.OpcUa.Client.Api.Browsing.Exceptions.EntityBrowseException;
@@ -16,7 +17,7 @@ namespace Hoeyer.OpcUa.EndToEndTest.ClientTests;
 [TestSubject(typeof(ConcurrentBrowse))]
 [Timeout(10_0000)]
 public abstract class NodeTreeTraverserTest(
-    ApplicationFixture fixture,
+    SimulationFixture fixture,
     string classUnderTest,
     Func<INodeTreeTraverser> getTraversal)
 {
@@ -69,7 +70,7 @@ public abstract class NodeTreeTraverserTest(
         {
             foreach (IGrouping<NodeId, NodeId> duplicate in duplicates)
             {
-                await Assert.That(duplicate.Count()).IsLessThan(2).Because(duplicate.Key +
+                await Assert.That(duplicate.Count()).IsLessThan(1).Because(duplicate.Key +
                                                                            " should only be returned once but was returned " +
                                                                            duplicates.Count + " times");
             }
@@ -99,17 +100,34 @@ public abstract class NodeTreeTraverserTest(
         }
     }
 
-    [Test]
-    [BrowseNameCollection]
-    [DisplayName("Can find entity root for $browseNameCollection")]
-    public async Task CanFindReferencesForAllNodes(IBrowseNameCollection browseNameCollection, CancellationToken token)
+    private IEnumerable<IBrowseNameCollection> ConstructBrowseNameCollections()
     {
-        var traversalStrategy = getTraversal();
-        var session = await fixture.CreateSession();
-        await traversalStrategy
-            .TraverseUntil(session,
-                ObjectIds.RootFolder,
-                node => browseNameCollection.EntityName.Equals(node.BrowseName.Name),
-                token);
+        return fixture
+            .GetService<EntityTypesCollection>()
+            .ModelledEntities
+            .Select(entity =>
+            {
+                var browseNameCollectionService = typeof(IBrowseNameCollection<>).MakeGenericType(entity);
+                return fixture.GetService<IBrowseNameCollection>(browseNameCollectionService);
+            });
+    }
+
+    [Test]
+    [DisplayName("Can find entity root for $browseNameCollection")]
+    public async Task CanFindReferencesForAllNodes(CancellationToken token)
+    {
+        IEnumerable<IBrowseNameCollection> browseNameCollections = ConstructBrowseNameCollections();
+        using var assertion = Assert.Multiple();
+
+        foreach (var browseNameCollection in browseNameCollections)
+        {
+            var traversalStrategy = getTraversal();
+            var session = await fixture.CreateSession();
+            await traversalStrategy
+                .TraverseUntil(session,
+                    ObjectIds.RootFolder,
+                    node => browseNameCollection.EntityName.Equals(node.BrowseName.Name),
+                    token);
+        }
     }
 }

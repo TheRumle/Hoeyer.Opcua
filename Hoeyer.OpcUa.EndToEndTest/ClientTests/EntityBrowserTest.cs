@@ -2,8 +2,8 @@
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
 using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.EndToEndTest.Fixtures;
-using Hoeyer.OpcUa.EndToEndTest.Generators;
+using Hoeyer.OpcUa.EndToEndTest.Extensions;
+using Hoeyer.OpcUa.EndToEndTest.Fixtures.Simulation;
 using JetBrains.Annotations;
 using Opc.Ua;
 using Playground.Modelling.Models;
@@ -12,44 +12,48 @@ namespace Hoeyer.OpcUa.EndToEndTest.ClientTests;
 
 [TestSubject(typeof(IEntityBrowser<>))]
 [TestSubject(typeof(INodeReader))]
-public sealed class EntityBrowserTest
+[ClassDataSource<SimulationFixture<IEntityBrowser>>(Shared = SharedType.Keyed, Key = FixtureKeys.ReadOnlyFixture)]
+public sealed class EntityBrowserTest(SimulationFixture<IEntityBrowser> simulationFixture)
 {
     [Test]
-    [ApplicationFixtureGenerator<IEntityBrowser>]
-    public async Task EntityBrowser_CanCreateEntityNode_AndTranslateIt(ApplicationFixture<IEntityBrowser> services)
+    public async Task EntityBrowser_CanCreateEntityNode_AndTranslateIt(
+        CancellationToken token)
     {
-        var entity = await services.ExecuteAsync(browser => browser.BrowseEntityNode(CancellationToken.None));
-
-        await Assert.That(entity).IsNotNull();
-        await Assert.That(entity.PropertyStates).IsNotEmpty();
-        await Assert.That(entity.BaseObject).IsNotNull();
+        await simulationFixture.AssertAll(async service =>
+        {
+            var entity = await service.BrowseEntityNode(token);
+            await Assert.That(entity).IsNotNull();
+            await Assert.That(entity.PropertyStates).IsNotEmpty();
+            await Assert.That(entity.BaseObject).IsNotNull();
+        });
     }
 
     [Test]
-    [ApplicationFixtureGenerator<IEntityBrowser>]
-    public async Task EntityBrowser_BrowsedEntity_DoesNotHaveNullValues(ApplicationFixture<IEntityBrowser> services)
+    public async Task EntityBrowser_BrowsedEntity_DoesNotHaveNullValues(CancellationToken token)
     {
-        var entity = await services.ExecuteAsync(browser => browser.BrowseEntityNode(CancellationToken.None));
-        Dictionary<string, object?> propertyValue = GetNullPropertyValues(entity);
-
-        using (Assert.Multiple())
+        await simulationFixture.AssertInteractions(async serviceUnderTest =>
         {
-            foreach (var key in propertyValue.Keys)
+            var entity = await serviceUnderTest.ExecuteAsync(browser => browser.BrowseEntityNode(token));
+            var propertyValue = GetNullPropertyValues(entity);
+
+            using (Assert.Multiple())
             {
-                Assert.Fail(
-                    $"{entity.BaseObject.BrowseName.Name}.{key} was null and no browsed property should be null");
+                foreach (var key in propertyValue.Keys)
+                {
+                    Assert.Fail(
+                        $"{entity.BaseObject.BrowseName.Name}.{key} was null and no browsed property should be null");
+                }
             }
-        }
+        });
     }
 
     [Test]
     [TestSubject(typeof(IEntityTranslator<Gantry>))]
     [TestSubject(typeof(IEntityBrowser<Gantry>))]
-    [ClassDataSource<ApplicationFixture>]
-    public async Task EntityBrowser_BrowsedEntity_CanBeTranslated_DoesNotHaveNullValues(ApplicationFixture services)
+    public async Task EntityBrowser_BrowsedEntity_CanBeTranslated_DoesNotHaveNullValues()
     {
-        var browser = services.GetService<IEntityBrowser<Gantry>>();
-        var translator = services.GetService<IEntityTranslator<Gantry>>();
+        var browser = simulationFixture.GetService<IEntityBrowser<Gantry>>();
+        var translator = simulationFixture.GetService<IEntityTranslator<Gantry>>();
         var node = await browser.BrowseEntityNode();
         var gantry = translator.Translate(node);
 
@@ -65,18 +69,18 @@ public sealed class EntityBrowserTest
             .Because(" after reading the node and translating it, there should not be null values");
     }
 
-    [ApplicationFixtureGenerator<IEntityBrowser>]
     [Test]
-    public void CanBrowseOnSimultaneousThreads(ApplicationFixture<IEntityBrowser> fixture)
-    {
-        IEntityBrowser browser = fixture.TestedService;
-        var first = new Thread(() => browser.BrowseEntityNode(CancellationToken.None).GetAwaiter().GetResult());
-        var second = new Thread(() => browser.BrowseEntityNode(CancellationToken.None).GetAwaiter().GetResult());
-        first.Start();
-        second.Start();
-        first.Join();
-        second.Join();
-    }
+    public async Task CanBrowseOnSimultaneousThreads(CancellationToken token) =>
+        await simulationFixture.AssertInteractions(serviceUnderTest =>
+        {
+            var browser = serviceUnderTest.TestedService;
+            var first = new Thread(() => browser.BrowseEntityNode(token).GetAwaiter().GetResult());
+            var second = new Thread(() => browser.BrowseEntityNode(token).GetAwaiter().GetResult());
+            first.Start();
+            second.Start();
+            first.Join();
+            second.Join();
+        });
 
     private static Dictionary<string, object?> GetNullPropertyValues(IEntityNode entity)
     {

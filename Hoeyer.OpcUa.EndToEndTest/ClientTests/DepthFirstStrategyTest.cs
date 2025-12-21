@@ -1,12 +1,11 @@
 ﻿using Hoeyer.OpcUa.Client.Application.Browsing;
-using Hoeyer.OpcUa.EndToEndTest.Fixtures;
-using Hoeyer.OpcUa.EndToEndTest.Generators;
+using Hoeyer.OpcUa.EndToEndTest.Fixtures.Simulation;
 using JetBrains.Annotations;
 
 namespace Hoeyer.OpcUa.EndToEndTest.ClientTests;
 
 [InheritsTests]
 [TestSubject(typeof(DepthFirstStrategy))]
-[ApplicationFixtureGenerator<DepthFirstStrategy>]
-public sealed class DepthFirstStrategyTest(ApplicationFixture<DepthFirstStrategy> fixture)
-    : NodeTreeTraverserTest(fixture, nameof(DepthFirstStrategy), () => fixture.TestedService);
+[ClassDataSource<SimulationFixture>(Key = FixtureKeys.ReadOnlyFixture, Shared = SharedType.Keyed)]
+public sealed class DepthFirstStrategyTest(SimulationFixture fixture)
+    : NodeTreeTraverserTest(fixture, nameof(DepthFirstStrategy), fixture.GetService<BreadthFirstStrategy>);

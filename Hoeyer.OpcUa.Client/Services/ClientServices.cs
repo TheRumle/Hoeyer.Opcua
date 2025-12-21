@@ -49,8 +49,8 @@ public static class ClientServices
         var markers = fromAssembly.ToList();
         services.AddSingleton(conf.EntityMonitoringConfiguration);
         services.AddKeyedSingleton(ServiceKeys.CLIENT_SERVICES, markers.Select(e => new AssemblyMarker(e)));
-        services.AddServiceAndImplSingleton<BreadthFirstStrategy, BreadthFirstStrategy>();
-        services.AddServiceAndImplSingleton<DepthFirstStrategy, DepthFirstStrategy>();
+        services.AddServiceAndImplTransient<INodeTreeTraverser, BreadthFirstStrategy>();
+        services.AddServiceAndImplTransient<INodeTreeTraverser, DepthFirstStrategy>();
         services.AddServiceAndImplTransient(typeof(INodeTreeTraverser), conf.TraversalStrategy);
         services.AddServiceAndImplTransient(typeof(INodeReader), conf.NodeReader);
         services.AddServiceAndImplTransient(typeof(INodeBrowser), conf.Browser);

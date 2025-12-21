@@ -1,19 +1,20 @@
-﻿using Hoeyer.OpcUa.EndToEndTest.Fixtures;
-using Hoeyer.OpcUa.EndToEndTest.Generators;
+﻿using Hoeyer.OpcUa.EndToEndTest.Fixtures.Simulation;
 using Playground.Modelling.Methods;
 using Playground.Modelling.Models;
 
 namespace Hoeyer.OpcUa.EndToEndTest.ClientTests;
 
-[ApplicationFixtureGenerator<IGantryMethods>]
-public class MethodCallingTest(ApplicationFixture<IGantryMethods> appFixture)
+[ClassDataSource<SimulationFixture>(Shared = SharedType.PerTestSession)]
+public class MethodCallingTest(SimulationFixture fixture)
 {
+    private readonly Lazy<IGantryMethods> _gantryMethods = new(fixture.GetService<IGantryMethods>);
+
     [Test]
     public async Task WhenCallingVoidTask_DoesNotThrow()
-        => await appFixture.TestedService.ChangePosition(Position.OnTheMoon);
+        => await _gantryMethods.Value.ChangePosition(Position.OnTheMoon);
 
 
     [Test]
-    public async Task<int> WhenCalling_TaskWithGuidReturn_DoesNotThrow() =>
-        await appFixture.TestedService.PlaceContainer(Position.OnTheMoon);
+    public async Task WhenCalling_TaskWithGuidReturn_DoesNotThrow() =>
+        await _gantryMethods.Value.AssignContainer(Guid.NewGuid());
 }

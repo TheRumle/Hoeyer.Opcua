@@ -10,12 +10,7 @@ public sealed record ReservedPort : IDisposable
     private int? _port;
 
     public int Port => GetPort();
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        _listener.Dispose();
-    }
+    public void Dispose() => _listener.Dispose();
 
     public static implicit operator int(ReservedPort port) => port.Port;
 
