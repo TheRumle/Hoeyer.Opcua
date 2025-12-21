@@ -55,6 +55,11 @@ public static class Rules
         DesignCategory,
         "Entity methods must be uniquely identified by their name.");
 
+    public static readonly DiagnosticDescriptor MustBeAnnotatedWithAlarmType = CreateErrorDescriptor(
+        "HOEYERUA0009",
+        DesignCategory,
+        $"The alarm field must be annotated with an alarm type using '{WellKnown.FullyQualifiedAttribute.AlarmTypeAttribute.WithoutGlobalPrefix}'.");
+
     public static Diagnostic MustNotBeNullableProperty(PropertyDeclarationSyntax property) =>
         Diagnostic.Create(MustNotBeNullablePropertyDescriptor, property.GetLocation(), property.Identifier);
 
