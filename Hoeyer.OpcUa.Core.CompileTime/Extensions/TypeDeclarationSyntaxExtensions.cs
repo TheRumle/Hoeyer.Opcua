@@ -55,4 +55,26 @@ public static class TypeDeclarationSyntaxExtensions
         WellKnown.FullyQualifiedAttribute
             .EntityAttribute
             .WithGlobalPrefix.Equals(x.AttributeClass?.GloballyQualifiedNonGeneric());
+
+    public static bool IsAnnotatedAsOpcUaAlarm(this EnumDeclarationSyntax typeSyntax, SemanticModel semanticModel)
+    {
+        var symbol = semanticModel.GetDeclaredSymbol(typeSyntax);
+        var isAnnotated = symbol?
+            .GetAttributes()
+            .Any(IsOpcAlarmAttributeSymbol);
+
+        return isAnnotated != null && isAnnotated.Value;
+    }
+
+    public static AttributeData? GetOpcUaAlarmAttribute(this EnumDeclarationSyntax typeSyntax,
+        SemanticModel semanticModel) =>
+        semanticModel
+            .GetDeclaredSymbol(typeSyntax)
+            ?.GetAttributes()
+            .FirstOrDefault(IsOpcAlarmAttributeSymbol);
+
+    private static bool IsOpcAlarmAttributeSymbol(AttributeData x) =>
+        WellKnown.FullyQualifiedAttribute
+            .AlarmAttribute
+            .WithGlobalPrefix.Equals(x.AttributeClass?.GloballyQualifiedNonGeneric());
 }

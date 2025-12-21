@@ -3,7 +3,7 @@
   "profiles": {
     "DebugRoslynAnalyzers": {
       "commandName": "DebugRoslynComponent",
-      "targetProject": "../Playground/Playground.csproj"
+      "targetProject": "../Playground.Modelling/Playground.Modelling.csproj"
     }
   }
 }
