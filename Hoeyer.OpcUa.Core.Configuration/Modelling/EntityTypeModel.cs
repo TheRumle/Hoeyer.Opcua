@@ -1,5 +1,4 @@
 ﻿using System.Collections.Frozen;
-using System.Collections.Immutable;
 using System.Reflection;
 using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Reflection;
@@ -9,38 +8,20 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Core.Configuration.Modelling;
 
-public sealed class EntityTypeModel<TEntity> : EntityTypeModel, IEntityTypeModel<TEntity>
+public sealed class EntityTypeModel<TEntity> : IEntityTypeModel<TEntity>
 {
-    public EntityTypeModel(Type marker) : base([new AssemblyMarker(marker)],
+    public EntityTypeModel(Type marker) : this([new AssemblyMarker(marker)],
         new EntityTypesCollection([new AssemblyMarker(marker)]), typeof(TEntity))
     {
     }
 
-    public EntityTypeModel(AssemblyMarker markers) : base([markers], new EntityTypesCollection([markers]),
+    public EntityTypeModel(AssemblyMarker markers) : this([markers], new EntityTypesCollection([markers]),
         typeof(TEntity))
     {
     }
 
     public EntityTypeModel([FromKeyedServices(ServiceKeys.MODELLING)] IEnumerable<AssemblyMarker> markers,
-        EntityTypesCollection collection) : base(markers, collection, typeof(TEntity))
-    {
-    }
-}
-
-public class EntityTypeModel : IEntityTypeModel
-{
-    public EntityTypeModel(Type entity) : this([new AssemblyMarker(entity)],
-        new EntityTypesCollection([new AssemblyMarker(entity)]), entity)
-    {
-    }
-
-    public EntityTypeModel(Type marker, Type entity) : this([new AssemblyMarker(marker)],
-        new EntityTypesCollection([new AssemblyMarker(marker)]), entity)
-    {
-    }
-
-    public EntityTypeModel(AssemblyMarker markers, Type entity) : this([markers], new EntityTypesCollection([markers]),
-        entity)
+        EntityTypesCollection collection) : this(markers, collection, typeof(TEntity))
     {
     }
 
@@ -61,15 +42,20 @@ public class EntityTypeModel : IEntityTypeModel
             .SelectMany(e => e.TypesInAssembly)
             .ToList();
 
+        Alarms = markerTypes
+            .Where(t => t.IsEnum && t.IsAnnotatedWith<OpcUaAlarmAttribute<TEntity>>())
+            .Select(type => type.GetFields(BindingFlags.Public | BindingFlags.Static))
+            .SelectMany(enumFields => enumFields
+                .Select(field => (
+                    AlarmName: field.Name,
+                    AlarmType: field.GetCustomAttribute<OpcUaAlarmTypeAttribute>().AlarmValue)
+                )
+            )
+            .ToFrozenSet();
+
         BehaviourInterfaces = markerTypes
-            .ToImmutableHashSet()
             .Where(type => type is { IsGenericType: false, IsInterface: true })
-            .Select(type => (
-                type,
-                isValid: type.GetInstantiatedGenericAttribute(typeof(OpcUaEntityMethodsAttribute<>)) != null
-            ))
-            .Where(e => e.isValid)
-            .Select(e => e.type)
+            .Where(t => t.IsAnnotatedWith<OpcUaEntityMethodsAttribute<TEntity>>())
             .ToFrozenSet();
 
         Methods = BehaviourInterfaces.SelectMany(e => e.GetMethods()).ToFrozenSet();
@@ -83,13 +69,11 @@ public class EntityTypeModel : IEntityTypeModel
     }
 
     public Type EntityType { get; }
-
     public FrozenSet<Type> BehaviourInterfaces { get; }
     public FrozenSet<MethodInfo> Methods { get; }
     public FrozenDictionary<string, string> MethodNames { get; set; }
     public FrozenDictionary<string, string> PropertyNames { get; set; }
     public string EntityName { get; }
-
-    /// <inheritdoc />
+    public FrozenSet<(string AlarmName, AlarmValue AlarmType)> Alarms { get; }
     public override string ToString() => $"Entity model [{EntityName}]";
 }
