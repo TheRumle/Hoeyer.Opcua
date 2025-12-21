@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Reflection;
+using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Application.NodeStructure;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
-using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Hoeyer.OpcUa.Server.Application;
@@ -21,7 +22,7 @@ namespace Hoeyer.OpcUa.Server.Services;
 public static class ServiceExtensions
 {
     public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServer(
-        this OnGoingOpcEntityServiceRegistration serviceRegistration,
+        this OnGoingOpcEntityServiceRegistrationWithModels serviceRegistration,
         Type fromAssembly,
         Action<ServerConfiguration>? additionalConfiguration = null)
         => WithOpcUaServer(
@@ -31,7 +32,7 @@ public static class ServiceExtensions
         );
 
     public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServer(
-        this OnGoingOpcEntityServiceRegistration serviceRegistration,
+        this OnGoingOpcEntityServiceRegistrationWithModels serviceRegistration,
         IEnumerable<Assembly> assembliesContainingLoaders,
         AdditionalServerConfiguration? additionalConfiguration = null)
     {
@@ -44,7 +45,9 @@ public static class ServiceExtensions
         var registration = typeof(ServiceExtensions)
             .CreateStaticMethodInvoker(nameof(AddServices), collection);
 
-        foreach (var entity in OpcUaEntityTypes.Entities)
+        foreach (var entity in serviceRegistration.EntityCollection.ModelledEntities
+                     .Where(type => type.IsAnnotatedWith<OpcUaEntityAttribute>())
+                     .ToFrozenSet())
         {
             registration.Invoke(entity);
         }
@@ -82,7 +85,7 @@ public static class ServiceExtensions
     }
 
     public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServerAsBackgroundService(
-        this OnGoingOpcEntityServiceRegistration serviceRegistration,
+        this OnGoingOpcEntityServiceRegistrationWithModels serviceRegistration,
         Type assemblyMarker,
         Action<ServerConfiguration>? additionalConfiguration = null
     )

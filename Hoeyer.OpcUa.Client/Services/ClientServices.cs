@@ -24,12 +24,12 @@ namespace Hoeyer.OpcUa.Client.Services;
 
 public static class ClientServices
 {
-    public static OnGoingOpcEntityServiceRegistration WithOpcUaClientModelsFrom(
-        this OnGoingOpcEntityServiceRegistration registration,
+    public static OnGoingOpcEntityServiceRegistrationWithModels WithOpcUaClientModelsFrom(
+        this OnGoingOpcEntityServiceRegistrationWithModels registration,
         Type fromAssembly) => WithOpcUaClientModelsFrom(registration, [fromAssembly]);
 
-    public static OnGoingOpcEntityServiceRegistration WithOpcUaClientModelsFrom(
-        this OnGoingOpcEntityServiceRegistration registration,
+    public static OnGoingOpcEntityServiceRegistrationWithModels WithOpcUaClientModelsFrom(
+        this OnGoingOpcEntityServiceRegistrationWithModels registration,
         IEnumerable<Type> fromAssembly,
         Action<ClientServiceConfiguration>? configure = null
     )

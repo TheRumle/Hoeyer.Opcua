@@ -46,12 +46,15 @@ public static class ServiceCollectionExtensions
         return new OnGoingOpcEntityServiceRegistration(services);
     }
 
-    public static OnGoingOpcEntityServiceRegistration WithEntityModelsFrom(
+    public static OnGoingOpcEntityServiceRegistrationWithModels WithEntityModelsFrom(
         this OnGoingOpcEntityServiceRegistration registration,
         params IEnumerable<Type> assemblyMarkers)
     {
         registration.Collection.WithEntityModelsFrom(assemblyMarkers);
-        return registration;
+        return new OnGoingOpcEntityServiceRegistrationWithModels(
+            registration.Collection,
+            registration.Collection.BuildServiceProvider()
+                .GetRequiredService<EntityTypesCollection>());
     }
 
     public static IServiceCollection WithEntityModelsFrom(this IServiceCollection services,
