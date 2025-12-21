@@ -70,6 +70,19 @@ public static class EntitySourceCodeDefinitions
         {
             public Position Position { get; set; }
         }
+        """,
+        """
+        namespace Test;
+        using System;
+        using System.Collections.Generic;
+        using Hoeyer.OpcUa.Core;
+        [OpcUaAlarm<AlarmSupport>]
+        public enum Alarm
+        {}
+
+        [OpcUaEntity]
+        public sealed class AlarmSupport
+        {}
         """
     ];
 

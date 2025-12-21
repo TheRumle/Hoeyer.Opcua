@@ -50,7 +50,12 @@ public class AlarmAnalyser()
 
         if (!typeArg.IsAnnotatedAsOpcUaEntity())
         {
-            return [Diagnostic.Create(Rules.MustBeOpcEntityArgument, enumSyntax.Identifier.GetLocation())];
+            var attrSyntax = attribute?
+                .ApplicationSyntaxReference?
+                .GetSyntax(context.CancellationToken) as AttributeSyntax;
+
+            var location = attrSyntax?.GetLocation() ?? enumSyntax.GetLocation();
+            return [Diagnostic.Create(Rules.MustBeOpcEntityArgument, location)];
         }
 
         return [];
