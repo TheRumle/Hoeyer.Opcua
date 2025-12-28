@@ -60,6 +60,16 @@ public static class Rules
         DesignCategory,
         $"The alarm field must be annotated with an alarm type using '{WellKnown.FullyQualifiedAttribute.AlarmTypeAttribute.WithoutGlobalPrefix}'.");
 
+    public static readonly DiagnosticDescriptor MustMatchFieldType = CreateErrorDescriptor(
+        "HOEYERUA0010",
+        DesignCategory,
+        "The alarm value must match the field type.");
+
+    public static readonly DiagnosticDescriptor IllegalRange = CreateErrorDescriptor(
+        "HOEYERUA0011",
+        DesignCategory,
+        "The range {0} to {1} does not construct a legal range'");
+
     public static Diagnostic MustNotBeNullableProperty(PropertyDeclarationSyntax property) =>
         Diagnostic.Create(MustNotBeNullablePropertyDescriptor, property.GetLocation(), property.Identifier);
 
@@ -67,9 +77,8 @@ public static class Rules
         string diagnosticId,
         string category,
         DiagnosticSeverity severity,
-        string message)
-    {
-        return new DiagnosticDescriptor(
+        string message) =>
+        new(
             diagnosticId,
             message,
             message,
@@ -77,13 +86,10 @@ public static class Rules
             severity,
             true,
             message);
-    }
 
     private static DiagnosticDescriptor CreateErrorDescriptor(
         string diagnosticId,
         string category,
-        string message)
-    {
-        return CreateDescriptor(diagnosticId, category, DiagnosticSeverity.Error, message);
-    }
+        string message) =>
+        CreateDescriptor(diagnosticId, category, DiagnosticSeverity.Error, message);
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Frozen;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Hoeyer.OpcUa.Core.Api.NodeStructure;
@@ -12,5 +13,5 @@ public interface IBehaviourTypeModel
 
 public interface IEntityTypeModel<T> : IBehaviourTypeModel<T>, IBrowseNameCollection<T>
 {
-    FrozenSet<(string AlarmName, AlarmValue AlarmType)> Alarms { get; }
+    public FrozenDictionary<string, IEnumerable<OpcAlarmAttribute>> PropertyAlarms { get; set; }
 }

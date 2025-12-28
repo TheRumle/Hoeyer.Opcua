@@ -42,17 +42,6 @@ public sealed class EntityTypeModel<TEntity> : IEntityTypeModel<TEntity>
             .SelectMany(e => e.TypesInAssembly)
             .ToList();
 
-        Alarms = markerTypes
-            .Where(t => t.IsEnum && t.IsAnnotatedWith<OpcUaAlarmAttribute<TEntity>>())
-            .Select(type => type.GetFields(BindingFlags.Public | BindingFlags.Static))
-            .SelectMany(enumFields => enumFields
-                .Select(field => (
-                    AlarmName: field.Name,
-                    AlarmType: field.GetCustomAttribute<OpcUaAlarmTypeAttribute>().AlarmValue)
-                )
-            )
-            .ToFrozenSet();
-
         BehaviourInterfaces = markerTypes
             .Where(type => type is { IsGenericType: false, IsInterface: true })
             .Where(t => t.IsAnnotatedWith<OpcUaEntityMethodsAttribute<TEntity>>())
@@ -61,6 +50,12 @@ public sealed class EntityTypeModel<TEntity> : IEntityTypeModel<TEntity>
         Methods = BehaviourInterfaces.SelectMany(e => e.GetMethods()).ToFrozenSet();
 
         EntityName = entity.GetBrowseNameOrDefault(entity.Name);
+
+        PropertyAlarms = entity.GetProperties().ToFrozenDictionary(
+            property => property.Name,
+            property => property.GetCustomAttributes<OpcAlarmAttribute>()
+        );
+
         PropertyNames = entity.GetProperties().ToFrozenDictionary(
             property => property.Name,
             property => property.GetBrowseNameOrDefault(property.Name));
@@ -73,7 +68,7 @@ public sealed class EntityTypeModel<TEntity> : IEntityTypeModel<TEntity>
     public FrozenSet<MethodInfo> Methods { get; }
     public FrozenDictionary<string, string> MethodNames { get; set; }
     public FrozenDictionary<string, string> PropertyNames { get; set; }
+    public FrozenDictionary<string, IEnumerable<OpcAlarmAttribute>> PropertyAlarms { get; set; }
     public string EntityName { get; }
-    public FrozenSet<(string AlarmName, AlarmValue AlarmType)> Alarms { get; }
     public override string ToString() => $"Entity model [{EntityName}]";
 }

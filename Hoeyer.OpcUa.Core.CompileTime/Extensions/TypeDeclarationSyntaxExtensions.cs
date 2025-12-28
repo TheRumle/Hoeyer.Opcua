@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Hoeyer.OpcUa.Core.CompileTime.CodeDomain;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -66,15 +67,32 @@ public static class TypeDeclarationSyntaxExtensions
         return isAnnotated != null && isAnnotated.Value;
     }
 
-    public static AttributeData? GetOpcUaAlarmAttribute(this EnumDeclarationSyntax typeSyntax,
+    public static IEnumerable<AttributeData> GetOpcUaAlarmAttributes(this PropertyDeclarationSyntax typeSyntax,
         SemanticModel semanticModel) =>
         semanticModel
             .GetDeclaredSymbol(typeSyntax)
             ?.GetAttributes()
-            .FirstOrDefault(IsOpcAlarmAttributeSymbol);
+            .Where(IsOpcAlarmAttributeSymbol)
+        ?? [];
 
-    private static bool IsOpcAlarmAttributeSymbol(AttributeData x) =>
-        WellKnown.FullyQualifiedAttribute
-            .AlarmAttribute
-            .WithGlobalPrefix.Equals(x.AttributeClass?.GloballyQualifiedNonGeneric());
+    public static bool IsOpcAlarmAttributeSymbol(this AttributeData attribute) =>
+        IsTypeInheritingFrom(attribute.AttributeClass, WellKnown.FullyQualifiedAttribute.AlarmAttribute);
+
+    public static bool IsLegalRangeAlarm(this AttributeData attribute) => IsTypeInheritingFrom(attribute.AttributeClass,
+        WellKnown.FullyQualifiedAttribute.LegalRangeAlarmAttribute);
+
+    public static bool IsTypeInheritingFrom(this INamedTypeSymbol? clazz, FullyQualifiedTypeName target)
+    {
+        while (clazz != null)
+        {
+            if (target.WithGlobalPrefix.Equals(clazz.GloballyQualifiedNonGeneric()))
+            {
+                return true;
+            }
+
+            clazz = clazz.BaseType;
+        }
+
+        return false;
+    }
 }

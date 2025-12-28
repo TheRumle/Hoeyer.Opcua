@@ -15,7 +15,6 @@ public sealed class ReflectionBasedEntityStructureFactory<T>(
     private readonly Type _type = typeof(T);
     private IEntityNode? _node;
 
-    /// <inheritdoc />
     public IEntityNode Create(ushort applicationNamespaceIndex)
     {
         if (_node != null)
@@ -48,10 +47,32 @@ public sealed class ReflectionBasedEntityStructureFactory<T>(
         AssignReferences(properties, entity);
         AssignMethods(nodeMethods, entity);
 
+        var alarms = CreateAlarms(entity).ToList();
+        AssignAlarms(alarms, entity);
+
         _node = new EntityNode(entity,
             new HashSet<PropertyState>(properties.Select(e => e.OpcProperty)),
             new HashSet<MethodState>(nodeMethods.Select(e => e.Method)));
         return _node;
+    }
+
+    private void AssignAlarms(List<OffNormalAlarmState> alarms, BaseObjectState entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    private IEnumerable<OffNormalAlarmState> CreateAlarms(BaseObjectState parent)
+    {
+        return entityModel
+            .PropertyAlarms
+            .Values
+            .SelectMany(attribute => attribute)
+            .Select(e => e.BrowseName).Select(alarm => new OffNormalAlarmState(parent)
+            {
+                NodeId = new NodeId($"{parent.NodeId}.{alarm}.Alarm", parent.NodeId.NamespaceIndex),
+                BrowseName = new QualifiedName(alarm, parent.BrowseName.NamespaceIndex),
+                DisplayName = alarm
+            });
     }
 
     private IEnumerable<Exception> VerifyProperties(IList<OpcPropertyTypeInfo> properties)
@@ -113,5 +134,38 @@ public sealed class ReflectionBasedEntityStructureFactory<T>(
                     arguments: method.GetParameters()
                 );
             });
+    }
+
+    private OffNormalAlarmState AddBoolAlarm(
+        SystemContext context,
+        BaseObjectState entity,
+        string alarmName,
+        bool initialValue)
+    {
+        var stateVariable = new BaseDataVariableState<bool>(entity)
+        {
+            NodeId = new NodeId($"{entity.NodeId}.{alarmName}.State", entity.NodeId.NamespaceIndex),
+            BrowseName = new QualifiedName($"{alarmName}State", entity.BrowseName.NamespaceIndex),
+            DisplayName = alarmName + " State",
+            DataType = DataTypeIds.Boolean,
+            ValueRank = ValueRanks.Scalar,
+            Value = initialValue,
+            StatusCode = StatusCodes.Good,
+            Timestamp = DateTime.UtcNow
+        };
+
+        entity.AddChild(stateVariable);
+        var alarm = new OffNormalAlarmState(entity)
+        {
+            NodeId = new NodeId($"{entity.NodeId}.{alarmName}.Alarm", entity.NodeId.NamespaceIndex),
+            BrowseName = new QualifiedName(alarmName, entity.BrowseName.NamespaceIndex),
+            DisplayName = alarmName
+        };
+
+        alarm.Create(context, null, alarm.BrowseName, alarm.BrowseName.Name, true);
+
+        alarm.EventId.Value = Guid.NewGuid().ToByteArray();
+        entity.AddChild(alarm);
+        return alarm;
     }
 }

@@ -1,101 +1,143 @@
 ﻿using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.CompileTime;
+using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 
 namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
 
 [InheritsTests]
+[TestSubject(typeof(AlarmAnalyser))]
+[TestSubject(typeof(LegalRangeAlarmAttribute))]
+[TestSubject(typeof(MinimumThresholdExceededAlarmAttribute<>))]
+[TestSubject(typeof(MaximumThresholdExceededAlarmAttribute<>))]
 public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalyser())
 {
-    private const string REFERENCE_REPLACEMENT_EXPRESSION = "!--XXX--!";
     private const string ENTITY_CLASS = "EntityClass";
-    private const string NON_ENTITY_CLASS = "NonEntityClass";
 
-    public const string ATTRIBUTE_USAGE_EXAMPLE = $$"""
+    [Test]
+    [DisplayName(
+        $"({nameof(MaximumThresholdExceededAlarmAttribute<int>)}) When using alarm with generic argument double on property of type int, an error is reported")]
+    public async Task When_MaxThreshold_AlarmGenericArg_DoesNotMatchField_ReportsError(CancellationToken token)
+    {
+        const string maximumThresholdAlarmClass = $$"""
                                                     using Hoeyer.OpcUa.Core;
-                                                    [OpcUaAlarm<!--XXX--!>]
-                                                    public enum Alarm
-                                                    {}
-                                                    [OpcUaEntity]
-                                                    public sealed record {{ENTITY_CLASS}}{}
-                                                    public sealed record {{NON_ENTITY_CLASS}}{}
+                                                    public sealed record {{ENTITY_CLASS}}
+                                                    {
+                                                        [{{nameof(MaximumThresholdExceededAlarmAttribute<int>)}}<double>(11, "IntValueAlarm", AlarmSeverity.Critical)]
+                                                        public int MyInt {get; set;}
+                                                    }
                                                     """;
-
-    private const string ALARM_ANNOTATION =
-        $"[{nameof(OpcUaAlarmTypeAttribute)}({nameof(AlarmValue)}.{nameof(AlarmValue.Discrete)})]";
-
-    public const string ALARM_TYPE = $$"""
-                                       using Hoeyer.OpcUa.Core;
-                                       [OpcUaAlarm<{{ENTITY_CLASS}}>]
-                                       public enum Alarm
-                                       {
-                                           {{REFERENCE_REPLACEMENT_EXPRESSION}}
-                                           TestAlarm
-                                           
-                                       }
-                                       [OpcUaEntity]
-                                       public sealed record {{ENTITY_CLASS}}{}
-                                       """;
-
-    private static string GetIncorrectSourceCode() =>
-        ATTRIBUTE_USAGE_EXAMPLE.Replace(REFERENCE_REPLACEMENT_EXPRESSION, NON_ENTITY_CLASS);
-
-    private static string GetAlarmReferencingEntity() =>
-        ATTRIBUTE_USAGE_EXAMPLE.Replace(REFERENCE_REPLACEMENT_EXPRESSION, ENTITY_CLASS);
-
-    [Test]
-    [DisplayName("When alarm attribute is not typed with entity, reports error")]
-    public async Task WhenNotParameterizedWithEntity_ShouldReportError(CancellationToken token)
-    {
-        var sourceCode = GetIncorrectSourceCode();
-        var analysis = await Driver.RunAnalyzerOn(sourceCode, token);
-        await Assert.That(analysis.Diagnostics).IsNotEmpty()
-            .Because("If the type parameter is not modelled as an entity, then an alarm cannot be created.");
-
-        await Assert.That(analysis.Diagnostics.First().Severity).IsEqualTo(DiagnosticSeverity.Error);
+        var diagnostics = (await Driver.RunAnalyzerOn(maximumThresholdAlarmClass, token)).Diagnostics.ToList();
+        await AssertHasOnlyError(diagnostics, Rules.MustMatchFieldType);
     }
 
-    [Test]
-    [DisplayName("When reporting error, a location of the error is placed on the attribute usage")]
-    public async Task When_ReportingError_LocationIsPresent(CancellationToken token)
-    {
-        var sourceCode = GetIncorrectSourceCode();
-        var analysis = await Driver.RunAnalyzerOn(sourceCode, token);
-
-        var errorLocation = analysis.Diagnostics.First().Location;
-        await Assert.That(errorLocation).IsNotEqualTo(Location.None);
-        await Assert.That(errorLocation.SourceSpan.Start).IsEqualTo(27);
-        await Assert.That(errorLocation.SourceSpan.End).IsEqualTo(53);
-    }
 
     [Test]
-    [DisplayName("When alarm attribute is typed with entity, does not reports error")]
-    public async Task WhenParameterizedWithEntity_ShouldNotReportError(CancellationToken token)
+    [DisplayName(
+        $"({nameof(MaximumThresholdExceededAlarmAttribute<int>)}) When using alarm with generic argument int on property of type int, no error")]
+    public async Task When_MaxThreshold_AlarmGenericArg_DoesMatchesField_DoesNotReportError(CancellationToken token)
     {
-        var sourceCode = GetAlarmReferencingEntity();
-        var analysis = await Driver.RunAnalyzerOn(sourceCode, token);
-        await Assert.That(analysis.Diagnostics).IsEmpty()
-            .Because("If the type parameter is not modelled as an entity, then an alarm cannot be created.");
-    }
-
-    [Test]
-    [DisplayName($"When alarm enum fields are not annotated with {nameof(OpcUaAlarmTypeAttribute)}, reports error")]
-    public async Task When_EnumIsNotAnnotatedWithAlarmType_ReportsError(CancellationToken token)
-    {
-        var sourceCode = ALARM_TYPE.Replace(REFERENCE_REPLACEMENT_EXPRESSION, "");
-        var diagnostics = (await Driver.RunAnalyzerOn(sourceCode, token)).Diagnostics.ToList();
-        await Assert.That(diagnostics).HasSingleItem();
-        var diagnosis = diagnostics[0];
-        await Assert.That(diagnosis.Severity).IsEqualTo(DiagnosticSeverity.Error);
-        await Assert.That(diagnostics).HasSingleItem();
-    }
-
-    [Test]
-    [DisplayName($"When alarm enum fields are annotated with {nameof(OpcUaAlarmTypeAttribute)}, does not report error")]
-    public async Task When_EnumIsAnnotatedWithAlarmType_ReportsNoError(CancellationToken token)
-    {
-        var sourceCode = ALARM_TYPE.Replace(REFERENCE_REPLACEMENT_EXPRESSION, ALARM_ANNOTATION);
-        var diagnostics = (await Driver.RunAnalyzerOn(sourceCode, token)).Diagnostics.ToList();
+        const string nonEntityAnnotatedClass = $$"""
+                                                 using Hoeyer.OpcUa.Core;
+                                                 public sealed record {{ENTITY_CLASS}}
+                                                 {
+                                                     [{{nameof(MaximumThresholdExceededAlarmAttribute<int>)}}<int>(11, "IntValueAlarm", AlarmSeverity.Critical)]
+                                                     public int MyInt {get; set;}
+                                                 }
+                                                 """;
+        var diagnostics = (await Driver.RunAnalyzerOn(nonEntityAnnotatedClass, token)).Diagnostics.ToList();
         await Assert.That(diagnostics).IsEmpty();
+    }
+
+    [Test]
+    [DisplayName(
+        $"({nameof(MinimumThresholdExceededAlarmAttribute<int>)}) When using alarm with generic argument double on property of type int, an error is reported")]
+    public async Task When_MinThreshold_AlarmGenericArg_DoesNotMatchField_ReportsError(CancellationToken token)
+    {
+        const string maximumThresholdAlarmClass = $$"""
+                                                    using Hoeyer.OpcUa.Core;
+                                                    public sealed record {{ENTITY_CLASS}}
+                                                    {
+                                                        [{{nameof(MinimumThresholdExceededAlarmAttribute<int>)}}<double>(11, "IntValueAlarm", AlarmSeverity.Critical)]
+                                                        public int MyInt {get; set;}
+                                                    }
+                                                    """;
+        var diagnostics = (await Driver.RunAnalyzerOn(maximumThresholdAlarmClass, token)).Diagnostics.ToList();
+        await AssertHasOnlyError(diagnostics, Rules.MustMatchFieldType);
+    }
+
+
+    [Test]
+    [DisplayName(
+        $"({nameof(MinimumThresholdExceededAlarmAttribute<int>)})  When using alarm with generic argument int on property of type int, no error")]
+    public async Task When_MinThreshold_AlarmGenericArg_DoesMatchesField_DoesNotReportError(CancellationToken token)
+    {
+        const string nonEntityAnnotatedClass = $$"""
+                                                 using Hoeyer.OpcUa.Core;
+                                                 public sealed record {{ENTITY_CLASS}}
+                                                 {
+                                                     [{{nameof(MinimumThresholdExceededAlarmAttribute<int>)}}<int>(11, "IntValueAlarm", AlarmSeverity.Critical)]
+                                                     public int MyInt {get; set;}
+                                                 }
+                                                 """;
+        var diagnostics = (await Driver.RunAnalyzerOn(nonEntityAnnotatedClass, token)).Diagnostics.ToList();
+        await Assert.That(diagnostics).IsEmpty();
+    }
+
+    [Test]
+    [DisplayName($"When using {nameof(LegalRangeAlarmAttribute)} with range of size 0, reports error")]
+    public async Task When_LegalRangeAlarm_MustConstructValidRange(CancellationToken token)
+    {
+        const string nonEntityAnnotatedClass = $$"""
+                                                 using Hoeyer.OpcUa.Core;
+                                                 public sealed record {{ENTITY_CLASS}}
+                                                 {
+                                                     [{{nameof(LegalRangeAlarmAttribute)}}(11, 11, "IntValueAlarm", AlarmSeverity.Critical)]
+                                                     public int MyInt {get; set;}
+                                                 }
+                                                 """;
+        var diagnostics = (await Driver.RunAnalyzerOn(nonEntityAnnotatedClass, token)).Diagnostics.ToList();
+        await AssertHasOnlyError(diagnostics, Rules.IllegalRange);
+    }
+
+    [Test]
+    [DisplayName($"When using {nameof(LegalRangeAlarmAttribute)} with negative range, reports error")]
+    public async Task When_LegalRangeAlarm_MustConstructValidRange_negative_reports(CancellationToken token)
+    {
+        const string nonEntityAnnotatedClass = $$"""
+                                                 using Hoeyer.OpcUa.Core;
+                                                 public sealed record {{ENTITY_CLASS}}
+                                                 {
+                                                     [{{nameof(LegalRangeAlarmAttribute)}}(11, 9, "IntValueAlarm", AlarmSeverity.Critical)]
+                                                     public int MyInt {get; set;}
+                                                 }
+                                                 """;
+        var diagnostics = (await Driver.RunAnalyzerOn(nonEntityAnnotatedClass, token)).Diagnostics.ToList();
+        await Assert.That(diagnostics.Count).IsEqualTo(1);
+        await AssertHasOnlyError(diagnostics, Rules.IllegalRange);
+    }
+
+    [Test]
+    [DisplayName($"When using {nameof(LegalRangeAlarmAttribute)} with positive range, no error is reported")]
+    public async Task When_LegalRangeAlarm_WithValidRange_DoesNotReportError(CancellationToken token)
+    {
+        const string nonEntityAnnotatedClass = $$"""
+                                                 using Hoeyer.OpcUa.Core;
+                                                 public sealed record {{ENTITY_CLASS}}
+                                                 {
+                                                     [{{nameof(LegalRangeAlarmAttribute)}}(11, 13, "IntValueAlarm", AlarmSeverity.Critical)]
+                                                     public int MyInt {get; set;}
+                                                 }
+                                                 """;
+        var diagnostics = (await Driver.RunAnalyzerOn(nonEntityAnnotatedClass, token)).Diagnostics.ToList();
+        await Assert.That(diagnostics.Count).IsEqualTo(0);
+    }
+
+
+    private static async Task AssertHasOnlyError(List<Diagnostic> diagnostics, DiagnosticDescriptor descriptor)
+    {
+        await Assert.That(diagnostics.Count).IsEqualTo(1);
+        await Assert.That(diagnostics[0].Id).IsEqualTo(descriptor.Id);
+        await Assert.That(diagnostics[0].Severity).IsEqualTo(DiagnosticSeverity.Error);
     }
 }

@@ -3,7 +3,7 @@
 namespace Hoeyer.OpcUa.Core;
 
 [AttributeUsage(AttributeTargets.Field)]
-public sealed class OpcUaAlarmTypeAttribute(AlarmValue alarmValue) : Attribute
+public sealed class OpcUaAlarmTypeAttribute(AlarmType alarmType) : Attribute
 {
-    public readonly AlarmValue AlarmValue = alarmValue;
+    public readonly AlarmType AlarmType = alarmType;
 }

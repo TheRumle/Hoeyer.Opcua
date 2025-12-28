@@ -1,84 +1,80 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.OpcUa.Core.CompileTime.CodeDomain;
 using Hoeyer.OpcUa.Core.CompileTime.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using static Microsoft.CodeAnalysis.SymbolEqualityComparer;
 
 namespace Hoeyer.OpcUa.Core.CompileTime;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AlarmAnalyser()
-    : ConcurrentAnalyzer([Rules.MustBeOpcEntityArgument, Rules.MustBeAnnotatedWithAlarmType])
+    : ConcurrentAnalyzer([Rules.MustMatchFieldType, Rules.IllegalRange])
 {
     /// <inheritdoc />
     protected override void InitializeAnalyzer(AnalysisContext context)
     {
-        context.RegisterSyntaxNodeAction(AnalyzeAttributeUseage, SyntaxKind.EnumDeclaration);
+        context.RegisterSyntaxNodeAction(AnalyzeAttributeUsage, SyntaxKind.PropertyDeclaration);
     }
 
-    private void AnalyzeAttributeUseage(SyntaxNodeAnalysisContext context)
+    private void AnalyzeAttributeUsage(SyntaxNodeAnalysisContext context)
     {
-        if (context.Node is not EnumDeclarationSyntax typeSyntax ||
-            !typeSyntax.IsAnnotatedAsOpcUaAlarm(context.SemanticModel))
+        if (context.Node is not PropertyDeclarationSyntax propertySyntax) //if null return
         {
             return;
         }
 
-        var errors = FindViolations(typeSyntax, context);
+        var alarms = propertySyntax.GetOpcUaAlarmAttributes(context.SemanticModel).ToList();
+        if (!alarms.Any())
+        {
+            return;
+        }
+
+        var errors = FindViolations(alarms, propertySyntax, context.SemanticModel);
         foreach (var diagnostic in errors)
         {
             context.ReportDiagnostic(diagnostic);
         }
     }
 
-    private static IEnumerable<Diagnostic> FindViolations(
-        EnumDeclarationSyntax enumSyntax,
-        SyntaxNodeAnalysisContext context
-    ) => AlarmAttributeTargetsEntity(enumSyntax, context)
-        .Union(AlarmFieldsAreAnnotatedWithValue(enumSyntax, context));
-
-    private static IEnumerable<Diagnostic> AlarmFieldsAreAnnotatedWithValue(EnumDeclarationSyntax enumDecl,
-        SyntaxNodeAnalysisContext context)
+    private static IEnumerable<Diagnostic> FindViolations(List<AttributeData> alarmAttributes,
+        PropertyDeclarationSyntax propertySyntax,
+        SemanticModel semanticModel)
     {
-        return enumDecl.Members
-            .Where(member => !member.AttributeLists //where attribute is not annotated with alarm type
-                .SelectMany(al => al.Attributes)
-                .Any(attr => context.SemanticModel.GetSymbolInfo(attr).Symbol is { ContainingType: var containingType }
-                             && containingType.GloballyQualifiedNonGeneric()
-                                 .Equals(WellKnown.FullyQualifiedAttribute.AlarmTypeAttribute.WithGlobalPrefix))
-            )
-            .Select(member =>
-                Diagnostic.Create(Rules.MustBeAnnotatedWithAlarmType, member.GetLocation()));
+        var property = semanticModel.GetDeclaredSymbol(propertySyntax)!;
+        return AlarmTypeMismatches(alarmAttributes, propertySyntax, property)
+            .Union(LegalRangeMismatches(alarmAttributes, propertySyntax));
     }
 
-    private static IEnumerable<Diagnostic> AlarmAttributeTargetsEntity(EnumDeclarationSyntax enumSyntax,
-        SyntaxNodeAnalysisContext context)
+    private static IEnumerable<Diagnostic> LegalRangeMismatches(
+        List<AttributeData> alarmAttributes,
+        PropertyDeclarationSyntax propertySyntax)
     {
-        var attribute = enumSyntax.GetOpcUaAlarmAttribute(context.SemanticModel);
-        if (attribute is null)
-        {
-            return [];
-        }
+        return alarmAttributes.Where(attr => attr.IsLegalRangeAlarm())
+            .Select(attr =>
+                (
+                    attr,
+                    min: (double)attr.ConstructorArguments[0].Value!,
+                    max: (double)attr.ConstructorArguments[1].Value!
+                )
+            )
+            .Where(tuple => tuple.min >= tuple.max)
+            .Select(_ => Diagnostic.Create(Rules.IllegalRange, propertySyntax.GetLocation()))
+            .ToList();
+    }
 
-        var typeArg = attribute?.AttributeClass?.TypeArguments.FirstOrDefault();
-        if (typeArg is null)
-        {
-            return [];
-        }
-
-        if (!typeArg.IsAnnotatedAsOpcUaEntity())
-        {
-            var attrSyntax = attribute?
-                .ApplicationSyntaxReference?
-                .GetSyntax(context.CancellationToken) as AttributeSyntax;
-
-            var location = attrSyntax?.GetLocation() ?? enumSyntax.GetLocation();
-            return [Diagnostic.Create(Rules.MustBeOpcEntityArgument, location)];
-        }
-
-        return [];
+    private static List<Diagnostic> AlarmTypeMismatches(
+        IEnumerable<AttributeData> alarmAttributes,
+        PropertyDeclarationSyntax propertySyntax,
+        IPropertySymbol property)
+    {
+        return alarmAttributes
+            .Where(attr => attr.AttributeClass is { IsGenericType: true, TypeArguments.Length: 1 })
+            .Select(attr => (attrType: attr.AttributeClass!.TypeArguments[0], attribute: attr))
+            .Where(attr => !Default.Equals(attr.attrType, property.Type))
+            .Select(_ => Diagnostic.Create(Rules.MustMatchFieldType, propertySyntax.GetLocation()))
+            .ToList();
     }
 }
