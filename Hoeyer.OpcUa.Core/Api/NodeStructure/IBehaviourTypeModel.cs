@@ -1,3 +1,13 @@
-﻿namespace Hoeyer.OpcUa.Core.Api.NodeStructure;
+﻿using System;
+using System.Collections.Frozen;
+using System.Reflection;
+
+namespace Hoeyer.OpcUa.Core.Api.NodeStructure;
+
+public interface IBehaviourTypeModel
+{
+    FrozenSet<Type> BehaviourInterfaces { get; }
+    FrozenSet<MethodInfo> Methods { get; }
+}
 
 public interface IBehaviourTypeModel<T> : IBehaviourTypeModel;

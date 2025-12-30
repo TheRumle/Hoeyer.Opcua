@@ -47,28 +47,34 @@ public sealed class EntityTypeModel<TEntity> : IEntityTypeModel<TEntity>
             .Where(t => t.IsAnnotatedWith<OpcUaEntityMethodsAttribute<TEntity>>())
             .ToFrozenSet();
 
-        Methods = BehaviourInterfaces.SelectMany(e => e.GetMethods()).ToFrozenSet();
 
         EntityName = entity.GetBrowseNameOrDefault(entity.Name);
-
-        PropertyAlarms = entity.GetProperties().ToFrozenDictionary(
-            property => property.Name,
-            property => property.GetCustomAttributes<OpcAlarmAttribute>()
-        );
 
         PropertyNames = entity.GetProperties().ToFrozenDictionary(
             property => property.Name,
             property => property.GetBrowseNameOrDefault(property.Name));
 
+        Methods = BehaviourInterfaces.SelectMany(e => e.GetMethods()).ToFrozenSet();
         MethodNames = Methods.ToFrozenDictionary(e => e.Name, e => e.GetBrowseNameOrDefault(e.Name));
+
+        PropertyAlarms = entity.GetProperties().ToFrozenDictionary(
+            property => PropertyNames[property.Name],
+            property => property.GetCustomAttributes<OpcAlarmAttribute>().ToList()
+        );
+
+        AlarmNames = PropertyAlarms
+            .Values
+            .SelectMany(e => e.Select(alarmAttr => alarmAttr.BrowseName))
+            .ToFrozenSet();
     }
 
     public Type EntityType { get; }
+    public FrozenSet<string> AlarmNames { get; set; }
     public FrozenSet<Type> BehaviourInterfaces { get; }
     public FrozenSet<MethodInfo> Methods { get; }
     public FrozenDictionary<string, string> MethodNames { get; set; }
     public FrozenDictionary<string, string> PropertyNames { get; set; }
-    public FrozenDictionary<string, IEnumerable<OpcAlarmAttribute>> PropertyAlarms { get; set; }
+    public FrozenDictionary<string, List<OpcAlarmAttribute>> PropertyAlarms { get; set; }
     public string EntityName { get; }
     public override string ToString() => $"Entity model [{EntityName}]";
 }
