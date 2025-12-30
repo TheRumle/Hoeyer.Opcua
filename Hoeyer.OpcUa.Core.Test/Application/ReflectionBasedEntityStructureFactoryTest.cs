@@ -1,39 +1,35 @@
-﻿using Hoeyer.OpcUa.Core.Api;
+﻿using Hoeyer.Common.Extensions.Collection;
+using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Application.NodeStructure;
-using Hoeyer.OpcUa.Core.Configuration.Modelling;
 using JetBrains.Annotations;
-using Playground.Modelling.Models;
 
 namespace Hoeyer.OpcUa.Core.Test.Application;
 
 [TestSubject(typeof(ReflectionBasedEntityStructureFactory<>))]
 [TestSubject(typeof(IEntityNodeStructureFactory<>))]
-public sealed class ReflectionBasedEntityStructureFactoryTest
+[CoreServicesOfType<IEntityNodeStructureFactory>(typeof(ReflectionBasedEntityStructureFactory<>))]
+public sealed class ReflectionBasedEntityStructureFactoryTest(
+    GenericImplementation<IEntityNodeStructureFactory> fixture
+)
 {
-    private static readonly Type EntityType = typeof(AllPropertyTypesEntity);
-
-    private static readonly ReflectionBasedEntityStructureFactory<AllPropertyTypesEntity> TestSubject =
-        new(new EntityTypeModel<AllPropertyTypesEntity>(EntityType));
+    private readonly IBrowseNameCollection browseNames = fixture.BrowseNameCollection;
+    private readonly IEntityNodeStructureFactory factory = fixture.Service;
 
     [Test]
     public async Task BaseObjectNameMatchesTypeName()
     {
-        var result = TestSubject.Create(2).BaseObject;
-        await Assert.That(result.BrowseName.Name).IsEqualTo(nameof(AllPropertyTypesEntity));
+        var result = factory.Create(2).BaseObject;
+        await Assert.That(result.BrowseName.Name).IsEqualTo(fixture.BrowseNameCollection.EntityName);
     }
 
-    [Test]
-    public async Task PropertyNamesMatch()
-    {
-        var nodePropertyNames = TestSubject.Create(2).PropertyByBrowseName.Keys;
+    public IEnumerable<Func<string>> CreatedProperties() => factory.Create(2).PropertyByBrowseName.Keys.SelectFunc();
 
-        var subjectPropertyNames = EntityType.GetProperties().Select(e => e.Name).ToHashSet();
-        using (Assert.Multiple())
-        {
-            foreach (var name in nodePropertyNames)
-            {
-                await Assert.That(subjectPropertyNames).Contains(name);
-            }
-        }
+    [Test]
+    [InstanceMethodDataSource(nameof(CreatedProperties))]
+    [DisplayName("Browse name '$propertyBrowseName' is the contained in browse name collection")]
+    public async Task CreatedBrowseNamesMatchExpected(string propertyBrowseName)
+    {
+        var expectedBrowseNames = browseNames.PropertyNames.Values;
+        await Assert.That(expectedBrowseNames).Contains(propertyBrowseName);
     }
 }

@@ -66,7 +66,12 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(typeof(IBrowseNameCollection<>), typeof(EntityTypeModel<>));
         services.AddSingleton(typeof(IEntityTypeModel<>), typeof(EntityTypeModel<>));
         services.AddSingleton(typeof(IBehaviourTypeModel<>), typeof(EntityTypeModel<>));
-        services.AddSingleton(typeof(IEntityNodeStructureFactory<>), typeof(ReflectionBasedEntityStructureFactory<>));
+        services.AddServiceAndImplSingleton(typeof(IEntityNodeStructureFactory<>),
+            typeof(ReflectionBasedEntityStructureFactory<>));
+        services.AddServiceAndImplSingleton(typeof(IEntityNodeMethodAssigner<>), typeof(EntityNodeMethodAssigner<>));
+        services.AddServiceAndImplSingleton(typeof(IEntityNodePropertyAssigner<>),
+            typeof(EntityNodePropertyAssigner<>));
+        services.AddServiceAndImplSingleton(typeof(IEntityNodeAlarmAssigner<>), typeof(EntityNodeAlarmAssigner<>));
         AddTranslators(services);
         return services;
     }

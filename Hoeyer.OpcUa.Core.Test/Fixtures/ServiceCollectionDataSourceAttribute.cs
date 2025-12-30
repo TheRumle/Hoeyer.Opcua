@@ -4,10 +4,10 @@ namespace Hoeyer.OpcUa.Core.Test.Fixtures;
 
 public class ServiceCollectionDataSourceAttribute : DependencyInjectionDataSourceAttribute<IServiceScope>
 {
-    private static readonly IServiceProvider ServiceProvider = CreateSharedServiceProvider();
+    private readonly IServiceProvider _serviceProvider = CreateSharedServiceProvider();
 
     public override IServiceScope CreateScope(DataGeneratorMetadata dataGeneratorMetadata) =>
-        ServiceProvider.CreateAsyncScope();
+        _serviceProvider.CreateAsyncScope();
 
     public override object Create(IServiceScope scope, Type type) => scope.ServiceProvider.GetService(type)!;
 
