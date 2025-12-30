@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Hoeyer.Common.Extensions.Collection;
+using Hoeyer.Opc.Ua.Test.TUnit;
 using Hoeyer.OpcUa.Client.Api.Connection;
 using Hoeyer.OpcUa.Core.Configuration.Modelling;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,18 +65,20 @@ public sealed class SimulationFixture<T> : SimulationFixture, IEnumerable<Func<S
             .Value
             .GetMatchingDescriptors()
             .DistinctBy(e => e.ImplementationType)
-            .Select(descriptor =>
-            {
-                var provider = Context.ServiceProvider;
-                var session = provider
-                    .GetRequiredService<IEntitySessionFactory>()
-                    .GetSessionFor(TestContext.Current!.Id);
-
-                var service = (T)provider
-                    .GetRequiredService(descriptor.ServiceType)!;
-                return new SimulationContext<T>(Context.ServiceProvider, session, service);
-            })
+            .Select(CreateFixture)
             .ToList();
         return _servicesUnderTestProvider;
+    }
+
+    private SimulationContext<T> CreateFixture(ServiceDescriptor descriptor)
+    {
+        var provider = Context.ServiceProvider;
+        var session = provider
+            .GetRequiredService<IEntitySessionFactory>()
+            .GetSessionFor(TestContext.Current!.Id);
+
+        var service = (T)provider
+            .GetRequiredService(descriptor.ServiceType)!;
+        return new SimulationContext<T>(Context.ServiceProvider, session, service);
     }
 }

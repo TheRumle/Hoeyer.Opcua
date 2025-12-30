@@ -44,7 +44,7 @@ public static class ServiceCollectionExtensions
         {
             case ServiceLifetime.Singleton:
                 collection.AddSingleton(impl, impl);
-                collection.AddSingleton(service, p => p.GetService(impl));
+                collection.AddSingleton(service, impl);
                 break;
             case ServiceLifetime.Scoped:
                 collection.AddScoped(service, impl);
