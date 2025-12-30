@@ -57,16 +57,6 @@ public static class TypeDeclarationSyntaxExtensions
             .EntityAttribute
             .WithGlobalPrefix.Equals(x.AttributeClass?.GloballyQualifiedNonGeneric());
 
-    public static bool IsAnnotatedAsOpcUaAlarm(this EnumDeclarationSyntax typeSyntax, SemanticModel semanticModel)
-    {
-        var symbol = semanticModel.GetDeclaredSymbol(typeSyntax);
-        var isAnnotated = symbol?
-            .GetAttributes()
-            .Any(IsOpcAlarmAttributeSymbol);
-
-        return isAnnotated != null && isAnnotated.Value;
-    }
-
     public static IEnumerable<AttributeData> GetOpcUaAlarmAttributes(this PropertyDeclarationSyntax typeSyntax,
         SemanticModel semanticModel) =>
         semanticModel
@@ -76,9 +66,23 @@ public static class TypeDeclarationSyntaxExtensions
         ?? [];
 
     public static bool IsOpcAlarmAttributeSymbol(this AttributeData attribute) =>
-        attribute.AttributeClass is not null &&
-        IsType(attribute.AttributeClass, WellKnown.FullyQualifiedAttribute.AlarmAttribute);
+        IsTypeInheritingFrom(attribute.AttributeClass, WellKnown.FullyQualifiedAttribute.AlarmAttribute);
 
     public static bool IsType(this INamedTypeSymbol clazz, FullyQualifiedTypeName target) =>
         target.WithGlobalPrefix.Equals(clazz.GloballyQualifiedNonGeneric());
+
+    public static bool IsTypeInheritingFrom(this INamedTypeSymbol? clazz, FullyQualifiedTypeName target)
+    {
+        while (clazz != null)
+        {
+            if (target.WithGlobalPrefix.Equals(clazz.GloballyQualifiedNonGeneric()))
+            {
+                return true;
+            }
+
+            clazz = clazz.BaseType;
+        }
+
+        return false;
+    }
 }
