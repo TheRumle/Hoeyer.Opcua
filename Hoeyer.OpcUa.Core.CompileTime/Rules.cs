@@ -60,13 +60,8 @@ public static class Rules
         DesignCategory,
         $"The alarm field must be annotated with an alarm type using '{WellKnown.FullyQualifiedAttribute.AlarmTypeAttribute.WithoutGlobalPrefix}'.");
 
-    public static readonly DiagnosticDescriptor MustMatchFieldType = CreateErrorDescriptor(
-        "HOEYERUA0010",
-        DesignCategory,
-        "The alarm value must match the field type.");
-
     public static readonly DiagnosticDescriptor IllegalRange = CreateErrorDescriptor(
-        "HOEYERUA0011",
+        "HOEYERUA0010",
         DesignCategory,
         "The range {0} to {1} does not construct a legal range'");
 

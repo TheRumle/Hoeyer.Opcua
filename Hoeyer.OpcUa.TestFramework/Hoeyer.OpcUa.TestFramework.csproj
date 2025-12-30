@@ -21,6 +21,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Client.Api\Hoeyer.OpcUa.Client.Api.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Core.Configuration\Hoeyer.OpcUa.Core.Configuration.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

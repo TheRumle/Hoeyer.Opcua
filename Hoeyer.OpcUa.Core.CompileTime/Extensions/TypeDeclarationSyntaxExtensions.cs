@@ -76,23 +76,9 @@ public static class TypeDeclarationSyntaxExtensions
         ?? [];
 
     public static bool IsOpcAlarmAttributeSymbol(this AttributeData attribute) =>
-        IsTypeInheritingFrom(attribute.AttributeClass, WellKnown.FullyQualifiedAttribute.AlarmAttribute);
+        attribute.AttributeClass is not null &&
+        IsType(attribute.AttributeClass, WellKnown.FullyQualifiedAttribute.AlarmAttribute);
 
-    public static bool IsLegalRangeAlarm(this AttributeData attribute) => IsTypeInheritingFrom(attribute.AttributeClass,
-        WellKnown.FullyQualifiedAttribute.LegalRangeAlarmAttribute);
-
-    public static bool IsTypeInheritingFrom(this INamedTypeSymbol? clazz, FullyQualifiedTypeName target)
-    {
-        while (clazz != null)
-        {
-            if (target.WithGlobalPrefix.Equals(clazz.GloballyQualifiedNonGeneric()))
-            {
-                return true;
-            }
-
-            clazz = clazz.BaseType;
-        }
-
-        return false;
-    }
+    public static bool IsType(this INamedTypeSymbol clazz, FullyQualifiedTypeName target) =>
+        target.WithGlobalPrefix.Equals(clazz.GloballyQualifiedNonGeneric());
 }

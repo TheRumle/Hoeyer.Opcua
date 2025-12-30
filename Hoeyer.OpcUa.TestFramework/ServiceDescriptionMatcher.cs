@@ -2,7 +2,7 @@
 using Hoeyer.OpcUa.Core.Configuration.Modelling;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hoeyer.OpcUa.EndToEndTest.Fixtures.Simulation;
+namespace Hoeyer.Opc.Ua.Test.TUnit;
 
 /**
  * Given a type T and an
@@ -12,18 +12,21 @@ namespace Hoeyer.OpcUa.EndToEndTest.Fixtures.Simulation;
 public sealed class ServiceDescriptionMatcher(
     Type type,
     IEnumerable<ServiceDescriptor> collection,
-    EntityTypesCollection? entityTypesCollection)
+    EntityTypesCollection entityTypesCollection)
 {
     public IEnumerable<ServiceDescriptor> GetMatchingDescriptors() =>
-        FilterDescriptors().SelectMany(EntityInstantiatedVariantsOfServiceDescriptors);
+        FilterDescriptors().SelectMany(e => EntityInstantiatedVariantsOfServiceDescriptors(e, entityTypesCollection));
 
     private IEnumerable<ServiceDescriptor> EntityInstantiatedVariantsOfServiceDescriptors(
-        DescriptorUsage descriptionWrapper) =>
+        DescriptorUsage descriptionWrapper,
+        EntityTypesCollection entityTypesCollection) =>
         descriptionWrapper.WrapsAnyOpenGeneric
-            ? GetTypePerEntity(descriptionWrapper)
+            ? GetTypePerEntity(descriptionWrapper, entityTypesCollection)
             : [descriptionWrapper.Descriptor];
 
-    private IEnumerable<ServiceDescriptor> GetTypePerEntity(DescriptorUsage descriptorWrapper)
+    private static IEnumerable<ServiceDescriptor> GetTypePerEntity(
+        DescriptorUsage descriptorWrapper,
+        EntityTypesCollection entityTypesCollection)
     {
         var oldDescriptor = descriptorWrapper.Descriptor;
         foreach (var entityType in entityTypesCollection.ModelledEntities)
@@ -107,6 +110,14 @@ public sealed class ServiceDescriptionMatcher(
     {
         return collection.Where(e => e.ServiceType == type || type == e.ImplementationType)
             .Select(d => new DescriptorUsage(d));
+    }
+
+    public List<T> CreateContextPerServiceImpl<T>(Func<ServiceDescriptor, T> contextCreator)
+    {
+        return GetMatchingDescriptors()
+            .DistinctBy(e => e.ImplementationType)
+            .Select(contextCreator)
+            .ToList();
     }
 
 
