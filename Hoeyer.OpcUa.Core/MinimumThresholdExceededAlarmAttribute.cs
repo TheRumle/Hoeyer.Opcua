@@ -3,11 +3,12 @@
 namespace Hoeyer.OpcUa.Core;
 
 [AttributeUsage(AttributeTargets.Property)]
-public sealed class MinimumThresholdExceededAlarmAttribute<T>(
-    T minimumThreshold,
+public sealed class MinimumThresholdExceededAlarmAttribute(
+    double lowDangerThreshold,
+    double lowWarningThreshold,
     string browseName,
     AlarmSeverity severity)
-    : LimitAlarmAttribute<T>(minimumThreshold, default, browseName, severity)
-    where T : IComparable<T>
+    : LegalRangeAlarmAttribute(lowWarningThreshold, lowDangerThreshold, double.MaxValue, double.MaxValue, browseName,
+        severity)
 {
 }
