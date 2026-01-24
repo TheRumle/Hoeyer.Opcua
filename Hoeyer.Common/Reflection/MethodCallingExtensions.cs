@@ -34,7 +34,7 @@ public static class MethodCallingExtensions
     {
         public void Invoke(Type entity)
         {
-            rawMethod.MakeGenericMethod(entity).Invoke(null, new object[] { collection });
+            rawMethod.MakeGenericMethod(entity).Invoke(null, [collection]);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Hoeyer.Opc.Ua.Test.TUnit;
-using Hoeyer.OpcUa.Core.Configuration;
+﻿using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,13 +12,12 @@ public class OpcUaCoreServicesFixtureAttribute : DependencyInjectionDataSourceAt
 
     public OpcUaCoreServicesFixtureAttribute()
     {
-        ReservedPort reservedPort = new();
         var services = new ServiceCollection();
         OnGoingOpcEntityServiceRegistration = services.AddLogging(c => c.SetMinimumLevel(LogLevel.Warning))
             .AddOpcUa(conf => conf
                 .WithServerId("MyServer")
                 .WithServerName("My Server")
-                .WithWebOrigins(WebProtocol.OpcTcp, "localhost", reservedPort.Port)
+                .WithWebOrigins(WebProtocol.OpcTcp, "localhost", 10)
                 .Build())
             .WithEntityModelsFrom(typeof(Gantry));
     }

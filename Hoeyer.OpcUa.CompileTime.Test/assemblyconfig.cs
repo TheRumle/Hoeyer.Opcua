@@ -1,3 +1,3 @@
-﻿using Hoeyer.Opc.Ua.Test.TUnit;
+﻿using Hoeyer.OpcUa.Test;
 
 [assembly: ParallelLimiter<ParallelLimit>]

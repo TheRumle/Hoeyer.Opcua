@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using Hoeyer.Common.Extensions.Collection;
 
 namespace Hoeyer.OpcUa.Core.Configuration.ServerTarget;
 
@@ -75,7 +74,7 @@ public class EntityServerConfigurationBuilder : IEntityServerConfigurationBuilde
 
     private static string ParseAdditionalPath(string additionalPath)
     {
-        if (additionalPath.IsEmpty())
+        if (!additionalPath.Any())
         {
             return additionalPath;
         }

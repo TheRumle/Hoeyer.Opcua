@@ -25,8 +25,6 @@ internal sealed class EntitySubscriptionManager<T>(
     IEntityTranslator<T> translator)
     : IEntitySubscriptionManager<T>
 {
-    private static readonly string SessionClientId = typeof(T).Name + "EntityMonitor";
-
     private readonly SubscriptionManager<T, ChannelBasedSubscription<T>> _subscriptionManager =
         new(new ChannelSubscriptionFactory<T>());
 
@@ -34,7 +32,6 @@ internal sealed class EntitySubscriptionManager<T>(
     private IEntityNode? CurrentNodeState { get; set; }
     private EntitySubscription? EntitySubscription { get; set; }
     public Subscription? Subscription => EntitySubscription;
-
 
     public async Task<IMessageSubscription> SubscribeToAllPropertyChanges(
         IMessageConsumer<T> consumer, CancellationToken cancellationToken = default)
@@ -47,7 +44,6 @@ internal sealed class EntitySubscriptionManager<T>(
         return _subscriptionManager.Subscribe(consumer);
     }
 
-    /// <inheritdoc />
     public async Task<IMessageSubscription> SubscribeToProperty(
         IMessageConsumer<T> consumer,
         string propertyName,
@@ -77,7 +73,7 @@ internal sealed class EntitySubscriptionManager<T>(
         try
         {
             var properties = CurrentNodeState!.PropertyByBrowseName!;
-            if (!properties.TryGetValue(item.DisplayName, out var property))
+            if (!properties.TryGetValue(item.DisplayName, out var propertyToChange))
             {
                 logger.LogInformation("Entity does not have any property named {Item}", item.DisplayName);
                 return;
@@ -86,7 +82,7 @@ internal sealed class EntitySubscriptionManager<T>(
             var values = item.DequeueValues().ToArray();
             foreach (var value in values)
             {
-                property.Value = value.Value;
+                propertyToChange.Value = value.Value;
                 _subscriptionManager.Publish(translator.Translate(CurrentNodeState));
             }
         }

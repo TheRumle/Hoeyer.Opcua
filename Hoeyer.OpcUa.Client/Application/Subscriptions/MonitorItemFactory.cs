@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -17,13 +18,14 @@ public sealed class MonitorItemFactory<T>(
     ILogger<MonitorItemFactory<T>> logger,
     EntityMonitoringConfiguration entityMonitoringConfiguration) : IMonitorItemsFactory<T>
 {
+    private static readonly string EntityName = typeof(T).Name;
     private static readonly int NumberOfProperties = typeof(T).GetProperties().Length;
     private readonly Random _guids = new(231687);
     private bool _subscriptionCreated;
     private bool AllItemsMonitored => MonitoredItemsByName.Values.Count == NumberOfProperties;
 
     private EntitySubscription Subscription { get; set; } = null!;
-    private Dictionary<string, MonitoredEntityItem> MonitoredItemsByName { get; } = [];
+    private ConcurrentDictionary<string, MonitoredEntityItem> MonitoredItemsByName { get; } = [];
     private IEnumerable<MonitoredEntityItem> MonitoredItems => MonitoredItemsByName.Values;
 
 
@@ -33,7 +35,7 @@ public sealed class MonitorItemFactory<T>(
             Action<MonitoredItem, MonitoredItemNotificationEventArgs> callback,
             CancellationToken cancel = default)
     {
-        await GetOrCreateSubscriptionWithCallback(session, "Name", callback, cancel);
+        await GetOrCreateSubscriptionWithCallback(session, EntityName + "Subscription", callback, cancel);
         await MonitorAllProperties(Subscription, node, cancel);
         return (Subscription, MonitoredItems.ToList());
     }

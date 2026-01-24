@@ -24,7 +24,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.CompileTime.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.TestFramework", "Hoeyer.OpcUa.TestFramework\Hoeyer.OpcUa.TestFramework.csproj", "{C7A8FD51-051F-4108-8E16-1519867BD9F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.EndToEndTest", "Hoeyer.OpcUa.EndToEndTest\Hoeyer.OpcUa.EndToEndTest.csproj", "{65351C5D-1F5C-4961-A839-8BE668BA089B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Client.Test", "Hoeyer.OpcUa.Client.Test\Hoeyer.OpcUa.Client.Test.csproj", "{65351C5D-1F5C-4961-A839-8BE668BA089B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.Common.Test", "Hoeyer.Common.Test\Hoeyer.Common.Test.csproj", "{B460E684-85BD-45D0-9F3D-95790DEC69AB}"
 EndProject
@@ -66,6 +66,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground.Server", "Playground.Server\Playground.Server.csproj", "{9FA2FC8A-6806-4D54-9A66-F341FFBBD860}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "example", "example", "{1FCEF48D-9F49-4DE6-A843-A55B286EDFDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Test.Adapter.Client", "Hoeyer.OpcUa.Test.Adapter.Client\Hoeyer.OpcUa.Test.Adapter.Client.csproj", "{B4141931-8564-451E-88F3-DC5A3C7DF628}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -169,6 +171,10 @@ Global
 		{9FA2FC8A-6806-4D54-9A66-F341FFBBD860}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9FA2FC8A-6806-4D54-9A66-F341FFBBD860}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9FA2FC8A-6806-4D54-9A66-F341FFBBD860}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4141931-8564-451E-88F3-DC5A3C7DF628}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4141931-8564-451E-88F3-DC5A3C7DF628}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4141931-8564-451E-88F3-DC5A3C7DF628}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4141931-8564-451E-88F3-DC5A3C7DF628}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{870B9A54-BD11-469A-A8D4-7B727C0B5B43} = {A89A920F-FE1F-41A1-A62D-7E11250B5576}
@@ -199,5 +205,6 @@ Global
 		{CB86AEB9-A556-42B0-942F-9D5A8A5A440F} = {1FCEF48D-9F49-4DE6-A843-A55B286EDFDA}
 		{9FA2FC8A-6806-4D54-9A66-F341FFBBD860} = {1FCEF48D-9F49-4DE6-A843-A55B286EDFDA}
 		{5EE4F679-8787-40DC-A879-2C1C947B87C4} = {1FCEF48D-9F49-4DE6-A843-A55B286EDFDA}
+		{B4141931-8564-451E-88F3-DC5A3C7DF628} = {592D1AA6-E902-4D44-BDDA-CF54EA15B5A0}
 	EndGlobalSection
 EndGlobal

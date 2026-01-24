@@ -5,7 +5,7 @@
         <LangVersion>latestmajor</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>Hoeyer.Opc.Ua.Test.TUnit</RootNamespace>
+        <RootNamespace>Hoeyer.OpcUa.Test</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,12 +16,15 @@
         <PackageReference Include="JetBrains.Annotations" Version="2024.3.0"/>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.1"/>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0"/>
-        <PackageReference Include="TUnit" Version="1.5.53"/>
+        <PackageReference Include="Testcontainers" Version="4.8.1"/>
+        <PackageReference Include="TUnit" Version="1.12.15"/>
+
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Client.Api\Hoeyer.OpcUa.Client.Api.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Client\Hoeyer.OpcUa.Client.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core.Configuration\Hoeyer.OpcUa.Core.Configuration.csproj"/>
     </ItemGroup>
 
@@ -30,7 +33,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="DependencyInjection\"/>
+        <Reference Include="Hoeyer.OpcUa.TestFramework">
+            <HintPath>..\Hoeyer.OpcUa.Client.Test\bin\Debug\net9.0\Hoeyer.OpcUa.TestFramework.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
 </Project>

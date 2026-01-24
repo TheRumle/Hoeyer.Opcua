@@ -1,11 +1,11 @@
 ﻿using Hoeyer.Common.Messaging.Api;
 using Hoeyer.Common.Messaging.Subscriptions;
-using Hoeyer.Opc.Ua.Test.TUnit;
-using Hoeyer.Opc.Ua.Test.TUnit.DependencyInjection.ServiceDescriptors;
 using Hoeyer.OpcUa.Simulation.Api.Execution;
 using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
 using Hoeyer.OpcUa.Simulation.Execution;
 using Hoeyer.OpcUa.Simulation.Services;
+using Hoeyer.OpcUa.Test.ServiceInjection;
+using Hoeyer.OpcUa.Test.ServiceInjection.ServiceDescriptors;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Simulation.Application.Test.Fixtures;
@@ -18,6 +18,7 @@ namespace Simulation.Application.Test;
 public sealed class ServiceExtensionTest()
     : ServiceInjectionTest(new ServiceCollectionFixture().SimulationServices, TestData)
 {
+    //TODO move this to adaptable test
     public static IEnumerable<IPartialServiceMatcher> TestData =>
     [
         new GenericMatcher(typeof(ISubscriptionManager<>), ServiceLifetime.Singleton),
