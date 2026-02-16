@@ -1,11 +1,11 @@
-﻿using Hoeyer.OpcUa.Test.Adapter.Client.Api;
-using Hoeyer.OpcUa.Test.Simulation;
+﻿using Hoeyer.OpcUa.Test.Api;
+using Hoeyer.OpcUa.Test.Client;
 using Playground.Modelling.Methods;
 using Playground.Modelling.Models;
 
-namespace OpcUa.Client.TestFramework.ApplicationTest;
+namespace Playground.Application.EndToEndTest;
 
-[ClassDataSource<AdaptedSimulationFixture>(Shared = SharedType.PerClass)]
+[ClassDataSource<ClientTestFixture>(Shared = SharedType.PerClass)]
 [DependsOn<AdapterTest>]
 public class MethodCallingTest(ISimulationTestSession fixture)
 {

@@ -1,20 +1,16 @@
 ﻿using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
 using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Test;
-using Hoeyer.OpcUa.Test.Adapter.Client.Api;
 using Hoeyer.OpcUa.Test.Simulation;
 using JetBrains.Annotations;
 using Opc.Ua;
 
-namespace OpcUa.Client.TestFramework;
+namespace Hoeyer.OpcUa.Test.Client;
 
 [TestSubject(typeof(IEntityBrowser<>))]
 [TestSubject(typeof(INodeReader))]
-[ClassDataSource<AdaptedSharedSimulationServiceContext<IEntityBrowser>>
-    (Key = FixtureKeys.ReadOnlyFixture, Shared = SharedType.Keyed)]
 [DependsOn<AdapterTest>]
-public class EntityBrowserTest(List<ISpecifiedTestSession<IEntityBrowser>> simulationFixtures)
+public abstract class EntityBrowserTest(List<ISpecifiedTestSession<IEntityBrowser>> simulationFixtures)
 {
     [Test]
     public async Task EntityBrowser_CanCreateEntityNode_AndTranslateIt(

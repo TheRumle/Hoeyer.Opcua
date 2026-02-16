@@ -5,12 +5,12 @@ using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Test.Simulation;
+using Hoeyer.OpcUa.Test.Api;
 using JetBrains.Annotations;
 using Opc.Ua;
 using EntityBrowseException = Hoeyer.OpcUa.Client.Api.Browsing.Exceptions.EntityBrowseException;
 
-namespace OpcUa.Client.TestFramework;
+namespace Hoeyer.OpcUa.Test.Client;
 
 [TestSubject(typeof(INodeTreeTraverser))]
 [TestSubject(typeof(ConcurrentBrowse))]

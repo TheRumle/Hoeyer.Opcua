@@ -1,7 +1,7 @@
 ﻿using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
 using TUnit.Core.Interfaces;
 
-namespace Hoeyer.OpcUa.Test.Simulation;
+namespace Hoeyer.OpcUa.Test.Adapter;
 
 public interface IOpcUaSimulationServer : IAsyncInitializer, IAsyncDisposable
 {

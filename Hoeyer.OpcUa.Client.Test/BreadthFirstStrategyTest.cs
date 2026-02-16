@@ -1,12 +1,10 @@
 ﻿using Hoeyer.OpcUa.Client.Application.Browsing;
-using Hoeyer.OpcUa.Test.Adapter.Client.Api;
-using Hoeyer.OpcUa.Test.Simulation;
+using Hoeyer.OpcUa.Test.Api;
 using JetBrains.Annotations;
 
-namespace OpcUa.Client.TestFramework;
+namespace Hoeyer.OpcUa.Test.Client;
 
 [InheritsTests]
 [TestSubject(typeof(BreadthFirstStrategy))]
-[ClassDataSource<AdaptedSimulationFixture>(Shared = SharedType.PerTestSession)]
-public sealed class BreadthFirstStrategyTest(ISimulationTestSession fixture)
+public abstract class BreadthFirstStrategyTest(ISimulationTestSession fixture)
     : NodeTreeTraverserTest(fixture, nameof(BreadthFirstStrategy), fixture.GetService<BreadthFirstStrategy>);

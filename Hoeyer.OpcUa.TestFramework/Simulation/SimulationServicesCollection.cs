@@ -1,15 +1,21 @@
 ﻿using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Core.Configuration;
-using Hoeyer.OpcUa.Test.Simulation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Hoeyer.OpcUa.Test;
+namespace Hoeyer.OpcUa.Test.Simulation;
 
-internal class ServerDependentClientSetup
+internal class SimulationServicesCollection : IAsyncDisposable
 {
-    public ServerDependentClientSetup(ClientServicesAdapterArgs args,
+    public SimulationServicesCollection(ClientServicesAdapterArgs args,
+        Type[] entityAssemblyMarkers,
+        Type[] clientModelMarker
+    ) : this(args, entityAssemblyMarkers.ToHashSet(), clientModelMarker.ToHashSet())
+    {
+    }
+
+    public SimulationServicesCollection(ClientServicesAdapterArgs args,
         ISet<Type> entityAssemblyMarkers,
         ISet<Type> clientModelMarker
     )
@@ -32,6 +38,7 @@ internal class ServerDependentClientSetup
             .WithOpcUaClientModelsFrom(clientModelMarker);
 
         Collection = services;
+        Scope = Collection.BuildServiceProvider().CreateAsyncScope();
     }
 
     public IServiceCollection Collection { get; }
@@ -42,11 +49,5 @@ internal class ServerDependentClientSetup
     public async ValueTask DisposeAsync()
     {
         await Scope.DisposeAsync();
-    }
-
-    public Task InitializeAsync()
-    {
-        Scope = Collection.BuildServiceProvider().CreateAsyncScope();
-        return Task.CompletedTask;
     }
 }

@@ -2,9 +2,9 @@
 using Hoeyer.OpcUa.Test.Simulation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hoeyer.OpcUa.Test.Adapter.Client;
+namespace Hoeyer.OpcUa.Test.Api;
 
-internal sealed class SpecifiedTestSession<T>(
+internal class SpecifiedTestSession<T>(
     IServiceProvider provider,
     IEntitySession session,
     T serviceUndertest)

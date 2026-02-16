@@ -2,20 +2,22 @@
 using Hoeyer.OpcUa.Client.Api.Monitoring;
 using Hoeyer.OpcUa.Client.Api.Writing;
 using Hoeyer.OpcUa.Client.Application.Subscriptions;
-using Hoeyer.OpcUa.Test.Adapter.Client.Api;
-using Hoeyer.OpcUa.Test.Simulation;
+using Hoeyer.OpcUa.Test.Api;
+using Hoeyer.OpcUa.Test.Client;
 using JetBrains.Annotations;
 using Playground.Modelling.Models;
 
-namespace OpcUa.Client.TestFramework.ApplicationTest;
+namespace Playground.Application.EndToEndTest;
 
 [TestSubject(typeof(CurrentEntityStateChannel<>))]
-[ClassDataSource<AdaptedSimulationFixture>(Shared = SharedType.None)]
 [DependsOn<AdapterTest>]
-public sealed class EntitySubscriptionManagerTest(ISimulationTestSession fixture)
+public sealed class EntitySubscriptionManagerTest
 {
     private const string EXPECTED_STRING_VALUE = "Hetsratsratsralo there";
     private static readonly int NumberOfGantryPropsChanged = 1;
+
+    [ClassDataSource<ClientTestFixture>(Shared = SharedType.None)]
+    public required ISimulationTestSession Fixture { get; set; }
 
     [Test]
     public async Task WhenWritingNode_ObserverIsNotified(CancellationToken token)
@@ -60,8 +62,8 @@ public sealed class EntitySubscriptionManagerTest(ISimulationTestSession fixture
         CancellationToken token)
     {
         var testSubscriber = new CountingConsumer<Gantry>();
-        var monitor = fixture.GetService<IEntitySubscriptionManager<Gantry>>();
-        var channel = fixture.GetService<ICurrentEntityStateChannel<Gantry>>();
+        var monitor = Fixture.GetService<IEntitySubscriptionManager<Gantry>>();
+        var channel = Fixture.GetService<ICurrentEntityStateChannel<Gantry>>();
         return new ValueTuple<ChannelSubscription, TestSubscriberSubscription>(
             new ChannelSubscription(channel, await monitor.SubscribeToAllPropertyChanges(channel, token)),
             new TestSubscriberSubscription(testSubscriber,
@@ -70,7 +72,7 @@ public sealed class EntitySubscriptionManagerTest(ISimulationTestSession fixture
 
     private async Task WriteNode()
     {
-        var writer = fixture.GetService<IEntityWriter<Gantry>>();
+        var writer = Fixture.GetService<IEntityWriter<Gantry>>();
         await writer.AssignEntityProperties([(nameof(Gantry.StringValue), EXPECTED_STRING_VALUE)]);
     }
 

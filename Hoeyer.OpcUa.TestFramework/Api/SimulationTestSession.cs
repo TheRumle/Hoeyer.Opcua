@@ -2,18 +2,18 @@
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua.Client;
 
-namespace Hoeyer.OpcUa.Test.Adapter.Client;
+namespace Hoeyer.OpcUa.Test.Api;
 
-public abstract class SimulationTestSession(SimulationSetup simulationSetup)
+public abstract class SimulationTestSession(Lazy<SimulationSetup> simulationSetup)
     : ISimulationTestSession
 {
-    public IServiceProvider ServiceProvider => simulationSetup.ServiceProvider;
+    public IServiceProvider ServiceProvider => simulationSetup.Value.ServiceProvider;
 
-    public async ValueTask DisposeAsync() => await simulationSetup.DisposeAsync();
-    public async Task InitializeAsync() => await simulationSetup.InitializeAsync();
+    public async ValueTask DisposeAsync() => await simulationSetup.Value.DisposeAsync();
+    public async Task InitializeAsync() => await simulationSetup.Value.InitializeAsync();
 
     public async Task<ISession> GetOrCreateSession() =>
-        (await simulationSetup.SessionFactory.GetSessionForAsync(TestContext.Current!.Id!)).Session;
+        (await simulationSetup.Value.SessionFactory.GetSessionForAsync(TestContext.Current!.Id!)).Session;
 
     public async Task ExecuteWithSession(Func<ISession, Task> action) =>
         await action.Invoke(await GetOrCreateSession());

@@ -5,9 +5,9 @@ using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Images;
 using DotNet.Testcontainers.Networks;
 using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
-using Hoeyer.OpcUa.Test.Simulation;
+using Hoeyer.OpcUa.Test.Adapter;
 
-namespace OpcUa.Client.TestFramework.ApplicationTest;
+namespace Playground.Application.EndToEndTest;
 
 public sealed class OpcUaServerTestContainer(WebProtocol webProtocol)
     : IOpcUaSimulationServer

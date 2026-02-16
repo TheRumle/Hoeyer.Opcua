@@ -5,11 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Hoeyer.OpcUa.Test.ServiceInjection;
 
 /**
- * Given a type T and an
- * <see cref="IServiceCollection" />
- * collection, examines the collection for all registered services that could be used for that type.
+ * <paramref name="type"/> An closed or open generic type representing the wanted generic service
+ * <see cref="IServiceCollection" /> the service collection to examine
+ * Examines a collection of servicedescriptors that matches the generic, but instantiated with entities
  */
-public sealed class ServiceDescriptionMatcher(
+public sealed class GenericEntityServiceDescriptionMatcher(
     Type type,
     IEnumerable<ServiceDescriptor> collection,
     EntityTypesCollection entityTypesCollection)
@@ -111,15 +111,6 @@ public sealed class ServiceDescriptionMatcher(
         return collection.Where(e => e.ServiceType == type || type == e.ImplementationType)
             .Select(d => new DescriptorUsage(d));
     }
-
-    public List<T> CreateContextPerServiceImpl<T>(Func<ServiceDescriptor, T> contextCreator)
-    {
-        return GetMatchingDescriptors()
-            .DistinctBy(e => e.ImplementationType)
-            .Select(contextCreator)
-            .ToList();
-    }
-
 
     private enum AttributeUsage
     {

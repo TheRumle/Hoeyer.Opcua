@@ -1,7 +1,7 @@
 ﻿using Opc.Ua.Client;
 using TUnit.Core.Interfaces;
 
-namespace Hoeyer.OpcUa.Test.Simulation;
+namespace Hoeyer.OpcUa.Test.Api;
 
 /// <summary>
 ///     Represents a simulation test session containing its own <see cref="ISession" /> and isolated environment the

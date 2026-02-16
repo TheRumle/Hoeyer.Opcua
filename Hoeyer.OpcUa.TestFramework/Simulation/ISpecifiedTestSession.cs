@@ -1,4 +1,5 @@
 ﻿using Hoeyer.OpcUa.Client.Api.Connection;
+using Hoeyer.OpcUa.Test.Api;
 
 namespace Hoeyer.OpcUa.Test.Simulation;
 

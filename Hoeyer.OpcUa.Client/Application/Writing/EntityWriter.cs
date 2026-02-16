@@ -17,9 +17,6 @@ public sealed class EntityWriter<TEntity>(
     IEntitySessionFactory factory,
     IEntityBrowser<TEntity> browser) : IEntityWriter<TEntity>
 {
-    private static string SessionId = typeof(TEntity).Name + "Writer";
-
-
     public async Task AssignEntityValues(TEntity entity, CancellationToken cancellationToken = default)
     {
         EntityNodeStructure valuesToWrite = await browser.GetNodeStructure(cancellationToken);

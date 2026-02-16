@@ -1,6 +1,4 @@
-﻿using Hoeyer.OpcUa.Test.Simulation;
-
-namespace Hoeyer.OpcUa.Test.Adapter.Client.Api;
+﻿namespace Hoeyer.OpcUa.Test.Adapter;
 
 public interface ITestFrameworkAdapter
 {
