@@ -10,7 +10,7 @@ using Opc.Ua.Configuration;
 namespace Hoeyer.OpcUa.Server;
 
 internal sealed class OpcUaEntityServerFactory(
-    IServerStartedHealthCheckMarker marker,
+    IServerStartedHealthCheck assignment,
     IOpcUaTargetServerSetup serverSetup,
     IEnumerable<IEntityNodeManagerFactory> entityManagerFactories,
     ILoggerFactory loggerFactory) : IOpcUaEntityServerFactory
@@ -35,9 +35,9 @@ internal sealed class OpcUaEntityServerFactory(
 
         application.LoadApplicationConfiguration(false);
 
-        var server = new OpcEntityServer(serverSetup, entityManagerFactories,
-            loggerFactory.CreateLogger<OpcEntityServer>());
-        _startable = new StartableEntityServer(application, server, marker);
+        var logger = loggerFactory.CreateLogger<OpcEntityServer>();
+        var server = new OpcEntityServer(serverSetup, entityManagerFactories, logger);
+        _startable = new StartableEntityServer(logger, application, server, assignment);
         return _startable;
     }
 }

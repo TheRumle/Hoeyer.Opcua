@@ -24,7 +24,7 @@ public class PositionChangeReactor(
     {
         var values = Enum.GetValues(typeof(Position));
         var startPosition = (Position)values.GetValue(new Random().Next(values.Length))!;
-        await marker;
+        await marker.ServerRunning();
         var (channel, subscription) = await observer
             .BeginObserveAsync()
             .ThenAsync(e => (e.StateChangeChannel, e.Subscription));

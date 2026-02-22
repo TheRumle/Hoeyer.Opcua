@@ -53,8 +53,8 @@ public static class ServiceExtensions
         }
 
         collection.AddServiceAndImplSingleton<IEntityNodeAccessConfigurator, NoAccessRestrictionsConfigurator>();
-        collection.AddServiceAndImplSingleton<IServerStartedHealthCheck, ServerStartedHealthCheck>();
-        collection.AddSingleton<IServerStartedHealthCheckMarker>(p => p.GetRequiredService<ServerStartedHealthCheck>());
+        collection.AddServiceAndImplSingleton<IServerStartedHealthCheck, HealthCheck>();
+        collection.AddSingleton<IHealthCheckAssignment>(p => p.GetRequiredService<HealthCheck>());
         collection.AddServiceAndImplSingleton<IOpcUaEntityServerFactory, OpcUaEntityServerFactory>();
         collection.AddSingleton<OpcEntityServer>();
         collection.AddSingleton<IStartableEntityServer>(p =>

@@ -1,10 +1,8 @@
-﻿using System.Runtime.CompilerServices;
+﻿namespace Hoeyer.OpcUa.Core.Configuration.ServerTarget;
 
-namespace Hoeyer.OpcUa.Core.Configuration.ServerTarget;
-
-public interface IServerStartedHealthCheck
+public interface IServerStartedHealthCheck : IHealthCheckAssignment
 {
     bool IsServerStarted { get; }
-    TaskAwaiter GetAwaiter();
     Task ServerRunning();
+    void MarkFailed(Exception exception);
 }

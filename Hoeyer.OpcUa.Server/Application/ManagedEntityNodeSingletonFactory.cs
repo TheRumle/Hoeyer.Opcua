@@ -14,7 +14,7 @@ internal sealed class ManagedEntityNodeSingletonFactory<T>(
     IEntityNodeStructureFactory<T> structureFactory) : IManagedEntityNodeSingletonFactory<T>
 {
     private IManagedEntityNode<T>? _node;
-    public IManagedEntityNode? Node => _node;
+    public IManagedEntityNode Node => GetEntityNode();
 
     public async Task<IManagedEntityNode<T>> CreateManagedEntityNode(Func<string, ushort> namespaceToIndex)
     {
@@ -30,13 +30,12 @@ internal sealed class ManagedEntityNodeSingletonFactory<T>(
         return _node;
     }
 
-    /// <inheritdoc />
-    public IManagedEntityNode<T> GetEntityNode()
+    private IManagedEntityNode<T> GetEntityNode()
     {
         if (_node == null)
         {
             throw new EntityNodeProviderException(typeof(T),
-                $"The node factory has not yet been provided with an namespace index used to construct the node. Have you awaited the {nameof(ServerStartedHealthCheck)}?");
+                $"The node factory has not yet been provided with an namespace index used to construct the node. Have you awaited the {nameof(HealthCheck)}?");
         }
 
         return _node;

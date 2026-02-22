@@ -3,15 +3,16 @@ using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
 using Hoeyer.OpcUa.Server.Api;
 using Hoeyer.OpcUa.Server.Services.Configuration;
-using Opc.Ua;
+using Microsoft.Extensions.Logging;
 using Opc.Ua.Configuration;
 
 namespace Hoeyer.OpcUa.Server;
 
 internal sealed class StartableEntityServer(
+    ILogger logger,
     ApplicationInstance applicationInstance,
     OpcEntityServer entityServer,
-    IServerStartedHealthCheckMarker marker)
+    IServerStartedHealthCheck healthCheckAssignment)
     : IStartableEntityServer, IStartedEntityServer
 {
     private readonly ApplicationInstance _applicationInstance =
@@ -29,16 +30,21 @@ internal sealed class StartableEntityServer(
             throw new ObjectDisposedException(nameof(StartableEntityServer));
         }
 
-        if (marker.IsServerStarted) return this;
+        if (healthCheckAssignment.IsServerStarted)
+        {
+            return this;
+        }
+
         try
         {
             await _applicationInstance.Start(_entityServer);
-            marker.MarkCompleted();
+            healthCheckAssignment.MarkCompleted();
         }
-        catch (ServiceResultException e)
+        catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            healthCheckAssignment.MarkFailed(e);
+            logger.LogCritical(e, "Failed to start the server");
+            throw new OpcUaEntityServerException("Failed to start the server", e);
         }
 
         return this;

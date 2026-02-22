@@ -1,6 +1,6 @@
 ﻿namespace Hoeyer.OpcUa.Core.Configuration.ServerTarget;
 
-public interface IServerStartedHealthCheckMarker : IServerStartedHealthCheck
+public interface IHealthCheckAssignment
 {
     public void MarkCompleted();
 }
