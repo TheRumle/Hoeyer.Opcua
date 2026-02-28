@@ -11,7 +11,7 @@ namespace Hoeyer.OpcUa.Server.Application;
 
 internal sealed class EntityNodeManagerSingletonFactory<T>(
     ILoggerFactory factory,
-    IManagedEntityNodeSingletonFactory<T> nodeFactory,
+    IManagedEntityNodeProvider<T> nodeProvider,
     MaybeInitializedEntityManager<T> loadableManager,
     IEnumerable<INodeConfigurator<T>> preinitializedNodeConfigurators,
     IEntityNodeAccessConfigurator accessConfigurator) : IEntityNodeManagerFactory<T>
@@ -26,7 +26,8 @@ internal sealed class EntityNodeManagerSingletonFactory<T>(
 
     private async Task<EntityNodeManager<T>> CreateManager(IServerInternal server)
     {
-        IManagedEntityNode<T> node = await nodeFactory.CreateManagedEntityNode(server.NamespaceUris.GetIndexOrAppend);
+        IManagedEntityNode<T> node =
+            await nodeProvider.GetOrCreateManagedEntityNode(server.NamespaceUris.GetIndexOrAppend);
         List<Exception> configurationExceptions = ConfigurePreInitialization(node, server.DefaultSystemContext);
         if (configurationExceptions.Count > 0)
         {

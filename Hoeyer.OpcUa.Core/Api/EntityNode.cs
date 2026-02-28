@@ -16,6 +16,7 @@ public sealed record EntityNode : IEntityNode
         MethodsByName = methods.ToFrozenDictionary(e => e.BrowseName.Name, e => e);
         PropertyByBrowseName = propertyStates.ToFrozenDictionary(e => e.BrowseName.Name);
         PropertyAlarmsByName = alarms.PropertyAlarms.ToFrozenDictionary(e => e.BrowseName.Name, e => e);
+        AlarmsByProperty = alarms.AlarmsByProperty;
     }
 
     public IReadOnlyDictionary<string, LimitAlarmState> PropertyAlarmsByName { get; set; }
@@ -23,6 +24,7 @@ public sealed record EntityNode : IEntityNode
     public IEnumerable<PropertyState> PropertyStates => PropertyByBrowseName.Values;
     public IEnumerable<MethodState> Methods => MethodsByName.Values;
     public IEnumerable<LimitAlarmState> PropertyAlarms => PropertyAlarmsByName.Values;
+    public IReadOnlyDictionary<PropertyState, LimitAlarmState> AlarmsByProperty { get; }
     public IReadOnlyDictionary<string, PropertyState> PropertyByBrowseName { get; }
     public IReadOnlyDictionary<string, MethodState> MethodsByName { get; }
 }

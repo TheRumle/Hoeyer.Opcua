@@ -7,16 +7,16 @@ using Hoeyer.OpcUa.Server.Api.NodeManagement;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-internal sealed class ManagedEntityNodeSingletonFactory<T>(
+internal sealed class ManagedEntityNodeProvider<T>(
     IOpcUaTargetServerInfo info,
     IEntityLoader<T> value,
     IEntityTranslator<T> translator,
-    IEntityNodeStructureFactory<T> structureFactory) : IManagedEntityNodeSingletonFactory<T>
+    IEntityNodeStructureFactory<T> structureFactory) : IManagedEntityNodeProvider<T>
 {
     private IManagedEntityNode<T>? _node;
-    public IManagedEntityNode Node => GetEntityNode();
+    public IManagedEntityNode<T> Node => GetEntityNode();
 
-    public async Task<IManagedEntityNode<T>> CreateManagedEntityNode(Func<string, ushort> namespaceToIndex)
+    public async Task<IManagedEntityNode<T>> GetOrCreateManagedEntityNode(Func<string, ushort> namespaceToIndex)
     {
         if (_node != null) return _node;
 

@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Frozen;
+using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Core.Api.NodeStructure;
 using Opc.Ua;
 
@@ -10,13 +10,13 @@ public sealed class EntityNodeAlarmAssigner<T>(IEntityTypeModel<T> model) : IEnt
 {
     public AlarmCollection AssignAlarms(IEnumerable<PropertyState> properties)
     {
-        AlarmCollection collection = new();
         var propertyStates = properties.ToDictionary(e => e.BrowseName.Name, e => e);
-        collection.PropertyAlarms.AddRange(GetAlarms(propertyStates));
-        return collection;
+        var alarms = GetAlarms(propertyStates).ToFrozenDictionary(e => e.property, e => e.alarm);
+        return new AlarmCollection(alarms);
     }
 
-    private IEnumerable<LimitAlarmState> GetAlarms(Dictionary<string, PropertyState> propertyStates)
+    private IEnumerable<(PropertyState property, LimitAlarmState alarm)> GetAlarms(
+        Dictionary<string, PropertyState> propertyStates)
     {
         foreach (var (propertyBrowseName, alarm) in model.PropertyAlarms)
         {
@@ -26,7 +26,7 @@ public sealed class EntityNodeAlarmAssigner<T>(IEntityTypeModel<T> model) : IEnt
                 switch (alarmAttribute)
                 {
                     case LegalRangeAlarmAttribute limitAlarm:
-                        yield return AssignLimitAlarm(property, limitAlarm);
+                        yield return (property, AssignLimitAlarm(property, limitAlarm));
                         break;
                 }
             }
@@ -44,7 +44,7 @@ public sealed class EntityNodeAlarmAssigner<T>(IEntityTypeModel<T> model) : IEnt
         alarmNode.HighHighLimit = CreateLimitNode(alarm.HighHigh, alarmNode);
         alarmNode.HighLimit = CreateLimitNode(alarm.High, alarmNode);
         alarmNode.Severity = CreateLimitNode(TranslateSeverity(alarm.Severity), alarmNode);
-        alarmNode.BrowseName = new QualifiedName(alarm.BrowseName);
+        alarmNode.BrowseName = new QualifiedName(alarm.BrowseName, parent.BrowseName.NamespaceIndex);
 
         return alarmNode;
     }

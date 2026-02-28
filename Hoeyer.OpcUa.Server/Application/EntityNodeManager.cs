@@ -44,6 +44,30 @@ internal sealed class EntityNodeManager<T>(
             }
 
             references.Add(new NodeStateReference(ReferenceTypeIds.Organizes, false, node.NodeId));
+
+            ManagedEntity.ChangeState(e =>
+            {
+                foreach (var (property, alarmNode) in e.AlarmsByProperty)
+                {
+                    alarmNode.Initialize(
+                        SystemContext,
+                        node,
+                        EventSeverity.Min,
+                        "Initialized");
+
+                    AddPredefinedNode(SystemContext, alarmNode);
+                    property.AddReference(
+                        ReferenceTypeIds.HasCondition,
+                        false,
+                        alarmNode.NodeId);
+
+                    alarmNode.AddReference(
+                        ReferenceTypeIds.HasCondition,
+                        true,
+                        property.NodeId);
+                    alarmNode.InputNode.Value = property.NodeId;
+                }
+            });
         }
     }
 }
