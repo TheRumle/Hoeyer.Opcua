@@ -1,13 +1,11 @@
 ﻿using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Test.Fixtures;
-using Hoeyer.OpcUa.Test;
 using JetBrains.Annotations;
 using Opc.Ua;
 using Playground.Modelling.Models;
 
 namespace Hoeyer.OpcUa.Core.Test.Application;
 
-[GeneratedClassTest]
 [TestSubject(typeof(IEntityTranslator<>))]
 public class EntityTranslatorTest
 {

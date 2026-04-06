@@ -2,9 +2,10 @@
 using Hoeyer.OpcUa.Test.Api;
 using JetBrains.Annotations;
 
-namespace Hoeyer.OpcUa.Test.Client;
+namespace Hoeyer.OpcUa.Client.Test;
 
 [InheritsTests]
 [TestSubject(typeof(BreadthFirstStrategy))]
+[NotInParallel(nameof(BreadthFirstStrategyTest))]
 public abstract class BreadthFirstStrategyTest(ISimulationTestSession fixture)
-    : NodeTreeTraverserTest(fixture, nameof(BreadthFirstStrategy), fixture.GetService<BreadthFirstStrategy>);
+    : NodeTreeTraverserTest(fixture, fixture.GetService<BreadthFirstStrategy>);

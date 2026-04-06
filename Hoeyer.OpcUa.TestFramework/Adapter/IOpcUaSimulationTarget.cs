@@ -3,7 +3,7 @@ using TUnit.Core.Interfaces;
 
 namespace Hoeyer.OpcUa.Test.Adapter;
 
-public interface IOpcUaSimulationServer : IAsyncInitializer, IAsyncDisposable
+public interface IOpcUaSimulationTarget : IAsyncInitializer, IAsyncDisposable
 {
     int SimulationPort { get; }
     string Host { get; }

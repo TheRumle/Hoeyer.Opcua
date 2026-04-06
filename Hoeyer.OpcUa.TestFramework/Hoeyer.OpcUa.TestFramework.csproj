@@ -17,8 +17,8 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.1"/>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.1"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.1"/>
-        <PackageReference Include="Testcontainers" Version="4.8.1"/>
-        <PackageReference Include="TUnit" Version="1.12.102"/>
+        <PackageReference Include="Testcontainers" Version="4.11.0"/>
+        <PackageReference Include="TUnit" Version="1.24.18"/>
 
     </ItemGroup>
 

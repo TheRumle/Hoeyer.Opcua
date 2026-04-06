@@ -1,0 +1,10 @@
+{
+  "solution": {
+    "path": "Hoeyer.OpcUa.sln",
+    "projects": [
+      "Hoeyer.Common.Test\\Hoeyer.Common.Test.csproj",
+      "Hoeyer.OpcUa.CompileTime.Test\\Hoeyer.OpcUa.CompileTime.Test.csproj",
+      "Hoeyer.OpcUa.Core.Test\\Hoeyer.OpcUa.Core.Test.csproj"
+    ]
+  }
+}

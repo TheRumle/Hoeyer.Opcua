@@ -10,19 +10,16 @@ using JetBrains.Annotations;
 using Opc.Ua;
 using EntityBrowseException = Hoeyer.OpcUa.Client.Api.Browsing.Exceptions.EntityBrowseException;
 
-namespace Hoeyer.OpcUa.Test.Client;
+namespace Hoeyer.OpcUa.Client.Test;
 
 [TestSubject(typeof(INodeTreeTraverser))]
 [TestSubject(typeof(ConcurrentBrowse))]
 [Timeout(10_0000)]
-[DependsOn<AdapterTest>]
+[DependsOn<SimulationSetupTest>]
 public abstract class NodeTreeTraverserTest(
     ISimulationTestSession fixture,
-    string classUnderTest,
     Func<INodeTreeTraverser> getTraversal)
 {
-    public override string ToString() => classUnderTest;
-
     public static IEnumerable<Func<NodeId>> PresentObjects()
     {
         IEnumerable<NodeId> ids =

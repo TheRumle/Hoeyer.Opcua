@@ -8,7 +8,7 @@ namespace Hoeyer.OpcUa.Test.Simulation;
 /// </summary>
 /// <seealso cref="ISimulationTestSession" />
 /// <typeparam name="T"></typeparam>
-public interface ISpecifiedTestSession<out T>
+public interface ISimulationTestContext<out T>
 {
     public T TestedService { get; }
     TOut ExecuteWithSession<TOut>(Func<IEntitySession, T, TOut> execute);

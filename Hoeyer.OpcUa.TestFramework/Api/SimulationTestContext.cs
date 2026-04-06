@@ -4,11 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Test.Api;
 
-internal class SpecifiedTestSession<T>(
+internal class SimulationTestContext<T>(
     IServiceProvider provider,
     IEntitySession session,
     T serviceUndertest)
-    : ISpecifiedTestSession<T>
+    : ISimulationTestContext<T>
 {
     private readonly string _testName = typeof(T).Name;
     public T TestedService => serviceUndertest;

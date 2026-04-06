@@ -4,16 +4,38 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Test.Api;
 
-public abstract class SimulationTestSession(Lazy<SimulationSetup> simulationSetup)
-    : ISimulationTestSession
+public class SimulationTestSession(SimulationSetup simulationSetup) : ISimulationTestSession
 {
-    public IServiceProvider ServiceProvider => simulationSetup.Value.ServiceProvider;
+    private bool _disposed;
+    private bool _initialized;
+    public IServiceProvider ServiceProvider => simulationSetup.ServiceProvider;
+    public Guid TestSessionId => SimulationSetup.SimulationTestIdentity;
+    public SimulationSetup SimulationSetup => simulationSetup;
 
-    public async ValueTask DisposeAsync() => await simulationSetup.Value.DisposeAsync();
-    public async Task InitializeAsync() => await simulationSetup.Value.InitializeAsync();
+    public async ValueTask DisposeAsync()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        await simulationSetup.DisposeAsync();
+        _disposed = true;
+    }
+
+    public async Task InitializeAsync()
+    {
+        if (_initialized)
+        {
+            return;
+        }
+
+        await simulationSetup.InitializeAsync();
+        _initialized = true;
+    }
 
     public async Task<ISession> GetOrCreateSession() =>
-        (await simulationSetup.Value.SessionFactory.GetSessionForAsync(TestContext.Current!.Id!)).Session;
+        (await simulationSetup.SessionFactory.GetSessionForAsync(TestSessionId.ToString())).Session;
 
     public async Task ExecuteWithSession(Func<ISession, Task> action) =>
         await action.Invoke(await GetOrCreateSession());

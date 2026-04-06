@@ -1,5 +1,4 @@
 ﻿using Opc.Ua.Client;
-using TUnit.Core.Interfaces;
 
 namespace Hoeyer.OpcUa.Test.Api;
 
@@ -8,7 +7,7 @@ namespace Hoeyer.OpcUa.Test.Api;
 ///     session can connect to.
 ///     Provides a proxy for executing actions using the opened <see cref="ISession" /> and for getting different services.
 /// </summary>
-public interface ISimulationTestSession : IAsyncDisposable, IAsyncInitializer
+public interface ISimulationTestSession : ISimulationSession
 {
     public T GetService<T>() where T : notnull;
     public T GetService<T>(Type t) where T : notnull;

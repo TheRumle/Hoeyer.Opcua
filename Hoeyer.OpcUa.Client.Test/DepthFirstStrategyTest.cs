@@ -2,10 +2,10 @@
 using Hoeyer.OpcUa.Test.Api;
 using JetBrains.Annotations;
 
-namespace Hoeyer.OpcUa.Test.Client;
+namespace Hoeyer.OpcUa.Client.Test;
 
 [InheritsTests]
 [TestSubject(typeof(DepthFirstStrategy))]
-[ClassDataSource<ClientTestFixture>(Shared = SharedType.PerTestSession)]
-public abstract class DepthFirstStrategyTest(ISimulationTestSession fixture)
-    : NodeTreeTraverserTest(fixture, nameof(DepthFirstStrategy), fixture.GetService<BreadthFirstStrategy>);
+[NotInParallel(nameof(DepthFirstStrategyTest))]
+public abstract class DepthFirstStrategyTest(SimulationTestSession fixture)
+    : NodeTreeTraverserTest(fixture, fixture.GetService<BreadthFirstStrategy>);

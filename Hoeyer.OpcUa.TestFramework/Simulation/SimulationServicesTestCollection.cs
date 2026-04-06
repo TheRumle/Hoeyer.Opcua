@@ -6,21 +6,24 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Hoeyer.OpcUa.Test.Simulation;
 
-internal class SimulationServicesCollection : IAsyncDisposable
+internal class SimulationServicesTestCollection : IAsyncDisposable
 {
-    public SimulationServicesCollection(ClientServicesAdapterArgs args,
+    public SimulationServicesTestCollection(
+        IServiceCollection services,
+        ClientServicesAdapterArgs args,
         Type[] entityAssemblyMarkers,
         Type[] clientModelMarker
-    ) : this(args, entityAssemblyMarkers.ToHashSet(), clientModelMarker.ToHashSet())
+    ) : this(services, args, entityAssemblyMarkers.ToHashSet(), clientModelMarker.ToHashSet())
     {
     }
 
-    public SimulationServicesCollection(ClientServicesAdapterArgs args,
+    public SimulationServicesTestCollection(
+        IServiceCollection services,
+        ClientServicesAdapterArgs args,
         ISet<Type> entityAssemblyMarkers,
         ISet<Type> clientModelMarker
     )
     {
-        var services = new ServiceCollection();
         services.AddSingleton<ILoggerFactory>(NullLoggerFactory.Instance)
             .AddSingleton(typeof(ILogger<>), typeof(NullLogger<>))
             .AddSingleton(services)

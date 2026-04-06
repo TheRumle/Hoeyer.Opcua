@@ -12,15 +12,17 @@ namespace Hoeyer.OpcUa.TestFramework.Test;
 
 public sealed class GenericEntityServiceDescriptionMatcherTest
 {
-    private static readonly SimulationServicesCollection TestCollection =
-        new(new ClientServicesAdapterArgs
-        {
-            Protocol = WebProtocol.OpcTcp,
-            OpcUaServerId = "id",
-            OpcUaServerName = "Name",
-            HostName = "localhost",
-            Port = 0
-        }, [typeof(MyClass)], []);
+    private static readonly SimulationServicesTestCollection TestTestCollection =
+        new(
+            new ServiceCollection(),
+            new ClientServicesAdapterArgs
+            {
+                Protocol = WebProtocol.OpcTcp,
+                OpcUaServerId = "id",
+                OpcUaServerName = "Name",
+                HostName = "localhost",
+                Port = 0
+            }, [typeof(MyClass)], []);
 
     public static List<Type> GenericServicesToFind() =>
     [
@@ -41,8 +43,8 @@ public sealed class GenericEntityServiceDescriptionMatcherTest
 
     private static GenericEntityServiceDescriptionMatcher ConstructMatcherFor(Type type) => new(
         type,
-        TestCollection.Collection,
-        TestCollection.ServiceProvider.GetRequiredService<EntityTypesCollection>()
+        TestTestCollection.Collection,
+        TestTestCollection.ServiceProvider.GetRequiredService<EntityTypesCollection>()
     );
 
     [OpcUaEntity]
