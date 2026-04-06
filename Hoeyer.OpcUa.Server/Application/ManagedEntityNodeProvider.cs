@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Server.Api;
@@ -16,13 +15,9 @@ internal sealed class ManagedEntityNodeProvider<T>(
     private IManagedEntityNode<T>? _node;
     public IManagedEntityNode<T> Node => GetEntityNode();
 
-    public async Task<IManagedEntityNode<T>> GetOrCreateManagedEntityNode(Func<string, ushort> namespaceToIndex)
+    public async Task<IManagedEntityNode<T>> GetOrCreateManagedEntityNode(ushort namespaceIndex, string @namespace)
     {
         if (_node != null) return _node;
-
-        var @namespace = info.ApplicationNamespace + $"/{typeof(T).Name}";
-        var namespaceIndex = namespaceToIndex.Invoke(@namespace);
-
         var entity = await value.LoadCurrentState();
         var nodeRepresentation = structureFactory.Create(namespaceIndex);
         translator.AssignToNode(entity, nodeRepresentation);

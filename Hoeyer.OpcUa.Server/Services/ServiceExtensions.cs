@@ -52,6 +52,8 @@ public static class ServiceExtensions
             registration.Invoke(entity);
         }
 
+        collection.AddServiceAndImplSingleton(typeof(INodeConfigurator<>), typeof(AlarmSetupConfigurator<>));
+        collection.AddServiceAndImplSingleton(typeof(INodeConfigurator<>), typeof(AlarmLoggingConfigurator<>));
         collection.AddServiceAndImplSingleton<IEntityNodeAccessConfigurator, NoAccessRestrictionsConfigurator>();
         collection.AddServiceAndImplSingleton<IServerStartedHealthCheck, HealthCheck>();
         collection.AddSingleton<IHealthCheckAssignment>(p => p.GetRequiredService<HealthCheck>());
@@ -69,12 +71,10 @@ public static class ServiceExtensions
     public static void AddServices<TEntity>(IServiceCollection collection)
     {
         collection
-            .AddSingleton<IManagedEntityNodeSingletonFactory<TEntity>, ManagedEntityNodeSingletonFactory<TEntity>>();
-
+            .AddServiceAndImplSingleton<IManagedEntityNodeProvider<TEntity>, ManagedEntityNodeProvider<TEntity>>();
         collection
             .AddServiceAndImplSingleton<IEntityNodeManagerFactory<TEntity>,
                 EntityNodeManagerSingletonFactory<TEntity>>();
-
         collection.AddServiceAndImplSingleton(typeof(IEntityNodeManagerFactory),
             typeof(EntityNodeManagerSingletonFactory<TEntity>));
 

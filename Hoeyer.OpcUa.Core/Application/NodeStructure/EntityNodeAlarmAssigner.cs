@@ -8,7 +8,7 @@ namespace Hoeyer.OpcUa.Core.Application.NodeStructure;
 
 public sealed class EntityNodeAlarmAssigner<T>(IEntityTypeModel<T> model) : IEntityNodeAlarmAssigner<T>
 {
-    public AlarmCollection AssignAlarms(IEnumerable<PropertyState> properties)
+    public AlarmCollection AssignAlarms(IEnumerable<PropertyState> properties, ushort applicationNamespaceIndex)
     {
         var propertyStates = properties.ToDictionary(e => e.BrowseName.Name, e => e);
         var alarms = GetAlarms(propertyStates).ToFrozenDictionary(e => e.property, e => e.alarm);
@@ -34,17 +34,18 @@ public sealed class EntityNodeAlarmAssigner<T>(IEntityTypeModel<T> model) : IEnt
     }
 
     private static ExclusiveLimitAlarmState AssignLimitAlarm(
-        NodeState parent,
+        NodeState property,
         LimitAlarmAttribute<double> alarm)
     {
-        var alarmNode = new ExclusiveLimitAlarmState(parent);
-
+        var alarmNode = new ExclusiveLimitAlarmState(property);
         alarmNode.LowLowLimit = CreateLimitNode(alarm.LowLow, alarmNode);
         alarmNode.LowLimit = CreateLimitNode(alarm.Low, alarmNode);
         alarmNode.HighHighLimit = CreateLimitNode(alarm.HighHigh, alarmNode);
         alarmNode.HighLimit = CreateLimitNode(alarm.High, alarmNode);
         alarmNode.Severity = CreateLimitNode(TranslateSeverity(alarm.Severity), alarmNode);
-        alarmNode.BrowseName = new QualifiedName(alarm.BrowseName, parent.BrowseName.NamespaceIndex);
+        alarmNode.BrowseName = new QualifiedName(alarm.BrowseName, property.BrowseName.NamespaceIndex);
+        alarmNode.DisplayName = alarmNode.BrowseName.Name;
+        alarmNode.TypeDefinitionId = ObjectTypeIds.LimitAlarmType;
 
         return alarmNode;
     }

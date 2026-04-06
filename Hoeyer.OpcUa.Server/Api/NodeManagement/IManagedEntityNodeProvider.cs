@@ -1,10 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Hoeyer.OpcUa.Server.Api.NodeManagement;
 
 public interface IManagedEntityNodeProvider<T>
 {
     IManagedEntityNode<T> Node { get; }
-    Task<IManagedEntityNode<T>> GetOrCreateManagedEntityNode(Func<string, ushort> namespaceToIndex);
+    Task<IManagedEntityNode<T>> GetOrCreateManagedEntityNode(ushort namespaceIndex, string @namespace);
 }

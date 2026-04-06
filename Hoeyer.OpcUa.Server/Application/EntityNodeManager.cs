@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hoeyer.OpcUa.Core.Extensions.Logging;
+using System.Linq;
+using Hoeyer.OpcUa.Core.Api;
 using Hoeyer.OpcUa.Server.Api.NodeManagement;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
@@ -9,20 +10,32 @@ using Opc.Ua.Server;
 namespace Hoeyer.OpcUa.Server.Application;
 
 internal sealed class EntityNodeManager<T>(
-    IManagedEntityNode<T> managedEntity,
-    IServerInternal server,
-    ILogger logger)
-    : CustomNodeManager(server, managedEntity.Namespace), IEntityNodeManager<T>
+    Uri applicationNamespaceUri,
+    IManagedEntityNodeProvider<T> nodeProvider,
+    IEnumerable<INodeConfigurator<T>> nodeConfigurators,
+    ILogger<EntityNodeManager<T>> logger,
+    IEntityNodeAccessConfigurator accessConfigurator,
+    IServerInternal server)
+    : CustomNodeManager(server, applicationNamespaceUri.ToString()), IEntityNodeManager<T>
 {
-    public IManagedEntityNode ManagedEntity { get; } = managedEntity;
+    public IManagedEntityNode ManagedEntity { get; private set; } = null!;
 
     public override void CreateAddressSpace(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
-        using IDisposable? scope = logger.BeginScope(ManagedEntity.Select(e => e.ToLoggingObject()));
-        logger.Log(LogLevel.Information, "Creating address space");
         try
         {
-            InitializeNode(externalReferences);
+            using var scope = logger.BeginScope(nameof(CreateAddressSpace));
+            logger.LogDebug("Creating managed entity node");
+
+            var nodeTask = nodeProvider.GetOrCreateManagedEntityNode(NamespaceIndex, NamespaceUris.First());
+            ManagedEntity = nodeTask.Result;
+            accessConfigurator.Configure(ManagedEntity, SystemContext);
+            ManagedEntity.ChangeState(entity =>
+            {
+                ConfigureEntity(nodeConfigurators);
+                AddEntityStructure(entity, externalReferences);
+            });
+            base.CreateAddressSpace(externalReferences);
         }
         catch (Exception e)
         {
@@ -30,44 +43,28 @@ internal sealed class EntityNodeManager<T>(
         }
     }
 
-    private void InitializeNode(IDictionary<NodeId, IList<IReference>> externalReferences)
+    private void ConfigureEntity(IEnumerable<INodeConfigurator<T>> enumerable)
+    {
+        foreach (var configurator in enumerable)
+        {
+            configurator.Configure(ManagedEntity, SystemContext);
+        }
+    }
+
+    private void AddEntityStructure(
+        IEntityNode entityNode,
+        IDictionary<NodeId, IList<IReference>> externalReferences
+    )
     {
         var wantedPlacement = ObjectIds.RootFolder;
-        lock (Lock)
+        var node = entityNode.BaseObject;
+        AddPredefinedNode(SystemContext, node);
+        if (!externalReferences.TryGetValue(wantedPlacement, out var references))
         {
-            BaseObjectState node = ManagedEntity.Select(e => e.BaseObject);
-            AddPredefinedNode(SystemContext, node);
-            if (!externalReferences.TryGetValue(wantedPlacement, out var references))
-            {
-                references ??= new List<IReference>();
-                externalReferences[wantedPlacement] = references;
-            }
-
-            references.Add(new NodeStateReference(ReferenceTypeIds.Organizes, false, node.NodeId));
-
-            ManagedEntity.ChangeState(e =>
-            {
-                foreach (var (property, alarmNode) in e.AlarmsByProperty)
-                {
-                    alarmNode.Initialize(
-                        SystemContext,
-                        node,
-                        EventSeverity.Min,
-                        "Initialized");
-
-                    AddPredefinedNode(SystemContext, alarmNode);
-                    property.AddReference(
-                        ReferenceTypeIds.HasCondition,
-                        false,
-                        alarmNode.NodeId);
-
-                    alarmNode.AddReference(
-                        ReferenceTypeIds.HasCondition,
-                        true,
-                        property.NodeId);
-                    alarmNode.InputNode.Value = property.NodeId;
-                }
-            });
+            references ??= new List<IReference>();
+            externalReferences[wantedPlacement] = references;
         }
+
+        references.Add(new NodeStateReference(ReferenceTypeIds.Organizes, false, node.NodeId));
     }
 }
