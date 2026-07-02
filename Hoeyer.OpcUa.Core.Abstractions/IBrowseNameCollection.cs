@@ -1,6 +1,6 @@
 ﻿using System.Collections.Frozen;
 
-namespace Hoeyer.OpcUa.Core.Api;
+namespace Hoeyer.OpcUa.Core.Abstractions;
 
 public interface IBrowseNameCollection<T> : IBrowseNameCollection;
 

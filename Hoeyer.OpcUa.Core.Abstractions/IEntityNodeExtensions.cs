@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.OpcUa.Core.Api;
+﻿namespace Hoeyer.OpcUa.Core.Abstractions;
 
 public static class IEntityNodeExtensions
 {

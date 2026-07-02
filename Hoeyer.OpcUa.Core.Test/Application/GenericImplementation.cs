@@ -1,5 +1,5 @@
-﻿using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Core.Api.NodeStructure;
+﻿using Hoeyer.OpcUa.Core.Abstractions;
+using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 
 namespace Hoeyer.OpcUa.Core.Test.Application;
 

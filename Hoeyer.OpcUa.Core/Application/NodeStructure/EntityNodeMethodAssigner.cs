@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Core.Api.NodeStructure;
+using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Application.NodeStructure;

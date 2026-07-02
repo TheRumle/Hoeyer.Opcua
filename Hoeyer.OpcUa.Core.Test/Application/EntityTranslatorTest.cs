@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.Core.Api;
+﻿using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Test.Fixtures;
 using JetBrains.Annotations;
 using Opc.Ua;

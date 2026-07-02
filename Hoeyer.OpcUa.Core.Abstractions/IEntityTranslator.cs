@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Hoeyer.OpcUa.Core.Api;
+﻿namespace Hoeyer.OpcUa.Core.Abstractions;
 
 public interface IEntityTranslator<T>
 {

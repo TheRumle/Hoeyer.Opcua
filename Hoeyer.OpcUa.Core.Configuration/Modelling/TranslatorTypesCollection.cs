@@ -1,8 +1,8 @@
 ﻿using System.Collections.Frozen;
 using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Extensions.Types;
-using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Core.Api.NodeStructure;
+using Hoeyer.OpcUa.Core.Abstractions;
+using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Core.Configuration.Modelling;

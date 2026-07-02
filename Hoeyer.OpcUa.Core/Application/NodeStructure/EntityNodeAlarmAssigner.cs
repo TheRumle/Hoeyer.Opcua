@@ -1,7 +1,7 @@
 ﻿using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.OpcUa.Core.Api.NodeStructure;
+using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Application.NodeStructure;
@@ -59,10 +59,10 @@ public sealed class EntityNodeAlarmAssigner<T>(IEntityTypeModel<T> model) : IEnt
     private static ushort TranslateSeverity(AlarmSeverity alarmSeverity) =>
         alarmSeverity switch
         {
-            AlarmSeverity.Low => 100, // Low severity (1–199)
-            AlarmSeverity.Medium => 300, // Medium severity (200–399)
-            AlarmSeverity.High => 500, // High severity (400–599)
-            AlarmSeverity.Critical => 800, // Critical severity (600–999)
+            AlarmSeverity.Low => 100, // Low Severity (1–199)
+            AlarmSeverity.Medium => 300, // Medium Severity (200–399)
+            AlarmSeverity.High => 500, // High Severity (400–599)
+            AlarmSeverity.Critical => 800, // Critical Severity (600–999)
             var _ => 0
         };
 }

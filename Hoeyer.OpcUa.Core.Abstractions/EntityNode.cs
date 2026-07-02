@@ -1,9 +1,8 @@
 ﻿using System.Collections.Frozen;
-using System.Collections.Generic;
-using Hoeyer.OpcUa.Core.Api.NodeStructure;
+using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Api;
+namespace Hoeyer.OpcUa.Core.Abstractions;
 
 public sealed record EntityNode : IEntityNode
 {

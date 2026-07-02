@@ -5,7 +5,9 @@ namespace Hoeyer.OpcUa.Core.SourceGeneration.Constants;
 internal static class WellKnown
 {
     public const string CoreServiceName = "Hoeyer.OpcUa.Core.Application";
-    public static FullyQualifiedTypeName CoreApiTypeName(string className) => new("Hoeyer.OpcUa.Core.Api." + className);
+
+    public static FullyQualifiedTypeName CoreApiTypeName(string className) =>
+        new("Hoeyer.OpcUa.Core.Abstractions." + className);
 
     private static FullyQualifiedTypeName CoreTypeName(string className) => new("Hoeyer.OpcUa.Core." + className);
 

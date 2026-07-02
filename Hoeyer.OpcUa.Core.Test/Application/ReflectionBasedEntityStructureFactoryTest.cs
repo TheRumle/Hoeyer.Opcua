@@ -1,5 +1,5 @@
 ﻿using Hoeyer.Common.Extensions.Collection;
-using Hoeyer.OpcUa.Core.Api;
+using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Application.NodeStructure;
 using JetBrains.Annotations;
 

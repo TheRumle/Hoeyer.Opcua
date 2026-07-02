@@ -1,6 +1,6 @@
 ﻿using Hoeyer.Common.Architecture;
-using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Core.Api.NodeStructure;
+using Hoeyer.OpcUa.Core.Abstractions;
+using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 using Hoeyer.OpcUa.Core.Application.NodeStructure;
 using Hoeyer.OpcUa.Core.Configuration.Modelling;
 using Hoeyer.OpcUa.Core.Configuration.Options;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Client.Api.Connection;
-using Hoeyer.OpcUa.Core.Api;
+using Hoeyer.OpcUa.Core.Abstractions;
 using Opc.Ua;
 using Opc.Ua.Client;
 

@@ -2,7 +2,7 @@
 using System.Reflection;
 using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Reflection;
-using Hoeyer.OpcUa.Core.Api.NodeStructure;
+using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 using Hoeyer.OpcUa.Core.Application.NodeStructure;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -59,7 +59,7 @@ public sealed class EntityTypeModel<TEntity> : IEntityTypeModel<TEntity>
 
         PropertyAlarms = entity.GetProperties().ToFrozenDictionary(
             property => PropertyNames[property.Name],
-            property => property.GetCustomAttributes<OpcAlarmAttribute>().ToList()
+            property => property.GetCustomAttributes<OpcAlarmAttribute>().Cast<IOpcAlarm>().ToList()
         );
 
         AlarmNames = PropertyAlarms
@@ -74,7 +74,7 @@ public sealed class EntityTypeModel<TEntity> : IEntityTypeModel<TEntity>
     public FrozenSet<MethodInfo> Methods { get; }
     public FrozenDictionary<string, string> MethodNames { get; set; }
     public FrozenDictionary<string, string> PropertyNames { get; set; }
-    public FrozenDictionary<string, List<OpcAlarmAttribute>> PropertyAlarms { get; set; }
+    public FrozenDictionary<string, List<IOpcAlarm>> PropertyAlarms { get; set; }
     public string EntityName { get; }
     public override string ToString() => $"Entity model [{EntityName}]";
 }

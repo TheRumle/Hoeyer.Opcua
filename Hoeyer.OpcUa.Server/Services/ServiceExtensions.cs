@@ -6,7 +6,7 @@ using System.Reflection;
 using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.Core.Api;
+using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Application.NodeStructure;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Configuration.ServerTarget;

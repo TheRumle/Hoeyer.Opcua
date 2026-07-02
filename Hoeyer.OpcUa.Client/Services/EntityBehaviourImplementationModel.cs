@@ -5,7 +5,7 @@ using System.Linq;
 using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.Core.Api.NodeStructure;
+using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Client.Services;

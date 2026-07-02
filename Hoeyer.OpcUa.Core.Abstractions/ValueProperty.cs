@@ -1,6 +1,6 @@
 ﻿using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Api;
+namespace Hoeyer.OpcUa.Core.Abstractions;
 
 public sealed class ValueProperty(PropertyState state)
 {

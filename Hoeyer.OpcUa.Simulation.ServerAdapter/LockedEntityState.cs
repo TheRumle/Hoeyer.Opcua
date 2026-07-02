@@ -1,6 +1,6 @@
 ﻿using System;
 using Hoeyer.Common.Utilities.Threading;
-using Hoeyer.OpcUa.Core.Api;
+using Hoeyer.OpcUa.Core.Abstractions;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter;
 

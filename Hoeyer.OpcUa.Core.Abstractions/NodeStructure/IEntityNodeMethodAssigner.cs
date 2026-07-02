@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using Opc.Ua;
+﻿using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Api.NodeStructure;
+namespace Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 
 public interface IEntityNodeMethodAssigner<T>
 {

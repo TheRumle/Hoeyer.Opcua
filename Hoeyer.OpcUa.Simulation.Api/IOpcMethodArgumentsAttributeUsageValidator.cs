@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.Core.Api;
+﻿using Hoeyer.OpcUa.Core.Abstractions;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Simulation.Api;

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Frozen;
+﻿using System.Collections.Frozen;
 using System.Reflection;
 
-namespace Hoeyer.OpcUa.Core.Api.NodeStructure;
+namespace Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 
 public interface IBehaviourTypeModel
 {

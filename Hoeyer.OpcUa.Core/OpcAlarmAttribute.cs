@@ -1,11 +1,13 @@
 ﻿using System;
+using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 
 namespace Hoeyer.OpcUa.Core;
 
 [AttributeUsage(AttributeTargets.Property)]
-public abstract class OpcAlarmAttribute(AlarmType alarmType, string browseName, AlarmSeverity severity) : Attribute
+public abstract class OpcAlarmAttribute(AlarmType alarmType, string browseName, AlarmSeverity severity)
+    : Attribute, IOpcAlarm
 {
-    public readonly AlarmType AlarmType = alarmType;
-    public readonly string BrowseName = browseName;
-    public readonly AlarmSeverity Severity = severity;
+    public AlarmType AlarmType => alarmType;
+    public string BrowseName => browseName;
+    public AlarmSeverity Severity => Severity;
 }

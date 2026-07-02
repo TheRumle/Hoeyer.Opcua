@@ -5,7 +5,7 @@ using Hoeyer.OpcUa.Client.Api.Browsing;
 using Hoeyer.OpcUa.Client.Api.Calling;
 using Hoeyer.OpcUa.Client.Api.Calling.Exceptions;
 using Hoeyer.OpcUa.Client.Api.Connection;
-using Hoeyer.OpcUa.Core.Api;
+using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 using Opc.Ua;
 

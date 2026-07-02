@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Opc.Ua;
+﻿using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Core.Api;
+namespace Hoeyer.OpcUa.Core.Abstractions;
 
 public readonly record struct EntityNodeStructure
 {
