@@ -4,7 +4,7 @@ using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
 using Hoeyer.OpcUa.Server.Services;
-using Hoeyer.OpcUa.Simulation.Api.Services;
+using Hoeyer.OpcUa.Simulation.Abstractions.Services;
 using Hoeyer.OpcUa.Simulation.ServerAdapter;
 using Hoeyer.OpcUa.Simulation.Services;
 using Playground.Application;

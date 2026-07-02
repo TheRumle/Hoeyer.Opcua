@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
+using Hoeyer.OpcUa.Simulation.Abstractions.Execution.ExecutionSteps;
 
-namespace Hoeyer.OpcUa.Simulation.Api.Execution;
+namespace Hoeyer.OpcUa.Simulation.Abstractions.Execution;
 
 public interface ISimulationExecutor<TState, in TArgs>
 {

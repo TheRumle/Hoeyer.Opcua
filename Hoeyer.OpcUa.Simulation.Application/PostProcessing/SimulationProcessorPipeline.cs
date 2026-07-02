@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hoeyer.Common.Messaging.Api;
-using Hoeyer.OpcUa.Simulation.Api.Execution;
-using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
+using Hoeyer.OpcUa.Simulation.Abstractions.Execution;
+using Hoeyer.OpcUa.Simulation.Abstractions.PostProcessing;
 
 namespace Hoeyer.OpcUa.Simulation.PostProcessing;
 

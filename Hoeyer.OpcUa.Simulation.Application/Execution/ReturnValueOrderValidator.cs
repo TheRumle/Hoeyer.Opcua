@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.OpcUa.Simulation.Api.Configuration.Exceptions;
-using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
+using Hoeyer.OpcUa.Simulation.Abstractions.Configuration.Exceptions;
+using Hoeyer.OpcUa.Simulation.Abstractions.Execution.ExecutionSteps;
 
 namespace Hoeyer.OpcUa.Simulation.Execution;
 

@@ -1,6 +1,6 @@
 ﻿using Hoeyer.Common.Messaging.Api;
 
-namespace Hoeyer.OpcUa.Simulation.Api.PostProcessing;
+namespace Hoeyer.OpcUa.Simulation.Abstractions.PostProcessing;
 
 public sealed record SimulationExecutionContext(IMessageSubscription Subscription)
 {

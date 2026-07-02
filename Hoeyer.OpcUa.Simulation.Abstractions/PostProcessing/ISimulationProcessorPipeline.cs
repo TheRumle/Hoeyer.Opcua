@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Hoeyer.OpcUa.Simulation.Api.Execution;
+using Hoeyer.OpcUa.Simulation.Abstractions.Execution;
 
-namespace Hoeyer.OpcUa.Simulation.Api.PostProcessing;
+namespace Hoeyer.OpcUa.Simulation.Abstractions.PostProcessing;
 
 public interface
     ISimulationProcessorPipeline<TState, in TArgs, in TReturn> : ISimulationProcessorPipeline<TState, TArgs>

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hoeyer.OpcUa.Simulation.Api;
+using Hoeyer.OpcUa.Simulation.Abstractions;
 using Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter.Application;

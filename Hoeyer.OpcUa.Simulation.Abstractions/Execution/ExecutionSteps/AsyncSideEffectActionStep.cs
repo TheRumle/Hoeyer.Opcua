@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Hoeyer.Common.Utilities.Threading;
-using Hoeyer.OpcUa.Simulation.Api.Configuration;
+using Hoeyer.OpcUa.Simulation.Abstractions.Configuration;
 
-namespace Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
+namespace Hoeyer.OpcUa.Simulation.Abstractions.Execution.ExecutionSteps;
 
 public sealed class AsyncSideEffectActionStep<TState, TArguments>(
     ILocked<TState> lockedState,

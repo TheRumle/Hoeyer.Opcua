@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Hoeyer.OpcUa.Simulation.Api;
+namespace Hoeyer.OpcUa.Simulation.Abstractions;
 
 public interface IOpcMethodArgumentsAttribute
 {

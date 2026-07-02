@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.OpcUa.Simulation.Api.PostProcessing;
+﻿namespace Hoeyer.OpcUa.Simulation.Abstractions.PostProcessing;
 
 public enum ActionType
 {

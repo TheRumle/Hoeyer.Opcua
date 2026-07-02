@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
+using Hoeyer.OpcUa.Simulation.Abstractions.Execution.ExecutionSteps;
 
-namespace Hoeyer.OpcUa.Simulation.Api.Configuration;
+namespace Hoeyer.OpcUa.Simulation.Abstractions.Configuration;
 
 /// <summary>
 /// Used to configure simulated behaviour that occurs when the method, indicated with the <typeparamref name="TArgs"/> argument, is called. 

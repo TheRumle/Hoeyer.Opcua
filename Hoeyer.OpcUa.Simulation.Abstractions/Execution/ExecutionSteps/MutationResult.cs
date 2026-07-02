@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
+namespace Hoeyer.OpcUa.Simulation.Abstractions.Execution.ExecutionSteps;
 
 public sealed record MutationResult<T>(T ReachedState, DateTime TimeOfMutation)
 {

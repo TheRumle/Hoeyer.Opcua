@@ -2,8 +2,8 @@
 using System.Reflection;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Abstractions;
-using Hoeyer.OpcUa.Simulation.Api;
-using Hoeyer.OpcUa.Simulation.Api.Configuration.Exceptions;
+using Hoeyer.OpcUa.Simulation.Abstractions;
+using Hoeyer.OpcUa.Simulation.Abstractions.Configuration.Exceptions;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Simulation;

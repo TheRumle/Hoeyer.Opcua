@@ -1,9 +1,9 @@
 ﻿using System;
 using Hoeyer.Common.Utilities.Threading;
-using Hoeyer.OpcUa.Simulation.Api.Configuration;
-using Hoeyer.OpcUa.Simulation.Api.Configuration.Exceptions;
+using Hoeyer.OpcUa.Simulation.Abstractions.Configuration;
+using Hoeyer.OpcUa.Simulation.Abstractions.Configuration.Exceptions;
 
-namespace Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
+namespace Hoeyer.OpcUa.Simulation.Abstractions.Execution.ExecutionSteps;
 
 public sealed class MutationStep<TState, TArgs>(
     ILocked<TState> lockedState,

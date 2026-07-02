@@ -1,5 +1,5 @@
-﻿using Hoeyer.OpcUa.Simulation.Api.Configuration;
-using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
+﻿using Hoeyer.OpcUa.Simulation.Abstractions.Configuration;
+using Hoeyer.OpcUa.Simulation.Abstractions.Execution.ExecutionSteps;
 using Playground.Modelling.Methods.Generated;
 using Playground.Modelling.Models;
 

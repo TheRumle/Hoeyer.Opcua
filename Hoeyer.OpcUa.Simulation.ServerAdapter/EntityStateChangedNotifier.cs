@@ -1,8 +1,8 @@
 ﻿using Hoeyer.Common.Messaging.Api;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
-using Hoeyer.OpcUa.Simulation.Api.Execution;
-using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
+using Hoeyer.OpcUa.Simulation.Abstractions.Execution;
+using Hoeyer.OpcUa.Simulation.Abstractions.PostProcessing;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter;

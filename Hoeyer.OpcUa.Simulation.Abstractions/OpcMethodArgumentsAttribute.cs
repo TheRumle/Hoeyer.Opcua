@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Hoeyer.OpcUa.Core.Extensions;
 
-namespace Hoeyer.OpcUa.Simulation.Api;
+namespace Hoeyer.OpcUa.Simulation.Abstractions;
 
 [AttributeUsage(AttributeTargets.Struct | AttributeTargets.Class, Inherited = false)]
 public sealed class OpcMethodArgumentsAttribute<TEntity, TInterface> : Attribute, IOpcMethodArgumentsAttribute

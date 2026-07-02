@@ -4,8 +4,8 @@ using System.Linq;
 using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.Common.Messaging.Subscriptions;
-using Hoeyer.OpcUa.Simulation.Api.Execution;
-using Hoeyer.OpcUa.Simulation.Api.Services;
+using Hoeyer.OpcUa.Simulation.Abstractions.Execution;
+using Hoeyer.OpcUa.Simulation.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Simulation.Services;

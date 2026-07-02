@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Hoeyer.OpcUa.Simulation.Api.Configuration.Exceptions;
+namespace Hoeyer.OpcUa.Simulation.Abstractions.Configuration.Exceptions;
 
 public class SimulationConfigurationException(string message) : Exception(message)
 {

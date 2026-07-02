@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Hoeyer.OpcUa.Simulation.Api.Services;
+namespace Hoeyer.OpcUa.Simulation.Abstractions.Services;
 
 public sealed class TimeScaler : ITimeScaler
 {

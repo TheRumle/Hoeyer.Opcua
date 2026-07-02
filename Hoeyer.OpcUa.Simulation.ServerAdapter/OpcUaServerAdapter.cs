@@ -6,7 +6,7 @@ using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
-using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
+using Hoeyer.OpcUa.Simulation.Abstractions.PostProcessing;
 using Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
 using Hoeyer.OpcUa.Simulation.ServerAdapter.Application;
 using Hoeyer.OpcUa.Simulation.Services;

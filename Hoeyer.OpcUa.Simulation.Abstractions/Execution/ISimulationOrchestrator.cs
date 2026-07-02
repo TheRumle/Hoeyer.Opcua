@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Simulation.Api.Configuration;
-using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
-using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
+using Hoeyer.OpcUa.Simulation.Abstractions.Configuration;
+using Hoeyer.OpcUa.Simulation.Abstractions.Execution.ExecutionSteps;
+using Hoeyer.OpcUa.Simulation.Abstractions.PostProcessing;
 
-namespace Hoeyer.OpcUa.Simulation.Api.Execution;
+namespace Hoeyer.OpcUa.Simulation.Abstractions.Execution;
 
 /// <summary>
 /// Orchestrates simulations of action executions. Is responsible for coordinating the execution of a simulated action and maintaining a pipeline for plug-in side-effects defined by implementations of <see cref="IStateChangeSimulationProcessor{TState}"/>. A new pipeline and plug-in instances are created for each invocation of the simulation execution.  

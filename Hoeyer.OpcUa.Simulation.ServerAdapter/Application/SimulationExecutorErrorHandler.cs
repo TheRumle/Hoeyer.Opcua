@@ -1,5 +1,5 @@
 ﻿using System;
-using Hoeyer.OpcUa.Simulation.Api.Configuration.Exceptions;
+using Hoeyer.OpcUa.Simulation.Abstractions.Configuration.Exceptions;
 using Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;

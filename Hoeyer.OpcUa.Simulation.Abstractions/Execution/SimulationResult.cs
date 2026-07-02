@@ -1,7 +1,7 @@
 ﻿using System;
-using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
+using Hoeyer.OpcUa.Simulation.Abstractions.PostProcessing;
 
-namespace Hoeyer.OpcUa.Simulation.Api.Execution;
+namespace Hoeyer.OpcUa.Simulation.Abstractions.Execution;
 
 public record SimulationResult<TState>(
     TState Previous,

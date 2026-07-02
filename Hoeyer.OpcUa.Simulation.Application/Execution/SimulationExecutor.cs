@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hoeyer.Common.Extensions.Types;
-using Hoeyer.OpcUa.Simulation.Api.Execution;
-using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
-using Hoeyer.OpcUa.Simulation.Api.PostProcessing;
-using Hoeyer.OpcUa.Simulation.Api.Services;
+using Hoeyer.OpcUa.Simulation.Abstractions.Execution;
+using Hoeyer.OpcUa.Simulation.Abstractions.Execution.ExecutionSteps;
+using Hoeyer.OpcUa.Simulation.Abstractions.PostProcessing;
+using Hoeyer.OpcUa.Simulation.Abstractions.Services;
 
 namespace Hoeyer.OpcUa.Simulation.Execution;
 

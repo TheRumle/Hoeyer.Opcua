@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Hoeyer.OpcUa.Simulation.Api.PostProcessing;
+namespace Hoeyer.OpcUa.Simulation.Abstractions.PostProcessing;
 
 internal interface IFunctionSimulationPipeline<in TEntity, in TArgs, in TReturn>
 {
