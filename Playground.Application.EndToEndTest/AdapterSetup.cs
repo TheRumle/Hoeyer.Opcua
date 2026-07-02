@@ -7,6 +7,6 @@ public static class PreDiscoverySetup
     [Before(TestDiscovery)]
     public static void AssignInstance()
     {
-        FrameworkAdapter.Assign(new EndToEndTestSimulationSetup());
+        FrameworkAdapter.Assign(new EndToEndContainerizedSimulationSetup());
     }
 }

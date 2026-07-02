@@ -25,11 +25,10 @@ public static class ServiceExtensions
         this OnGoingOpcEntityServiceRegistrationWithModels serviceRegistration,
         Type fromAssembly,
         Action<ServerConfiguration>? additionalConfiguration = null)
-        => WithOpcUaServer(
-            serviceRegistration,
-            [fromAssembly.Assembly],
-            c => additionalConfiguration?.Invoke(c)
-        );
+        =>
+            serviceRegistration.WithOpcUaServer([fromAssembly.Assembly],
+                c => additionalConfiguration?.Invoke(c)
+            );
 
     public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServer(
         this OnGoingOpcEntityServiceRegistrationWithModels serviceRegistration,
