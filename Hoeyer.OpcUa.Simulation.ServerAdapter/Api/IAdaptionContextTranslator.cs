@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Hoeyer.OpcUa.Server.Api.NodeManagement;
+using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter.Api;

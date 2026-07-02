@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Hoeyer.OpcUa.Server.Services.Configuration;
+using Hoeyer.OpcUa.Server.Abstractions;
 using Opc.Ua;
 using Opc.Ua.Server;
 

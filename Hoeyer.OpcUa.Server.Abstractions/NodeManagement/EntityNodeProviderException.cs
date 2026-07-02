@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Hoeyer.OpcUa.Server.Api.NodeManagement;
+﻿namespace Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 
 /// <summary>
 /// An exception indicating that an <see cref="IEntityNodeProvider{T}"/> has been registered for the entity but is unable to get the node.

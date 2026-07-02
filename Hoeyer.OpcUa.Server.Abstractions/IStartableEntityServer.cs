@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using Hoeyer.OpcUa.Server.Services.Configuration;
-
-namespace Hoeyer.OpcUa.Server.Api;
+﻿namespace Hoeyer.OpcUa.Server.Abstractions;
 
 public interface IStartableEntityServer
 {

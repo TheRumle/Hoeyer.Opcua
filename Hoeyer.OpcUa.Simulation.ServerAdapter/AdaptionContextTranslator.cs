@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Server.Api.NodeManagement;
+using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Hoeyer.OpcUa.Simulation.Api.Configuration;
 using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
 using Hoeyer.OpcUa.Simulation.Configuration;

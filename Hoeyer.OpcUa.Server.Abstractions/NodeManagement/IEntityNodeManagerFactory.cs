@@ -1,7 +1,6 @@
-﻿using System.Threading.Tasks;
-using Opc.Ua.Server;
+﻿using Opc.Ua.Server;
 
-namespace Hoeyer.OpcUa.Server.Api.NodeManagement;
+namespace Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 
 public interface IEntityNodeManagerFactory<in T> : IEntityNodeManagerFactory;
 

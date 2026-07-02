@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Opc.Ua;
+﻿using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Server.Services.Configuration;
+namespace Hoeyer.OpcUa.Server.Abstractions;
 
 public interface IOpcUaTargetServerSetup
 {

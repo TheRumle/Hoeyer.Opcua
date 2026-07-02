@@ -1,7 +1,7 @@
 ﻿using Hoeyer.Common.Utilities.Threading;
 using Hoeyer.OpcUa.Core.Api;
 
-namespace Hoeyer.OpcUa.Server.Api.NodeManagement;
+namespace Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 
 /// <summary>
 /// A wrapper around an <see cref="IEntityNode"/> ensuring exposing state-change methods that can be used to securely operate on the node. For changing the state of the node see <see cref="ILocked{T}"/>.

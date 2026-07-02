@@ -1,3 +1,3 @@
-﻿namespace Hoeyer.OpcUa.Server.Api.NodeManagement;
+﻿namespace Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 
 public interface IEntityNodeAccessConfigurator : INodeConfigurator;

@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Hoeyer.OpcUa.Server.Api.NodeManagement;
+﻿namespace Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 
 public interface IManagedEntityNodeProvider<T>
 {

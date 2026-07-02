@@ -1,5 +1,5 @@
 ﻿using System;
-using Hoeyer.OpcUa.Server.Api.NodeManagement;
+using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application;

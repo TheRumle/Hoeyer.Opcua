@@ -1,11 +1,12 @@
 ﻿using System;
 using Hoeyer.OpcUa.Core.Api;
-using Hoeyer.OpcUa.Server.Api.NodeManagement;
+using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
 internal sealed record ManagedEntityNode<T> : IManagedEntityNode<T>
 {
+    private readonly object _lock = new();
     private readonly IEntityNode _managedNode;
 
     public ManagedEntityNode(IEntityNode node, string entityNamespace, ushort entityNamespaceIndex)
@@ -15,7 +16,6 @@ internal sealed record ManagedEntityNode<T> : IManagedEntityNode<T>
         Namespace = entityNamespace;
         EntityName = _managedNode.BaseObject.BrowseName.Name;
     }
-    private readonly object _lock = new();
 
     /// <inheritdoc />
     public void Examine(Action<IEntityNode> effect)
@@ -26,7 +26,7 @@ internal sealed record ManagedEntityNode<T> : IManagedEntityNode<T>
         }
     }
 
-    public  string Namespace { get; }
+    public string Namespace { get; }
     public ushort EntityNameSpaceIndex { get; }
 
     public string EntityName { get; set; }
@@ -38,7 +38,7 @@ internal sealed record ManagedEntityNode<T> : IManagedEntityNode<T>
             stateChanges.Invoke(_managedNode);
         }
     }
-    
+
     /// <inheritdoc />
     public TOut Select<TOut>(Func<IEntityNode, TOut> selection)
     {

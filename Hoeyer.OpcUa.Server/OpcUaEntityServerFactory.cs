@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
-using Hoeyer.OpcUa.Server.Api;
-using Hoeyer.OpcUa.Server.Api.NodeManagement;
+using Hoeyer.OpcUa.Server.Abstractions;
+using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Hoeyer.OpcUa.Server.Services.Configuration;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;

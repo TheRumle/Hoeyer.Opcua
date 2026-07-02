@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.Server.Api;
+﻿using Hoeyer.OpcUa.Server.Abstractions;
 using Playground.Modelling.Models;
 
 namespace Playground.Server;

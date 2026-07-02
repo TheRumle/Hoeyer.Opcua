@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Hoeyer.OpcUa.Server.Api;
+﻿namespace Hoeyer.OpcUa.Server.Abstractions;
 
 public interface IEntityLoader<T>
 {

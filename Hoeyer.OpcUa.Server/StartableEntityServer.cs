@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
-using Hoeyer.OpcUa.Server.Api;
-using Hoeyer.OpcUa.Server.Services.Configuration;
+using Hoeyer.OpcUa.Server.Abstractions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua.Configuration;
 

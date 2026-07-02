@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.Server.Api.NodeManagement;
+﻿using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 
 namespace Hoeyer.OpcUa.Server.Application;
 

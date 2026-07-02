@@ -17,6 +17,7 @@
         <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core.Configuration\Hoeyer.OpcUa.Core.Configuration.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Server.Abstractions\Hoeyer.OpcUa.Server.Abstractions.csproj"/>
     </ItemGroup>
 
 </Project>
