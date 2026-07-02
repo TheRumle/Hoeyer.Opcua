@@ -10,7 +10,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa.Client.Api\Hoeyer.OpcUa.Client.Api.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Client.Abstractions\Hoeyer.OpcUa.Client.Abstractions.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Client.Compiletime\Hoeyer.OpcUa.Client.Compiletime.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core.SourceGeneration\Hoeyer.OpcUa.Core.SourceGeneration.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core.Compiletime\Hoeyer.OpcUa.Core.Compiletime.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>

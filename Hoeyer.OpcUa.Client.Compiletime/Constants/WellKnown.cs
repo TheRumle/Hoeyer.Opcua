@@ -24,6 +24,6 @@ internal static class WellKnown
     public static class FullyQualifiedInterface
     {
         public static readonly FullyQualifiedTypeName MethodCallerType =
-            new("Hoeyer.OpcUa.Client.Api.Calling.IMethodCaller");
+            new("Hoeyer.OpcUa.Client.Abstractions.Calling.IMethodCaller");
     }
 }

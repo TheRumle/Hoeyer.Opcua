@@ -3,12 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Client.Api.Browsing;
-using Hoeyer.OpcUa.Client.Api.Browsing.Exceptions;
-using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
+using Hoeyer.OpcUa.Client.Abstractions.Browsing;
+using Hoeyer.OpcUa.Client.Abstractions.Browsing.Exceptions;
+using Hoeyer.OpcUa.Client.Abstractions.Browsing.Reading;
 using Opc.Ua;
 using Opc.Ua.Client;
-using INodeBrowser = Hoeyer.OpcUa.Client.Api.Browsing.INodeBrowser;
+using INodeBrowser = Hoeyer.OpcUa.Client.Abstractions.Browsing.INodeBrowser;
 
 namespace Hoeyer.OpcUa.Client.Application.Browsing;
 

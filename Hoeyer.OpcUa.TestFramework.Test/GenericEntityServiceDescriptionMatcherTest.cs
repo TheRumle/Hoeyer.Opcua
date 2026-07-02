@@ -1,5 +1,5 @@
-﻿using Hoeyer.OpcUa.Client.Api.Browsing;
-using Hoeyer.OpcUa.Client.Api.Writing;
+﻿using Hoeyer.OpcUa.Client.Abstractions.Browsing;
+using Hoeyer.OpcUa.Client.Abstractions.Writing;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 using Hoeyer.OpcUa.Core.Configuration.Modelling;

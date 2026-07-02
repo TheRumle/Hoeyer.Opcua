@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Client.Api.Browsing;
-using Hoeyer.OpcUa.Client.Api.Connection;
-using Hoeyer.OpcUa.Client.Api.Writing;
+using Hoeyer.OpcUa.Client.Abstractions.Browsing;
+using Hoeyer.OpcUa.Client.Abstractions.Connection;
+using Hoeyer.OpcUa.Client.Abstractions.Writing;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;

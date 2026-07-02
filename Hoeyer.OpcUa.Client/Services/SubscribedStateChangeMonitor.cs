@@ -1,6 +1,6 @@
 ﻿using System.Threading.Channels;
 using Hoeyer.Common.Messaging.Api;
-using Hoeyer.OpcUa.Client.Api.Monitoring;
+using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 
 namespace Hoeyer.OpcUa.Client.Services;
 

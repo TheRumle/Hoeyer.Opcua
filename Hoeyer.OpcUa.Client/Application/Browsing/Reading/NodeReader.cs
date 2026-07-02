@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.Common.Extensions.Types;
-using Hoeyer.OpcUa.Client.Api;
-using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
+using Hoeyer.OpcUa.Client.Abstractions;
+using Hoeyer.OpcUa.Client.Abstractions.Browsing.Reading;
 using Opc.Ua;
 using Opc.Ua.Client;
 

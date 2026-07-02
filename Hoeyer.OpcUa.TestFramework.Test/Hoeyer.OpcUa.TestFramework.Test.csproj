@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.OpcUa.Client.Api\Hoeyer.OpcUa.Client.Api.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Client.Abstractions\Hoeyer.OpcUa.Client.Abstractions.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.TestFramework\Hoeyer.OpcUa.TestFramework.csproj"/>
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Client.Api.Connection;
+using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Hoeyer.OpcUa.Client.Application.Subscriptions;
 using Hoeyer.OpcUa.Core.Configuration;
 using Microsoft.Extensions.Logging;

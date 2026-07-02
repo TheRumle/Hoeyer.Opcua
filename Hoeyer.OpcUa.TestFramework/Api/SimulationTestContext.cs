@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.Client.Api.Connection;
+﻿using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Hoeyer.OpcUa.Test.Simulation;
 using Microsoft.Extensions.DependencyInjection;
 

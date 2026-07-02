@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Hoeyer.OpcUa.Client.Api.Monitoring;
+using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Configuration.ServerTarget;

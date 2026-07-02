@@ -2,13 +2,13 @@
 using Hoeyer.Common.Extensions.Async;
 using Hoeyer.Common.Extensions.Collection;
 using Hoeyer.Common.Extensions.Types;
-using Hoeyer.OpcUa.Client.Api.Browsing;
+using Hoeyer.OpcUa.Client.Abstractions.Browsing;
 using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Test.Api;
 using JetBrains.Annotations;
 using Opc.Ua;
-using EntityBrowseException = Hoeyer.OpcUa.Client.Api.Browsing.Exceptions.EntityBrowseException;
+using EntityBrowseException = Hoeyer.OpcUa.Client.Abstractions.Browsing.Exceptions.EntityBrowseException;
 
 namespace Hoeyer.OpcUa.Client.Test;
 

@@ -1,7 +1,7 @@
 ﻿using System;
-using Hoeyer.OpcUa.Client.Api.Browsing;
-using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
-using Hoeyer.OpcUa.Client.Api.Connection;
+using Hoeyer.OpcUa.Client.Abstractions.Browsing;
+using Hoeyer.OpcUa.Client.Abstractions.Browsing.Reading;
+using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Client.Application.Browsing.Reading;
 using Hoeyer.OpcUa.Client.Application.Connection;

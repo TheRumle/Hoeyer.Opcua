@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Client.Api.Browsing;
-using Hoeyer.OpcUa.Client.Api.Calling;
-using Hoeyer.OpcUa.Client.Api.Calling.Exceptions;
-using Hoeyer.OpcUa.Client.Api.Connection;
+using Hoeyer.OpcUa.Client.Abstractions.Browsing;
+using Hoeyer.OpcUa.Client.Abstractions.Calling;
+using Hoeyer.OpcUa.Client.Abstractions.Calling.Exceptions;
+using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 using Opc.Ua;

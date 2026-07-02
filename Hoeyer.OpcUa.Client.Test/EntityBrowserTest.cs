@@ -1,5 +1,5 @@
-﻿using Hoeyer.OpcUa.Client.Api.Browsing;
-using Hoeyer.OpcUa.Client.Api.Browsing.Reading;
+﻿using Hoeyer.OpcUa.Client.Abstractions.Browsing;
+using Hoeyer.OpcUa.Client.Abstractions.Browsing.Reading;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Test;
 using Hoeyer.OpcUa.Test.Api;

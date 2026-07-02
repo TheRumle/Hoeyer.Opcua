@@ -1,7 +1,7 @@
 ﻿using System.Threading.Channels;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.Common.Messaging.Api;
-using Hoeyer.OpcUa.Client.Api.Monitoring;
+using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

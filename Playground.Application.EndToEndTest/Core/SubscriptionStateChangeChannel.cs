@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.Client.Api.Monitoring;
+﻿using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 using Hoeyer.OpcUa.Test.Api;
 using Hoeyer.OpcUa.Test.Api.Attributes;
 using Hoeyer.OpcUa.Test.Simulation;

@@ -46,7 +46,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Simulation.Ser
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "client", "client", "{A2247354-5DC4-4F65-B235-A7F3B5170165}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Client.Api", "Hoeyer.OpcUa.Client.Api\Hoeyer.OpcUa.Client.Api.csproj", "{C4D01B85-FB21-49D2-8004-B18006DB4056}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Client.Abstractions", "Hoeyer.OpcUa.Client.Abstractions\Hoeyer.OpcUa.Client.Abstractions.csproj", "{C4D01B85-FB21-49D2-8004-B18006DB4056}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Core.Compiletime", "Hoeyer.OpcUa.Core.Compiletime\Hoeyer.OpcUa.Core.Compiletime.csproj", "{112B1E81-DCB9-40A4-AE2F-0EF49D8C98B3}"
 EndProject

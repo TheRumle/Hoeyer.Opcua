@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using Hoeyer.OpcUa.Client.Api.Connection;
+using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Hoeyer.OpcUa.Core.Configuration.Modelling;
 using Hoeyer.OpcUa.Test.Adapter;
 using Hoeyer.OpcUa.Test.ServiceInjection;

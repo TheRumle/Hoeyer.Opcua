@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.Client.Api.Monitoring;
+﻿using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 
 namespace Playground.Application;
 

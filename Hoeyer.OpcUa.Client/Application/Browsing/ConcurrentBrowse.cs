@@ -5,10 +5,10 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.Common.Extensions.Types;
-using Hoeyer.OpcUa.Client.Api.Browsing;
+using Hoeyer.OpcUa.Client.Abstractions.Browsing;
 using Opc.Ua;
 using Opc.Ua.Client;
-using INodeBrowser = Hoeyer.OpcUa.Client.Api.Browsing.INodeBrowser;
+using INodeBrowser = Hoeyer.OpcUa.Client.Abstractions.Browsing.INodeBrowser;
 
 namespace Hoeyer.OpcUa.Client.Application.Browsing;
 

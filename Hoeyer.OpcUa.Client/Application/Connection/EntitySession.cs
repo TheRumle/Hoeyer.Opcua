@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Hoeyer.OpcUa.Client.Api.Connection;
-using Hoeyer.OpcUa.Client.Api.Monitoring;
+using Hoeyer.OpcUa.Client.Abstractions.Connection;
+using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Connection;

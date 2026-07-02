@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Hoeyer.OpcUa.Client.Api.Connection;
+using Hoeyer.OpcUa.Client.Abstractions.Connection;
 
 namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
 
