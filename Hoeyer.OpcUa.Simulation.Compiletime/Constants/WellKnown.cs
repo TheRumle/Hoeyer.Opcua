@@ -5,7 +5,7 @@ namespace Hoeyer.OpcUa.Simulation.SourceGeneration.Constants;
 internal static class WellKnown
 {
     private static FullyQualifiedTypeName SimulationApiName(string className) =>
-        new("Hoeyer.OpcUa.Simulation.Api" + className);
+        new("Hoeyer.OpcUa.Simulation.Abstractions" + className);
 
     private static FullyQualifiedTypeName CoreTypeName(string className) => new("Hoeyer.OpcUa.Core." + className);
 

@@ -13,9 +13,9 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
                                                      using System.Collections.Generic;
                                                      using System.Threading.Tasks;
                                                      using Hoeyer.OpcUa.Core;
-                                                     using Hoeyer.OpcUa.Simulation.Api;
-                                                     using Hoeyer.OpcUa.Simulation.Api.Configuration;
-                                                     using Hoeyer.OpcUa.Simulation.Api.Execution.ExecutionSteps;
+                                                     using Hoeyer.OpcUa.Simulation.Abstractions;
+                                                     using Hoeyer.OpcUa.Simulation.Abstractions.Configuration;
+                                                     using Hoeyer.OpcUa.Simulation.Abstractions.Execution.ExecutionSteps;
 
                                                      namespace Hoeyer.OpcUa.EntityDefinitions;
 

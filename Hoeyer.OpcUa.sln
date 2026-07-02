@@ -40,7 +40,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Simulation.Com
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "simulation", "simulation", "{BD7E6EA4-E920-48E1-A527-7763B994EB3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Simulation.Api", "Hoeyer.OpcUa.Simulation.Api\Hoeyer.OpcUa.Simulation.Api.csproj", "{F38CB268-FFD7-4305-BBCF-81202157577A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Simulation.Abstractions", "Hoeyer.OpcUa.Simulation.Abstractions\Hoeyer.OpcUa.Simulation.Abstractions.csproj", "{F38CB268-FFD7-4305-BBCF-81202157577A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Simulation.ServerAdapter", "Hoeyer.OpcUa.Simulation.ServerAdapter\Hoeyer.OpcUa.Simulation.ServerAdapter.csproj", "{A92B7A35-BE90-4C66-87EC-500306E75C35}"
 EndProject

@@ -37,7 +37,7 @@ public interface ISimulationOrchestrator<in TState, in TArgs>
 ///     <description>The simulated behaviour is defined through an implementation of <see cref="ISimulation{TEntity,TArgs,TReturn}"/></description>
 ///   </item>
 ///   <item>
-///     <description>The defined simulation is then executed using an <see cref="Hoeyer.OpcUa.Simulation.Api.Execution.ISimulationExecutor{TEntity, TArgs, TResult}"/>, and a <see cref="ISimulationProcessorPipeline{TState,TArgs,TReturn}"/> is called at the beginning of the simulation, for each successful execution of a <see cref="ISimulationStep"/> as well as when the simulation is finished and when a return value can be provided</description>
+///     <description>The defined simulation is then executed using an <see cref="Hoeyer.OpcUa.Simulation.Abstractions.Execution.ISimulationExecutor{TEntity, TArgs, TResult}"/>, and a <see cref="ISimulationProcessorPipeline{TState,TArgs,TReturn}"/> is called at the beginning of the simulation, for each successful execution of a <see cref="ISimulationStep"/> as well as when the simulation is finished and when a return value can be provided</description>
 ///   </item>
 /// </list>
 /// </summary>

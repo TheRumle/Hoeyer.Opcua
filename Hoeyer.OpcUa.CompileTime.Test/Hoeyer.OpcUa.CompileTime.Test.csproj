@@ -20,7 +20,7 @@
         <ProjectReference Include="..\Hoeyer.OpcUa.Core.SourceGeneration\Hoeyer.OpcUa.Core.SourceGeneration.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Application\Hoeyer.OpcUa.Simulation.Application.csproj"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Api\Hoeyer.OpcUa.Simulation.Api.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Abstractions\Hoeyer.OpcUa.Simulation.Abstractions.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Compiletime\Hoeyer.OpcUa.Simulation.Compiletime.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.TestFramework\Hoeyer.OpcUa.TestFramework.csproj"/>
