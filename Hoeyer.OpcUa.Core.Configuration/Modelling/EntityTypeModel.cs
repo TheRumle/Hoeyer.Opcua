@@ -3,7 +3,7 @@ using System.Reflection;
 using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
-using Hoeyer.OpcUa.Core.Application.NodeStructure;
+using Hoeyer.OpcUa.Core.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Core.Configuration.Modelling;

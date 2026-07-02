@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Hoeyer.OpcUa.Core.Application.NodeStructure;
+namespace Hoeyer.OpcUa.Core.Extensions;
 
 public static class BrowseNameExtensions
 {

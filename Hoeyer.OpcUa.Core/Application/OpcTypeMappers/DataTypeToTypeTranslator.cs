@@ -8,7 +8,7 @@ namespace Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 
 public static class DataTypeToTypeTranslator
 {
-    public static T? TranslateToSingle<T>(
+    public static T TranslateToSingle<T>(
         IEntityNode node, string name)
     {
         var p = node.PropertyByBrowseName.TryGetValue(name, out var value) ? value : null;

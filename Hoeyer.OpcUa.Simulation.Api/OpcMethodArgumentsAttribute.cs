@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using Hoeyer.OpcUa.Core.Application.NodeStructure;
+using Hoeyer.OpcUa.Core.Extensions;
 
 namespace Hoeyer.OpcUa.Simulation.Api;
 
