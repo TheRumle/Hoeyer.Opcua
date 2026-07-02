@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Hoeyer.OpcUa.Client.Abstractions;
 using Opc.Ua;
 using Opc.Ua.Client;
+using INodeBrowser = Hoeyer.OpcUa.Client.Abstractions.Browsing.INodeBrowser;
 
 namespace Hoeyer.OpcUa.Client.Application.Browsing;
 

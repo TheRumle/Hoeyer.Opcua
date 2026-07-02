@@ -9,5 +9,5 @@ public abstract class OpcAlarmAttribute(AlarmType alarmType, string browseName, 
 {
     public AlarmType AlarmType => alarmType;
     public string BrowseName => browseName;
-    public AlarmSeverity Severity => Severity;
+    public AlarmSeverity Severity => severity;
 }
