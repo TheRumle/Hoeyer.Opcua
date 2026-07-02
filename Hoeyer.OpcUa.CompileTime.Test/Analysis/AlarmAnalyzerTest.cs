@@ -14,13 +14,15 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
 {
     private const string ENTITY_CLASS = "EntityClass";
 
+    private const string ALARM_USINGS = "using Hoeyer.OpcUa.Core; using Hoeyer.OpcUa.Core.Abstractions;";
+
     [Test]
     [DisplayName(
         $"({nameof(MaximumThresholdExceededAlarmAttribute)}) When using attribute with range 1-1, reports no error")]
     public async Task When_MaxThreshold_AlarmGenericArg_DoesNotMatchField_ReportsError(CancellationToken token)
     {
         const string maximumThresholdAlarmClass = $$"""
-                                                    using Hoeyer.OpcUa.Core;
+                                                    {{ALARM_USINGS}}
                                                     public sealed record {{ENTITY_CLASS}}
                                                     {
                                                         [{{nameof(MaximumThresholdExceededAlarmAttribute)}}(1, 1, "IntValueAlarm", AlarmSeverity.Critical)]
@@ -37,7 +39,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
     public async Task When_MaxThreshold_AlarmGenericArg_DoesNotMatchField_ReportsError_reversed(CancellationToken token)
     {
         const string maximumThresholdAlarmClass = $$"""
-                                                    using Hoeyer.OpcUa.Core;
+                                                    {{ALARM_USINGS}}
                                                     public sealed record {{ENTITY_CLASS}}
                                                     {
                                                         [{{nameof(MaximumThresholdExceededAlarmAttribute)}}(2, 1, "IntValueAlarm", AlarmSeverity.Critical)]
@@ -55,7 +57,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
     public async Task When_MaxThreshold_AlarmGenericArg_DoesMatchesField_DoesNotReportError(CancellationToken token)
     {
         const string nonEntityAnnotatedClass = $$"""
-                                                 using Hoeyer.OpcUa.Core;
+                                                 {{ALARM_USINGS}}
                                                  public sealed record {{ENTITY_CLASS}}
                                                  {
                                                      [{{nameof(MaximumThresholdExceededAlarmAttribute)}}(1, 2, "IntValueAlarm", AlarmSeverity.Critical)]
@@ -72,7 +74,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
     public async Task When_MinThreshold_AlarmGenericArg_DoesNotMatchField_ReportsError(CancellationToken token)
     {
         const string maximumThresholdAlarmClass = $$"""
-                                                    using Hoeyer.OpcUa.Core;
+                                                    {{ALARM_USINGS}}
                                                     public sealed record {{ENTITY_CLASS}}
                                                     {
                                                         [{{nameof(MinimumThresholdExceededAlarmAttribute)}}(1, 1, "IntValueAlarm", AlarmSeverity.Critical)]
@@ -89,7 +91,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
     public async Task When_MinThreshold_AlarmGenericArg_DoesNotMatchField_ReportsError_reversed(CancellationToken token)
     {
         const string maximumThresholdAlarmClass = $$"""
-                                                    using Hoeyer.OpcUa.Core;
+                                                    {{ALARM_USINGS}}
                                                     public sealed record {{ENTITY_CLASS}}
                                                     {
                                                         [{{nameof(MinimumThresholdExceededAlarmAttribute)}}(2, 1, "IntValueAlarm", AlarmSeverity.Critical)]
@@ -106,7 +108,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
     public async Task When_LegalRangeAlarm_MustConstructValidRange_negative_reports(CancellationToken token)
     {
         const string nonEntityAnnotatedClass = $$"""
-                                                 using Hoeyer.OpcUa.Core;
+                                                 {{ALARM_USINGS}}
                                                  public sealed record {{ENTITY_CLASS}}
                                                  {
                                                      [{{nameof(LegalRangeAlarmAttribute)}}(11, 9, "IntValueAlarm", AlarmSeverity.Critical)]
@@ -124,7 +126,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
     public async Task When_LegalRangeAlarm_WithValidRange_DoesNotReportError(CancellationToken token)
     {
         const string nonEntityAnnotatedClass = $$"""
-                                                 using Hoeyer.OpcUa.Core;
+                                                 {{ALARM_USINGS}}
                                                  public sealed record {{ENTITY_CLASS}}
                                                  {
                                                      [{{nameof(LegalRangeAlarmAttribute)}}(11, 13, "IntValueAlarm", AlarmSeverity.Critical)]
@@ -140,7 +142,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
     public async Task When_LegalRangeAlarm_MustConstructValidRange_negative_reports_ctor2(CancellationToken token)
     {
         const string nonEntityAnnotatedClass = $$"""
-                                                 using Hoeyer.OpcUa.Core;
+                                                 {{ALARM_USINGS}}
                                                  public sealed record {{ENTITY_CLASS}}
                                                  {
                                                      [{{nameof(LegalRangeAlarmAttribute)}}(1,1,2,1, "IntValueAlarm", AlarmSeverity.Critical)]
@@ -158,7 +160,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
     public async Task When_LegalRangeAlarm_WithValidRange_DoesNotReportError_Ctor2(CancellationToken token)
     {
         const string nonEntityAnnotatedClass = $$"""
-                                                 using Hoeyer.OpcUa.Core;
+                                                 {{ALARM_USINGS}}
                                                  public sealed record {{ENTITY_CLASS}}
                                                  {
                                                      [{{nameof(LegalRangeAlarmAttribute)}}(1,1,2,2, "IntValueAlarm", AlarmSeverity.Critical)]

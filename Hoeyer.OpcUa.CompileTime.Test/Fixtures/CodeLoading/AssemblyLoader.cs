@@ -1,4 +1,5 @@
 ﻿using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Simulation.Api;
 using Hoeyer.OpcUa.Simulation.Api.Configuration;
@@ -9,13 +10,14 @@ namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.CodeLoading;
 
 public static class AssemblyLoader
 {
-    public static readonly HashSet<Assembly> CoreAssemblies =
+    private static readonly HashSet<Assembly> CoreAssemblies =
     [
         Assembly.Load("mscorlib"),
         Assembly.Load("netstandard"),
         Assembly.Load("System"),
         Assembly.Load("System.Runtime"),
         typeof(OpcUaEntityAttribute).Assembly,
+        typeof(EntityNode).Assembly,
         typeof(OpcUaEntityMethodsAttribute<>).Assembly,
         typeof(OpcMethodArgumentsAttribute<,>).Assembly,
         typeof(HealthCheck).Assembly,
