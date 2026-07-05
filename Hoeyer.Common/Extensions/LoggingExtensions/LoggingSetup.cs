@@ -55,7 +55,7 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
         if (HasScope)
         {
             var a = await ExecuteAndLogWithScope(action);
-            if (EqualityComparer<T>.Default.Equals(a, default!))
+            if (!EqualityComparer<T>.Default.Equals(a, default!))
             {
                 Log(logResultAs, a);
             }
@@ -64,13 +64,14 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
         }
 
         var res = await ExecuteAndLog(action);
-        if (EqualityComparer<T>.Default.Equals(res, default!))
+        if (!EqualityComparer<T>.Default.Equals(res, default!))
         {
             Log(logResultAs, res);
         }
+
         return res;
     }
-    
+
     /// <inheritdoc />
     public IScopeSelected WithScope(string scopeTitle, params object[] scopeArguments)
     {
@@ -95,6 +96,12 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
         return this;
     }
 
+    public IScopeAndMessageSelected WithScope(string scopeTitle)
+    {
+        _scope = scopeTitle;
+        return this;
+    }
+
     /// <inheritdoc />
     IScopeAndMessageSelected IMessageSelected.WithScope(string scopeTitle, params object[] scopeArguments)
     {
@@ -116,7 +123,7 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
     {
         Logger.Log(logResultAs, "Got {Values}", a);
     }
-    
+
     private void ExecuteAndLogWithScope(Action action)
     {
         if (_scope != null)
@@ -153,8 +160,8 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
             throw customExceptionMapper.Invoke(ex);
         }
     }
-    
-    
+
+
     [SuppressMessage("SonarQube", "S5034", Justification = "If the operation fails, the error is caught and logged")]
     private T ExecuteAndLog<T>(Task<T> func)
     {

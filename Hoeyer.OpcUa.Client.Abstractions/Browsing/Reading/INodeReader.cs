@@ -11,7 +11,7 @@ public interface INodeReader
     public Task<ReadResult> ReadNodesAsync(
         ISession session,
         IEnumerable<NodeId> ids,
-        NodeClass filter = NodeClassFilters.Any,
+        NodeClass filter = NodeClass.Unspecified,
         CancellationToken ct = default);
 
     public Task<Node> ReadNodeAsync(

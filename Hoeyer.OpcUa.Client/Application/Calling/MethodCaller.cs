@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing;
@@ -7,11 +8,14 @@ using Hoeyer.OpcUa.Client.Abstractions.Calling.Exceptions;
 using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
+using Microsoft.Extensions.Logging;
 using Opc.Ua;
+using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Calling;
 
 public class MethodCaller<TEntity>(
+    ILogger<MethodCaller<TEntity>> logger,
     IEntityBrowser<TEntity> browser,
     IEntitySessionFactory factory,
     IBrowseNameCollection<TEntity> browseNameCollection)
@@ -36,21 +40,53 @@ public class MethodCaller<TEntity>(
     {
         try
         {
-            var entityNode = await browser.GetNodeStructure(token);
-            var methodNodesByName = entityNode.Methods;
-            var methodToCall = methodNodesByName[methodName] ??
-                               throw new EntityMethodCallException(entityNode.EntityName, methodName);
-
-            var session = await factory.GetSessionForAsync<TEntity>(token);
-            return await session.Session.CallAsync(entityNode.NodeId, methodToCall, token, args);
+            return await PerformCall(methodName, args, token);
         }
         catch (ServiceResultException e) when (e.StatusCode == StatusCodes.BadNotImplemented)
         {
+            logger.LogError(e, "The method '{method}' node is not found on server: {message}", methodName, e.Message);
             throw EntityMethodCallException.NotImplementedOnServer(methodName, e, args);
         }
         catch (ServiceResultException e) when (e.StatusCode == StatusCodes.BadInternalError)
         {
+            logger.LogError(e, "An internal server error occurred when calling '{method}': {message}", methodName,
+                e.Message);
             throw EntityMethodCallException.InternalServerError(methodName, e);
         }
+        catch (Exception e)
+        {
+            logger.LogError(e, "An unexpected error occurred when calling method '{method}': {message}", methodName,
+                e.Message);
+            throw;
+        }
+    }
+
+    private async Task<IList<object>> PerformCall(
+        string methodName,
+        object[] args,
+        CancellationToken token)
+    {
+        var entityNode = await browser.GetNodeStructure(token);
+        var methodToCall = entityNode.Methods[methodName]
+                           ?? throw EntityMethodCallException.NoCallMethodModelled(
+                               entityNode.EntityName,
+                               methodName);
+
+        var session = await factory.GetSessionForAsync<TEntity>(token);
+
+        var callArgument = args.Length == 1
+            ? args[0]
+            : args;
+
+        var response = await session.Session.CallAsync(
+            entityNode.NodeId,
+            methodToCall,
+            token,
+            callArgument);
+
+        return response
+               ?? throw EntityMethodCallException.NullResponse(
+                   entityNode.EntityName,
+                   methodName);
     }
 }

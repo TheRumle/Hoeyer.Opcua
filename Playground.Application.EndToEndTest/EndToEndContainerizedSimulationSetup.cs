@@ -6,10 +6,10 @@ using Playground.Modelling.Models;
 
 namespace Playground.Application.EndToEndTest;
 
-public sealed class EndToEndContainerizedSimulationSetup(string? containerName = null) : ITestFrameworkAdapter
+public sealed class EndToEndContainerizedSimulationSetup : ITestFrameworkAdapter
 {
     public IOpcUaSimulationTarget SimulationTarget { get; set; } =
-        new PlaygroundTestContainer(WebProtocol.OpcTcp, containerName);
+        new PlaygroundTestContainer(WebProtocol.OpcTcp);
 
     public IServiceCollection ApplicationServices => new ServiceCollection();
 

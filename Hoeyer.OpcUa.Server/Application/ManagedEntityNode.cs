@@ -47,4 +47,6 @@ internal sealed record ManagedEntityNode<T> : IManagedEntityNode<T>
             return selection.Invoke(_managedNode);
         }
     }
+
+    public override string ToString() => $"{EntityName} at {Namespace} with index {EntityNameSpaceIndex}";
 }

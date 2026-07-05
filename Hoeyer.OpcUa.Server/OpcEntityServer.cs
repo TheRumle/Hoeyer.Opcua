@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.OpcUa.Core.Extensions.Logging;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.Server.Abstractions;
-using Hoeyer.OpcUa.Server.Abstractions.Exceptions;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Extensions;
@@ -22,33 +22,23 @@ internal sealed class OpcEntityServer(
     ILogger<OpcEntityServer> logger)
     : StandardServer
 {
-    private static readonly DateTime buildDate = DateTime.UtcNow;
+    private static readonly DateTime BuildDate = DateTime.UtcNow;
     public readonly IOpcUaTargetServerSetup ServerInfo = applicationProductDetails;
 
     private bool _disposed;
 
     public DomainMasterNodeManager DomainManager { get; private set; } = null!;
 
-    /// <inheritdoc />
-    public override ResponseHeader Call(RequestHeader requestHeader, CallMethodRequestCollection methodsToCall,
-        out CallMethodResultCollection results, out DiagnosticInfoCollection diagnosticInfos)
-    {
-        try
-        {
-            var response = base.Call(requestHeader, methodsToCall, out results, out diagnosticInfos);
-            var errs = diagnosticInfos?.Any(e => StatusCode.IsBad(e.InnerStatusCode));
-            if (errs is true)
-            {
-                logger.LogError("Errors occured while calling methods: {Errors}", string.Join(", ", errs));
-            }
 
-            return response;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Errors occured while calling methods");
-            throw new MethodCallFailureException(ex);
-        }
+    public override async Task<CallResponse> CallAsync(SecureChannelContext secureChannelContext,
+        RequestHeader requestHeader,
+        CallMethodRequestCollection methodsToCall, CancellationToken ct)
+    {
+        return await logger
+            .LogCaughtExceptionAs(LogLevel.Error)
+            .WithErrorMessage("An error occured while calling methods")
+            .WithScope(requestHeader.ToLoggingObject().ToString())
+            .WhenExecutingAsync(() => base.CallAsync(secureChannelContext, requestHeader, methodsToCall, ct));
     }
 
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server,
@@ -72,74 +62,47 @@ internal sealed class OpcEntityServer(
         })!;
     }
 
-
-    /// <inheritdoc />
-    public override ResponseHeader ActivateSession(RequestHeader requestHeader, SignatureData clientSignature,
-        SignedSoftwareCertificateCollection clientSoftwareCertificates, StringCollection localeIds,
-        ExtensionObject userIdentityToken, SignatureData userTokenSignature, out byte[] serverNonce,
-        out StatusCodeCollection results, out DiagnosticInfoCollection diagnosticInfos)
+    public override async Task<ActivateSessionResponse> ActivateSessionAsync(SecureChannelContext secureChannelContext,
+        RequestHeader requestHeader,
+        SignatureData clientSignature, SignedSoftwareCertificateCollection clientSoftwareCertificates,
+        StringCollection localeIds, ExtensionObject userIdentityToken, SignatureData userTokenSignature,
+        CancellationToken ct)
     {
-        try
-        {
-            using (logger.BeginScope("Activating session for {@SessionDetails}", new
-                   {
-                       ClientSignature = clientSignature.Signature,
-                       UserTokenSignature = userTokenSignature.Signature,
-                       UserIdentityToken = userIdentityToken.Body,
-                       RequestHeader = requestHeader.ToLoggingObject(),
-                   }))
+        return await logger
+            .LogCaughtExceptionAs(LogLevel.Error)
+            .WithErrorMessage("An error occured while calling methods")
+            .WithScope("Activating session for {@SessionDetails}", new
             {
-                var header = base.ActivateSession(requestHeader, clientSignature, clientSoftwareCertificates, localeIds,
-                    userIdentityToken, userTokenSignature, out serverNonce, out results, out diagnosticInfos);
-                return LogResponseHeader(header, diagnosticInfos)!;
-            }
-        }
-        catch (Exception e)
-        {
-            logger.LogCritical(e, "An exception occurred when trying to activate session with RequestHeader {@Header}",
-                requestHeader.ToLoggingObject());
-            diagnosticInfos = new DiagnosticInfoCollection();
-            results = new StatusCodeCollection();
-            serverNonce = null!;
-            return new ResponseHeader
-            {
-                Timestamp = DateTime.UtcNow,
-                ServiceResult = StatusCodes.BadConnectionRejected
-            };
-        }
+                ClientSignature = clientSignature.Signature,
+                UserTokenSignature = userTokenSignature.Signature,
+                UserIdentityToken = userIdentityToken.Body,
+                RequestHeader = requestHeader.ToLoggingObject()
+            })
+            .WhenExecutingAsync(async () => await base.ActivateSessionAsync(secureChannelContext, requestHeader,
+                clientSignature,
+                clientSoftwareCertificates, localeIds, userIdentityToken, userTokenSignature, ct));
     }
 
-    /// <inheritdoc />
-    public override ResponseHeader CloseSession(RequestHeader requestHeader, bool deleteSubscriptions)
+    public override async Task<CloseSessionResponse> CloseSessionAsync(SecureChannelContext secureChannelContext,
+        RequestHeader requestHeader, bool deleteSubscriptions,
+        CancellationToken ct)
     {
-        try
-        {
-            using (logger.BeginScope("Closing session with handle {@Handle}", requestHeader.ToLoggingObject()))
-            {
-                var header = base.CloseSession(requestHeader, deleteSubscriptions);
-                return LogResponseHeader(header)!;
-            }
-        }
-        catch (Exception e)
-        {
-            logger.LogCritical(e, "An exception occurred when trying to close session with RequestHeader {@Header}",
-                requestHeader.ToLoggingObject());
-            return new ResponseHeader
-            {
-                Timestamp = DateTime.UtcNow,
-                ServiceResult = StatusCodes.BadInternalError
-            };
-        }
+        return await logger
+            .LogCaughtExceptionAs(LogLevel.Error)
+            .WithErrorMessage("An error occured while calling methods")
+            .WithScope(requestHeader.ToLoggingObject().ToString())
+            .WhenExecutingAsync(() =>
+                base.CloseSessionAsync(secureChannelContext, requestHeader, deleteSubscriptions, ct));
     }
 
-    /// <inheritdoc />
-    protected override void StartApplication(ApplicationConfiguration configuration)
+    protected override async ValueTask StartApplicationAsync(ApplicationConfiguration configuration,
+        CancellationToken cancellationToken = new())
     {
         try
         {
             logger.LogInformation("Starting application with configuration {@Configuration}",
                 configuration.ToLoggingObject());
-            base.StartApplication(configuration);
+            await base.StartApplicationAsync(configuration, cancellationToken);
         }
         catch (Exception e)
         {
@@ -148,14 +111,13 @@ internal sealed class OpcEntityServer(
         }
     }
 
-    /// <inheritdoc />
     protected override ServerProperties LoadServerProperties()
     {
         var properties = base.LoadServerProperties();
         properties.ProductName = ServerInfo.ApplicationName;
         properties.ProductUri = ServerInfo.ApplicationNamespace.ToString();
         properties.SoftwareVersion = "0.0.01";
-        properties.BuildDate = buildDate;
+        properties.BuildDate = BuildDate;
         return properties;
     }
 
@@ -188,7 +150,7 @@ internal sealed class OpcEntityServer(
                 e.AdditionalInfo,
                 e.InnerStatusCode,
                 Message = e.ToString()
-            }).ToArray());
+            }).ToArray<object?>());
         }
 
         if (responseHeader == null)

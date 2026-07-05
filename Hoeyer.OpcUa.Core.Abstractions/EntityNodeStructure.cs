@@ -7,16 +7,14 @@ public readonly record struct EntityNodeStructure
     public readonly string EntityName;
     public readonly IReadOnlyDictionary<string, NodeId> Methods;
     public readonly NodeId NodeId;
-    public readonly IReadOnlyDictionary<string, ValueProperty> Properties;
+    public readonly IReadOnlyDictionary<string, PropertyState> Properties;
 
     public EntityNodeStructure(IEntityNode node)
     {
         NodeId = node.BaseObject.NodeId;
         EntityName = node.BaseObject.BrowseName.Name;
         Properties =
-            node.PropertyByBrowseName.ToDictionary(k => k.Value.BrowseName.Name, k => new ValueProperty(k.Value));
+            node.PropertyByBrowseName.ToDictionary(k => k.Value.BrowseName.Name, k => k.Value);
         Methods = node.MethodsByName.ToDictionary(e => e.Key, e => e.Value.NodeId);
     }
-
-    public IEnumerable<ValueProperty> PropertyStates => Properties.Values;
 }

@@ -24,6 +24,7 @@ builder.Logging.AddJsonConsole(options =>
         MaxDepth = 10,
     };
     options.TimestampFormat = "yyyy-MM-dd HH:mm:ss";
+    options.IncludeScopes = true;
 });
 builder.Services.AddHostedService<PositionChangeReactor>();
 builder.Services.AddHostedService<RandomContainerAssignmentReactor>();

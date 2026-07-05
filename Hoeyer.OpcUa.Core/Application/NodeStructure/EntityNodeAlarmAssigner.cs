@@ -8,9 +8,9 @@ namespace Hoeyer.OpcUa.Core.Application.NodeStructure;
 
 public sealed class EntityNodeAlarmAssigner<T>(IEntityTypeModel<T> model) : IEntityNodeAlarmAssigner<T>
 {
-    public AlarmCollection AssignAlarms(IEnumerable<PropertyState> properties, ushort applicationNamespaceIndex)
+    public AlarmCollection AssignAlarms(IEnumerable<PropertyState> properties)
     {
-        var propertyStates = properties.ToDictionary(e => e.BrowseName.Name, e => e);
+        var propertyStates = properties.ToDictionary(property => property.BrowseName.Name, property => property);
         var alarms = GetAlarms(propertyStates).ToFrozenDictionary(e => e.property, e => e.alarm);
         return new AlarmCollection(alarms);
     }

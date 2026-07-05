@@ -32,7 +32,7 @@ public sealed class ReflectionBasedEntityStructureFactory<T>(
         entity.AccessRestrictions = AccessRestrictionType.None;
         var properties = entityNodePropertyAssigner.AssignProperties(entity).ToList();
         var methods = entityNodeMethodAssigner.AssignMethods(entity);
-        var alarms = entityNodeAlarmAssigner.AssignAlarms(properties, applicationNamespaceIndex);
+        var alarms = entityNodeAlarmAssigner.AssignAlarms(properties);
 
         _node = new EntityNode(
             entity,

@@ -6,11 +6,11 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.5.374.158"/>
+        <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.5.378.152"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa.Core\Hoeyer.OpcUa.Core.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Core.Abstractions\Hoeyer.OpcUa.Core.Abstractions.csproj"/>
     </ItemGroup>
 </Project>

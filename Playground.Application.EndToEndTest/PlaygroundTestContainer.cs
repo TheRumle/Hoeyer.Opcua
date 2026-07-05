@@ -9,7 +9,7 @@ using Hoeyer.OpcUa.Test.Adapter;
 
 namespace Playground.Application.EndToEndTest;
 
-public sealed class PlaygroundTestContainer(WebProtocol webProtocol, string? containerName = null)
+public sealed class PlaygroundTestContainer(WebProtocol webProtocol)
     : IOpcUaSimulationTarget
 {
     public const string OPCUA_SERVERID = "HostedSimulation";
@@ -40,8 +40,9 @@ public sealed class PlaygroundTestContainer(WebProtocol webProtocol, string? con
 
     public async Task InitializeAsync()
     {
+        var containerName = TestContext.Current?.ClassContext.ClassType.Name;
         Container = new ContainerBuilder("playground/simulationserver:latest")
-            .WithName($"simulation-server-{containerName ?? Guid.NewGuid().ToString()}")
+            .WithName($"{containerName ?? Guid.NewGuid().ToString()}")
             .WithPortBinding(4840, true)
             .WithEnvironment("OPCUA_PORT", "4840")
             .WithEnvironment("OPCUA_PROTOCOL", Protocol.ToString())

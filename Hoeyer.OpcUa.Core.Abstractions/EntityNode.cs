@@ -18,8 +18,9 @@ public sealed record EntityNode : IEntityNode
         AlarmsByProperty = alarms.AlarmsByProperty;
     }
 
-    public IReadOnlyDictionary<string, LimitAlarmState> PropertyAlarmsByName { get; set; }
+    public string EntityName => BaseObject.BrowseName.Name;
     public BaseObjectState BaseObject { get; }
+    public IReadOnlyDictionary<string, LimitAlarmState> PropertyAlarmsByName { get; set; }
     public IEnumerable<PropertyState> PropertyStates => PropertyByBrowseName.Values;
     public IEnumerable<MethodState> Methods => MethodsByName.Values;
     public IEnumerable<LimitAlarmState> PropertyAlarms => PropertyAlarmsByName.Values;

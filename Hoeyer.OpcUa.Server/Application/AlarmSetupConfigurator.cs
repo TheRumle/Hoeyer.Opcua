@@ -10,6 +10,7 @@ internal sealed class AlarmSetupConfigurator<T> : INodeConfigurator<T>
     {
         managed.ChangeState(entityNode =>
         {
+            return;
             var index = entityNode.BaseObject.NodeId.NamespaceIndex;
             foreach (var (property, alarmNode) in entityNode.AlarmsByProperty)
             {

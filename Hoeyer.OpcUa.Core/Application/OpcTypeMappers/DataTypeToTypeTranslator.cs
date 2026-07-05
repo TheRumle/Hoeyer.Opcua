@@ -11,13 +11,13 @@ public static class DataTypeToTypeTranslator
     public static T TranslateToSingle<T>(
         IEntityNode node, string name)
     {
-        var p = node.PropertyByBrowseName.TryGetValue(name, out var value) ? value : null;
+        var p = node.PropertyByBrowseName.GetValueOrDefault(name);
         if (p == null)
         {
             throw new ArgumentException("Unknown property: " + name);
         }
 
-        return (T)OpcToCSharpValueParser.ParseOpcValue(p.WrappedValue)!;
+        return (T)OpcToCSharpValueParser.ParseOpcValue(p.Value)!;
     }
 
     public static TCollection? TranslateToCollection<TCollection, T>(IEntityNode node, string name)

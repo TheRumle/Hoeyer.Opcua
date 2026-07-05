@@ -17,18 +17,9 @@ internal sealed class StartableEntityServer(
     private readonly ApplicationInstance _applicationInstance =
         applicationInstance ?? throw new ArgumentNullException(nameof(applicationInstance));
 
-    private readonly OpcEntityServer _entityServer =
-        entityServer ?? throw new ArgumentNullException(nameof(entityServer));
-
-    private bool _disposed;
 
     public async Task<IStartedEntityServer> StartAsync()
     {
-        if (_disposed)
-        {
-            throw new ObjectDisposedException(nameof(StartableEntityServer));
-        }
-
         if (healthCheckAssignment.IsServerStarted)
         {
             return this;
@@ -36,7 +27,7 @@ internal sealed class StartableEntityServer(
 
         try
         {
-            await _applicationInstance.Start(_entityServer);
+            await _applicationInstance.StartAsync(entityServer);
             healthCheckAssignment.MarkCompleted();
         }
         catch (Exception e)
@@ -50,33 +41,24 @@ internal sealed class StartableEntityServer(
     }
 
     /// <inheritdoc />
-    public IOpcUaTargetServerSetup ServerInfo => _entityServer.ServerInfo;
+    public IOpcUaTargetServerSetup ServerInfo => entityServer.ServerInfo;
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
+        await CastAndDispose(entityServer);
 
-    private void Dispose(bool disposing)
-    {
-        if (_disposed)
+        return;
+
+        static async ValueTask CastAndDispose(IDisposable resource)
         {
-            return;
+            if (resource is IAsyncDisposable resourceAsyncDisposable)
+            {
+                await resourceAsyncDisposable.DisposeAsync();
+            }
+            else
+            {
+                resource.Dispose();
+            }
         }
-
-        if (disposing)
-        {
-            _entityServer.Stop();
-            _applicationInstance.Stop();
-            _entityServer.Dispose();
-        }
-
-        _disposed = true;
-    }
-
-    ~StartableEntityServer()
-    {
-        Dispose(false);
     }
 }

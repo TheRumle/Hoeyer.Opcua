@@ -5,16 +5,11 @@ namespace Hoeyer.OpcUa.Client.Abstractions.Calling.Exceptions;
 
 public sealed class EntityMethodCallException : Exception
 {
-    public EntityMethodCallException(string message, Exception innerException) : base(message, innerException)
+    private EntityMethodCallException(string message, Exception innerException) : base(message, innerException)
     {
     }
 
-    public EntityMethodCallException(string entity, string methodName) : this(
-        $"The entity {entity} does not have CallMethod method called {methodName}")
-    {
-    }
-
-    public EntityMethodCallException(string message) : base(message)
+    private EntityMethodCallException(string message) : base(message)
     {
     }
 
@@ -29,6 +24,12 @@ public sealed class EntityMethodCallException : Exception
             ? new EntityMethodCallException(message)
             : new EntityMethodCallException(message, innerException);
     }
+
+    public static EntityMethodCallException NullResponse(string entityName, string methodName) =>
+        new($"Calling '{entityName}.{methodName}' yielded null response");
+
+    public static EntityMethodCallException NoCallMethodModelled(string entity, string methodName) =>
+        new($"The entity {entity} does not have CallMethod method called {methodName}");
 
     public static EntityMethodCallException InternalServerError(string methodName,
         Exception? innerException, params IEnumerable<object> args)

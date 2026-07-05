@@ -20,8 +20,9 @@ public sealed class EntityWriter<TEntity>(
     public async Task AssignEntityValues(TEntity entity, CancellationToken cancellationToken = default)
     {
         EntityNodeStructure valuesToWrite = await browser.GetNodeStructure(cancellationToken);
-        translator.AssignToStructure(entity, (name, value) => valuesToWrite.Properties[name].Value = value);
-        IEnumerable<WriteValue> values = valuesToWrite.Properties.Values.Select(CreateWriteValue);
+        translator.AssignToStructure(entity,
+            (name, value) => valuesToWrite.Properties[name].Value = value);
+        var values = valuesToWrite.Properties.Values.Select(CreateWriteValue);
         await WriteValues(cancellationToken, values);
     }
 
@@ -54,7 +55,7 @@ public sealed class EntityWriter<TEntity>(
         }
     }
 
-    private static WriteValue CreateWriteValue(ValueProperty e) =>
+    private static WriteValue CreateWriteValue(PropertyState e) =>
         new()
         {
             AttributeId = Attributes.Value,

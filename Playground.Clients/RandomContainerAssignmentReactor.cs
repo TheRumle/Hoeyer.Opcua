@@ -13,12 +13,18 @@ public class RandomContainerAssignmentReactor(
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await marker.ServerRunning();
-        while (!stoppingToken.IsCancellationRequested)
         {
-            var id = Guid.NewGuid();
-            await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
-            logger.LogInformation("Assigning {Id} to Gantry", id);
-            await methods.AssignContainer(id);
+            try
+            {
+                var id = Guid.NewGuid();
+                logger.LogInformation("Assigning {Id} to Gantry", id);
+                await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
+                await methods.AssignContainer(id);
+            }
+            catch (Exception e)
+            {
+                logger.LogError("Exception occurred: {Message}", e.Message);
+            }
         }
     }
 }

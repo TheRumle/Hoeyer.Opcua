@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Hoeyer.OpcUa.Client.Abstractions;
 using Opc.Ua;
 using Opc.Ua.Client;
 using INodeBrowser = Hoeyer.OpcUa.Client.Abstractions.Browsing.INodeBrowser;
@@ -12,7 +11,7 @@ namespace Hoeyer.OpcUa.Client.Application.Browsing;
 public class NodeBrowser : INodeBrowser
 {
     public Task<BrowseResponse> BrowseById(ISession session, IEnumerable<NodeId> ids,
-        NodeClass filter = NodeClassFilters.Any, CancellationToken ct = default)
+        NodeClass filter = NodeClass.Unspecified, CancellationToken ct = default)
     {
         List<BrowseDescription> toBrowse = ids.Select(e => new BrowseDescription
         {
@@ -42,7 +41,7 @@ public class NodeBrowser : INodeBrowser
                     BrowseDirection = BrowseDirection.Forward,
                     NodeId = id,
                     ResultMask = (uint)BrowseResultMask.All,
-                    NodeClassMask = (uint)NodeClassFilters.Any
+                    NodeClassMask = (uint)NodeClass.Unspecified
                 }
             ]), ct);
 }

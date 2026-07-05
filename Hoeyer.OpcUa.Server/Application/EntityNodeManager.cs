@@ -39,7 +39,7 @@ internal sealed class EntityNodeManager<T>(
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Failed to create address space for entity");
+            logger.LogCritical(e, "Failed to create address space for entity");
         }
     }
 

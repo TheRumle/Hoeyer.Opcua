@@ -37,27 +37,41 @@ public class PositionChangeReactor(
     {
         while (await reader.WaitToReadAsync(stoppingToken))
         {
-            var message = await reader.ReadAsync(stoppingToken);
-            var newPosition = message.Payload.Position;
-
-            if (LastPosition != newPosition)
+            try
             {
-                logger.LogInformation("Position has changed, calculating next position");
-                var next = newPosition switch
-                {
-                    Position.OverThere => Position.OverHere,
-                    Position.OverHere => Position.OnTheMoon,
-                    Position.OnTheMoon => Position.SanDiego,
-                    Position.SanDiego => Position.Mexico,
-                    Position.Mexico => Position.Submarine,
-                    Position.Submarine => Position.TheSecretUndergroundLab,
-                    Position.TheSecretUndergroundLab => Position.OverThere,
-                    var _ => throw new ArgumentOutOfRangeException(newPosition + " is not handled.")
-                };
-                await gantryMethods.ChangePosition(next);
+                await ChangePosition(stoppingToken, reader);
             }
-
-            LastPosition = newPosition;
+            catch (Exception e)
+            {
+                logger.LogError(e, "Error reacting to the position change");
+            }
         }
+
+        logger.LogInformation("No longer reacting to the position change due to cancellation");
+    }
+
+    private async Task ChangePosition(CancellationToken stoppingToken, ChannelReader<IMessage<Gantry>> reader)
+    {
+        var message = await reader.ReadAsync(stoppingToken);
+        var newPosition = message.Payload.Position;
+
+        if (LastPosition != newPosition)
+        {
+            logger.LogInformation("Position has changed, calculating next position");
+            var next = newPosition switch
+            {
+                Position.OverThere => Position.OverHere,
+                Position.OverHere => Position.OnTheMoon,
+                Position.OnTheMoon => Position.SanDiego,
+                Position.SanDiego => Position.Mexico,
+                Position.Mexico => Position.Submarine,
+                Position.Submarine => Position.TheSecretUndergroundLab,
+                Position.TheSecretUndergroundLab => Position.OverThere,
+                var _ => throw new ArgumentOutOfRangeException(newPosition + " is not handled.")
+            };
+            await gantryMethods.ChangePosition(next);
+        }
+
+        LastPosition = newPosition;
     }
 }

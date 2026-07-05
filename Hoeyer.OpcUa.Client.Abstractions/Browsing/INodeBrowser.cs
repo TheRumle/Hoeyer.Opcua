@@ -9,7 +9,7 @@ namespace Hoeyer.OpcUa.Client.Abstractions.Browsing;
 public interface INodeBrowser
 {
     Task<BrowseResponse> BrowseById(ISession session, IEnumerable<NodeId> ids,
-        NodeClass filter = NodeClassFilters.Any,
+        NodeClass filter = NodeClass.Unspecified,
         CancellationToken ct = default);
 
     Task<BrowseResponse> BrowseById(ISession session, NodeId id, CancellationToken ct = default);

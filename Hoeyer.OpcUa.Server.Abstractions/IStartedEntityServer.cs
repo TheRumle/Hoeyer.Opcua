@@ -1,3 +1,3 @@
 ﻿namespace Hoeyer.OpcUa.Server.Abstractions;
 
-public interface IStartedEntityServer : IDisposable;
+public interface IStartedEntityServer : IAsyncDisposable;

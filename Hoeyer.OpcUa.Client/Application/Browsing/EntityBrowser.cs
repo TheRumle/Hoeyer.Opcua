@@ -4,12 +4,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.Common.Extensions.Async;
-using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing.Reading;
 using Hoeyer.OpcUa.Client.Abstractions.Connection;
-using Hoeyer.OpcUa.Client.Extensions;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
@@ -47,8 +45,18 @@ public sealed class EntityBrowser<TEntity>(
     /// <inheritdoc />
     public async Task<IEntityNode> BrowseEntityNode(CancellationToken cancellationToken = default)
     {
-        ReadResult values = await ReadEntity(cancellationToken);
-        return await ParseToEntity(Session, cancellationToken, values);
+        try
+        {
+            logger.LogInformation("Browsing entity");
+            var values = await ReadEntity(cancellationToken);
+            return await ParseToEntity(Session, cancellationToken, values);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to browse entity '{name}' due to error: {errMessage}",
+                browseNameCollection.EntityName, e.Message);
+            throw;
+        }
     }
 
     public async ValueTask<EntityNodeStructure> GetNodeStructure(CancellationToken token = default) =>
@@ -59,6 +67,7 @@ public sealed class EntityBrowser<TEntity>(
     private async Task<IEntityNode> ParseToEntity(ISession session, CancellationToken cancellationToken,
         ReadResult values)
     {
+        logger.LogDebug("Parsing entity");
         List<VariableNode> variables = await reader
             .ReadNodesAsync(session, values.SuccesfulReads.Select(value => value!.NodeId),
                 ct: cancellationToken)
@@ -71,10 +80,12 @@ public sealed class EntityBrowser<TEntity>(
 
     private IEntityNode AssignReadValues(List<VariableNode> variables)
     {
+        logger.LogDebug("Assigning read values");
         var index = _entityRoot!.NodeId.NamespaceIndex;
         IEntityNode structure = nodeStructureFactory.Create(index);
         foreach (var variable in variables)
         {
+            logger.LogTrace("Assigning {variableName} to {value}", variable.BrowseName.Name, variable.Value);
             var browseName = variable.BrowseName.Name;
             var match = structure.PropertyByBrowseName.TryGetValue(browseName, out var currentValue);
             if (match)
@@ -89,28 +100,23 @@ public sealed class EntityBrowser<TEntity>(
 
     private async Task<ReadResult> ReadEntity(CancellationToken cancellationToken)
     {
-        return await logger.LogWithScopeAsync(new
-        {
-            Session = Session.ToLoggingObject(),
-            Entity = browseNameCollection.EntityName
-        }, async () =>
-        {
-            _entityRoot ??= await FindEntityRoot(cancellationToken);
-            IEnumerable<ReferenceWithId> descendants = await traversalStrategy
-                .TraverseFrom(_entityRoot.NodeId, Session, cancellationToken)
-                .Collect();
-            return await reader.ReadNodesAsync(Session, descendants.Select(e => e.NodeId), ct: cancellationToken);
-        });
+        logger.LogInformation("Reading entity from server");
+        _entityRoot ??= await FindEntityRoot(cancellationToken);
+        var descendants = await traversalStrategy
+            .TraverseFrom(_entityRoot.NodeId, Session, cancellationToken)
+            .Collect();
+        return await reader.ReadNodesAsync(Session, descendants.Select(e => e.NodeId), ct: cancellationToken);
     }
 
     private async Task<Node> FindEntityRoot(CancellationToken cancellationToken = default)
     {
+        logger.LogDebug("Looking for entity root...");
         ReferenceWithId r = await traversalStrategy
             .TraverseUntil(Session,
                 ObjectIds.RootFolder,
                 _identityMatcher.Invoke,
                 cancellationToken);
-
+        logger.LogDebug("Entity root found at {NodeId}", r.NodeId.ToString());
         return await reader.ReadNodeAsync(Session, r.NodeId, cancellationToken);
     }
 }

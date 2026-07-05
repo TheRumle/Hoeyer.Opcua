@@ -4,5 +4,5 @@ namespace Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 
 public interface IEntityNodeAlarmAssigner<T>
 {
-    public AlarmCollection AssignAlarms(IEnumerable<PropertyState> properties, ushort applicationNamespaceIndex);
+    public AlarmCollection AssignAlarms(IEnumerable<PropertyState> properties);
 }

@@ -6,4 +6,6 @@ public interface IMessageSelected : IFinishedLoggingSetup
 {
     [Pure]
     IScopeAndMessageSelected WithScope([StructuredMessageTemplate] string scopeTitle, params object[] scopeArguments);
+
+    IScopeAndMessageSelected WithScope(string scopeTitle);
 }

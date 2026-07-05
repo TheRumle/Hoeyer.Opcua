@@ -11,6 +11,7 @@ public static class LoggingExtensions
             requestHeader.Timestamp,
             AdditionalHeader = requestHeader.AdditionalHeader.ToString(),
             requestHeader.RequestHandle,
+            requestHeader.AuditEntryId
         };
     }
 
