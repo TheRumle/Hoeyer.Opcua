@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -13,7 +14,10 @@ public sealed record ChannelBasedSubscription<T> : IMessageSubscription<T>
     private readonly IMessageConsumer<T> _consumer;
     private readonly CancellationTokenSource _cts = new();
     private readonly ILogger _logger;
+    private readonly IDisposable? _loggingScope;
     private readonly Action? _onDispose;
+    private readonly Task _processingTask;
+    public readonly string ConsumerName;
     public readonly Guid Id;
 
     public ChannelBasedSubscription(Guid id,
@@ -27,7 +31,19 @@ public sealed record ChannelBasedSubscription<T> : IMessageSubscription<T>
         _consumer = consumer;
         _channel = channel;
         _logger = logger;
-        Task.Run(() => ProcessQueueAsync(_cts.Token), _cts.Token);
+        _processingTask = ProcessQueueAsync(_cts.Token);
+        ConsumerName = _consumer.GetType().Name;
+
+        _processingTask.ContinueWith(
+            t => _logger.LogError(t.Exception, "Subscription processing failed."),
+            TaskContinuationOptions.OnlyOnFaulted);
+
+        _loggingScope = _logger.BeginScope(new[]
+        {
+            new KeyValuePair<string, object?>(nameof(SubscriptionId), SubscriptionId),
+            new KeyValuePair<string, object?>(nameof(Id), Id),
+            new KeyValuePair<string, object?>(nameof(ConsumerName), ConsumerName)
+        });
     }
 
     public Guid SubscriptionId { get; } = Guid.NewGuid();
@@ -43,14 +59,19 @@ public sealed record ChannelBasedSubscription<T> : IMessageSubscription<T>
         _channel.Writer.TryWrite(message);
     }
 
-    /// <inheritdoc />
     public void Dispose()
     {
+        if (IsCancelled)
+        {
+            return;
+        }
+
         IsCancelled = true;
+        _cts.Cancel();
         _channel.Writer.TryComplete();
-        _logger.LogDebug("Subscription cancelled with owner '{@Name}'", _consumer.GetType().Name);
-        _cts.Dispose();
+        _logger.LogDebug("Subscription cancelled");
         _onDispose?.Invoke();
+        _loggingScope?.Dispose();
     }
 
 
@@ -64,14 +85,13 @@ public sealed record ChannelBasedSubscription<T> : IMessageSubscription<T>
                 _consumer.Consume(message);
             }
         }
-        catch (OperationCanceledException e)
+        catch (OperationCanceledException)
         {
-            // Expected during shutdown of manager
-            _logger.LogDebug(e, "{@Subscription} has been cancelled", SubscriptionId.ToString());
+            _logger.LogInformation("Subscription cancelled.");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occured when processing message from channel.");
+            _logger.LogError(ex, "Error processing message from channel");
         }
     }
 }
