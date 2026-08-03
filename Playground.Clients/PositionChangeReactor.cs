@@ -2,7 +2,7 @@
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.Common.Messaging.Api;
 using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
-using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
+using Hoeyer.OpcUa.Core.Configuration.Health;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Playground.Modelling.Methods;
@@ -22,15 +22,28 @@ public class PositionChangeReactor(
     /// <inheritdoc />
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        try
+        {
+            var channel = await SetupInitialValue();
+            await ReactToPositionChanges(stoppingToken, channel);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error reacting to the position change");
+            throw;
+        }
+    }
+
+    private async Task<ChannelReader<IMessage<Gantry>>> SetupInitialValue()
+    {
         var values = Enum.GetValues(typeof(Position));
         var startPosition = (Position)values.GetValue(new Random().Next(values.Length))!;
         await marker.ServerRunning();
         var (channel, subscription) = await observer
             .BeginObserveAsync()
-            .ThenAsync(e => (e.StateChangeChannel, e.Subscription));
+            .SelectAsync(e => (e.StateChangeChannel, e.Subscription));
         await gantryMethods.ChangePosition(startPosition); //initialize the whole sha-bang by changing a position
-
-        await ReactToPositionChanges(stoppingToken, channel);
+        return channel;
     }
 
     private async Task ReactToPositionChanges(CancellationToken stoppingToken, ChannelReader<IMessage<Gantry>> reader)

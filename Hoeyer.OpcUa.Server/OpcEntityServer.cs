@@ -62,6 +62,11 @@ internal sealed class OpcEntityServer(
         })!;
     }
 
+    protected override ISessionManager CreateSessionManager(IServerInternal server,
+        ApplicationConfiguration configuration) =>
+        new LoggingSessionManager(logger, server, configuration);
+
+
     public override async Task<ActivateSessionResponse> ActivateSessionAsync(SecureChannelContext secureChannelContext,
         RequestHeader requestHeader,
         SignatureData clientSignature, SignedSoftwareCertificateCollection clientSoftwareCertificates,

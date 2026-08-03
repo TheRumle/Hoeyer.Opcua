@@ -7,7 +7,7 @@ using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 namespace Hoeyer.OpcUa.Server.Application;
 
 internal sealed class ManagedEntityNodeProvider<T>(
-    IOpcUaTargetServerInfo info,
+    IApplicationConfigurationRequirements info,
     IEntityLoader<T> value,
     IEntityTranslator<T> translator,
     IEntityNodeStructureFactory<T> structureFactory) : IManagedEntityNodeProvider<T>

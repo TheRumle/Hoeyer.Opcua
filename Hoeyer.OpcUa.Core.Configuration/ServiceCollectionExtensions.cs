@@ -2,9 +2,10 @@
 using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 using Hoeyer.OpcUa.Core.Application.NodeStructure;
+using Hoeyer.OpcUa.Core.Configuration.Application;
+using Hoeyer.OpcUa.Core.Configuration.ConfigurationBuilder;
 using Hoeyer.OpcUa.Core.Configuration.Modelling;
 using Hoeyer.OpcUa.Core.Configuration.Options;
-using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,37 +14,13 @@ namespace Hoeyer.OpcUa.Core.Configuration;
 
 public static class ServiceCollectionExtensions
 {
-    public static OnGoingOpcEntityServiceRegistration AddOpcUa(this IServiceCollection services,
-        Func<IEntityServerConfigurationBuilder, IOpcUaTargetServerInfo> configurationBuilder)
-    {
-        var entityServerConfiguration = configurationBuilder.Invoke(EntityServerConfigurationBuilder.Create());
-        services.AddSingleton(entityServerConfiguration);
-        return new OnGoingOpcEntityServiceRegistration(services);
-    }
-
     public static OnGoingOpcEntityServiceRegistration AddOpcUaFromEnvironmentVariables(
-        this IHostApplicationBuilder applicationBuilder, string sectionName = "OpcUa")
+        this IHostApplicationBuilder applicationBuilder,
+        ApplicationConfigurationSetup configureOpcUaDefaults = null!
+    )
     {
         applicationBuilder.Configuration.AddEnvironmentVariables();
-        return AddOpcUaFromOptions(applicationBuilder.Services, sectionName);
-    }
-
-    public static OnGoingOpcEntityServiceRegistration AddOpcUaFromOptions(
-        this IHostApplicationBuilder builder,
-        string sectionName = "OpcUa") => AddOpcUaFromOptions(builder.Services, sectionName);
-
-    public static OnGoingOpcEntityServiceRegistration AddOpcUaFromOptions(
-        this IServiceCollection services,
-        string sectionName = "OpcUa")
-    {
-        services.AddOptions<OpcUaOptions>()
-            .BindConfiguration(sectionName)
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
-
-        services.AddSingleton<IOpcUaTargetServerInfoFactory, OpcUaTargetServerFromOptions>();
-        services.AddSingleton<IOpcUaTargetServerInfo>(p => p.GetRequiredService<IOpcUaTargetServerInfoFactory>().Get());
-        return new OnGoingOpcEntityServiceRegistration(services);
+        return applicationBuilder.Services.AddOpcUaFromOptions(configureOpcUaDefaults);
     }
 
     public static OnGoingOpcEntityServiceRegistrationWithModels WithEntityModelsFrom(
@@ -55,6 +32,47 @@ public static class ServiceCollectionExtensions
             registration.Collection,
             registration.Collection.BuildServiceProvider()
                 .GetRequiredService<EntityTypesCollection>());
+    }
+
+    public static OnGoingOpcEntityServiceRegistration AddOpcUa(this IServiceCollection services,
+        Func<IApplicationTargetConfigurationBuilder, IApplicationConfigurationRequirements> configurationBuilder,
+        ApplicationConfigurationSetup? configureOpcUaApplicationConfiguration = null
+    )
+    {
+        var entityServerConfiguration = configurationBuilder.Invoke(ApplicationRequirementBuilder.Create());
+        services.AddSingleton<IApplicationRequirementsFactory>(new DefaultFactory(() => entityServerConfiguration));
+        services.AddApplicationConfiguration(configureOpcUaApplicationConfiguration);
+
+        return new OnGoingOpcEntityServiceRegistration(services);
+    }
+
+    private static void AddApplicationConfiguration(this IServiceCollection services,
+        ApplicationConfigurationSetup? configureOpcUaApplicationConfiguration)
+    {
+        services.AddSingleton(configureOpcUaApplicationConfiguration ?? (_ => { }));
+        services.AddSingleton<IApplicationConfigurationRequirements>(p =>
+            p.GetRequiredService<IApplicationRequirementsFactory>().Get());
+        services.AddSingleton<IApplicationConfigurationTemplateFactory, ApplicationConfigurationTemplateFactory>();
+        services.AddSingleton<IApplicationSecurityConfigurationFactory, CertificateBasedSecurityConfigurationFactory>();
+    }
+
+    public static OnGoingOpcEntityServiceRegistration AddOpcUaFromOptions(this IServiceCollection services,
+        ApplicationConfigurationSetup? configureOpcUaApplicationConfiguration = null)
+    {
+        services.AddOptions<OpcUaOptions>()
+            .BindConfiguration("OpcUa")
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddOptions<CertificateConfigurationOptions>()
+            .BindConfiguration("OpcUa:CertificateConfiguration")
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+
+        services.AddSingleton<IApplicationRequirementsFactory, EnvironmentVariableRequirementsFactory>();
+        services.AddApplicationConfiguration(configureOpcUaApplicationConfiguration);
+        return new OnGoingOpcEntityServiceRegistration(services);
     }
 
     public static IServiceCollection WithEntityModelsFrom(this IServiceCollection services,

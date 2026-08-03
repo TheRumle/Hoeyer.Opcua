@@ -9,37 +9,51 @@ using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Application.NodeStructure;
 using Hoeyer.OpcUa.Core.Configuration;
-using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
+using Hoeyer.OpcUa.Core.Configuration.Health;
 using Hoeyer.OpcUa.Server.Abstractions;
+using Hoeyer.OpcUa.Server.Abstractions.Configuration;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Hoeyer.OpcUa.Server.Application;
-using Hoeyer.OpcUa.Server.Services.Configuration;
+using Hoeyer.OpcUa.Server.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Services;
+
+public static class ServiceKeys
+{
+    public const string CONFIGURATION_KEY = "SERVER_APPLICATION_CONFIGURATION";
+}
 
 public static class ServiceExtensions
 {
     public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServer(
         this OnGoingOpcEntityServiceRegistrationWithModels serviceRegistration,
         Type fromAssembly,
-        Action<ServerConfiguration>? additionalConfiguration = null)
+        Action<IServiceProvider, ServerConfiguration>? additionalConfiguration = null)
         =>
             serviceRegistration.WithOpcUaServer([fromAssembly.Assembly],
-                c => additionalConfiguration?.Invoke(c)
+                additionalConfiguration
             );
 
     public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServer(
         this OnGoingOpcEntityServiceRegistrationWithModels serviceRegistration,
         IEnumerable<Assembly> assembliesContainingLoaders,
-        AdditionalServerConfiguration? additionalConfiguration = null)
+        Action<IServiceProvider, ServerConfiguration>? additionalConfiguration = null)
     {
         IServiceCollection collection = serviceRegistration.Collection;
-        collection.AddSingleton(additionalConfiguration ?? (_ => { }));
 
         collection.AddSingleton(typeof(IEntityNodeStructureFactory<>), typeof(ReflectionBasedEntityStructureFactory<>));
         collection.AddServiceAndImplSingleton<IOpcUaTargetServerSetup, OpcUaTargetServerSetup>();
+        collection.AddSingleton<IServerApplicationConfigurationFactory, ServerApplicationConfigurationFactory>();
+        collection.AddSingleton<ServerApplicationConfigurationAction>(serviceProvider =>
+        {
+            return config =>
+            {
+                config.ServerConfiguration ??= new ServerConfiguration();
+                additionalConfiguration?.Invoke(serviceProvider, config.ServerConfiguration);
+            };
+        });
 
         var registration = typeof(ServiceExtensions)
             .CreateStaticMethodInvoker(nameof(AddServices), collection);
@@ -57,17 +71,14 @@ public static class ServiceExtensions
         collection.AddServiceAndImplSingleton<IServerStartedHealthCheck, HealthCheck>();
         collection.AddSingleton<IHealthCheckAssignment>(p => p.GetRequiredService<HealthCheck>());
         collection.AddServiceAndImplSingleton<IOpcUaEntityServerFactory, OpcUaEntityServerFactory>();
-        collection.AddSingleton<OpcEntityServer>();
         collection.AddSingleton<IStartableEntityServer>(p =>
-        {
-            var factory = p.GetRequiredService<IOpcUaEntityServerFactory>();
-            return factory.CreateServer();
-        });
+            p.GetRequiredService<IOpcUaEntityServerFactory>().CreateServer());
+        collection.AddSingleton<OpcEntityServer>();
         AddLoaders(serviceRegistration.Collection, assembliesContainingLoaders);
         return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
     }
 
-    public static void AddServices<TEntity>(IServiceCollection collection)
+    private static void AddServices<TEntity>(IServiceCollection collection)
     {
         collection
             .AddServiceAndImplSingleton<IManagedEntityNodeProvider<TEntity>, ManagedEntityNodeProvider<TEntity>>();
@@ -86,11 +97,13 @@ public static class ServiceExtensions
     public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServerAsBackgroundService(
         this OnGoingOpcEntityServiceRegistrationWithModels serviceRegistration,
         Type assemblyMarker,
-        Action<ServerConfiguration>? additionalConfiguration = null
+        Action<IServiceProvider, ServerConfiguration>? additionalConfiguration = null
     )
     {
-        var serverConfig =
-            serviceRegistration.WithOpcUaServer([assemblyMarker.Assembly], c => additionalConfiguration?.Invoke(c));
+        var serverConfig = serviceRegistration.WithOpcUaServer(
+            assembliesContainingLoaders: [assemblyMarker.Assembly],
+            additionalConfiguration: additionalConfiguration
+        );
         serverConfig.Collection.AddHostedService<OpcUaServerBackgroundService>();
         return serverConfig;
     }

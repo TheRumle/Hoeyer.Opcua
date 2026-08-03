@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
+﻿using Hoeyer.OpcUa.Core.Configuration.Health;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Playground.Modelling.Methods;
@@ -23,7 +23,7 @@ public class RandomContainerAssignmentReactor(
             }
             catch (Exception e)
             {
-                logger.LogError("Exception occurred: {Message}", e.Message);
+                logger.LogError("Exception occurred in container assignment: {Message}", e.Message);
             }
         }
     }

@@ -1,5 +1,6 @@
-﻿@typeparam T
-@inject EntityStateService<T> EntityStateService
+﻿@using Hoeyer.OpcUa.Client.Abstractions.Monitoring
+@typeparam T
+@inject EntityState<T> EntityState
 
 <div>
     <h3>Current State:</h3>
@@ -11,8 +12,8 @@
 
     protected override void OnInitialized()
     {
-        EntityStateService.OnStateChanged += HandleEntityStateChanged;
-        State = EntityStateService.Current;
+        EntityState.OnStateChanged += HandleEntityStateChanged;
+        State = EntityState.Current;
     }
 
     private void HandleEntityStateChanged(T newState)
@@ -23,7 +24,7 @@
 
     public void Dispose()
     {
-        EntityStateService.OnStateChanged -= HandleEntityStateChanged;
+        EntityState.OnStateChanged -= HandleEntityStateChanged;
     }
 
 }

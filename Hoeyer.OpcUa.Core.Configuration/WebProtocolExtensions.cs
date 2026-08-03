@@ -1,5 +1,5 @@
 ﻿using System.Globalization;
-using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
+using Hoeyer.OpcUa.Core.Configuration.ConfigurationBuilder;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Configuration;

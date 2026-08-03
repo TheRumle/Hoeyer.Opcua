@@ -28,10 +28,7 @@
         <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Application\Hoeyer.OpcUa.Simulation.Application.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.ServerAdapter\Hoeyer.OpcUa.Simulation.ServerAdapter.csproj"/>
         <ProjectReference Include="..\Playground.Server\Playground.Server.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="InitialState\"/>
+        <ProjectReference Include="..\Playground.Application\Playground.Application.csproj"/>
     </ItemGroup>
 
 

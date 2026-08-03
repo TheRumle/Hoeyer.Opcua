@@ -14,7 +14,8 @@ internal class EntityBehaviourImplementationModel<T>
 {
     public EntityBehaviourImplementationModel(
         [FromKeyedServices(ServiceKeys.CLIENT_SERVICES)]
-        IEnumerable<AssemblyMarker> markers, IEntityTypeModel<T> model)
+        IEnumerable<AssemblyMarker> markers,
+        IEntityTypeModel<T> model)
     {
         var wantedInterfaces = model.BehaviourInterfaces;
         MethodImplementors = markers
@@ -37,9 +38,5 @@ internal class EntityBehaviourImplementationModel<T>
         }
     }
 
-    public FrozenSet<(Type EntityBehaviourInterface, Type EntityBehaviourImplementation)> MethodImplementors
-    {
-        get;
-        set;
-    }
+    public FrozenSet<(Type EntityBehaviourInterface, Type EntityBehaviourImplementation)> MethodImplementors { get; }
 }

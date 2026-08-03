@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using Hoeyer.Common.Extensions;
+using Opc.Ua;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Extensions;
@@ -25,7 +27,7 @@ public static class LoggingExtensions
         {
             subscription.Id,
             subscription.Priority,
-            DisplayName = subscription.DisplayName,
+            subscription.DisplayName,
             subscription.PublishingEnabled,
             subscription.PublishTime,
             subscription.LastNotificationTime,
@@ -43,4 +45,17 @@ public static class LoggingExtensions
             item.SamplingInterval,
             Monitored = item.StartNodeId.ToString()
         };
+
+    public static object ToLoggingObject(this EndpointDescription? item)
+    {
+        if (item == null) return "[null]";
+        return new
+        {
+            item.EndpointUrl,
+            item.SecurityMode,
+            item.SecurityPolicyUri,
+            UserIdentityTokens = item.UserIdentityTokens.Select(e => new { e.PolicyId, e.TokenType }.ToString())
+                .ToCommaSeparatedString(),
+        };
+    }
 }

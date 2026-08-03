@@ -1,7 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
+using Hoeyer.OpcUa.Core.Configuration.ConfigurationBuilder;
 
 namespace Hoeyer.OpcUa.Core.Configuration.Options;
+
+public sealed record CertificateConfigurationOptions
+{
+    public string PkiRoot { get; init; } = null!;
+    public string CertificateSubjectName { get; init; } = null!;
+    [Required] public bool? AutoAcceptUntrustedCertificates { get; init; } = null!;
+    [Required] public bool? AddAppCertToTrustedStore { get; init; } = null!;
+    [Required] public bool? AcceptRejectedCertificates { get; init; } = null!;
+}
 
 public sealed class OpcUaOptions
 {
@@ -12,6 +21,8 @@ public sealed class OpcUaOptions
     [Required] public string Host { get; init; } = null!;
     [Required] public int Port { get; init; }
 
+    [Required] public CertificateConfigurationOptions CertificateConfiguration { get; init; } = new();
+
     public override string ToString() =>
         $"[OpcUaOptions] " +
         $"ServerId={ServerId ?? "null"}, " +
@@ -19,5 +30,6 @@ public sealed class OpcUaOptions
         $"ApplicationUri={ApplicationUri ?? "null"}, " +
         $"Protocol={Protocol.ToString() ?? "null"}, " +
         $"Host={Host ?? "null"}, " +
-        $"Port={Port}";
+        $"Port={Port}, " +
+        $"SecurityConfig={CertificateConfiguration?.ToString() ?? "null"}";
 }

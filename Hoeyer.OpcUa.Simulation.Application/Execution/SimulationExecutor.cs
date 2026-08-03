@@ -69,7 +69,7 @@ internal sealed class SimulationExecutor<TState, TArgs>(
     private async Task<SimulationResult<TState>> Sleep(TimeStep timeStep, TState state)
     {
         return await timeStep.Execute(scaler)
-            .ThenAsync(() => new SimulationResult<TState>(state, state, ActionType.Sleep));
+            .SelectAsync(() => new SimulationResult<TState>(state, state, ActionType.Sleep));
     }
 
     private static SimulationResult<TState> ThrowUseFunctionExecutorInstead() => throw new ArgumentException(

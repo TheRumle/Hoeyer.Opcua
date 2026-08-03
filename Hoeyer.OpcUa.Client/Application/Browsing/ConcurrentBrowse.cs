@@ -55,7 +55,7 @@ internal sealed class ConcurrentBrowse(INodeBrowser browser, IProducerConsumerCo
         List<ReferenceWithId> visiting)
     {
         return await browser.BrowseById(session, visiting.Select(e => e.NodeId), ct: cancellationToken)
-            .ThenAsync(browseResults => browseResults
+            .SelectAsync(browseResults => browseResults
                 .Results
                 .SelectMany<BrowseResult, ReferenceDescription>(browseResult => browseResult.References)
                 .Select(reference => new ReferenceWithId(session, reference))

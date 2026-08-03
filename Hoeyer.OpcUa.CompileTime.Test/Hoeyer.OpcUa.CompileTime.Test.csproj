@@ -23,9 +23,16 @@
         <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Abstractions\Hoeyer.OpcUa.Simulation.Abstractions.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.Compiletime\Hoeyer.OpcUa.Simulation.Compiletime.csproj"/>
-        <ProjectReference Include="..\Hoeyer.OpcUa.TestFramework\Hoeyer.OpcUa.TestFramework.csproj"/>
         <ProjectReference Include="..\Hoeyer.Common\Hoeyer.Common.csproj"/>
         <ProjectReference Include="..\Playground.Modelling\Playground.Modelling.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="JetBrains.Annotations" Version="2026.2.0"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.9"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.9"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.9"/>
+        <PackageReference Include="TUnit" Version="1.61.38"/>
     </ItemGroup>
 
 

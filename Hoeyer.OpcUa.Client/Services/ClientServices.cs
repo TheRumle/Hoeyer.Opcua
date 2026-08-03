@@ -8,6 +8,7 @@ using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing.Reading;
 using Hoeyer.OpcUa.Client.Abstractions.Calling;
+using Hoeyer.OpcUa.Client.Abstractions.Configuration;
 using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 using Hoeyer.OpcUa.Client.Abstractions.Writing;
@@ -16,9 +17,12 @@ using Hoeyer.OpcUa.Client.Application.Calling;
 using Hoeyer.OpcUa.Client.Application.Connection;
 using Hoeyer.OpcUa.Client.Application.Subscriptions;
 using Hoeyer.OpcUa.Client.Application.Writing;
+using Hoeyer.OpcUa.Client.Configuration;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Configuration.Modelling;
 using Microsoft.Extensions.DependencyInjection;
+using Opc.Ua.Client;
+using INodeBrowser = Hoeyer.OpcUa.Client.Abstractions.Browsing.INodeBrowser;
 
 namespace Hoeyer.OpcUa.Client.Services;
 
@@ -49,20 +53,26 @@ public static class ClientServices
         var markers = fromAssembly.ToList();
         services.AddSingleton(conf.EntityMonitoringConfiguration);
         services.AddKeyedSingleton(ServiceKeys.CLIENT_SERVICES, markers.Select(e => new AssemblyMarker(e)));
-        services.AddServiceAndImplTransient<INodeTreeTraverser, BreadthFirstStrategy>();
-        services.AddServiceAndImplTransient<INodeTreeTraverser, DepthFirstStrategy>();
-        services.AddServiceAndImplTransient(typeof(INodeTreeTraverser), conf.TraversalStrategy);
-        services.AddServiceAndImplTransient(typeof(INodeReader), conf.NodeReader);
-        services.AddServiceAndImplTransient(typeof(INodeBrowser), conf.Browser);
-        services.AddServiceAndImplTransient(typeof(IMethodCaller<>), typeof(MethodCaller<>));
-        services.AddServiceAndImplTransient(typeof(IEntityBrowser<>), typeof(EntityBrowser<>));
-        services.AddServiceAndImplTransient(typeof(IMonitorItemsFactory<>), typeof(MonitorItemFactory<>));
-        services.AddServiceAndImplTransient(typeof(IEntityWriter<>), typeof(EntityWriter<>));
-        services.AddSingleton(typeof(EntityBehaviourImplementationModel<>));
-        services.AddServiceAndImplSingleton<IEntitySessionFactory, ReusableSessionFactory>();
-        services.AddServiceAndImplSingleton<ISubscriptionTransferStrategy, CopySubscriptionTransferStrategy>();
-        services.AddServiceAndImplSingleton(typeof(IReconnectionStrategy), conf.ReconnectionStrategy);
 
+        services.AddSingleton(new ClientApplicationConfigurationAction(conf.clientConfig));
+        services.AddSingleton<IClientApplicationConfigurationFactory, ClientApplicationConfigurationFactory>();
+
+
+        services.AddNodeBrowsing(conf);
+        services.AddSessionManagement(conf);
+        services.AddMethodCalling();
+
+
+        services.AddServiceAndImplTransient(typeof(IEntityWriter<>), typeof(EntityWriter<>));
+
+
+        return services;
+    }
+
+    private static void AddMethodCalling(this IServiceCollection services)
+    {
+        services.AddServiceAndImplTransient(typeof(IMethodCaller<>), typeof(MethodCaller<>));
+        services.AddSingleton(typeof(EntityBehaviourImplementationModel<>));
         var provider = services.BuildServiceProvider();
         var entities = provider.GetRequiredService<EntityTypesCollection>().ModelledEntities;
         var subscriptionEngineRegistration =
@@ -74,8 +84,26 @@ public static class ClientServices
             subscriptionEngineRegistration.Invoke(entity);
             behaviourImplementationRegistration.Invoke(entity);
         }
+    }
 
-        return services;
+    private static void AddSessionManagement(this IServiceCollection services, ClientServiceConfiguration conf)
+    {
+        services.AddServiceAndImplTransient(typeof(IMonitorItemFactory<>), typeof(MonitorItemFactory<>));
+        services.AddSingleton<ISessionFactory, DefaultSessionFactory>();
+        services.AddServiceAndImplSingleton(typeof(IEntitySessionFactory), conf.EntitySessionFactory);
+        services.AddSingleton<EntitySessionFactory>();
+        services.AddServiceAndImplSingleton<ISubscriptionTransferStrategy, CopySubscriptionTransferStrategy>();
+        services.AddServiceAndImplSingleton(typeof(IReconnectionStrategy), conf.ReconnectionStrategy);
+    }
+
+    private static void AddNodeBrowsing(this IServiceCollection services, ClientServiceConfiguration conf)
+    {
+        services.AddServiceAndImplTransient<INodeTreeTraverser, BreadthFirstStrategy>();
+        services.AddServiceAndImplTransient<INodeTreeTraverser, DepthFirstStrategy>(); //default
+        services.AddServiceAndImplTransient(typeof(INodeTreeTraverser), conf.TraversalStrategy);
+        services.AddServiceAndImplTransient(typeof(INodeReader), conf.NodeReader);
+        services.AddServiceAndImplTransient(typeof(INodeBrowser), conf.Browser);
+        services.AddServiceAndImplTransient(typeof(IEntityBrowser<>), typeof(EntityBrowser<>));
     }
 
     private static void RegisterEntityBehaviour<TEntity>(IServiceCollection services, IServiceProvider provider)

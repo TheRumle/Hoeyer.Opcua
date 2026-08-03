@@ -1,67 +1,21 @@
-using System.Text.Json;
-using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
-using Hoeyer.OpcUa.Client.Services;
-using Hoeyer.OpcUa.Core.Configuration;
-using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
-using Hoeyer.OpcUa.Server.Services;
-using Hoeyer.OpcUa.Simulation.Abstractions.Services;
-using Hoeyer.OpcUa.Simulation.ServerAdapter;
-using Hoeyer.OpcUa.Simulation.Services;
 using Playground.Application;
 using Playground.Clients;
-using Playground.Modelling.Models;
-using Playground.Server;
 
 var builder = WebApplication.CreateBuilder(args);
-
-
-builder.Logging.AddJsonConsole(options =>
-{
-    options.IncludeScopes = true;
-    options.JsonWriterOptions = new JsonWriterOptions
-    {
-        Indented = true,
-        MaxDepth = 10,
-    };
-    options.TimestampFormat = "yyyy-MM-dd HH:mm:ss";
-    options.IncludeScopes = true;
-});
 builder.Services.AddHostedService<PositionChangeReactor>();
 builder.Services.AddHostedService<RandomContainerAssignmentReactor>();
-builder.Services.Configure<HostOptions>(options =>
-{
-    options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
-});
-
-builder.Services.AddLogging(e => e.AddSimpleConsole());
-builder.Services.AddOpcUa(serverSetup => serverSetup
-        .WithServerId("MyServer")
-        .WithServerName("My Server")
-        .WithWebOrigins(WebProtocol.OpcTcp, "localhost", 4840)
-        .WithApplicationUri("/myApplication")
-        .Build())
-    .WithEntityModelsFrom(typeof(Gantry))
-    .WithOpcUaClientModelsFrom(typeof(PositionChangeReactor))
-    .WithOpcUaServerAsBackgroundService(typeof(AllPropertiesLoader))
-    .WithOpcUaSimulationServices(configure =>
+builder.AddDefaultSimulationApplication(useEnvironmentVariables: false,
+    configureOpcUaDefaults: (appConfig) => { appConfig.SecurityConfiguration.AutoAcceptUntrustedCertificates = true; },
+    serverConfiguration: (provider, config) =>
     {
-        configure.WithTimeScaling(TimeScaler.Identity);
-        configure.AdaptToRuntime<OpcUaServerAdapter>();
+        var serverConfiguration = config.ServerConfiguration;
+        serverConfiguration.MaxSessionCount = 1000;
+        serverConfiguration.MaxSubscriptionCount = 1000;
+        serverConfiguration.MaxBrowseContinuationPoints = 100;
+        serverConfiguration.MaxQueryContinuationPoints = 1000;
+        serverConfiguration.MaxHistoryContinuationPoints = 1000;
     });
 
-
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton(typeof(IStateChangeObserver<>), typeof(StateChangeObserver<>));
-builder.Services.AddScoped(typeof(EntityStateService<>));
 var app = builder.Build();
-
-app.UseStaticFiles();
-app.UseRouting();
-
-// Map Blazor
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
-
-app.UseHttpsRedirection();
+app.MapHealthChecks("/health/server");
 await app.RunAsync();

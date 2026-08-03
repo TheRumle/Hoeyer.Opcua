@@ -1,8 +1,8 @@
 ﻿using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Test.Fixtures;
+using Hoeyer.OpcUa.Core.Test.Fixtures.TestEntities;
 using JetBrains.Annotations;
 using Opc.Ua;
-using Playground.Modelling.Models;
 
 namespace Hoeyer.OpcUa.Core.Test.Application;
 
@@ -42,27 +42,28 @@ public class EntityTranslatorTest
     [Test]
     [ServiceCollectionDataSource]
     public async Task WhenTranslating_ToEntityNode_ListValuesAreTranslatedTo_Arrays(
-        IEntityTranslator<Gantry> translator,
-        IEntityNodeStructureFactory<Gantry> structure)
+        IEntityTranslator<AllPropertyTypesEntity> translator,
+        IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
     {
         IEntityNode node = structure.Create(2);
-        translator.AssignToNode(new Gantry
+        translator.AssignToNode(new AllPropertyTypesEntity
         {
-            ListValue =
+            IntList =
             [
-                "stneriao",
-                "tnserio"
+                123, 321
             ],
-            IntValue = 21,
-            StringValue = "hello",
-            Position = Position.OverThere,
-            HeldContainer = Guid.Empty,
-            Occupied = false
+            Integer = 321312,
+            String = "hello",
+            EnumVal = AllPropertyTypesEntity.EnumValue.start,
+            Guid = Guid.NewGuid(),
+            Bool = false,
+            StringList = ["five hundred", "Cigarettes"]
         }, node);
 
         Func<string, object> propertyFor = name => node.PropertyByBrowseName[name].Value;
         using IDisposable assertion = Assert.Multiple();
-        await Assert.That(propertyFor(nameof(Gantry.ListValue))).IsTypeOf<string[]>();
+        await Assert.That(propertyFor(nameof(AllPropertyTypesEntity.IntList))).IsTypeOf<int[]>();
+        await Assert.That(propertyFor(nameof(AllPropertyTypesEntity.StringList))).IsTypeOf<string[]>();
     }
 
 

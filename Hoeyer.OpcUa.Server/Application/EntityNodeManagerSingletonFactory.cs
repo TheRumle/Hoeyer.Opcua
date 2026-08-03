@@ -11,7 +11,7 @@ using Opc.Ua.Server;
 namespace Hoeyer.OpcUa.Server.Application;
 
 internal sealed class EntityNodeManagerSingletonFactory<T>(
-    IOpcUaTargetServerInfo info,
+    IApplicationConfigurationRequirements info,
     IServiceProvider serviceProvider,
     MaybeInitializedEntityManager<T> loadableManager) : IEntityNodeManagerFactory<T>
 {
@@ -34,7 +34,7 @@ internal sealed class EntityNodeManagerSingletonFactory<T>(
         var uriString = info.ApplicationNamespace + $"/{typeof(T).Name}";
         if (!Uri.TryCreate(uriString, UriKind.RelativeOrAbsolute, out var uri))
         {
-            throw new InvalidServerConfigurationException(uriString + " is not a valid URI");
+            throw new InvalidUaConfigurationException(uriString + " is not a valid URI");
         }
 
         var manager = new EntityNodeManager<T>(

@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoeyer.Common.Messaging.Api;
-using Hoeyer.Common.Messaging.Subscriptions;
-using Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing;
 using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
@@ -18,16 +16,14 @@ using Opc.Ua.Client;
 namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
 
 internal sealed class EntitySubscriptionManager<T>(
+    ISubscriptionManager<T> subscriptionManager,
     ILogger<EntitySubscriptionManager<T>> logger,
     IEntitySessionFactory sessionFactory,
     IEntityBrowser<T> browser,
-    IMonitorItemsFactory<T> monitorFactory,
+    IMonitorItemFactory<T> monitorFactory,
     IEntityTranslator<T> translator)
     : IEntitySubscriptionManager<T>
 {
-    private readonly SubscriptionManager<T, ChannelBasedSubscription<T>> _subscriptionManager =
-        new(new ChannelSubscriptionFactory<T>());
-
     private IReadOnlyList<MonitoredItem> MonitoredItems { get; set; } = [];
     private IEntityNode? CurrentNodeState { get; set; }
     private EntitySubscription? EntitySubscription { get; set; }
@@ -41,7 +37,7 @@ internal sealed class EntitySubscriptionManager<T>(
         (EntitySubscription, MonitoredItems) =
             await monitorFactory.CreateAndMonitorAll(session, CurrentNodeState, HandleChange, cancellationToken);
         await session.Session.PublishAsync(null, new SubscriptionAcknowledgementCollection(), cancellationToken);
-        return _subscriptionManager.Subscribe(consumer);
+        return subscriptionManager.Subscribe(consumer);
     }
 
     public async Task<IMessageSubscription> SubscribeToProperty(
@@ -60,7 +56,7 @@ internal sealed class EntitySubscriptionManager<T>(
         var propertyIdentity = CurrentNodeState.PropertyByBrowseName[propertyName].ToIdentityTuple();
         await monitorFactory.MonitorProperty(EntitySubscription, propertyIdentity, cancellationToken);
         await session.Session.PublishAsync(null, new SubscriptionAcknowledgementCollection(), cancellationToken);
-        return _subscriptionManager.Subscribe(consumer);
+        return subscriptionManager.Subscribe(consumer);
     }
 
     private void HandleChange(MonitoredItem item, MonitoredItemNotificationEventArgs eventArgs)
@@ -83,7 +79,7 @@ internal sealed class EntitySubscriptionManager<T>(
             foreach (var value in values)
             {
                 propertyToChange.Value = value.Value;
-                _subscriptionManager.Publish(translator.Translate(CurrentNodeState));
+                subscriptionManager.Publish(translator.Translate(CurrentNodeState));
             }
         }
         catch (Exception exception)

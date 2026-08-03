@@ -1,39 +1,19 @@
-using System.Text.Json;
-using Hoeyer.OpcUa.Core.Configuration;
-using Hoeyer.OpcUa.Server.Services;
-using Hoeyer.OpcUa.Simulation.Abstractions.Services;
-using Hoeyer.OpcUa.Simulation.ServerAdapter;
-using Hoeyer.OpcUa.Simulation.Services;
-using Playground.Modelling.Models;
-using Playground.Server;
-using Playground.SimulationServer.Containerized;
+using Playground.Application;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Logging.AddJsonConsole(options =>
-{
-    options.IncludeScopes = true;
-    options.JsonWriterOptions = new JsonWriterOptions
-    {
-        Indented = true,
-        MaxDepth = 10
-    };
-    options.TimestampFormat = "yyyy-MM-dd HH:mm:ss";
-});
 
-builder.AddOpcUaFromEnvironmentVariables()
-    .WithEntityModelsFrom(assemblyMarkers: typeof(Gantry))
-    .WithOpcUaServerAsBackgroundService(typeof(GantryLoader))
-    .WithOpcUaSimulationServices(configure =>
+builder.AddDefaultSimulationApplication(useEnvironmentVariables: true,
+    configureOpcUaDefaults: (appConfig) => { appConfig.SecurityConfiguration.AutoAcceptUntrustedCertificates = true; },
+    serverConfiguration: (provider, config) =>
     {
-        configure.WithTimeScaling(TimeScaler.Identity);
-        configure.AdaptToRuntime<OpcUaServerAdapter>();
+        var serverConfiguration = config.ServerConfiguration;
+        serverConfiguration.MaxSessionCount = 1000;
+        serverConfiguration.MaxSubscriptionCount = 1000;
+        serverConfiguration.MaxBrowseContinuationPoints = 100;
+        serverConfiguration.MaxQueryContinuationPoints = 1000;
+        serverConfiguration.MaxHistoryContinuationPoints = 1000;
     });
 
-builder.Services
-    .AddHealthChecks()
-    .AddCheck<ServerStartedHealthCheckAdapter>("server_started");
-
 var app = builder.Build();
-
 app.MapHealthChecks("/health/server");
 await app.RunAsync();

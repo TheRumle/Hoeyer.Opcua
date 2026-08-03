@@ -9,6 +9,7 @@ using Hoeyer.Common.Messaging.Api;
 using Hoeyer.Common.Messaging.Subscriptions;
 using Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 using JetBrains.Annotations;
+using TUnit.Core.Interfaces;
 
 namespace Hoeyer.Common.Test.Messaging;
 
@@ -172,5 +173,48 @@ public abstract class SubscriptionSystemTest(IMessageSubscriptionFactory<int> fa
             Count += 1;
             if (Count >= wantedCalls) _tcs.TrySetResult(true);
         }
+    }
+}
+
+public static class DataGetter
+{
+    public static Task<int> GetKeyedAsync(object o) => Task.FromResult(2);
+}
+
+public class MyDataSource : IAsyncInitializer
+{
+    public int MyData { get; private set; } = -1;
+
+    public async Task InitializeAsync()
+    {
+        var context = TestContext.Current!;
+        var details = context.Metadata.TestDetails;
+
+        //get attributes for current method injectino
+        //
+
+        // get the current key for SharedDataSource. For instance, if MyDataSource is used in 
+        // [ClassDataSource<SimulationTestSession>(SharedType = SharedType.PerTestSession)] then
+        // a mechanism for getting the value PerTestSession would be usefull
+        var myKey = "";
+        MyData = await DataGetter.GetKeyedAsync(myKey);
+    }
+}
+
+public class MyTest
+{
+    [Test]
+    [ClassDataSource<MyDataSource>(Shared = SharedType.Keyed, Key = "HelloWorld")]
+    public async Task KeyedTest(MyDataSource keyedFixture)
+    {
+        await Assert.That(keyedFixture.MyData).IsNotDefault();
+    }
+
+
+    [Test]
+    [ClassDataSource<MyDataSource>(Shared = SharedType.PerTestSession)]
+    public async Task PerTestSessionTest(MyDataSource perSessionFixture)
+    {
+        await Assert.That(perSessionFixture.MyData).IsNotDefault();
     }
 }

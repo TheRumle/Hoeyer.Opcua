@@ -35,12 +35,12 @@ public sealed class EntityBrowser<TEntity>(
         = n => browseNameCollection.EntityName.Equals(n.BrowseName.Name);
 
     private readonly Lazy<ISession>
-        _session = new(() => sessionFactory.GetSessionFor<TEntity>().Session);
+        _session = new(() => sessionFactory.GetSession<TEntity>().Session);
 
     private Node? _entityRoot;
-    private ISession Session => _session.Value;
 
     public (IEntityNode node, DateTime timeLoaded)? LastState { get; private set; }
+    private ISession Session => _session.Value;
 
     /// <inheritdoc />
     public async Task<IEntityNode> BrowseEntityNode(CancellationToken cancellationToken = default)
@@ -62,7 +62,7 @@ public sealed class EntityBrowser<TEntity>(
     public async ValueTask<EntityNodeStructure> GetNodeStructure(CancellationToken token = default) =>
         LastState.HasValue
             ? LastState.Value.node.ToStructureOnly()
-            : await BrowseEntityNode(token).ThenAsync(e => e.ToStructureOnly());
+            : await BrowseEntityNode(token).SelectAsync(e => e.ToStructureOnly());
 
     private async Task<IEntityNode> ParseToEntity(ISession session, CancellationToken cancellationToken,
         ReadResult values)
@@ -71,8 +71,8 @@ public sealed class EntityBrowser<TEntity>(
         List<VariableNode> variables = await reader
             .ReadNodesAsync(session, values.SuccesfulReads.Select(value => value!.NodeId),
                 ct: cancellationToken)
-            .ThenAsync(result => result.SuccesfulReads.OfType<VariableNode>())
-            .ThenAsync(nodes => nodes.ToList());
+            .SelectAsync(result => result.SuccesfulReads.OfType<VariableNode>())
+            .SelectAsync(nodes => nodes.ToList());
 
         IEntityNode structure = AssignReadValues(variables);
         return structure;

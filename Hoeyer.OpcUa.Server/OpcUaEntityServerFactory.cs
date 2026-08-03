@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Hoeyer.OpcUa.Core.Configuration.ServerTarget;
+using Hoeyer.OpcUa.Core.Configuration.Health;
 using Hoeyer.OpcUa.Server.Abstractions;
+using Hoeyer.OpcUa.Server.Abstractions.Configuration;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
-using Hoeyer.OpcUa.Server.Services.Configuration;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Configuration;
@@ -10,6 +10,8 @@ using Opc.Ua.Configuration;
 namespace Hoeyer.OpcUa.Server;
 
 internal sealed class OpcUaEntityServerFactory(
+    ILogger<OpcUaEntityServerFactory> entityServerFactoryLogger,
+    IServerApplicationConfigurationFactory applicationConfigurationFactory,
     IServerStartedHealthCheck assignment,
     IOpcUaTargetServerSetup serverSetup,
     IEnumerable<IEntityNodeManagerFactory> entityManagerFactories,
@@ -19,12 +21,13 @@ internal sealed class OpcUaEntityServerFactory(
 
     public IStartableEntityServer CreateServer()
     {
+        using var scope = entityServerFactoryLogger.BeginScope("CreateServerAsync");
         if (_startable != null)
         {
             return _startable;
         }
 
-        var configuration = ServerApplicationConfigurationFactory.CreateServerConfiguration(serverSetup);
+        var configuration = applicationConfigurationFactory.CreateServerConfiguration();
 
         var application = new ApplicationInstance
         {
@@ -32,8 +35,6 @@ internal sealed class OpcUaEntityServerFactory(
             ApplicationName = serverSetup.ApplicationName,
             ApplicationType = ApplicationType.Server
         };
-
-        application.LoadApplicationConfiguration(false);
 
         var logger = loggerFactory.CreateLogger<OpcEntityServer>();
         var server = new OpcEntityServer(serverSetup, entityManagerFactories, logger);
