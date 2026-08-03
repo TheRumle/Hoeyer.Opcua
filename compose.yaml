@@ -13,6 +13,12 @@ services:
       - OPCUA_SERVERID=MyServer
       - OPCUA_SERVERNAME=My OPC Server
       - OPCUA_APPLICATION_NAME=SimulationApp
+      - CERTIFICATE_PKI_ROOT=/root/.local/share/OPC Foundation/pki
+      - CERTIFICATE_SUBJECTNAME=CN=HostedSimulation
+      - CERTIFICATE_ACCEPT_UNTRUSTED=true
+      - CERTIFICATE_ADD_TO_TRUSTED_STORE=true
+      - CERTIFICATE_ACCEPT_REJECTED=false
+      - LogLevel=DEBUG
     ports:
       - "4840:4840"
     networks:

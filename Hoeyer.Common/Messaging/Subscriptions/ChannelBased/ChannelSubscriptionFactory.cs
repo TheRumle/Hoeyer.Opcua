@@ -2,34 +2,24 @@
 using System.Threading.Channels;
 using Hoeyer.Common.Messaging.Api;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 
-public sealed class ChannelSubscriptionFactory<T>(ILoggerFactory loggerFactory)
-    : IMessageSubscriptionFactory<T, ChannelBasedSubscription<T>>,
-        IMessageSubscriptionFactory<T>
+public sealed class ChannelSubscriptionFactory<T>(ILogger<ChannelSubscriptionFactory<T>> logger)
+    : IMessageSubscriptionFactory<T>
 {
-    private readonly ILogger _logger = loggerFactory.CreateLogger<ChannelSubscriptionFactory<T>>();
-
-
-    public ChannelSubscriptionFactory() : this(NullLoggerFactory.Instance)
-    {
-    }
-
+    public IMessageSubscription<T> CreateSubscription(IMessageConsumer<T> consumer,
+        Action<IMessageSubscription<T>>? disposeCallBack = null) => Create(consumer, disposeCallBack);
 
     public ChannelBasedSubscription<T> CreateSubscription(IMessageConsumer<T> consumer,
         Action<ChannelBasedSubscription<T>>? disposeCallBack = null) =>
         Create(consumer, disposeCallBack);
 
-    public IMessageSubscription<T> CreateSubscription(IMessageConsumer<T> consumer,
-        Action<IMessageSubscription<T>>? disposeCallBack = null) => Create(consumer, disposeCallBack);
-
     private ChannelBasedSubscription<T> Create(IMessageConsumer<T> consumer,
         Action<ChannelBasedSubscription<T>>? disposeCallBack)
     {
         var subscriptionId = Guid.NewGuid();
-        _logger.LogDebug("Creating channel subscription '{SubscriptionId}' for {Consumer}", subscriptionId,
+        logger.LogDebug("Creating channel subscription '{SubscriptionId}' for {Consumer}", subscriptionId,
             consumer.GetType().Name);
 
         var unboundedChannelOptions = new UnboundedChannelOptions
@@ -40,6 +30,6 @@ public sealed class ChannelSubscriptionFactory<T>(ILoggerFactory loggerFactory)
         };
 
         var channel = Channel.CreateUnbounded<IMessage<T>>(unboundedChannelOptions);
-        return new ChannelBasedSubscription<T>(subscriptionId, consumer, channel, _logger, disposeCallBack);
+        return new ChannelBasedSubscription<T>(subscriptionId, consumer, channel, logger, disposeCallBack);
     }
 }

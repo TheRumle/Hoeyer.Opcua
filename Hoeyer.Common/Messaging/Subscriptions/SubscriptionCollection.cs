@@ -7,13 +7,12 @@ using Hoeyer.Common.Messaging.Api;
 
 namespace Hoeyer.Common.Messaging.Subscriptions;
 
-public sealed class SubscriptionCollection<T, TSubscription> : ISubscriptionCollection<T>
-    where TSubscription : IMessageSubscription<T>
+public sealed class SubscriptionCollection<T> : ISubscriptionCollection<T>
 {
-    private readonly Func<IMessageConsumer<T>, TSubscription> _subscriptionFactory;
+    private readonly Func<IMessageConsumer<T>, IMessageSubscription<T>> _subscriptionFactory;
     private readonly ConcurrentDictionary<Guid, IMessageSubscription<T>> _subscriptions = new();
 
-    public SubscriptionCollection(IMessageSubscriptionFactory<T, TSubscription> factory)
+    public SubscriptionCollection(IMessageSubscriptionFactory<T, IMessageSubscription<T>> factory)
     {
         _subscriptionFactory = consumer => factory.CreateSubscription(consumer, sub => Remove(sub.SubscriptionId));
     }
@@ -37,7 +36,7 @@ public sealed class SubscriptionCollection<T, TSubscription> : ISubscriptionColl
     }
 
     [Pure]
-    public TSubscription CreateSubscriptionFor(IMessageConsumer<T> subscriber)
+    public IMessageSubscription<T> CreateSubscriptionFor(IMessageConsumer<T> subscriber)
     {
         var subscription = _subscriptionFactory.Invoke(subscriber);
         _subscriptions.TryAdd(subscription.SubscriptionId, subscription);

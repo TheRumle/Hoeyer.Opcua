@@ -7,4 +7,4 @@ namespace Hoeyer.Common.Test.Messaging;
 [InheritsTests]
 [TestSubject(typeof(ChannelBasedSubscription<>))]
 public class ChannelBasedSubscriptionTest() : SubscriptionSystemTest(
-    new ChannelSubscriptionFactory<int>(NullLoggerFactory.Instance));
+    new ChannelSubscriptionFactory<int>(NullLogger<ChannelSubscriptionFactory<int>>.Instance));
