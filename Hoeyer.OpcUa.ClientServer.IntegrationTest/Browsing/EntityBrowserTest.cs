@@ -1,7 +1,7 @@
 ﻿using Hoeyer.OpcUa.Client.Abstractions.Browsing;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing.Reading;
 using Hoeyer.OpcUa.Core.Abstractions;
-using Hoeyer.OpcUa.IntegrationTest.Attributes;
+using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using JetBrains.Annotations;
 
@@ -9,7 +9,7 @@ namespace Hoeyer.OpcUa.IntegrationTest.AbstractTests;
 
 [TestSubject(typeof(IEntityBrowser<>))]
 [TestSubject(typeof(INodeReader))]
-[IntegrationDependentTest]
+[IntegrationAdapterDependentTest]
 [DependsOn<IntegrationEnvironmentHealthTests>]
 public abstract class EntityBrowserTest<T>(IntegrationTestFixture<IEntityBrowser<T>> context)
 {

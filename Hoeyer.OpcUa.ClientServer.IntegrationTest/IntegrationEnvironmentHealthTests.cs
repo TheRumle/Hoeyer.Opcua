@@ -1,13 +1,13 @@
 ﻿using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Abstractions.Connection;
-using Hoeyer.OpcUa.IntegrationTest.Attributes;
 using Hoeyer.OpcUa.IntegrationTest.ConfigurationTest;
+using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.IntegrationTest;
 
-[IntegrationDependentTest]
+[IntegrationAdapterDependentTest]
 [DependsOn<ConfigurationCompatibilityTest>]
 [ClassDataSource<IntegrationTestFixture>(Shared = SharedType.PerTestSession)]
 public class IntegrationEnvironmentHealthTests(IntegrationTestFixture integrationTestFixture)

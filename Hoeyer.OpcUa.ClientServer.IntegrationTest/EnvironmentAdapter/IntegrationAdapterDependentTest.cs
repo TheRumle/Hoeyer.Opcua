@@ -1,8 +1,6 @@
-﻿using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
+﻿namespace Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
 
-namespace Hoeyer.OpcUa.IntegrationTest.Attributes;
-
-public sealed class IntegrationDependentTest()
+public sealed class IntegrationAdapterDependentTest()
     : SkipAttribute(NoFrameworkAdapterException.ErrorMessage)
 {
     private static readonly Task EnvironmentCheckTask = CheckEnvironmentAsync();
@@ -13,7 +11,7 @@ public sealed class IntegrationDependentTest()
         try
         {
             //create one, but never initialize environment.
-            var integrationEnv = IntegrationTestAdapter.CreateOrGetCached(nameof(IntegrationDependentTest));
+            var integrationEnv = IntegrationTestAdapter.CreateOrGetCached(nameof(IntegrationAdapterDependentTest));
             if (integrationEnv == null!) return Task.FromException(new NoFrameworkAdapterException());
             return Task.CompletedTask;
         }

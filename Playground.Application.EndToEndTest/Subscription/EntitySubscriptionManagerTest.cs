@@ -3,7 +3,7 @@ using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 using Hoeyer.OpcUa.Client.Abstractions.Writing;
 using Hoeyer.OpcUa.Client.Application.Subscriptions;
 using Hoeyer.OpcUa.IntegrationTest;
-using Hoeyer.OpcUa.IntegrationTest.Attributes;
+using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using JetBrains.Annotations;
 using Playground.Modelling.Models;
@@ -12,7 +12,7 @@ namespace Playground.Application.EndToEndTest.Subscription;
 
 [TestSubject(typeof(CurrentEntityStateChannel<>))]
 [DependsOn<IntegrationEnvironmentHealthTests>]
-[IntegrationDependentTest]
+[IntegrationAdapterDependentTest]
 [ClassDataSource<IntegrationTestFixture>(Shared = SharedType.PerClass)]
 [Timeout(10000)]
 public sealed class EntitySubscriptionManagerTest(IntegrationTestFixture fixture)
