@@ -1,6 +1,4 @@
-﻿using Hoeyer.OpcUa.Core;
-
-namespace Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
+﻿namespace Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
 
 [OpcUaEntity]
 public sealed record TestEntity
@@ -12,9 +10,11 @@ public sealed record TestEntity
         end = 20
     }
 
-
+    [LegalRangeAlarm(0, 10, "IntValueAlarm", AlarmSeverity.Critical)]
     public int Integer { get; set; }
+
     public long Long { get; set; }
+
     public Guid Guid { get; set; }
     public required string String { get; set; }
     public required List<int> IntList { get; set; }

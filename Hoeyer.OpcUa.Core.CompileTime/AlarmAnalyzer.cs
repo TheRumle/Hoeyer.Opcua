@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Hoeyer.OpcUa.Core.CompileTime.Extensions;
+﻿using Hoeyer.OpcUa.Core.CompileTime.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -11,7 +8,7 @@ using static Hoeyer.OpcUa.Core.CompileTime.CodeDomain.WellKnown.FullyQualifiedAt
 namespace Hoeyer.OpcUa.Core.CompileTime;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class AlarmAnalyser() : ConcurrentAnalyzer([Rules.IllegalRange])
+public class AlarmAnalyser() : ConcurrentAnalyzer([Rules.IllegalRange, Rules.AlarmNotCompatibleWithType])
 {
     protected override void InitializeAnalyzer(AnalysisContext context)
     {
@@ -31,7 +28,7 @@ public class AlarmAnalyser() : ConcurrentAnalyzer([Rules.IllegalRange])
             return;
         }
 
-        var errors = FindViolations(alarms, propertySyntax);
+        var errors = FindViolations(alarms, propertySyntax, context.SemanticModel);
         foreach (var diagnostic in errors)
         {
             context.ReportDiagnostic(diagnostic);
@@ -39,11 +36,39 @@ public class AlarmAnalyser() : ConcurrentAnalyzer([Rules.IllegalRange])
     }
 
     private static IEnumerable<Diagnostic> FindViolations(List<AttributeData> alarms,
-        PropertyDeclarationSyntax propertySyntax) =>
-        Enumerable.Range(0, RangeThresholdMismatch(alarms)
-                            + MinimumThresholdExceededRangeMismatch(alarms)
-                            + MaximumThresholdExceededRangeMismatch(alarms))
+        PropertyDeclarationSyntax propertySyntax, SemanticModel semanticModel)
+    {
+        var typeMismatch = CreatePropertyTypeIncompatibilityDiagnostic(alarms, propertySyntax, semanticModel);
+        if (typeMismatch is not null) return [typeMismatch];
+
+
+        return Enumerable.Range(0, RangeThresholdMismatch(alarms)
+                                   + MinimumThresholdExceededRangeMismatch(alarms)
+                                   + MaximumThresholdExceededRangeMismatch(alarms))
             .Select(_ => Diagnostic.Create(Rules.IllegalRange, propertySyntax.GetLocation()));
+    }
+
+    private static Diagnostic? CreatePropertyTypeIncompatibilityDiagnostic(
+        List<AttributeData> alarms,
+        PropertyDeclarationSyntax propertySyntax,
+        SemanticModel semanticModel)
+    {
+        var propertySymbol = semanticModel.GetDeclaredSymbol(propertySyntax);
+        if (propertySymbol == null)
+        {
+            return null;
+        }
+
+        if (!propertySymbol.Type.IsNumericType())
+        {
+            return Diagnostic.Create(
+                Rules.AlarmNotCompatibleWithType,
+                propertySyntax.GetLocation());
+        }
+
+        return null;
+    }
+
 
     private static int RangeThresholdMismatch(
         List<AttributeData> alarmAttributes)

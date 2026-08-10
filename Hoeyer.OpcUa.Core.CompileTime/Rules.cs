@@ -65,6 +65,11 @@ public static class Rules
         DesignCategory,
         "The range {0} to {1} does not construct a legal range'");
 
+    public static readonly DiagnosticDescriptor AlarmNotCompatibleWithType = CreateErrorDescriptor(
+        "HOEYERUA0011",
+        DesignCategory,
+        "The type is not compatible with the chosen alarm");
+
     public static Diagnostic MustNotBeNullableProperty(PropertyDeclarationSyntax property) =>
         Diagnostic.Create(MustNotBeNullablePropertyDescriptor, property.GetLocation(), property.Identifier);
 

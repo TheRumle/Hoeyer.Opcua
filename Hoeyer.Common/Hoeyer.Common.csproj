@@ -7,10 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2026.2.0"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.9"/>
-        <PackageReference Include="System.Collections.Immutable" Version="10.0.9"/>
-        <PackageReference Include="System.Threading.Channels" Version="10.0.9"/>
+        <PackageReference Include="JetBrains.Annotations"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
+        <PackageReference Include="System.Collections.Immutable"/>
+        <PackageReference Include="System.Threading.Channels"/>
     </ItemGroup>
 
 </Project>

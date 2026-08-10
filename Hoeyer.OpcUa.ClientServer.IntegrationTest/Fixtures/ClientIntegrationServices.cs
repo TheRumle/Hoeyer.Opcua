@@ -1,15 +1,10 @@
 ﻿using Hoeyer.OpcUa.Client.Application.Connection;
-using Hoeyer.OpcUa.Client.Services;
-using Hoeyer.OpcUa.Core.Configuration;
-using Hoeyer.OpcUa.Core.Configuration.ConfigurationBuilder;
 using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
 using Hoeyer.OpcUa.IntegrationTest.TUnitConfiguration.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Fixtures;
 
-public class ClientIntegrationServices : IDisposable
+public sealed class ClientIntegrationServices : IDisposable
 {
     public readonly OnGoingOpcEntityServiceRegistrationWithModels OpcServices;
 
