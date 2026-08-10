@@ -1,4 +1,6 @@
-﻿namespace Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
+﻿using Hoeyer.OpcUa.Core;
+
+namespace Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
 
 [OpcUaEntity]
 public sealed record TestEntity
