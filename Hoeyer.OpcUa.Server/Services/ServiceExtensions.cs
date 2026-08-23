@@ -127,6 +127,7 @@ public static class ServiceExtensions
                     return ex.Types.Where(t => t != null).ToArray();
                 }
             })
+            .Where(type => type is { IsInterface: false, IsAbstract: false })
             .Select(type =>
             {
                 var foundLoaderInterface = type
