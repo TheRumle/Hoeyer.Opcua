@@ -2,8 +2,8 @@
 
 [AttributeUsage(AttributeTargets.Property)]
 public class LegalRangeAlarmAttribute(
-    double minimumWarningThreshold,
     double minimumDangerThreshold,
+    double minimumWarningThreshold,
     double maximumWarningThreshold,
     double maximumDangerThreshold,
     string browseName,
@@ -20,12 +20,10 @@ public class LegalRangeAlarmAttribute(
         double minimumDangerThreshold,
         double maximumDangerThreshold,
         string browseName,
-        AlarmSeverity severity) : this(
-        minimumDangerThreshold,
+        AlarmSeverity severity) : this(minimumDangerThreshold,
         minimumDangerThreshold,
         maximumDangerThreshold,
-        maximumDangerThreshold,
-        browseName, severity)
+        maximumDangerThreshold, browseName, severity)
     {
     }
 }

@@ -6,7 +6,7 @@ public sealed class MinimumThresholdExceededAlarmAttribute(
     double lowWarningThreshold,
     string browseName,
     AlarmSeverity severity)
-    : LegalRangeAlarmAttribute(lowWarningThreshold, lowDangerThreshold, double.MaxValue, double.MaxValue, browseName,
-        severity)
+    : LegalRangeAlarmAttribute(lowDangerThreshold, lowWarningThreshold, double.MaxValue, double.MaxValue,
+        browseName, severity)
 {
 }

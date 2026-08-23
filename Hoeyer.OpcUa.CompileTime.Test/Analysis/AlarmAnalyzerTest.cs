@@ -25,7 +25,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
                                                     {{ALARM_USINGS}}
                                                     public sealed record {{ENTITY_CLASS}}
                                                     {
-                                                        [{{nameof(MaximumThresholdExceededAlarmAttribute)}}(1, 1, "IntValueAlarm", AlarmSeverity.Critical)]
+                                                        [{{nameof(MaximumThresholdExceededAlarmAttribute)}}(1, 1, "IntValueAlarm", {{nameof(AlarmSeverity)}}.{{nameof(AlarmSeverity.Critical)}})]
                                                         public int MyInt {get; set;}
                                                     }
                                                     """;
@@ -42,7 +42,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
                                                     {{ALARM_USINGS}}
                                                     public sealed record {{ENTITY_CLASS}}
                                                     {
-                                                        [{{nameof(MaximumThresholdExceededAlarmAttribute)}}(2, 1, "IntValueAlarm", AlarmSeverity.Critical)]
+                                                        [{{nameof(MaximumThresholdExceededAlarmAttribute)}}(2, 1, "IntValueAlarm", {{nameof(AlarmSeverity)}}.{{nameof(AlarmSeverity.Critical)}})]
                                                         public int MyInt {get; set;}
                                                     }
                                                     """;
@@ -62,7 +62,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
                                            {{ALARM_USINGS}}
                                            public sealed record {{ENTITY_CLASS}}
                                            {
-                                               [{{alarmType}}(2, 1, "Guid", AlarmSeverity.Critical)]
+                                               [{{alarmType}}(2, 1, "Guid", {{nameof(AlarmSeverity)}}.{{nameof(AlarmSeverity.Critical)}})]
                                                public string myString {get; set;}
                                            }
                                            """;
@@ -79,7 +79,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
                                            {{ALARM_USINGS}}
                                            public sealed record {{ENTITY_CLASS}}
                                            {
-                                               [{{alarmType}}(1, 2, "int", AlarmSeverity.Critical)]
+                                               [{{alarmType}}(1, 2, "int", {{nameof(AlarmSeverity)}}.{{nameof(AlarmSeverity.Critical)}})]
                                                public int myyInt {get; set;}
                                            }
                                            """;
@@ -97,7 +97,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
                                                  {{ALARM_USINGS}}
                                                  public sealed record {{ENTITY_CLASS}}
                                                  {
-                                                     [{{nameof(MaximumThresholdExceededAlarmAttribute)}}(1, 2, "IntValueAlarm", AlarmSeverity.Critical)]
+                                                     [{{nameof(MaximumThresholdExceededAlarmAttribute)}}(1, 2, "IntValueAlarm", {{nameof(AlarmSeverity)}}.{{nameof(AlarmSeverity.Critical)}})]
                                                      public int MyInt {get; set;}
                                                  }
                                                  """;
@@ -114,7 +114,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
                                                     {{ALARM_USINGS}}
                                                     public sealed record {{ENTITY_CLASS}}
                                                     {
-                                                        [{{nameof(MinimumThresholdExceededAlarmAttribute)}}(1, 1, "IntValueAlarm", AlarmSeverity.Critical)]
+                                                        [{{nameof(MinimumThresholdExceededAlarmAttribute)}}(1, 1, "IntValueAlarm", {{nameof(AlarmSeverity)}}.{{nameof(AlarmSeverity.Critical)}})]
                                                         public int MyInt {get; set;}
                                                     }
                                                     """;
@@ -131,7 +131,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
                                                     {{ALARM_USINGS}}
                                                     public sealed record {{ENTITY_CLASS}}
                                                     {
-                                                        [{{nameof(MinimumThresholdExceededAlarmAttribute)}}(2, 1, "IntValueAlarm", AlarmSeverity.Critical)]
+                                                        [{{nameof(MinimumThresholdExceededAlarmAttribute)}}(2, 1, "IntValueAlarm", {{nameof(AlarmSeverity)}}.{{nameof(AlarmSeverity.Critical)}})]
                                                         public int MyInt {get; set;}
                                                     }
                                                     """;
@@ -148,7 +148,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
                                                  {{ALARM_USINGS}}
                                                  public sealed record {{ENTITY_CLASS}}
                                                  {
-                                                     [{{nameof(LegalRangeAlarmAttribute)}}(11, 9, "IntValueAlarm", AlarmSeverity.Critical)]
+                                                     [{{nameof(LegalRangeAlarmAttribute)}}(11, 9, "IntValueAlarm", {{nameof(AlarmSeverity)}}.{{nameof(AlarmSeverity.Critical)}})]
                                                      public int MyInt {get; set;}
                                                  }
                                                  """;
@@ -166,7 +166,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
                                                  {{ALARM_USINGS}}
                                                  public sealed record {{ENTITY_CLASS}}
                                                  {
-                                                     [{{nameof(LegalRangeAlarmAttribute)}}(11, 13, "IntValueAlarm", AlarmSeverity.Critical)]
+                                                     [{{nameof(LegalRangeAlarmAttribute)}}(11, 13, "IntValueAlarm", {{nameof(AlarmSeverity)}}.{{nameof(AlarmSeverity.Critical)}})]
                                                      public int MyInt {get; set;}
                                                  }
                                                  """;
@@ -182,7 +182,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
                                                  {{ALARM_USINGS}}
                                                  public sealed record {{ENTITY_CLASS}}
                                                  {
-                                                     [{{nameof(LegalRangeAlarmAttribute)}}(1,1,2,1, "IntValueAlarm", AlarmSeverity.Critical)]
+                                                     [{{nameof(LegalRangeAlarmAttribute)}}(1,1,2,1, "IntValueAlarm", {{nameof(AlarmSeverity)}}.{{nameof(AlarmSeverity.Critical)}})]
                                                      public int MyInt {get; set;}
                                                  }
                                                  """;
@@ -200,11 +200,30 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
                                                  {{ALARM_USINGS}}
                                                  public sealed record {{ENTITY_CLASS}}
                                                  {
-                                                     [{{nameof(LegalRangeAlarmAttribute)}}(1,1,2,2, "IntValueAlarm", AlarmSeverity.Critical)]
+                                                     [{{nameof(LegalRangeAlarmAttribute)}}(1,1,2,2, "IntValueAlarm", {{nameof(AlarmSeverity)}}.{{nameof(AlarmSeverity.Critical)}})]
                                                      public int MyInt {get; set;}
                                                  }
                                                  """;
         var diagnostics = (await Driver.RunAnalyzerOn(nonEntityAnnotatedClass, token)).Diagnostics.ToList();
+        await Assert.That(diagnostics.Count).IsEqualTo(0);
+    }
+
+
+    [Test]
+    [DisplayName(
+        $"When using {nameof(LegalRangeAlarmAttribute)} should not report error when range is legal")]
+    public async Task When_LegalRangeAlarm_WithValidRange_DoesNotReportError_Ctor3(CancellationToken token)
+    {
+        const string alarmAnnotatedClass = $$"""
+
+                                             {{ALARM_USINGS}}
+                                             public sealed class {{ENTITY_CLASS}}
+                                             {
+                                                 [{{nameof(LegalRangeAlarmAttribute)}}(-2, 0, 2d, 4, "ALARM", {{nameof(AlarmSeverity)}}.{{nameof(AlarmSeverity.Critical)}})]
+                                                 public int I { get; set; }
+                                             }
+                                             """;
+        var diagnostics = (await Driver.RunAnalyzerOn(alarmAnnotatedClass, token)).Diagnostics.ToList();
         await Assert.That(diagnostics.Count).IsEqualTo(0);
     }
 
