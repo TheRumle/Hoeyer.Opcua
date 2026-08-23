@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Hoeyer.OpcUa.Core.CompileTime.Extensions;
+﻿using Hoeyer.OpcUa.Core.CompileTime.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -49,7 +46,7 @@ public sealed class EntityAnalyzer() : ConcurrentAnalyzer([
                 EnumDeclarationSyntax => true,
                 MethodDeclarationSyntax => true,
                 TypeDeclarationSyntax => true,
-                _ => false
+                var _ => false
             }).ToList();
 
         var unsupportedMembers = typeSyntax
@@ -80,17 +77,17 @@ public sealed class EntityAnalyzer() : ConcurrentAnalyzer([
 
     private static IEnumerable<Diagnostic> GetAssessabilityViolations(List<MemberDeclarationSyntax> supportedMembers)
     {
-        Predicate<PropertyDeclarationSyntax> IsSupported = (p) =>
+        Predicate<PropertyDeclarationSyntax> IsSupported = p =>
         {
-            bool isPublic = p.Modifiers.Any(mod => mod.IsKind(SyntaxKind.PublicKeyword));
-            bool hasSetter = p.AccessorList?.Accessors
+            var isPublic = p.Modifiers.Any(mod => mod.IsKind(SyntaxKind.PublicKeyword));
+            var hasSetter = p.AccessorList?.Accessors
                 .Any(accessor => accessor.Kind() == SyntaxKind.SetAccessorDeclaration) == true;
 
             return (isPublic, hasSetter) switch
             {
                 (true, true) => true,
                 (true, false) => false,
-                (false, _) => false,
+                (false, var _) => false
             };
         };
 

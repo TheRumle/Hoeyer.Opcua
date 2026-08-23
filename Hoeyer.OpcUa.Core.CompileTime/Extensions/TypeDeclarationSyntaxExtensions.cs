@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Hoeyer.OpcUa.Core.CompileTime.CodeDomain;
+﻿using Hoeyer.OpcUa.Core.CompileTime.CodeDomain;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -66,7 +64,7 @@ public static class TypeDeclarationSyntaxExtensions
         ?? [];
 
     public static bool IsOpcAlarmAttributeSymbol(this AttributeData attribute) =>
-        IsTypeInheritingFrom(attribute.AttributeClass, WellKnown.FullyQualifiedAttribute.AlarmAttribute);
+        attribute.AttributeClass.IsTypeInheritingFrom(WellKnown.FullyQualifiedAttribute.AlarmAttribute);
 
     public static bool IsType(this INamedTypeSymbol clazz, FullyQualifiedTypeName target) =>
         target.WithGlobalPrefix.Equals(clazz.GloballyQualifiedNonGeneric());

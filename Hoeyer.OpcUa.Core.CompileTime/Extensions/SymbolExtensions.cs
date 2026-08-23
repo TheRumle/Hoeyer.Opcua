@@ -5,15 +5,11 @@ namespace Hoeyer.OpcUa.Core.CompileTime.Extensions;
 
 public static class SymbolExtensions
 {
-    public static string GloballyQualifiedNonGeneric(this ISymbol typeSymbol)
-    {
-        return typeSymbol.ToDisplayString(SymbolDisplayFormats.FullyQualifiedNonGenericWithGlobalPrefix);
-    }
+    public static string GloballyQualifiedNonGeneric(this ISymbol typeSymbol) =>
+        typeSymbol.ToDisplayString(SymbolDisplayFormats.FullyQualifiedNonGenericWithGlobalPrefix);
 
-    public static string ToFullyQualifiedTypeName(this ITypeSymbol symbol)
-    {
-        return symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-    }
+    public static string ToFullyQualifiedTypeName(this ITypeSymbol symbol) =>
+        symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
 
     public static bool IsNumericType(this ITypeSymbol type)
     {
@@ -30,7 +26,7 @@ public static class SymbolExtensions
             SpecialType.System_Single => true,
             SpecialType.System_Double => true,
             SpecialType.System_Decimal => true,
-            _ => false
+            var _ => false
         };
     }
 }

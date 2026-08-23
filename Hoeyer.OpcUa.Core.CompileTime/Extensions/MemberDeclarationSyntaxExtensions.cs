@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Hoeyer.OpcUa.Core.CompileTime.Extensions;
@@ -8,7 +7,7 @@ public static class MemberDeclarationSyntaxExtensions
 {
     public static (string? violator, Location location) GetIdentifierText(this MemberDeclarationSyntax member)
     {
-        string? name = member switch
+        var name = member switch
         {
             PropertyDeclarationSyntax field => field.Identifier.Text,
             EventFieldDeclarationSyntax field => string.Join(", ",
@@ -26,7 +25,7 @@ public static class MemberDeclarationSyntaxExtensions
             TypeDeclarationSyntax field => field.Identifier.Text,
             BaseTypeDeclarationSyntax field => field.Identifier.Text,
             EnumMemberDeclarationSyntax field => field.Identifier.Text,
-            _ => null
+            var _ => null
         };
 
         return (name, member.GetLocation());

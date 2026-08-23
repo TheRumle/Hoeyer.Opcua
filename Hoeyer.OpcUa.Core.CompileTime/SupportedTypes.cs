@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -12,15 +11,24 @@ public static class SupportedTypes
     {
         var taskType = model.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
         var taskOfTType = model.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task`1");
-        TypeInfo modelType = model.GetTypeInfo(syntax);
-        ITypeSymbol? typeSymbol = modelType.Type;
-        if (typeSymbol is not INamedTypeSymbol namedTypeSymbol) return false;
+        var modelType = model.GetTypeInfo(syntax);
+        var typeSymbol = modelType.Type;
+        if (typeSymbol is not INamedTypeSymbol namedTypeSymbol)
+        {
+            return false;
+        }
 
-        if (SymbolEqualityComparer.Default.Equals(namedTypeSymbol, taskType)) return true;
+        if (SymbolEqualityComparer.Default.Equals(namedTypeSymbol, taskType))
+        {
+            return true;
+        }
 
-        if (!SymbolEqualityComparer.Default.Equals(namedTypeSymbol.OriginalDefinition, taskOfTType)) return false;
+        if (!SymbolEqualityComparer.Default.Equals(namedTypeSymbol.OriginalDefinition, taskOfTType))
+        {
+            return false;
+        }
 
-        ITypeSymbol typeArg = namedTypeSymbol.TypeArguments.First();
+        var typeArg = namedTypeSymbol.TypeArguments.First();
         return Simple.Supports(typeArg) || Collection.Supports(typeArg);
     }
 
@@ -84,29 +92,38 @@ public static class SupportedTypes
                 return true;
             }
 
-            if (type.TypeKind == TypeKind.Enum) return true;
+            if (type.TypeKind == TypeKind.Enum)
+            {
+                return true;
+            }
 
             if (type is INamedTypeSymbol namedType &&
                 namedType.ContainingNamespace?.ToDisplayString() == "System" &&
                 namedType.Name == "Guid")
+            {
                 return true;
+            }
 
             return false;
         }
     }
 
     /// <summary>
-    /// Currently supported types are: generic lists
+    ///     Currently supported types are: generic lists
     /// </summary>
     private static class Collection
     {
         public static bool Supports(ITypeSymbol typeSymbol)
         {
-            if (typeSymbol is not INamedTypeSymbol named) return false;
+            if (typeSymbol is not INamedTypeSymbol named)
+            {
+                return false;
+            }
+
             var isIlist = named.OriginalDefinition.SpecialType == SpecialType.System_Collections_Generic_IList_T;
-            bool isList = named.OriginalDefinition.Name == "List" &&
-                          named.OriginalDefinition.ContainingNamespace.ToDisplayString() ==
-                          "System.Collections.Generic";
+            var isList = named.OriginalDefinition.Name == "List" &&
+                         named.OriginalDefinition.ContainingNamespace.ToDisplayString() ==
+                         "System.Collections.Generic";
 
             if (isList || isIlist)
             {

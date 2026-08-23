@@ -1,7 +1,5 @@
 ﻿using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -20,10 +18,7 @@ public sealed class PropertiesMustBePublicFixProvider : CodeFixProvider
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =
         [Rules.MustHavePublicSetter.Id];
 
-    public override FixAllProvider? GetFixAllProvider()
-    {
-        return null;
-    }
+    public override FixAllProvider? GetFixAllProvider() => null;
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {

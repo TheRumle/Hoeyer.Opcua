@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Hoeyer.OpcUa.Core.CompileTime.Extensions;
+﻿using Hoeyer.OpcUa.Core.CompileTime.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -85,9 +83,13 @@ public sealed class EntityBehaviourAnalyzer()
     private static IEnumerable<Diagnostic> GetGenericArgNotEntity(TypeDeclarationSyntax interfaceSyntax,
         SemanticModel model)
     {
-        AttributeData? attribute = interfaceSyntax.GetOpcUaEntityBehaviourAttribute(model);
-        ITypeSymbol? targetType = attribute?.AttributeClass?.TypeArguments.FirstOrDefault();
-        if (targetType == null) yield break;
+        var attribute = interfaceSyntax.GetOpcUaEntityBehaviourAttribute(model);
+        var targetType = attribute?.AttributeClass?.TypeArguments.FirstOrDefault();
+        if (targetType == null)
+        {
+            yield break;
+        }
+
         if (!targetType.IsAnnotatedAsOpcUaEntity())
         {
             yield return Diagnostic.Create(Rules.MustBeOpcEntityArgument, interfaceSyntax.Identifier.GetLocation());

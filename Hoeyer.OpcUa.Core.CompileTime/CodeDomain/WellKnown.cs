@@ -21,9 +21,6 @@ public static class WellKnown
         public static readonly FullyQualifiedTypeName EntityBehaviourAttribute =
             GetTypeName("OpcUaEntityMethodsAttribute");
 
-        private static FullyQualifiedTypeName GetTypeName(string className)
-        {
-            return new FullyQualifiedTypeName("Hoeyer.OpcUa.Core." + className);
-        }
+        private static FullyQualifiedTypeName GetTypeName(string className) => new("Hoeyer.OpcUa.Core." + className);
     }
 }

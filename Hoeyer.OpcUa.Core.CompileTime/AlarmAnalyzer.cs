@@ -39,7 +39,10 @@ public class AlarmAnalyser() : ConcurrentAnalyzer([Rules.IllegalRange, Rules.Ala
         PropertyDeclarationSyntax propertySyntax, SemanticModel semanticModel)
     {
         var typeMismatch = CreatePropertyTypeIncompatibilityDiagnostic(alarms, propertySyntax, semanticModel);
-        if (typeMismatch is not null) return [typeMismatch];
+        if (typeMismatch is not null)
+        {
+            return [typeMismatch];
+        }
 
 
         return Enumerable.Range(0, RangeThresholdMismatch(alarms)
