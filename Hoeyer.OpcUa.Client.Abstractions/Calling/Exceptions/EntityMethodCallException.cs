@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Hoeyer.OpcUa.Client.Abstractions.Calling.Exceptions;
+﻿namespace Hoeyer.OpcUa.Client.Abstractions.Calling.Exceptions;
 
 public sealed class EntityMethodCallException : Exception
 {

@@ -23,11 +23,10 @@ public sealed class EntitySubscriptionManagerTest(IntegrationTestFixture fixture
     [Test]
     public async Task WhenWritingNode_ObserverIsNotified(CancellationToken token)
     {
-        ((ICurrentEntityStateChannel<Gantry> channel, IMessageSubscription _),
-            (CountingConsumer<Gantry> observer, IMessageSubscription _)) = await CreateSubscriberPair(token);
+        var ((channel, _), (observer, _)) = await CreateSubscriberPair(token);
         await WriteNode();
         await channel.Reader.WaitToReadAsync(token);
-        Gantry result = (await channel.Reader.ReadAsync(token)).Payload;
+        var result = (await channel.Reader.ReadAsync(token)).Payload;
 
         await Assert.That(observer.Count).IsEqualTo(NumberOfGantryPropsChanged);
         await Assert.That(result.StringValue).IsEqualTo(EXPECTED_STRING_VALUE);
@@ -37,8 +36,7 @@ public sealed class EntitySubscriptionManagerTest(IntegrationTestFixture fixture
     [Test]
     public async Task WhenPausingNotification_ObserverIsNotNotified(CancellationToken token)
     {
-        ((ICurrentEntityStateChannel<Gantry> channel, IMessageSubscription _),
-            (CountingConsumer<Gantry> observer, IMessageSubscription subscription)) = await CreateSubscriberPair(token);
+        var ((channel, _), (observer, subscription)) = await CreateSubscriberPair(token);
         subscription.Pause();
 
         await WriteNode();
@@ -50,8 +48,7 @@ public sealed class EntitySubscriptionManagerTest(IntegrationTestFixture fixture
     [Test]
     public async Task WhenSubscriptionIsCancelled_ObserverIsNotNotified(CancellationToken token)
     {
-        ((ICurrentEntityStateChannel<Gantry> channel, IMessageSubscription _),
-            (CountingConsumer<Gantry> observer, IMessageSubscription subscription)) = await CreateSubscriberPair(token);
+        var ((channel, _), (observer, subscription)) = await CreateSubscriberPair(token);
         subscription.Dispose();
 
         await WriteNode();

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Hoeyer.Common.Reflection;
+﻿namespace Hoeyer.Common.Reflection;
 
 public static class TypeExtensions
 {

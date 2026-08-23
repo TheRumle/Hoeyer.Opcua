@@ -42,7 +42,7 @@ public static class TestContextExtensions
         return (pair.Shared, pair.Key) switch
         {
             (null, null) => TestKeys.PerTestSessionKey,
-            (SharedType.PerTestSession, _) => TestKeys.PerTestSessionKey,
+            (SharedType.PerTestSession, var _) => TestKeys.PerTestSessionKey,
             (SharedType.Keyed, var k) => k!,
             (SharedType.PerClass, var _) => perClassName,
             (SharedType.PerAssembly, var _) => TestKeys.PER_ASSEMBLY_KEY,

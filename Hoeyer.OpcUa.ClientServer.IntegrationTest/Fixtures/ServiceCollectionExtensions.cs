@@ -21,7 +21,8 @@ public static class ServiceCollectionExtensions
     public static OnGoingOpcEntityServiceRegistrationWithModels AddClientTestServices(
         this IServiceCollection services,
         OpcEnvironment args,
-        Type[] clientModelMarker) => AddClientTestServices(services, args, clientModelMarker, clientModelMarker);
+        Type[] clientModelMarker) =>
+        services.AddClientTestServices(args, clientModelMarker, clientModelMarker);
 
     public static OnGoingOpcEntityServiceRegistrationWithModels AddClientTestServices(
         this IServiceCollection services,
@@ -56,12 +57,12 @@ public static class ServiceCollectionExtensions
                         OwnStorePath = Path.Combine(PkiRoot, "own"),
                         TrustedStorePath = Path.Combine(PkiRoot, "trusted"),
                         IssuerStorePath = Path.Combine(PkiRoot, "issuer"),
-                        RejectedStorePath = Path.Combine(PkiRoot, "rejected"),
+                        RejectedStorePath = Path.Combine(PkiRoot, "rejected")
                     })
                 .Build())
             .WithEntityModelsFrom(entityAssemblyMarkers)
             .WithOpcUaClientModelsFrom(clientModelMarker,
-                configure: c => { c.WithEntitySessionFactory<EntitySessionFactory>(); });
+                c => { c.WithEntitySessionFactory<EntitySessionFactory>(); });
     }
 
 
@@ -72,7 +73,7 @@ public static class ServiceCollectionExtensions
         Type[] clientModelMarker,
         Type[] serverModelMarker)
     {
-        var clientServices = AddClientTestServices(services, args, entityAssemblyMarkers, clientModelMarker);
+        var clientServices = services.AddClientTestServices(args, entityAssemblyMarkers, clientModelMarker);
         clientServices.WithOpcUaServer(serverModelMarker);
     }
 
@@ -80,6 +81,6 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         OpcEnvironment args,
         Type[] entityAssemblyMarkers) =>
-        AddClientTestServices(services, args, entityAssemblyMarkers, entityAssemblyMarkers)
+        services.AddClientTestServices(args, entityAssemblyMarkers, entityAssemblyMarkers)
             .WithOpcUaServer(entityAssemblyMarkers);
 }

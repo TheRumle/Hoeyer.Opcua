@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Hoeyer.OpcUa.Core.Abstractions;
+﻿using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Hoeyer.OpcUa.Simulation.Abstractions.Configuration;
 using Hoeyer.OpcUa.Simulation.Abstractions.Execution.ExecutionSteps;

@@ -1,8 +1,10 @@
 ﻿namespace Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 
 /// <summary>
-/// An exception indicating that an <see cref="IEntityNodeProvider{T}"/> has been registered for the entity but is unable to get the node.
-/// This exception is thrown if, for instance, an <see cref="IEntityNodeManager"/> has not been configured for the node. 
+///     An exception indicating that an <see cref="IEntityNodeProvider{T}" /> has been registered for the entity but is
+///     unable to get the node.
+///     This exception is thrown if, for instance, an <see cref="IEntityNodeManager" /> has not been configured for the
+///     node.
 /// </summary>
 public sealed class EntityNodeProviderException(string s) : Exception(s)
 {

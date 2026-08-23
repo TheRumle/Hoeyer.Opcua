@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Hoeyer.Common.Extensions.Types;
+﻿namespace Hoeyer.Common.Extensions.Types;
 
 public static class ListExtensions
 {
     public static void AddRange<T>(this IList<T> list, IEnumerable<T> items)
     {
-        foreach (var i in items) list.Add(i);
+        foreach (var i in items)
+        {
+            list.Add(i);
+        }
     }
 
     public static (List<TValue> Fit, List<TValue> Fail) WithSuccessCriteria<TValue>(this IEnumerable<TValue> values,
@@ -28,6 +27,7 @@ public static class ListExtensions
         var nonMatching = new List<T>();
 
         foreach (var item in source)
+        {
             if (predicate(item))
             {
                 matching.Add(item);
@@ -36,6 +36,7 @@ public static class ListExtensions
             {
                 nonMatching.Add(item);
             }
+        }
 
         return (matching, nonMatching);
     }

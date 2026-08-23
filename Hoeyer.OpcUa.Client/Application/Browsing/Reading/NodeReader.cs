@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Hoeyer.Common.Extensions.Types;
+﻿using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Abstractions;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing.Reading;
 using Microsoft.Extensions.Logging;
@@ -19,7 +15,7 @@ internal sealed class NodeReader(ILogger<NodeReader> logger) : INodeReader
         NodeClass filter = NodeClass.Unspecified,
         CancellationToken ct = default)
     {
-        List<NodeId> idList = ids.ToList();
+        var idList = ids.ToList();
 
         logger.LogTrace("Reading nodes {nodes}", string.Join(", ", idList));
         var responseTuples = await session.ReadNodesAsync(idList, filter, ct: ct);

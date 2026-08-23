@@ -19,6 +19,6 @@ public sealed record OpcEnvironment
             Port = port,
             OpcUaServerId = SERVER_ID,
             OpcUaServerName = SERVER_NAME,
-            Protocol = WebProtocol.OpcTcp,
+            Protocol = WebProtocol.OpcTcp
         };
 }

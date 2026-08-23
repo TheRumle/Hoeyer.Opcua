@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using Hoeyer.Common.Messaging.Api;
 
 namespace Hoeyer.Common.Messaging.Subscriptions;
@@ -25,14 +22,14 @@ public sealed class SubscriptionCollection<T> : ISubscriptionCollection<T>
     [Pure]
     public IMessageSubscription<T> Subscribe(IMessageConsumer<T> subscriber)
     {
-        IMessageSubscription<T>? subscription = _subscriptionFactory.Invoke(subscriber);
+        var subscription = _subscriptionFactory.Invoke(subscriber);
         _subscriptions.TryAdd(subscription.SubscriptionId, subscription);
         return subscription;
     }
 
     public void Remove(Guid messageSubscription)
     {
-        _subscriptions.TryRemove(messageSubscription, out _);
+        _subscriptions.TryRemove(messageSubscription, out var _);
     }
 
     [Pure]

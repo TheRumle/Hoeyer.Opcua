@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 
 namespace Hoeyer.Common.Extensions.LoggingExtensions;
@@ -13,8 +10,8 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
     private object[]? _messageArgs;
     private string? _scope;
     private object[]? _scopeArgs;
-    private bool HasScope => _scope != null;
     public ILogger Logger { get; } = logger;
+    private bool HasScope => _scope != null;
 
     public void WhenExecuting(Action action)
     {
@@ -83,8 +80,8 @@ internal sealed class LoggingSetup(ILogger logger, LogLevel logLevel, Func<Excep
     /// <inheritdoc />
     public IScopeSelected WithScope(object scopeArguments)
     {
-        this._scopeArgs = [scopeArguments];
-        this._message = "";
+        _scopeArgs = [scopeArguments];
+        _message = "";
         return this;
     }
 

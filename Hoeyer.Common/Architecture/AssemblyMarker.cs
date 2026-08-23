@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Hoeyer.Common.Architecture;
+﻿namespace Hoeyer.Common.Architecture;
 
 public sealed record AssemblyMarker(Type Marker)
 {

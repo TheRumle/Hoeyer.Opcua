@@ -1,21 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Hoeyer.Common.Extensions.Exceptions;
+﻿namespace Hoeyer.Common.Extensions.Exceptions;
 
 public static class ExceptionExtensions
 {
-    public static AggregateException ToAggregateException(this IEnumerable<Exception> exceptions)
-    {
-        return new AggregateException(exceptions);
-    }
+    public static AggregateException ToAggregateException(this IEnumerable<Exception> exceptions) => new(exceptions);
 
     public static TResult ToNewlineSeparated<TResult>(this IEnumerable<Exception> exceptions,
-        Func<string, TResult> newException) where TResult : Exception
-    {
-        return ToCharSeparated(exceptions, '\n', newException);
-    }
+        Func<string, TResult> newException) where TResult : Exception =>
+        exceptions.ToCharSeparated('\n', newException);
 
     public static TResult ToCharSeparated<TResult>(this IEnumerable<Exception> exceptions, char character,
         Func<string, TResult> newException) where TResult : Exception

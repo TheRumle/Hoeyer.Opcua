@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Hoeyer.Common.Messaging.Api;
+﻿using Hoeyer.Common.Messaging.Api;
 using Hoeyer.OpcUa.Simulation.Abstractions.Execution;
 using Hoeyer.OpcUa.Simulation.Abstractions.PostProcessing;
 
@@ -22,10 +20,7 @@ internal class SimulationProcessorPipeline<TState, TArgs> : ISimulationProcessor
     }
 
 
-    public ValueTask OnSimulationBegin(TArgs args)
-    {
-        return default;
-    }
+    public ValueTask OnSimulationBegin(TArgs args) => default;
 
     public ValueTask ProcessStateChange(SimulationResult<TState> stateChange)
     {

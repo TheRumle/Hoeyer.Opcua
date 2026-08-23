@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Simulation.Services;
 
 /// <summary>
-/// A container that holds dependency injection services for the simulation framework. Holds a scope for the services
+///     A container that holds dependency injection services for the simulation framework. Holds a scope for the services
 /// </summary>
 public sealed class SimulationServicesContainer(IServiceCollection collection) : IServiceProvider, IServiceCollection
 {

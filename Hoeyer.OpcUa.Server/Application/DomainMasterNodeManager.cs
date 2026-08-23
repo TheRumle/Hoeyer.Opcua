@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Hoeyer.OpcUa.Core.Abstractions;
+﻿using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Opc.Ua;
 using Opc.Ua.Server;

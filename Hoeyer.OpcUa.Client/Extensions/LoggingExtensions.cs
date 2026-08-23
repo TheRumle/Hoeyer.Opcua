@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Hoeyer.Common.Extensions;
+﻿using Hoeyer.Common.Extensions;
 using Opc.Ua;
 using Opc.Ua.Client;
 
@@ -48,14 +47,18 @@ public static class LoggingExtensions
 
     public static object ToLoggingObject(this EndpointDescription? item)
     {
-        if (item == null) return "[null]";
+        if (item == null)
+        {
+            return "[null]";
+        }
+
         return new
         {
             item.EndpointUrl,
             item.SecurityMode,
             item.SecurityPolicyUri,
             UserIdentityTokens = item.UserIdentityTokens.Select(e => new { e.PolicyId, e.TokenType }.ToString())
-                .ToCommaSeparatedString(),
+                .ToCommaSeparatedString()
         };
     }
 }

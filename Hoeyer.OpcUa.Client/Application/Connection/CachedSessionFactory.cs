@@ -1,7 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Hoeyer.OpcUa.Client.Application.Subscriptions;
 using Microsoft.Extensions.Logging;
@@ -24,7 +21,7 @@ public class CachedSessionFactory(
             { "ClientKey", clientKey }
         });
 
-        if (!_sessions.TryGetValue(clientKey, out IEntitySession? existingSession))
+        if (!_sessions.TryGetValue(clientKey, out var existingSession))
         {
             logger.LogInformation("No cache hit.");
             return _sessions[clientKey] = await entitySessionFactory.GetSessionAsync(clientKey, token);

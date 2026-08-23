@@ -1,5 +1,4 @@
-﻿using System;
-using Hoeyer.OpcUa.Client.Abstractions.Browsing;
+﻿using Hoeyer.OpcUa.Client.Abstractions.Browsing;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing.Reading;
 using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Hoeyer.OpcUa.Client.Application.Browsing;
@@ -15,7 +14,7 @@ namespace Hoeyer.OpcUa.Client.Services;
 public sealed class ClientServiceConfiguration
 {
     public static readonly ClientServiceConfiguration Default = new();
-    public Action<ApplicationConfiguration> clientConfig { get; private set; } = (_) => { };
+    public Action<ApplicationConfiguration> clientConfig { get; private set; } = _ => { };
     public Type TraversalStrategy { get; private set; } = typeof(BreadthFirstStrategy);
     public Type Browser { get; private set; } = typeof(NodeBrowser);
     public Type NodeReader { get; private set; } = typeof(NodeReader);
@@ -56,7 +55,7 @@ public sealed class ClientServiceConfiguration
 
     public ClientServiceConfiguration ConfigureClientApplication(Action<ApplicationConfiguration> appConfiguration)
     {
-        this.clientConfig = appConfiguration;
+        clientConfig = appConfiguration;
         return this;
     }
 

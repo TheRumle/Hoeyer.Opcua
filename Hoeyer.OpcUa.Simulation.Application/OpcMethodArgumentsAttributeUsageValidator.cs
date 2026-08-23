@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Simulation.Abstractions;

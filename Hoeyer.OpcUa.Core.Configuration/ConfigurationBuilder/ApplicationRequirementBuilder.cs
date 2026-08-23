@@ -11,7 +11,7 @@ public class ApplicationRequirementBuilder : IApplicationTargetConfigurationBuil
     private string _serverId = string.Empty;
     private string _serverName = string.Empty;
     private WebProtocol _webProtocol;
-    private CertificateConfiguration? _security = null;
+    private CertificateConfiguration? _security;
 
 
     private ApplicationRequirementBuilder()

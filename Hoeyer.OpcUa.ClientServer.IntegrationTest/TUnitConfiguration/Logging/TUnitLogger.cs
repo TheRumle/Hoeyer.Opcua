@@ -9,10 +9,8 @@ public sealed class TUnitLogger(
     : ILogger
 {
     public IDisposable BeginScope<TState>(TState state)
-        where TState : notnull
-    {
-        return scopeProvider.Push(state);
-    }
+        where TState : notnull =>
+        scopeProvider.Push(state);
 
     public bool IsEnabled(LogLevel logLevel)
         => true;

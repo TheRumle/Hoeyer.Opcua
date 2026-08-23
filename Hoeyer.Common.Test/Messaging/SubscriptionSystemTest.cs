@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 using Hoeyer.Common.Extensions.Async;
 using Hoeyer.Common.Messaging.Api;
 using Hoeyer.Common.Messaging.Subscriptions;
@@ -25,9 +20,9 @@ public abstract class SubscriptionSystemTest(IMessageSubscriptionFactory<int> fa
 
     public static IEnumerable<Func<(int consumers, int messages)>> IncreasingLoad()
     {
-        for (int i = 1; i < 13; i++)
+        for (var i = 1; i < 13; i++)
         {
-            for (int j = 1; j < i; j++)
+            for (var j = 1; j < i; j++)
             {
                 yield return () => ((int)Math.Pow(i, 2), (int)Math.Pow(j, 2));
             }
@@ -59,7 +54,7 @@ public abstract class SubscriptionSystemTest(IMessageSubscriptionFactory<int> fa
     public async Task WhenUnsubscribing_NumberOfSubscriptions_Decreases(CancellationToken token)
     {
         var subscriber = new TestSubscriber(1, token);
-        IMessageSubscription<int> subscription = publisher.Subscribe(subscriber);
+        var subscription = publisher.Subscribe(subscriber);
         var before = publisher.Collection.ActiveSubscriptionsCount;
         subscription.Dispose();
         await Assert.That(publisher.Collection.ActiveSubscriptionsCount).IsLessThan(before);
@@ -80,7 +75,7 @@ public abstract class SubscriptionSystemTest(IMessageSubscriptionFactory<int> fa
     public void CanHandleManyRequests_With_Changing_Subscribers(int consumers, int requests)
     {
         List<TestSubscriber> subscribers = new();
-        for (int i = 0; i < consumers; i++)
+        for (var i = 0; i < consumers; i++)
         {
             var s = new TestSubscriber(10, CancellationToken.None);
             subscribers.Add(s);
@@ -88,7 +83,7 @@ public abstract class SubscriptionSystemTest(IMessageSubscriptionFactory<int> fa
             s.MessageSubscription = sub;
         }
 
-        for (int i = 0; i < requests; i++)
+        for (var i = 0; i < requests; i++)
         {
             var value = _rand.Next(0, consumers);
             if (subscribers[value].MessageSubscription.IsPaused)
@@ -110,7 +105,7 @@ public abstract class SubscriptionSystemTest(IMessageSubscriptionFactory<int> fa
     public async Task CanHandleConcurrent_AddingAndRemoving(CancellationToken _)
     {
         var cts = new CancellationTokenSource();
-        (Thread addThread, Thread publish) = CreateSimulationThreads(cts.Token);
+        var (addThread, publish) = CreateSimulationThreads(cts.Token);
         cts.CancelAfter(2000);
         addThread.Start();
         publish.Start();
@@ -144,7 +139,7 @@ public abstract class SubscriptionSystemTest(IMessageSubscriptionFactory<int> fa
         {
             while (!token.IsCancellationRequested)
             {
-                IMessageSubscription<int> sub = publisher.Subscribe(new TestSubscriber(1, token));
+                var sub = publisher.Subscribe(new TestSubscriber(1, token));
                 subscriptions.Add(sub);
                 Thread.Sleep(TimeSpan.FromMilliseconds(60));
                 pauseUnpause.Invoke(subscriptions.Skip(_rand.Next(0, subscriptions.Count)).First());
@@ -171,7 +166,10 @@ public abstract class SubscriptionSystemTest(IMessageSubscriptionFactory<int> fa
         public void Consume(IMessage<int> message)
         {
             Count += 1;
-            if (Count >= wantedCalls) _tcs.TrySetResult(true);
+            if (Count >= wantedCalls)
+            {
+                _tcs.TrySetResult(true);
+            }
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
+﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -22,7 +20,7 @@ public static class Locations
                 "Hoeyer.OpcUa.Core.Application.Translator",
                 "System.Collections.Generic",
                 "Hoeyer.OpcUa.Core",
-                "Hoeyer.OpcUa.Core.Api",
+                "Hoeyer.OpcUa.Core.Api"
             }
             .Select(e => SyntaxFactory.ParseName(e))
             .Select(SyntaxFactory.UsingDirective)

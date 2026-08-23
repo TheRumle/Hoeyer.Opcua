@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
+﻿namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
 
 public sealed record EntityMonitoringConfiguration
 {

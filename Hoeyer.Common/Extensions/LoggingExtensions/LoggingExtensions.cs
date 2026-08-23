@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.Contracts;
 using Hoeyer.Common.Extensions.Types;
 using Microsoft.Extensions.Logging;
 
@@ -10,10 +8,8 @@ public static class LoggingExtensions
 {
     [Pure]
     public static ILogLevelSelected LogCaughtExceptionAs(this ILogger logger, LogLevel level,
-        Func<Exception, Exception>? customExceptionMapper = null)
-    {
-        return new LoggingSetup(logger, level, customExceptionMapper ?? Functionals.Identity);
-    }
+        Func<Exception, Exception>? customExceptionMapper = null) =>
+        new LoggingSetup(logger, level, customExceptionMapper ?? Functionals.Identity);
 
 
     public static T? Try<T>(this ILogger logger, Func<T> action)
@@ -60,7 +56,7 @@ public static class LoggingExtensions
             TaskStatus.Faulted => LogError(t),
             TaskStatus.Canceled => LogCancelled(t),
             TaskStatus.RanToCompletion => t,
-            _ => throw new InvalidOperationException("Unhandled task status")
+            var _ => throw new InvalidOperationException("Unhandled task status")
         }).Unwrap();
     }
 

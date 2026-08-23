@@ -12,7 +12,8 @@ public static class IntegrationTestAdapter
         CreateOrGetCached(TestKeys.PerTestSessionKey);
 
     /// <summary>
-    /// Checks cache and reuses adapter if one exists. Otherwise creates an adapter and adds it to the cache using <paramref name="cacheKey"/>
+    ///     Checks cache and reuses adapter if one exists. Otherwise creates an adapter and adds it to the cache using
+    ///     <paramref name="cacheKey" />
     /// </summary>
     /// <param name="cacheKey"></param>
     /// <returns></returns>
@@ -30,7 +31,7 @@ public static class IntegrationTestAdapter
     public static void AssignFuncFactory(Func<string, IIntegrationTestEnvironment> adapter)
     {
         IIntegrationTestEnvironmentAdapter Factory(string s) => new SingletonAdapterFactory(adapter.Invoke(s));
-        FuncBasedFactory factory = new FuncBasedFactory(Factory);
+        var factory = new FuncBasedFactory(Factory);
         AssignAdapter(factory);
     }
 

@@ -2,4 +2,4 @@
 
 namespace Hoeyer.OpcUa.Server.Configuration;
 
-delegate void ServerApplicationConfigurationAction(ApplicationConfiguration applicationConfiguration);
+internal delegate void ServerApplicationConfigurationAction(ApplicationConfiguration applicationConfiguration);

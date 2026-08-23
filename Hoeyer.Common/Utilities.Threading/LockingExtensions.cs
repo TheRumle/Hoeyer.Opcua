@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Hoeyer.Common.Utilities.Threading;
+﻿namespace Hoeyer.Common.Utilities.Threading;
 
 public static class LockingExtensions
 {

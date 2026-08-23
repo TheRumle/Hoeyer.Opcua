@@ -2,7 +2,6 @@
 using Hoeyer.OpcUa.Core.Test.Fixtures;
 using Hoeyer.OpcUa.Core.Test.Fixtures.TestEntities;
 using JetBrains.Annotations;
-using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Test.Application;
 
@@ -15,12 +14,12 @@ public class EntityTranslatorTest
         IEntityTranslator<AllPropertyTypesEntity> translator,
         IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
     {
-        IEntityNode node = structure.Create(2);
+        var node = structure.Create(2);
         var entity = AllPropertyTypesEntity.CreateRandom();
-        HashSet<MethodState> before = node.Methods.ToHashSet();
+        var before = node.Methods.ToHashSet();
 
         translator.AssignToNode(entity, node);
-        IEnumerable<MethodState> after = node.Methods;
+        var after = node.Methods;
 
         await Assert.That(before.SetEquals(after)).IsTrue();
     }
@@ -31,11 +30,11 @@ public class EntityTranslatorTest
         IEntityTranslator<AllPropertyTypesEntity> translator,
         IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
     {
-        IEntityNode node = structure.Create(2);
+        var node = structure.Create(2);
         var entity = AllPropertyTypesEntity.CreateRandom();
-        HashSet<PropertyState> before = node.PropertyStates.ToHashSet();
+        var before = node.PropertyStates.ToHashSet();
         translator.AssignToNode(entity, node);
-        IEnumerable<PropertyState> after = node.PropertyStates;
+        var after = node.PropertyStates;
         await Assert.That(before.SetEquals(after)).IsTrue();
     }
 
@@ -45,7 +44,7 @@ public class EntityTranslatorTest
         IEntityTranslator<AllPropertyTypesEntity> translator,
         IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
     {
-        IEntityNode node = structure.Create(2);
+        var node = structure.Create(2);
         translator.AssignToNode(new AllPropertyTypesEntity
         {
             IntList =
@@ -61,7 +60,7 @@ public class EntityTranslatorTest
         }, node);
 
         Func<string, object> propertyFor = name => node.PropertyByBrowseName[name].Value;
-        using IDisposable assertion = Assert.Multiple();
+        using var assertion = Assert.Multiple();
         await Assert.That(propertyFor(nameof(AllPropertyTypesEntity.IntList))).IsTypeOf<int[]>();
         await Assert.That(propertyFor(nameof(AllPropertyTypesEntity.StringList))).IsTypeOf<string[]>();
     }
@@ -73,13 +72,13 @@ public class EntityTranslatorTest
         IEntityTranslator<AllPropertyTypesEntity> translator,
         IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
     {
-        IEntityNode node = structure.Create(2);
+        var node = structure.Create(2);
         var entity = AllPropertyTypesEntity.CreateRandom();
 
         translator.AssignToNode(entity, node);
         await AssertPropertiesEqual(entity, node);
 
-        AllPropertyTypesEntity newEntity = translator.Translate(node);
+        var newEntity = translator.Translate(node);
         translator.AssignToNode(newEntity, node);
         await AssertPropertiesEqual(entity, node);
     }
@@ -92,7 +91,7 @@ public class EntityTranslatorTest
         IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
     {
         //Arrange
-        IEntityNode node = structure.Create(2);
+        var node = structure.Create(2);
         var entity = AllPropertyTypesEntity.CreateRandom();
 
         //Act

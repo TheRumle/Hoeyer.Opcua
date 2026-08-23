@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Hoeyer.Common.Architecture;
+﻿using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Messaging.Api;
 using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing;
@@ -30,7 +26,8 @@ public static class ClientServices
 {
     public static OnGoingOpcEntityServiceRegistrationWithModels WithOpcUaClientModelsFrom(
         this OnGoingOpcEntityServiceRegistrationWithModels registration,
-        Type fromAssembly) => WithOpcUaClientModelsFrom(registration, [fromAssembly]);
+        Type fromAssembly) =>
+        registration.WithOpcUaClientModelsFrom([fromAssembly]);
 
     public static OnGoingOpcEntityServiceRegistrationWithModels WithOpcUaClientModelsFrom(
         this OnGoingOpcEntityServiceRegistrationWithModels registration,

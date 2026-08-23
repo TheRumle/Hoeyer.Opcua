@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Hoeyer.OpcUa.Core.Configuration.Application;
+﻿using Hoeyer.OpcUa.Core.Configuration.Application;
 using Hoeyer.OpcUa.Server.Abstractions;
 using Hoeyer.OpcUa.Server.Abstractions.Configuration;
 using Opc.Ua;
@@ -18,7 +15,7 @@ internal sealed class ServerApplicationConfigurationFactory(
     private static readonly IEnumerable<ServerSecurityPolicy> DefaultSupportedSecurityPolicies =
         new List<(string Uri, MessageSecurityMode Mode)>
         {
-            ("http://opcfoundation.org/UA/SecurityPolicy#None", MessageSecurityMode.None),
+            ("http://opcfoundation.org/UA/SecurityPolicy#None", MessageSecurityMode.None)
             //("http://opcfoundation.org/UA/SecurityPolicy#Basic256", MessageSecurityMode.Sign),
             //("http://opcfoundation.org/UA/SecurityPolicy#Basic256", MessageSecurityMode.SignAndEncrypt),
             //("http://opcfoundation.org/UA/SecurityPolicy#Basic256", MessageSecurityMode.SignAndEncrypt),

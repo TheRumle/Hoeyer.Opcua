@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Hoeyer.Common.Messaging.Api;
+﻿namespace Hoeyer.Common.Messaging.Api;
 
 public interface ISubscriptionCollection<T> : ISubscribable<T>
 {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Hoeyer.OpcUa.Client.Abstractions.Monitoring;
+﻿namespace Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 
 public interface IEntitySubscription : IDisposable
 {

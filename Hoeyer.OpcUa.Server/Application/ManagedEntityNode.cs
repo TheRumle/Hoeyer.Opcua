@@ -1,5 +1,4 @@
-﻿using System;
-using Hoeyer.OpcUa.Core.Abstractions;
+﻿using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 
 namespace Hoeyer.OpcUa.Server.Application;

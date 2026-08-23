@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Hoeyer.OpcUa.Core.Configuration.Health;
+﻿using Hoeyer.OpcUa.Core.Configuration.Health;
 
 namespace Hoeyer.OpcUa.Server.Application;
 

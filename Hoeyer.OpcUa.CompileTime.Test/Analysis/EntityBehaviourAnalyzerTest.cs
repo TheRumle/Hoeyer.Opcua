@@ -64,7 +64,7 @@ public class EntityBehaviourAnalyzerTest
         var data = new EntityAndServiceSourceCode("TestInterface", sourceCode.Type,
             sourceCode.SourceCodeString, interfaceDefinition);
 
-        AnalyzerResult result = await Driver.RunAnalyzerOn(data, CancellationToken.None);
+        var result = await Driver.RunAnalyzerOn(data, CancellationToken.None);
 
         await Assert.That(result.Diagnostics).IsEmpty();
     }

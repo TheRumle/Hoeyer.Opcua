@@ -16,8 +16,8 @@ public sealed class GeneratorTestDriver(IIncrementalGenerator generator, Action<
 
     public GeneratorResult RunGeneratorOn(string sourceCode)
     {
-        CSharpCompilation compilation = _compilationFactory.CreateCompilation(CSharpSyntaxTree.ParseText(sourceCode));
-        var compilationResult = _driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out var diagnostics);
+        var compilation = _compilationFactory.CreateCompilation(CSharpSyntaxTree.ParseText(sourceCode));
+        var compilationResult = _driver.RunGeneratorsAndUpdateCompilation(compilation, out var _, out var diagnostics);
         var result = CreateResult(compilationResult, diagnostics, _driver.GetTimingInfo());
 
         logger?.Invoke("Generated code: \n" + result.SourceCode);

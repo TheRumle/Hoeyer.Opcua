@@ -4,7 +4,7 @@ public sealed class IntegrationAdapterDependentTest()
     : SkipAttribute(NoFrameworkAdapterException.ErrorMessage)
 {
     private static readonly Task EnvironmentCheckTask = CheckEnvironmentAsync();
-    private Exception? _skipReason = null;
+    private Exception? _skipReason;
 
     private static Task CheckEnvironmentAsync()
     {
@@ -12,7 +12,11 @@ public sealed class IntegrationAdapterDependentTest()
         {
             //create one, but never initialize environment.
             var integrationEnv = IntegrationTestAdapter.CreateOrGetCached(nameof(IntegrationAdapterDependentTest));
-            if (integrationEnv == null!) return Task.FromException(new NoFrameworkAdapterException());
+            if (integrationEnv == null!)
+            {
+                return Task.FromException(new NoFrameworkAdapterException());
+            }
+
             return Task.CompletedTask;
         }
         catch (Exception e)

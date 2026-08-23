@@ -8,7 +8,7 @@ using Opc.Ua;
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter;
 
 /// <summary>
-/// Notifies the OpcUa server that the held entity has changed state when a simulation state change occurs.
+///     Notifies the OpcUa server that the held entity has changed state when a simulation state change occurs.
 /// </summary>
 /// <param name="translator"></param>
 /// <typeparam name="TEntity"></typeparam>
@@ -16,9 +16,9 @@ internal class EntityStateChangedNotifier<TEntity>(
     IEntityTranslator<TEntity> translator) : INodeConfigurator<TEntity>,
     IStateChangeSimulationProcessor<TEntity>
 {
-    private ISystemContext Context { get; set; } = null!;
     public IManagedEntityNode ManagedNode { get; set; } = null!;
     public IMessageSubscription Subscription { get; set; } = null!;
+    private ISystemContext Context { get; set; } = null!;
 
     public void Configure(IManagedEntityNode managed, ISystemContext context)
     {

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using Hoeyer.OpcUa.Client.SourceGeneration.Constants;
+﻿using Hoeyer.OpcUa.Client.SourceGeneration.Constants;
 using Hoeyer.OpcUa.Client.SourceGeneration.Extensions;
 using Hoeyer.OpcUa.Client.SourceGeneration.Models;
 using Microsoft.CodeAnalysis;
@@ -68,7 +65,7 @@ public sealed class RemoteMethodCallerGenerator : IIncrementalGenerator
                 ? $"<{named.TypeArguments[0].ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix)}>"
                 : "";
 
-            List<string> paramStrings = method.Parameters.Select(e =>
+            var paramStrings = method.Parameters.Select(e =>
                 e.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix)).ToList();
             var typeArgs = string.Join(",", paramStrings);
             var paramNames = string.Join(", ", method.Parameters.Select(e => e.Name));
@@ -76,7 +73,10 @@ public sealed class RemoteMethodCallerGenerator : IIncrementalGenerator
             builder.WriteLine("{");
             builder.Write($"return caller.CallMethod{genericArgs}(").Write($"nameof({method.Name}),");
             builder.Write(" global::System.Threading.CancellationToken.None");
-            if (paramStrings.Count > 0) builder.Write(", " + paramNames);
+            if (paramStrings.Count > 0)
+            {
+                builder.Write(", " + paramNames);
+            }
 
             builder.Write(");");
             builder.WriteLine();

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Hoeyer.OpcUa.Core.SourceGeneration.Constants;
+﻿using Hoeyer.OpcUa.Core.SourceGeneration.Constants;
 using Hoeyer.OpcUa.Core.SourceGeneration.Generation.IncrementalProvider;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -20,7 +19,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         context.RegisterImplementationSourceOutput(decoratedRecordsProvider.Collect(),
             (productionContext, compilations) =>
             {
-                foreach ((SourceCodeWriter code, INamedTypeSymbol symbol) in compilations)
+                foreach (var (code, symbol) in compilations)
                 {
                     productionContext.AddSource(symbol.Name + "Translator.g.cs", code.ToString());
                 }
@@ -29,7 +28,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
 
     private static (SourceCodeWriter writer, INamedTypeSymbol symbol) CreateSourceCode(TypeContext typeContext)
     {
-        INamedTypeSymbol symbol = typeContext.SemanticModel.GetDeclaredSymbol(typeContext.Node)!;
+        var symbol = typeContext.SemanticModel.GetDeclaredSymbol(typeContext.Node)!;
         var entityName = symbol.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
         var className = symbol.Name + "Translator";
         var browseNameLookupType = WellKnown.FullyQualifiedInterface.EntityBrowseNameCollection(entityName);
@@ -122,14 +121,14 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
     private static void WriteTranslations(SourceCodeWriter writer, TypeDeclarationSyntax symbol,
         SemanticModel semanticModel)
     {
-        foreach (PropertyDeclarationSyntax? member in symbol.Members.OfType<PropertyDeclarationSyntax>())
+        foreach (var member in symbol.Members.OfType<PropertyDeclarationSyntax>())
         {
             var name = member.Identifier.Text;
-            IPropertySymbol propertySymbol = semanticModel.GetDeclaredSymbol(member)!;
+            var propertySymbol = semanticModel.GetDeclaredSymbol(member)!;
             var type = propertySymbol.Type.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
 
 
-            INamedTypeSymbol? listInterface = GetListInterface(propertySymbol, semanticModel);
+            var listInterface = GetListInterface(propertySymbol, semanticModel);
             writer.WriteLine("var " + name + " = " +
                              WellKnown.FullyQualifiedInterface.DataTypeTranslator.WithGlobalPrefix + ".");
             if (listInterface is not null)
@@ -152,10 +151,10 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
 
     private static void WriteAssignments(SourceCodeWriter writer, TypeDeclarationSyntax syntax, SemanticModel model)
     {
-        foreach (PropertyDeclarationSyntax? property in syntax.Members.OfType<PropertyDeclarationSyntax>())
+        foreach (var property in syntax.Members.OfType<PropertyDeclarationSyntax>())
         {
             var propName = property.Identifier.Text;
-            INamedTypeSymbol? listInterface = GetListInterface(model.GetDeclaredSymbol(property)!, model);
+            var listInterface = GetListInterface(model.GetDeclaredSymbol(property)!, model);
 
             var toList = listInterface is not null
                 ? $".{nameof(Enumerable.ToArray)}()"
@@ -170,10 +169,10 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
     private static void WriteStateAssignment(SourceCodeWriter writer,
         TypeDeclarationSyntax syntax, SemanticModel model)
     {
-        foreach (PropertyDeclarationSyntax? property in syntax.Members.OfType<PropertyDeclarationSyntax>())
+        foreach (var property in syntax.Members.OfType<PropertyDeclarationSyntax>())
         {
             var propName = property.Identifier.Text;
-            INamedTypeSymbol? listInterface = GetListInterface(model.GetDeclaredSymbol(property)!, model);
+            var listInterface = GetListInterface(model.GetDeclaredSymbol(property)!, model);
 
             var toList = listInterface is not null
                 ? $".{nameof(Enumerable.ToArray)}()"
@@ -186,7 +185,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
 
     private static INamedTypeSymbol? GetListInterface(IPropertySymbol typeSymbol, SemanticModel model)
     {
-        INamedTypeSymbol? ilistType = model.Compilation.GetTypeByMetadataName("System.Collections.Generic.IList`1");
+        var ilistType = model.Compilation.GetTypeByMetadataName("System.Collections.Generic.IList`1");
         return typeSymbol.Type.AllInterfaces
             .FirstOrDefault(i => i.OriginalDefinition.Equals(ilistType, SymbolEqualityComparer.Default));
     }

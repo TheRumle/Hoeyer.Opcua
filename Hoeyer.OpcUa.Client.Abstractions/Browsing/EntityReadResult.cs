@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Opc.Ua;
+﻿using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Client.Abstractions.Browsing;
 

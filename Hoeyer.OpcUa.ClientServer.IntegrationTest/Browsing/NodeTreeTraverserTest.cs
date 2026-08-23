@@ -93,7 +93,7 @@ public abstract class NodeTreeTraverserTest<T>(
     {
         var strategy = fixture.TestedService;
         var session = await fixture.OpenSession();
-        await foreach (ReferenceWithId _ in strategy.TraverseFrom(ObjectIds.RootFolder, session.Session, ct))
+        await foreach (var _ in strategy.TraverseFrom(ObjectIds.RootFolder, session.Session, ct))
         {
         }
     }

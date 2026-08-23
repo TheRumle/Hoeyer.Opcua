@@ -22,7 +22,7 @@ internal sealed class OpcEntityServer(
 
     private bool _disposed;
 
-    public DomainMasterNodeManager? DomainManager { get; private set; } = null!;
+    public DomainMasterNodeManager? DomainManager { get; private set; }
 
 
     public override async Task<CallResponse> CallAsync(SecureChannelContext secureChannelContext,
@@ -46,10 +46,13 @@ internal sealed class OpcEntityServer(
                 .ToArray();
 
             Task.WhenAll(managerCreationTasks).Wait();
-            List<AggregateException> exceptions =
+            var exceptions =
                 managerCreationTasks.Select(e => e.Exception).Where(e => e != null).ToList();
 
-            if (exceptions.Any()) throw new AggregateException(exceptions);
+            if (exceptions.Any())
+            {
+                throw new AggregateException(exceptions);
+            }
 
             DomainManager = new DomainMasterNodeManager(server, configuration,
                 managerCreationTasks.Select(e => e.Result).ToArray());

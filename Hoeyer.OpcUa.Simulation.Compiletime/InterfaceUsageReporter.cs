@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -19,7 +18,7 @@ public sealed class InterfaceUsageReporter
             .Types
             .First(baseType =>
             {
-                ITypeSymbol? actualType = context.SemanticModel.GetTypeInfo(baseType.Type).Type;
+                var actualType = context.SemanticModel.GetTypeInfo(baseType.Type).Type;
                 return actualType is INamedTypeSymbol named &&
                        SymbolEqualityComparer.Default.Equals(named, violatedInterfaceSymbol);
             }).GetLocation();

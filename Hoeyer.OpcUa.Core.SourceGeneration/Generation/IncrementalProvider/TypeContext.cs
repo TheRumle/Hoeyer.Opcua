@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Hoeyer.OpcUa.Core.SourceGeneration.Constants;
+﻿using Hoeyer.OpcUa.Core.SourceGeneration.Constants;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -62,11 +58,11 @@ public sealed record TypeContext(SemanticModel SemanticModel, TypeDeclarationSyn
     {
         var usingDirectives = await GetImportsAndContainingNamespace(cancellationToken);
 
-        IEnumerable<UsingDirectiveSyntax> usingStatements = additionalUsings == null
+        var usingStatements = additionalUsings == null
             ? SyntaxFactory.List(usingDirectives.Union(Locations.Utilities))
             : SyntaxFactory.List(usingDirectives.Union(Locations.Utilities)).Union(additionalUsings);
 
-        IEnumerable<UsingDirectiveSyntax> distincts = usingStatements.Distinct(UsingDirectiveComparer);
+        var distincts = usingStatements.Distinct(UsingDirectiveComparer);
 
         return SyntaxFactory.CompilationUnit()
             .AddUsings(distincts.ToArray())
@@ -77,8 +73,15 @@ public sealed record TypeContext(SemanticModel SemanticModel, TypeDeclarationSyn
     {
         public bool Equals(UsingDirectiveSyntax? x, UsingDirectiveSyntax? y)
         {
-            if (x == null && y == null) return true;
-            if (x == null || y == null) return false;
+            if (x == null && y == null)
+            {
+                return true;
+            }
+
+            if (x == null || y == null)
+            {
+                return false;
+            }
 
             return x.NormalizeWhitespace().ToFullString() == y.NormalizeWhitespace().ToFullString();
         }

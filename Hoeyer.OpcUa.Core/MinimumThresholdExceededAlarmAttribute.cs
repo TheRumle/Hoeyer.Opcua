@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Hoeyer.OpcUa.Core;
+﻿namespace Hoeyer.OpcUa.Core;
 
 [AttributeUsage(AttributeTargets.Property)]
 public sealed class MinimumThresholdExceededAlarmAttribute(

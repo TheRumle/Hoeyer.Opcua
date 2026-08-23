@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Hoeyer.Common.Architecture;
+﻿using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.Common.Messaging.Subscriptions;
 using Hoeyer.OpcUa.Simulation.Abstractions.Execution;
@@ -17,10 +14,10 @@ namespace Hoeyer.OpcUa.Simulation.Services;
 /// </summary>
 public class SimulationServicesConfig
 {
-    private readonly IServiceCollection _originalServices;
     public readonly IReadOnlyList<(Type entityType, Type methodArgs)> ActionSimulationPatterns;
     public readonly IReadOnlyList<(Type entityType, Type methodArgs, Type returnType)> FunctionSimulationPatterns;
     public readonly SimulationServicesContainer SimulationServices;
+    private readonly IServiceCollection _originalServices;
 
     public SimulationServicesConfig(SimulationServicesConfig source)
     {

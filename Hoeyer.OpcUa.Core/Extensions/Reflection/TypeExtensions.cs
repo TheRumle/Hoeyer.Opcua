@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Opc.Ua;
+﻿using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Extensions.Reflection;
 
@@ -16,14 +12,19 @@ public static class TypeExtensions
             i.GetGenericTypeDefinition() == typeof(ICollection<>));
         if (collectionInterface is not null)
         {
-            NodeId? gottenId = TypeInfo.GetDataTypeId(collectionInterface.GenericTypeArguments[0]);
+            var gottenId = TypeInfo.GetDataTypeId(collectionInterface.GenericTypeArguments[0]);
             return (gottenId, valueRank);
         }
 
         if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Task<>))
-            return GetOpcTypeInfo(t.GenericTypeArguments[0]);
+        {
+            return t.GenericTypeArguments[0].GetOpcTypeInfo();
+        }
 
-        if (t == typeof(Task)) return (null!, valueRank);
+        if (t == typeof(Task))
+        {
+            return (null!, valueRank);
+        }
 
         return (TypeInfo.GetDataTypeId(t), valueRank);
     }

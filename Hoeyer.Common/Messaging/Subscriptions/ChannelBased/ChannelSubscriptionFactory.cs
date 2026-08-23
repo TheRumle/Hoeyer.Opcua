@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Channels;
+﻿using System.Threading.Channels;
 using Hoeyer.Common.Messaging.Api;
 using Microsoft.Extensions.Logging;
 

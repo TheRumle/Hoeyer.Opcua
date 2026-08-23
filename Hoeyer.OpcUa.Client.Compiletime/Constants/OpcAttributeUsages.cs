@@ -1,6 +1,4 @@
-﻿using System;
-using Hoeyer.OpcUa.Client.SourceGeneration.Models;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -40,7 +38,7 @@ public static class OpcAttributeUsages
         }
 
 
-        FullyQualifiedTypeName serviceAttribute = WellKnown.FullyQualifiedAttribute.OpcUaEntityServiceAttribute;
+        var serviceAttribute = WellKnown.FullyQualifiedAttribute.OpcUaEntityServiceAttribute;
 
         return
             SyntaxFactory.Attribute(SyntaxFactory.IdentifierName(serviceAttribute.WithGlobalPrefix))

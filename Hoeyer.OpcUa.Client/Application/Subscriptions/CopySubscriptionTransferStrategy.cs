@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Hoeyer.OpcUa.Client.Abstractions.Connection;
+﻿using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 
 namespace Hoeyer.OpcUa.Client.Application.Subscriptions;

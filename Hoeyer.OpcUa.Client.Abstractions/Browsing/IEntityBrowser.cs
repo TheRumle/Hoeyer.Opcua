@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Hoeyer.OpcUa.Core.Abstractions;
+﻿using Hoeyer.OpcUa.Core.Abstractions;
 
 namespace Hoeyer.OpcUa.Client.Abstractions.Browsing;
 

@@ -129,7 +129,7 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
     public async Task WhenAnalysing_ActionSimulatorFor_MethodWith_NoReturn_ShouldNotProduceDiagnostics()
     {
         var sourceCode = EntityWithGeneratorClasses + ActionSimulator_NoReturnValue;
-        AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
+        var result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
         await Assert.That(result.Diagnostics).IsEmpty().Because(result.Diagnostics.ToCommaSeparatedString() +
                                                                 " should not be present after running the analyser");
     }
@@ -138,7 +138,7 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
     public async Task WhenAnalysing_FuncSimulatorFor_CorrectGenericReturnValueArg_ShouldNotProduceDiagnostics()
     {
         var sourceCode = EntityWithGeneratorClasses + FuncSimulatorForIntTask_CorrectReturnType;
-        AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
+        var result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
         await Assert.That(result.Diagnostics).IsEmpty().Because(result.Diagnostics.ToCommaSeparatedString() +
                                                                 " should not be present after running the analyser");
     }
@@ -147,7 +147,7 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
     public async Task WhenAnalysing_FuncSimulatorFor_MethodWith_IntReturn_ShouldNotProduceDiagnostics()
     {
         var sourceCode = EntityWithGeneratorClasses + FuncSimulatorFor_IntReturnValue;
-        AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
+        var result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
         await Assert.That(result.Diagnostics).IsEmpty().Because(result.Diagnostics.ToCommaSeparatedString() +
                                                                 " should not be present after running the analyser");
     }
@@ -157,7 +157,7 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
     public async Task WhenAnalysing_ActionSimulatorFor_MethodWith_IntReturn_ShouldProduceDiagnostics()
     {
         var sourceCode = EntityWithGeneratorClasses + ActionSimulatorFor_IntReturnValue;
-        AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
+        var result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
         await Assert.That(result.Diagnostics).IsNotEmpty().Because(" the code should produce diagnostics");
     }
 
@@ -165,7 +165,7 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
     public async Task WhenAnalysing_FuncSimulatorFor_MethodWith_NoReturnValue_ShouldProduceDiagnostics()
     {
         var sourceCode = EntityWithGeneratorClasses + FuncSimulatorFor_NoReturnValue;
-        AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
+        var result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
         await Assert.That(result.Diagnostics).IsNotEmpty().Because(" the code should produce diagnostics");
     }
 
@@ -173,7 +173,7 @@ public sealed class SimulationConfiguratorUsageAnalyserTest
     public async Task WhenAnalysing_FuncSimulator_IncorrectGenericReturnValueArg_ShouldProduceDiagnostics()
     {
         var sourceCode = EntityWithGeneratorClasses + FuncSimulatorForIntTask_WrongReturnType;
-        AnalyzerResult result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
+        var result = await Driver.RunAnalyzerOn(sourceCode, CancellationToken.None);
         await Assert.That(result.Diagnostics).IsNotEmpty().Because(" the code should produce diagnostics");
     }
 }

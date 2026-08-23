@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Extensions.Logging;
@@ -16,7 +15,7 @@ public static class LoggingExtensions
             Extensions = configuration.ExtensionObjects,
             Other = new
             {
-                DomainNames = configuration.GetServerDomainNames(),
+                DomainNames = configuration.GetServerDomainNames()
             },
             Security = new
             {

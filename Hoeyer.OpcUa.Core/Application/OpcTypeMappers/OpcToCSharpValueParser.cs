@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
@@ -15,7 +12,9 @@ public static class OpcToCSharpValueParser
     public static T[] ParseToArray<T>(Variant variant)
     {
         if (variant.TypeInfo.ValueRank != ValueRanks.OneDimension)
+        {
             throw new ArgumentException("Variant must be one dimension.");
+        }
 
         if (variant.Value is T[] asArray)
         {

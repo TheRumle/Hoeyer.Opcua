@@ -42,6 +42,9 @@ internal record ApplicationConfigurationRequirements : IApplicationConfiguration
             .Where(e => e is not null)
             .ToArray();
 
-        if (errors.Length > 0) throw new InvalidUaConfigurationException(string.Join("\n", errors));
+        if (errors.Length > 0)
+        {
+            throw new InvalidUaConfigurationException(string.Join("\n", errors));
+        }
     }
 }

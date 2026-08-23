@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing.Exceptions;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing.Reading;
@@ -19,8 +15,8 @@ public abstract class ConcurrentTreeTraversalStrategy(
 {
     public IAsyncEnumerable<ReferenceWithId> TraverseFrom(NodeId id, ISession session, CancellationToken ct)
     {
-        IProducerConsumerCollection<ReferenceWithId>? queue = orderedCollectionFactory.Invoke();
-        Node? node = reader.ReadNodeAsync(session, id, ct).Result;
+        var queue = orderedCollectionFactory.Invoke();
+        var node = reader.ReadNodeAsync(session, id, ct).Result;
         if (node == null)
         {
             throw new InvalidBrowseRootException(id);
@@ -47,7 +43,7 @@ public abstract class ConcurrentTreeTraversalStrategy(
     {
         using var whenFoundCancel = new CancellationTokenSource();
         using var combinedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token, whenFoundCancel.Token);
-        await foreach (ReferenceWithId? referenceDescription in TraverseFrom(root, session, combinedTokenSource.Token))
+        await foreach (var referenceDescription in TraverseFrom(root, session, combinedTokenSource.Token))
         {
             if (!predicate(referenceDescription.Description))
             {

@@ -17,14 +17,15 @@ public sealed class ClientAndServerServiceInjectionAttribute : DependencyInjecti
             .BuildServiceProvider();
     }
 
-    public override IServiceScope CreateScope(DataGeneratorMetadata dataGeneratorMetadata)
-    {
-        return _provider.CreateScope();
-    }
+    public override IServiceScope CreateScope(DataGeneratorMetadata dataGeneratorMetadata) => _provider.CreateScope();
 
     public override object? Create(IServiceScope scope, Type type)
     {
-        if (type.IsAssignableTo(typeof(IServiceProvider))) return scope.ServiceProvider;
+        if (type.IsAssignableTo(typeof(IServiceProvider)))
+        {
+            return scope.ServiceProvider;
+        }
+
         return scope.ServiceProvider.GetRequiredService(type);
     }
 }

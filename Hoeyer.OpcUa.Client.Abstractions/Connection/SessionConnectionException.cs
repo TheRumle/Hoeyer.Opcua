@@ -1,5 +1,4 @@
-﻿using System;
-using Opc.Ua;
+﻿using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Client.Abstractions.Connection;
 

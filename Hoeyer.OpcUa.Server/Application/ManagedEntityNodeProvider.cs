@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Hoeyer.OpcUa.Core.Abstractions;
+﻿using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Server.Abstractions;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
@@ -17,7 +16,11 @@ internal sealed class ManagedEntityNodeProvider<T>(
 
     public async Task<IManagedEntityNode<T>> GetOrCreateManagedEntityNode(ushort namespaceIndex, string @namespace)
     {
-        if (_node != null) return _node;
+        if (_node != null)
+        {
+            return _node;
+        }
+
         var entity = await value.LoadCurrentState();
         var nodeRepresentation = structureFactory.Create(namespaceIndex);
         translator.AssignToNode(entity, nodeRepresentation);

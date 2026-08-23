@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Opc.Ua;
+﻿using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Client.Abstractions.Browsing.Reading;
 
@@ -10,7 +8,7 @@ public sealed class ReadResult
 
     public ReadResult(IEnumerable<(Node? node, ServiceResult result)> values)
     {
-        List<(Node? node, ServiceResult result)> nodes = values.ToList();
+        var nodes = values.ToList();
         SuccesfulReads = nodes.Where(e => e.result.IsGood()).Select(e => e.node).ToList();
         FailedReads = nodes.Where(e => e.result.IsNotGood()).Select(e => e.node).ToList();
         AllSuccess = !FailedReads.Any();

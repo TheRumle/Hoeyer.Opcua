@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Channels;
-using System.Threading.Tasks;
+﻿using System.Threading.Channels;
 using Hoeyer.Common.Messaging.Api;
 using Microsoft.Extensions.Logging;
 
@@ -10,6 +6,8 @@ namespace Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 
 public sealed record ChannelBasedSubscription<T> : IMessageSubscription<T>
 {
+    public readonly string ConsumerName;
+    public readonly Guid Id;
     private readonly Channel<IMessage<T>> _channel;
     private readonly IMessageConsumer<T> _consumer;
     private readonly CancellationTokenSource _cts = new();
@@ -17,8 +15,6 @@ public sealed record ChannelBasedSubscription<T> : IMessageSubscription<T>
     private readonly IDisposable? _loggingScope;
     private readonly Action? _onDispose;
     private readonly Task _processingTask;
-    public readonly string ConsumerName;
-    public readonly Guid Id;
 
     public ChannelBasedSubscription(Guid id,
         IMessageConsumer<T> consumer,
@@ -55,7 +51,11 @@ public sealed record ChannelBasedSubscription<T> : IMessageSubscription<T>
 
     public void Forward(IMessage<T> message)
     {
-        if (IsCancelled || IsPaused) return;
+        if (IsCancelled || IsPaused)
+        {
+            return;
+        }
+
         _channel.Writer.TryWrite(message);
     }
 
@@ -79,9 +79,13 @@ public sealed record ChannelBasedSubscription<T> : IMessageSubscription<T>
     {
         try
         {
-            await foreach (IMessage<T>? message in _channel.Reader.ReadAllAsync(token))
+            await foreach (var message in _channel.Reader.ReadAllAsync(token))
             {
-                if (IsCancelled || IsPaused) continue;
+                if (IsCancelled || IsPaused)
+                {
+                    continue;
+                }
+
                 _consumer.Consume(message);
             }
         }

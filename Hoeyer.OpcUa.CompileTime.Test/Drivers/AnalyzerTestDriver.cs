@@ -36,7 +36,7 @@ public sealed class AnalyzerTestDriver<T>(T analyzer, Action<string>? logger = n
 
     private async Task<AnalyzerResult> CreateAnalyzerResultTask(SyntaxTree[] trees, CancellationToken cancellationToken)
     {
-        foreach (SyntaxTree syntaxTree in trees)
+        foreach (var syntaxTree in trees)
         {
             logger?.Invoke(syntaxTree.ToString());
         }

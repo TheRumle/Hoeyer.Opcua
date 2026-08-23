@@ -1,5 +1,4 @@
-﻿using System;
-using Hoeyer.OpcUa.Core.Configuration;
+﻿using Hoeyer.OpcUa.Core.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Simulation.Services;

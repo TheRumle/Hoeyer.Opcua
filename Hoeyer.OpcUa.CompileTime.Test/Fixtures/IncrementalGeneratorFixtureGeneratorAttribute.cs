@@ -13,11 +13,11 @@ internal sealed class
     protected override IEnumerable<Func<IIncrementalGenerator>> GenerateDataSources(
         DataGeneratorMetadata dataGeneratorMetadata)
     {
-        IEnumerable<Func<IIncrementalGenerator>> generatedCoreServices =
+        var generatedCoreServices =
             new TypesWithEmptyCtorScanner<IIncrementalGenerator,
                 EntityTranslatorGenerator>().GenerateDataSources();
 
-        IEnumerable<Func<IIncrementalGenerator>> generatedClientServices =
+        var generatedClientServices =
             new TypesWithEmptyCtorScanner<IIncrementalGenerator,
                 RemoteMethodCallerGenerator>().GenerateDataSources();
 

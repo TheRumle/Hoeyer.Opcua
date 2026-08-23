@@ -57,10 +57,10 @@ internal static class WellKnown
             new("Hoeyer.OpcUa.Client.Abstractions.Calling.IMethodCaller");
 
         public static FullyQualifiedTypeName IActionSimulationConfigurator =>
-            SimulationApiName($"IActionSimulationConfigurator.");
+            SimulationApiName("IActionSimulationConfigurator.");
 
         public static FullyQualifiedTypeName IFuncSimulationConfigurator =>
-            SimulationApiName($"IFunctionSimulationConfigurator.");
+            SimulationApiName("IFunctionSimulationConfigurator.");
 
         public static FullyQualifiedTypeName IObjectArgsToTypedArgs(string attributeClassName) =>
             SimulationApiName($"IEntityMethodArgTranslator<{attributeClassName}>");

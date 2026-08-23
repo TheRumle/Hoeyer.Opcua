@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Hoeyer.OpcUa.Simulation.Abstractions.Configuration.Exceptions;
+﻿using Hoeyer.OpcUa.Simulation.Abstractions.Configuration.Exceptions;
 using Hoeyer.OpcUa.Simulation.Abstractions.Execution.ExecutionSteps;
 
 namespace Hoeyer.OpcUa.Simulation.Execution;
@@ -16,7 +13,10 @@ internal sealed class ReturnValueOrderValidator<TState, TArgs, TReturnValue> : I
             .Union(OnlyOneReturnValue(list))
             .ToList();
 
-        if (errors.Count > 0) throw new AggregateException(errors);
+        if (errors.Count > 0)
+        {
+            throw new AggregateException(errors);
+        }
     }
 
     private static IEnumerable<SimulationConfigurationException> OnlyOneReturnValue(

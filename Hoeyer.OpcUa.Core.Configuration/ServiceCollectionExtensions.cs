@@ -79,7 +79,7 @@ public static class ServiceCollectionExtensions
         params IEnumerable<Type> assemblyMarkers)
     {
         var markers = assemblyMarkers.ToList();
-        AddEntityModels(services, markers);
+        services.AddEntityModels(markers);
         services.AddSingleton<TranslatorTypesCollection>();
         services.AddSingleton(typeof(IBrowseNameCollection<>), typeof(EntityTypeModel<>));
         services.AddSingleton(typeof(IEntityTypeModel<>), typeof(EntityTypeModel<>));

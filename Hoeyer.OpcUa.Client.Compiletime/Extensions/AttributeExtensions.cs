@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Hoeyer.OpcUa.Client.SourceGeneration.Constants;
+﻿using Hoeyer.OpcUa.Client.SourceGeneration.Constants;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -9,13 +8,19 @@ public static class AttributeExtensions
 {
     public static INamedTypeSymbol? GetEntityFromGenericArgument(this AttributeSyntax attribute, SemanticModel model)
     {
-        SymbolInfo symbolInfo = model.GetSymbolInfo(attribute);
-        if (symbolInfo.Symbol is not IMethodSymbol attributeConstructor) return null;
+        var symbolInfo = model.GetSymbolInfo(attribute);
+        if (symbolInfo.Symbol is not IMethodSymbol attributeConstructor)
+        {
+            return null;
+        }
 
-        INamedTypeSymbol? attributeType = attributeConstructor.ContainingType;
+        var attributeType = attributeConstructor.ContainingType;
 
 
-        if (attributeType is not INamedTypeSymbol { IsGenericType: true, Arity: 1 } namedType) return null;
+        if (attributeType is not INamedTypeSymbol { IsGenericType: true, Arity: 1 } namedType)
+        {
+            return null;
+        }
 
         if (namedType.OriginalDefinition.ToDisplayString() == WellKnown.FullyQualifiedAttribute
                 .GenericEntityBehaviourAttribute.WithoutGlobalPrefix ||

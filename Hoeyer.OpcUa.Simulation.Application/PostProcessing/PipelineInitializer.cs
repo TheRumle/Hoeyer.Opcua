@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Hoeyer.Common.Messaging.Api;
+﻿using Hoeyer.Common.Messaging.Api;
 using Hoeyer.OpcUa.Simulation.Abstractions.Execution;
 using Hoeyer.OpcUa.Simulation.Abstractions.PostProcessing;
 
@@ -14,7 +13,7 @@ internal sealed class PipelineInitializer<TState, TProcessor>(
     {
         foreach (var stepProcessor in processors)
         {
-            IMessageSubscription<SimulationResult<TState>> subscription = stepManager.Subscribe(stepProcessor);
+            var subscription = stepManager.Subscribe(stepProcessor);
             stepProcessor.AssignContext(new SimulationExecutionContext(subscription));
         }
 

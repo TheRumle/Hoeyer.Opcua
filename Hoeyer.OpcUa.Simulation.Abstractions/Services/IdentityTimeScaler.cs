@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Hoeyer.OpcUa.Simulation.Abstractions.Services;
+﻿namespace Hoeyer.OpcUa.Simulation.Abstractions.Services;
 
 public sealed class IdentityTimeScaler : ITimeScaler
 {

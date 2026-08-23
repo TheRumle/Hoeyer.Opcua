@@ -1,5 +1,4 @@
-﻿using System;
-using Hoeyer.OpcUa.Simulation.Abstractions.PostProcessing;
+﻿using Hoeyer.OpcUa.Simulation.Abstractions.PostProcessing;
 
 namespace Hoeyer.OpcUa.Simulation.Abstractions.Execution;
 

@@ -17,13 +17,12 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
     public const string OPCUA_SERVERNAME = "HostedSimulation";
     public const string OPCUA_APPLICATION_NAME = "Simulation";
     private readonly Lazy<Task> _initializeTask;
-    private readonly WebProtocol _webProtocol;
     private readonly string _containerName;
     private TcpListener? _portHolder;
 
     public PlaygroundTestContainer(WebProtocol webProtocol, string containerName)
     {
-        _webProtocol = webProtocol;
+        Protocol = webProtocol;
         _containerName = containerName;
         _initializeTask = new Lazy<Task>(StartAndWaitForHealth);
     }
@@ -31,7 +30,8 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
     public DockerHealthChecker HealthChecker { get; set; } = null!;
 
     public IContainer Container { get; private set; } = null!;
-    public WebProtocol Protocol => _webProtocol;
+    public WebProtocol Protocol { get; }
+
     public int SimulationPort { get; private set; }
     public string Host => Container.Hostname;
     public string ServerId => OPCUA_SERVERID;
@@ -49,7 +49,11 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
 
     public Task InitializeAsync()
     {
-        if (_initializeTask.IsValueCreated) return Task.CompletedTask;
+        if (_initializeTask.IsValueCreated)
+        {
+            return Task.CompletedTask;
+        }
+
         return _initializeTask.Value;
     }
 
@@ -57,7 +61,7 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
     {
         Container = new ContainerBuilder("playground/simulationserver:latest")
             .WithName(_containerName)
-            .WithPortBinding(4840, assignRandomHostPort: true)
+            .WithPortBinding(4840, true)
             .WithEnvironment("OPCUA_PORT", "4840")
             .WithEnvironment("OPCUA_PROTOCOL", Protocol.ToString())
             .WithEnvironment("OPCUA_SERVERID", OPCUA_SERVERID)

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Hoeyer.Common.Extensions;
+﻿namespace Hoeyer.Common.Extensions;
 
 public static class RandomExtensions
 {
@@ -10,6 +8,4 @@ public static class RandomExtensions
         random.NextBytes(bytes);
         return BitConverter.ToUInt32(bytes, 0);
     }
-        
-    
 }

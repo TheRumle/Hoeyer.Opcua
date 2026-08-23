@@ -23,7 +23,7 @@ internal static class WellKnown
             CoreApiTypeName($"IEntityTranslator<{T}>");
 
         public static FullyQualifiedTypeName EntityTranslatorInterfaceOf() =>
-            CoreApiTypeName($"IEntityTranslator<>");
+            CoreApiTypeName("IEntityTranslator<>");
 
         public static FullyQualifiedTypeName EntityBrowseNameCollection(string T) =>
             CoreApiTypeName($"IBrowseNameCollection<{T}>");

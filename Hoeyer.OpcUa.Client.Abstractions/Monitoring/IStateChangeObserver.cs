@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Hoeyer.OpcUa.Client.Abstractions.Monitoring;
+﻿namespace Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 
 /// <summary>
 ///     An observer that observe any state change of the given entity.

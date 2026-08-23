@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Hoeyer.OpcUa.Server.Abstractions;
+﻿using Hoeyer.OpcUa.Server.Abstractions;
 using Microsoft.Extensions.Hosting;
 
 namespace Hoeyer.OpcUa.Server.Services;

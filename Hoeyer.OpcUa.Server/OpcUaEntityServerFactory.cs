@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Hoeyer.OpcUa.Core.Configuration.Health;
+﻿using Hoeyer.OpcUa.Core.Configuration.Health;
 using Hoeyer.OpcUa.Server.Abstractions;
 using Hoeyer.OpcUa.Server.Abstractions.Configuration;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;

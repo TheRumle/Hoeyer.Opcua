@@ -1,9 +1,5 @@
 ﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing;
 using Opc.Ua;
@@ -20,7 +16,7 @@ internal sealed class ConcurrentBrowse(INodeBrowser browser, IProducerConsumerCo
         ISession session,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        queue.TryTake(out ReferenceWithId root);
+        queue.TryTake(out var root);
         _visited.TryAdd(root.NodeId, root);
         queue.TryAdd(root);
         while (!cancellationToken.IsCancellationRequested)
@@ -30,20 +26,20 @@ internal sealed class ConcurrentBrowse(INodeBrowser browser, IProducerConsumerCo
                 break;
             }
 
-            List<ReferenceWithId> visiting = DequeueBatchOfSize(30).ToList();
+            var visiting = DequeueBatchOfSize(30).ToList();
             if (visiting.Count == 0)
             {
                 break;
             }
 
-            List<ReferenceWithId> neighbours = await FindNeighbours(session, cancellationToken, visiting);
+            var neighbours = await FindNeighbours(session, cancellationToken, visiting);
 
-            foreach (ReferenceWithId? reference in neighbours)
+            foreach (var reference in neighbours)
             {
                 queue.TryAdd(reference);
             }
 
-            foreach (ReferenceWithId? visited in visiting)
+            foreach (var visited in visiting)
             {
                 yield return visited;
             }
@@ -66,7 +62,7 @@ internal sealed class ConcurrentBrowse(INodeBrowser browser, IProducerConsumerCo
     private IEnumerable<ReferenceWithId> DequeueBatchOfSize(int size)
     {
         var i = size;
-        while (i > 0 && queue.TryTake(out ReferenceWithId? res))
+        while (i > 0 && queue.TryTake(out var res))
         {
             yield return res;
             i--;

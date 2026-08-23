@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 
 namespace Hoeyer.OpcUa.Simulation.SourceGeneration.Generation;
 
@@ -31,7 +27,7 @@ public static class GeneratorInitializationContextExtensions
 
         var types = ns.GetMembers().SelectMany(member => member switch
         {
-            INamedTypeSymbol namedTypeSymbol => [namedTypeSymbol, ..GetNestedTypes(namedTypeSymbol)],
+            INamedTypeSymbol namedTypeSymbol => [namedTypeSymbol, ..namedTypeSymbol.GetNestedTypes()],
             INamespaceSymbol namespaceSymbol => namespaceSymbol.VisitNamespace(cancellationToken, alreadyVisited),
             var _ => []
         });
@@ -99,7 +95,7 @@ public static class GeneratorInitializationContextExtensions
                     IsNamespace: false,
                     EnumUnderlyingType: null
                 } && !IsModuleType(type))
-                .Where(static type => !IsCompilerGenerated(type))
+                .Where(static type => !type.IsCompilerGenerated())
                 .Where(static type => !type.ContainingNamespace.ToDisplayString().StartsWith("Microsoft"))
                 .Where(static type => !type.ContainingNamespace.ToDisplayString().StartsWith("Org.BouncyCastle"))
                 .Where(static type => !type.ContainingNamespace.ToDisplayString().StartsWith("System."))

@@ -1,5 +1,4 @@
-﻿using System;
-using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
+﻿using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Hoeyer.OpcUa.Simulation.Abstractions;
 using Hoeyer.OpcUa.Simulation.Abstractions.Execution;
 using Hoeyer.OpcUa.Simulation.ServerAdapter.Api;

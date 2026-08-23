@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using Hoeyer.OpcUa.Simulation.SourceGeneration.Constants;
+﻿using Hoeyer.OpcUa.Simulation.SourceGeneration.Constants;
 using Hoeyer.OpcUa.Simulation.SourceGeneration.Models;
 using Microsoft.CodeAnalysis;
 
@@ -47,7 +43,7 @@ public sealed class MethodArgumentsStructureGenerator : IIncrementalGenerator
         var @interface = model.InterfaceSymbol.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
         var @namespace = model.InterfaceSymbol.GetFullNamespace();
 
-        foreach (IMethodSymbol methodSymbol in model.Methods)
+        foreach (var methodSymbol in model.Methods)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -58,7 +54,7 @@ public sealed class MethodArgumentsStructureGenerator : IIncrementalGenerator
 
             var className = methodSymbol.Name + "Args";
 
-            Func<string, string> firstLetterToUpper = (string s) => char.ToUpper(s[0]) + s.Substring(1);
+            var firstLetterToUpper = (string s) => char.ToUpper(s[0]) + s.Substring(1);
             var paramList = methodSymbol
                 .Parameters
                 .Select((param, index) => (

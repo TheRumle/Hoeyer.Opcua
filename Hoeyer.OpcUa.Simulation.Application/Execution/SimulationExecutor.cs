@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Hoeyer.Common.Extensions.Types;
+﻿using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Simulation.Abstractions.Execution;
 using Hoeyer.OpcUa.Simulation.Abstractions.Execution.ExecutionSteps;
 using Hoeyer.OpcUa.Simulation.Abstractions.PostProcessing;
@@ -19,7 +15,7 @@ internal sealed class SimulationExecutor<TState, TArgs>(
         IEnumerable<ISimulationStep> steps)
     {
         TState _current = default!;
-        foreach (ISimulationStep? step in steps)
+        foreach (var step in steps)
         {
             if (step is SideEffectActionStep<TState, TArgs> sideEffectActionStep)
             {
@@ -54,7 +50,7 @@ internal sealed class SimulationExecutor<TState, TArgs>(
         TArgs args)
     {
         var (reachedState, timeCreated) = await mutateStateStep.Execute(args);
-        return new(previousState, timeCreated, reachedState, ActionType.StateMutation);
+        return new SimulationResult<TState>(previousState, timeCreated, reachedState, ActionType.StateMutation);
     }
 
     private static SimulationResult<TState> ExecuteMutation(
@@ -90,7 +86,7 @@ internal sealed class SimulationExecutor<TState, TArgs, TReturnValue>(
         var executionSteps = steps.ToList();
         validator.ValidateOrThrow(executionSteps);
 
-        await foreach (SimulationResult<TState> step in simulationExecutor.ExecuteSimulation(args,
+        await foreach (var step in simulationExecutor.ExecuteSimulation(args,
                            executionSteps.SkipLast(1)))
         {
             yield return step;

@@ -47,7 +47,7 @@ internal class EnvironmentVariableRequirementsFactory(
     private CertificateConfiguration CreateCertificateConfig(CertificateConfigurationOptions certificateOptionsValue)
     {
         var root = certificateOptionsValue.PkiRoot;
-        return new CertificateConfiguration()
+        return new CertificateConfiguration
         {
             PkiRoot = root,
             CertificateSubjectName = certificateOptionsValue.CertificateSubjectName,

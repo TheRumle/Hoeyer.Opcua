@@ -9,7 +9,7 @@ public sealed class ParseTypeSpecification
     [MethodDataSource<ParseTypeSpecification>(nameof(TypeToNodeIdSource))]
     public async Task HowTo_Parse_NativeTypeTo_TypeId(Type t, NodeId expectedNodeId)
     {
-        NodeId x = TypeInfo.GetDataTypeId(t);
+        var x = TypeInfo.GetDataTypeId(t);
         var rank = TypeInfo.GetValueRank(t);
         await Assert.That(x).IsEquatableOrEqualTo(expectedNodeId);
         await Assert.That(rank).IsEqualTo(ValueRanks.Scalar);

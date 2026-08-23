@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 
 namespace Hoeyer.Common.Extensions.Types;
 
@@ -80,7 +77,7 @@ public static class TypeExtensions
         sb.Append(name);
         sb.Append("<");
 
-        Type[] args = type.GetGenericArguments();
+        var args = type.GetGenericArguments();
         for (var i = 0; i < args.Length; i++)
         {
             if (i > 0)
@@ -88,7 +85,7 @@ public static class TypeExtensions
                 sb.Append(", ");
             }
 
-            sb.Append(GetFriendlyTypeName(args[i]));
+            sb.Append(args[i].GetFriendlyTypeName());
         }
 
         sb.Append(">");

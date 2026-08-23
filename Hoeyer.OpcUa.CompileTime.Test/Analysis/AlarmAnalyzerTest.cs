@@ -58,14 +58,14 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
     [DisplayName("Using attribute $1 on non-numeric type should cause error to be reported.")]
     public async Task WhenUsingRangeAlarmOnNonNumericType_ShouldCauseError(string alarmType, CancellationToken token)
     {
-        string maximumThresholdAlarmClass = $$"""
-                                              {{ALARM_USINGS}}
-                                              public sealed record {{ENTITY_CLASS}}
-                                              {
-                                                  [{{alarmType}}(2, 1, "Guid", AlarmSeverity.Critical)]
-                                                  public string myString {get; set;}
-                                              }
-                                              """;
+        var maximumThresholdAlarmClass = $$"""
+                                           {{ALARM_USINGS}}
+                                           public sealed record {{ENTITY_CLASS}}
+                                           {
+                                               [{{alarmType}}(2, 1, "Guid", AlarmSeverity.Critical)]
+                                               public string myString {get; set;}
+                                           }
+                                           """;
         var diagnostics = (await Driver.RunAnalyzerOn(maximumThresholdAlarmClass, token)).Diagnostics.ToList();
         await AssertHasOnlyError(diagnostics, Rules.AlarmNotCompatibleWithType);
     }
@@ -75,14 +75,14 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
     [DisplayName("Using attribute $1 on a numeric type error should not be reported")]
     public async Task WhenUsingRangeAlarmOnNonNumericType_ShouldNotCauseError(string alarmType, CancellationToken token)
     {
-        string maximumThresholdAlarmClass = $$"""
-                                              {{ALARM_USINGS}}
-                                              public sealed record {{ENTITY_CLASS}}
-                                              {
-                                                  [{{alarmType}}(1, 2, "int", AlarmSeverity.Critical)]
-                                                  public int myyInt {get; set;}
-                                              }
-                                              """;
+        var maximumThresholdAlarmClass = $$"""
+                                           {{ALARM_USINGS}}
+                                           public sealed record {{ENTITY_CLASS}}
+                                           {
+                                               [{{alarmType}}(1, 2, "int", AlarmSeverity.Critical)]
+                                               public int myyInt {get; set;}
+                                           }
+                                           """;
         var diagnostics = (await Driver.RunAnalyzerOn(maximumThresholdAlarmClass, token)).Diagnostics.ToList();
         await Assert.That(diagnostics).IsEmpty();
     }

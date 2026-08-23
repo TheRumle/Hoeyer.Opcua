@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Hoeyer.OpcUa.Client.Abstractions.Connection;
+﻿using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 using Opc.Ua.Client;
 
@@ -15,7 +14,7 @@ internal sealed class EntitySession(ISession session) : IEntitySession
     public void Dispose()
     {
         session.Dispose();
-        foreach (EntitySubscription entitySubscription in EntitySubscriptions)
+        foreach (var entitySubscription in EntitySubscriptions)
         {
             entitySubscription.Dispose();
         }

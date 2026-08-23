@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
+﻿using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Abstractions.Connection;

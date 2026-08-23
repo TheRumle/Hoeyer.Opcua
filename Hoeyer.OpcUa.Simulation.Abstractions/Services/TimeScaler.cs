@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Hoeyer.OpcUa.Simulation.Abstractions.Services;
+﻿namespace Hoeyer.OpcUa.Simulation.Abstractions.Services;
 
 public sealed class TimeScaler : ITimeScaler
 {
@@ -9,7 +7,11 @@ public sealed class TimeScaler : ITimeScaler
 
     public TimeScaler(double scale)
     {
-        if (scale <= 0) throw new ArgumentOutOfRangeException(nameof(scale) + " must be greater than zero");
+        if (scale <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(scale) + " must be greater than zero");
+        }
+
         _scale = scale;
     }
 

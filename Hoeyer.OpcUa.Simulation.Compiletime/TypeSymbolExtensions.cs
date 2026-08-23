@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Hoeyer.OpcUa.Simulation.SourceGeneration.Constants;
+﻿using Hoeyer.OpcUa.Simulation.SourceGeneration.Constants;
 using Microsoft.CodeAnalysis;
 
 namespace Hoeyer.OpcUa.Simulation.SourceGeneration;
@@ -10,7 +9,7 @@ public static class TypeSymbolExtensions
         symbol.GetAttributes()
             .Any(IsOpcEntityAttributeSymbol);
 
-    public static bool IsAnnotatedAsOpcMethodArgs(this ITypeSymbol symbol) => GetOpcArgsAttribute(symbol) != null;
+    public static bool IsAnnotatedAsOpcMethodArgs(this ITypeSymbol symbol) => symbol.GetOpcArgsAttribute() != null;
 
     public static AttributeData? GetOpcEntityAttribute(this ITypeSymbol? symbol) =>
         symbol?

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Hoeyer.OpcUa.Core.Abstractions;
+﻿using Hoeyer.OpcUa.Core.Abstractions;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Application.OpcTypeMappers;

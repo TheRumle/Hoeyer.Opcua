@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Hoeyer.OpcUa.Client.Abstractions.Connection;
+﻿using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Connection;

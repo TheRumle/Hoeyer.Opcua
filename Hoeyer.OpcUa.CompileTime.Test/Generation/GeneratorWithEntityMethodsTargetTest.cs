@@ -26,8 +26,8 @@ public abstract class GeneratorWithEntityMethodsTargetTest(IIncrementalGenerator
     public async Task WhenGivenValidSourceCode_ProducesValidSyntaxTree(ServiceInterfaceSourceCode serviceInterface)
     {
         var generationResult = _testDriver.RunGeneratorOn(serviceInterface.AllSourceCode);
-        SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(generationResult.SourceCode);
-        List<Diagnostic> diagnostics = syntaxTree.GetDiagnostics().ToList();
+        var syntaxTree = CSharpSyntaxTree.ParseText(generationResult.SourceCode);
+        var diagnostics = syntaxTree.GetDiagnostics().ToList();
         await Assert.That(diagnostics).IsEmpty()
             .Because(
                 $" the generated syntax trees should not have compilation errors: {string.Join('\n', diagnostics)}");

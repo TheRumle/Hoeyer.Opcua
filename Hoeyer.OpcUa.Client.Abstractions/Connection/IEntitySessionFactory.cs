@@ -3,11 +3,14 @@
 public interface IEntitySessionFactory
 {
     /// <summary>
-    /// Creates or gets a session for the given client indicated by the <see cref="clientKey"/>
+    ///     Creates or gets a session for the given client indicated by the <see cref="clientKey" />
     /// </summary>
-    /// <param name="clientKey">an object used to uniquely identify the client utilizing the session. For instance, an <see cref="Hoeyer.OpcUa.Client.Abstractions.Browsing.IEntityBrowser"/></param>
+    /// <param name="clientKey">
+    ///     an object used to uniquely identify the client utilizing the session. For instance, an
+    ///     <see cref="Hoeyer.OpcUa.Client.Abstractions.Browsing.IEntityBrowser" />
+    /// </param>
     /// <param name="token">a token to cancel the creation of a session</param>
-    /// <returns>A new or reused <seealso cref="IEntitySession"/> wrapper.</returns>
+    /// <returns>A new or reused <seealso cref="IEntitySession" /> wrapper.</returns>
     Task<IEntitySession> GetSessionAsync(string clientKey, CancellationToken token = default);
 
     /// <summary>
@@ -20,10 +23,13 @@ public interface IEntitySessionFactory
         GetSessionAsync(typeof(TEntity).Name, token);
 
     /// <summary>
-    /// Creates or gets a session for the given client indicated by the <see cref="clientKey"/>
+    ///     Creates or gets a session for the given client indicated by the <see cref="clientKey" />
     /// </summary>
-    /// <param name="clientKey">an object used to uniquely identify the client utilizing the session. For instance, an <see cref="Hoeyer.OpcUa.Client.Abstractions.Browsing.IEntityBrowser"/></param>
-    /// <returns>A new or reused <seealso cref="IEntitySession"/> wrapper.</returns>
+    /// <param name="clientKey">
+    ///     an object used to uniquely identify the client utilizing the session. For instance, an
+    ///     <see cref="Hoeyer.OpcUa.Client.Abstractions.Browsing.IEntityBrowser" />
+    /// </param>
+    /// <returns>A new or reused <seealso cref="IEntitySession" /> wrapper.</returns>
     IEntitySession GetSession(string clientKey) => GetSessionAsync(clientKey, CancellationToken.None).Result;
 
     /// <summary>

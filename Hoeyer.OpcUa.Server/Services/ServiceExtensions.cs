@@ -46,7 +46,7 @@ public static class ServiceExtensions
         IEnumerable<Assembly> assembliesContainingLoaders,
         Action<IServiceProvider, ServerConfiguration>? additionalConfiguration = null)
     {
-        IServiceCollection collection = serviceRegistration.Collection;
+        var collection = serviceRegistration.Collection;
 
         collection.AddSingleton(typeof(IEntityNodeStructureFactory<>), typeof(ReflectionBasedEntityStructureFactory<>));
         collection.AddServiceAndImplSingleton<IOpcUaTargetServerSetup, OpcUaTargetServerSetup>();
@@ -106,8 +106,8 @@ public static class ServiceExtensions
     )
     {
         var serverConfig = serviceRegistration.WithOpcUaServer(
-            assembliesContainingLoaders: [assemblyMarker.Assembly],
-            additionalConfiguration: additionalConfiguration
+            [assemblyMarker.Assembly],
+            additionalConfiguration
         );
         serverConfig.Collection.AddHostedService<OpcUaServerBackgroundService>();
         return serverConfig;
@@ -115,7 +115,7 @@ public static class ServiceExtensions
 
     private static void AddLoaders(IServiceCollection collection, IEnumerable<Assembly> assemblies)
     {
-        Type loaderType = typeof(IEntityLoader<>);
+        var loaderType = typeof(IEntityLoader<>);
         var loaders = assemblies.SelectMany(assembly =>
             {
                 try
@@ -129,18 +129,22 @@ public static class ServiceExtensions
             })
             .Select(type =>
             {
-                Type? foundLoaderInterface = type
+                var foundLoaderInterface = type
                     .GetInterfaces()
                     .FirstOrDefault(@interface => @interface.Namespace == loaderType.Namespace
                                                   && @interface.IsConstructedGenericType &&
                                                   @interface.GetGenericTypeDefinition() == loaderType);
 
-                if (foundLoaderInterface is null) return default;
+                if (foundLoaderInterface is null)
+                {
+                    return default;
+                }
+
                 return (Service: foundLoaderInterface, Implementation: type);
             })
             .Where(result => result.Service is not null);
 
-        foreach ((Type service, Type implementation) in loaders)
+        foreach (var (service, implementation) in loaders)
         {
             collection.AddServiceAndImplSingleton(service, implementation);
         }

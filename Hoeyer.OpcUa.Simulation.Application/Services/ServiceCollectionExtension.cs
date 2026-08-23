@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reflection;
 using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Extensions.Types;
@@ -30,7 +27,7 @@ public static class ServiceCollectionExtension
         this IServiceCollection registration,
         Action<SimulationServicesConfig> configure,
         params IEnumerable<Type> assemblyMarkers) =>
-        WithOpcUaSimulationServices(new OnGoingOpcEntityServiceRegistration(registration), configure, assemblyMarkers);
+        new OnGoingOpcEntityServiceRegistration(registration).WithOpcUaSimulationServices(configure, assemblyMarkers);
 
 
     public static OnGoingOpcEntityServiceRegistrationWithSimulation WithOpcUaSimulationServices(
@@ -114,19 +111,17 @@ public static class ServiceCollectionExtension
     private static void AddFunctionServices(List<SimulationPatternTypeDetails> typeReferences,
         SimulationServicesContainer simulationServicesContainer)
     {
-        foreach ((Type implementor, Type simulatorInterface, Type methodArgType, Type methodReturnType,
-                     Type entity) in typeReferences)
+        foreach (var (implementor, simulatorInterface, methodArgType, methodReturnType, entity) in typeReferences)
         {
             List<IServiceCollection> args = [simulationServicesContainer];
             ExecuteLocalStaticGeneric(
                 nameof(AddFunctionSimulationConfigurator),
-                generics: [entity, methodArgType, methodReturnType],
-                args: [implementor, args]);
+                [entity, methodArgType, methodReturnType], implementor, args);
 
             ExecuteLocalStaticGeneric(
                 nameof(RegisterFunctionServices),
-                generics: [entity, methodArgType, methodReturnType],
-                args: args);
+                [entity, methodArgType, methodReturnType],
+                args);
         }
     }
 
@@ -140,13 +135,12 @@ public static class ServiceCollectionExtension
             List<IServiceCollection> args = [simulationServicesContainer];
             ExecuteLocalStaticGeneric(
                 nameof(AddActionSimulationConfigurator),
-                generics: [entity, methodArgType],
-                args: [implementor, args]);
+                [entity, methodArgType], implementor, args);
 
             ExecuteLocalStaticGeneric(
                 nameof(RegisterActionServices),
-                generics: [entity, methodArgType],
-                args: args);
+                [entity, methodArgType],
+                args);
         }
     }
 
@@ -236,8 +230,8 @@ public static class ServiceCollectionExtension
 
     private static SimulationPatternTypeDetails CreateConfiguratorInfoTuple(Type implementor, Type simulatorInterface)
     {
-        Type? args = simulatorInterface!.GenericTypeArguments[1];
-        IOpcMethodArgumentsAttribute? argumentAttribute =
+        var args = simulatorInterface!.GenericTypeArguments[1];
+        var argumentAttribute =
             args.GetCustomAttributes().OfType<IOpcMethodArgumentsAttribute>().First();
 
         return new SimulationPatternTypeDetails(implementor,

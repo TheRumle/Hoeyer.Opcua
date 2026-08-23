@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Hoeyer.OpcUa.Client.Abstractions.Writing;
+﻿namespace Hoeyer.OpcUa.Client.Abstractions.Writing;
 
 public interface IEntityWriter
 {

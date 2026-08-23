@@ -32,7 +32,7 @@ public class OpcUaCoreServicesFixtureAttribute : DependencyInjectionDataSourceAt
                         OwnStorePath = Path.Combine(pkiRoot, "own"),
                         TrustedStorePath = Path.Combine(pkiRoot, "trusted"),
                         IssuerStorePath = Path.Combine(pkiRoot, "issuer"),
-                        RejectedStorePath = Path.Combine(pkiRoot, "rejected"),
+                        RejectedStorePath = Path.Combine(pkiRoot, "rejected")
                     })
                 .Build())
             .WithEntityModelsFrom(typeof(AllPropertyTypesEntity));

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
 namespace Hoeyer.OpcUa.Core.SourceGeneration.Generation;
 
@@ -32,15 +31,24 @@ public sealed class SourceCodeWriter : IDisposable
 
     public SourceCodeWriter WriteLine(string value)
     {
-        if (string.IsNullOrEmpty(value)) return this;
+        if (string.IsNullOrEmpty(value))
+        {
+            return this;
+        }
 
-        if (value[0] is '}' or ']') _tabLevel--;
+        if (value[0] is '}' or ']')
+        {
+            _tabLevel--;
+        }
 
         WriteTabs();
 
         _stringBuilder.AppendLine(value);
 
-        if (value.Equals("{") || value.Equals("[")) _tabLevel++;
+        if (value.Equals("{") || value.Equals("["))
+        {
+            _tabLevel++;
+        }
 
         return this;
     }

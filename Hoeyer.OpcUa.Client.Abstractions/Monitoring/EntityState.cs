@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Hoeyer.OpcUa.Client.Abstractions.Monitoring;
+﻿namespace Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 
 public class EntityState<T>
 {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Hoeyer.Common.Extensions.Types;
+﻿namespace Hoeyer.Common.Extensions.Types;
 
 public static class DictionaryExtensions
 {
@@ -25,7 +22,7 @@ public static class DictionaryExtensions
 
         return dict[key] = new TValue();
     }
-    
+
     public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, Func<TValue> factory)
     {
         if (dict.TryGetValue(key, out var value))

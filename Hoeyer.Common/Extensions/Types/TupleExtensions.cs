@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Hoeyer.Common.Extensions.Types;
+﻿namespace Hoeyer.Common.Extensions.Types;
 
 public static class TupleExtensions
 {
@@ -118,7 +114,8 @@ public static class TupleExtensions
         return GetZipIterator(firstList, secondList);
     }
 
-    private static IEnumerable<(TFirst first, TSecond second)> GetZipIterator<TFirst, TSecond>(List<TFirst> firstList, List<TSecond> secondList)
+    private static IEnumerable<(TFirst first, TSecond second)> GetZipIterator<TFirst, TSecond>(List<TFirst> firstList,
+        List<TSecond> secondList)
     {
         for (var i = 0; i < firstList.Count; i++) yield return (firstList[i], secondList[i]);
     }

@@ -1,5 +1,4 @@
-﻿using System;
-using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
+﻿using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Application;
@@ -31,14 +30,10 @@ internal sealed class AlarmSetupConfigurator<T> : INodeConfigurator<T>
                     "Initialized");
 
                 property.OnWriteValue +=
-                    (
-                        ISystemContext systemContext,
-                        NodeState node,
-                        NumericRange range,
-                        QualifiedName encoding,
-                        ref object value,
-                        ref StatusCode code,
-                        ref DateTime timestamp
+                    (systemContext, node, range, encoding,
+                        ref value,
+                        ref code,
+                        ref timestamp
                     ) =>
                     {
                         if (value is double val)

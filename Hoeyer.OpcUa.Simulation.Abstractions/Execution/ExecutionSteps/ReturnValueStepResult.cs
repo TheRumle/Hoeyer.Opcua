@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Hoeyer.OpcUa.Simulation.Abstractions.Execution.ExecutionSteps;
+﻿namespace Hoeyer.OpcUa.Simulation.Abstractions.Execution.ExecutionSteps;
 
 public sealed record ReturnValueStepResult<TEntity, TReturn>(
     TEntity PreviousState,

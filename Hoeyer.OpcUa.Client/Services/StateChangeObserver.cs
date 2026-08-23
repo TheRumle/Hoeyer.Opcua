@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Hoeyer.Common.Messaging.Api;
+﻿using Hoeyer.Common.Messaging.Api;
 using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 using Hoeyer.OpcUa.Client.Application.Subscriptions;
 

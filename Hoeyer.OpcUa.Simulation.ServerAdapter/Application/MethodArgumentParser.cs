@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using Hoeyer.OpcUa.Simulation.Abstractions;
+﻿using Hoeyer.OpcUa.Simulation.Abstractions;
 using Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter.Application;
 
 /// <summary>
-/// Parses a list of method arguments into a strongly-typed argument structure of type <typeparamref name="TMethodArgs"/>.
+///     Parses a list of method arguments into a strongly-typed argument structure of type
+///     <typeparamref name="TMethodArgs" />.
 /// </summary>
 /// <typeparam name="TMethodArgs">The type representing the structure of method arguments.</typeparam>
 internal sealed class MethodArgumentParser<TMethodArgs>(IEntityMethodArgTranslator<TMethodArgs> argsMapper)
@@ -14,7 +13,7 @@ internal sealed class MethodArgumentParser<TMethodArgs>(IEntityMethodArgTranslat
 {
     private static readonly int NumberOfArgs = typeof(TMethodArgs).GetProperties().Length;
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public TMethodArgs ParseToArgsStructure(IList<object> inputArguments)
     {
         var argumentStructure = argsMapper.Map(inputArguments);

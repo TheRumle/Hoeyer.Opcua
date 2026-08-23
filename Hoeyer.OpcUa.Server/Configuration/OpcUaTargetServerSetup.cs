@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Hoeyer.OpcUa.Core.Configuration;
+﻿using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Server.Abstractions;
 
 namespace Hoeyer.OpcUa.Server.Configuration;

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Hoeyer.Common.Extensions.Types;
+﻿namespace Hoeyer.Common.Extensions.Types;
 
 public static class TaskExtensions
 {
@@ -46,13 +42,13 @@ public static class TaskExtensions
                     TaskStatus.Faulted => Task.FromException<TOut>(t.Exception!),
                     TaskStatus.Canceled => Task.FromCanceled<TOut>(new CancellationToken(true)),
                     TaskStatus.RanToCompletion => Task.FromResult(mapper.Invoke(t.Result)),
-                    _ => throw new InvalidOperationException(UNEXPECTED_TASK_STATUS)
+                    var _ => throw new InvalidOperationException(UNEXPECTED_TASK_STATUS)
                 })
                 .Unwrap();
         }
 
         public Task<TOut> SelectAsync<TOut>(Func<TIn, Task<TOut>> mapper) =>
-            SelectAsync(task, mapper, CancellationToken.None);
+            task.SelectAsync(mapper, CancellationToken.None);
 
         public Task<TOut> SelectAsync<TOut>(Func<TIn, Task<TOut>> mapper,
             CancellationToken ct)
@@ -62,7 +58,7 @@ public static class TaskExtensions
                     TaskStatus.Faulted => Task.FromException<TOut>(t.Exception!),
                     TaskStatus.Canceled => Task.FromCanceled<TOut>(new CancellationToken(true)),
                     TaskStatus.RanToCompletion => mapper.Invoke(t.Result),
-                    _ => throw new InvalidOperationException(UNEXPECTED_TASK_STATUS)
+                    var _ => throw new InvalidOperationException(UNEXPECTED_TASK_STATUS)
                 }, ct)
                 .Unwrap();
         }
@@ -81,7 +77,7 @@ public static class TaskExtensions
                         TaskStatus.Faulted => t,
                         TaskStatus.Canceled => t,
                         TaskStatus.RanToCompletion => constActionThenReturn.Invoke(t),
-                        _ => throw new InvalidOperationException(UNEXPECTED_TASK_STATUS)
+                        var _ => throw new InvalidOperationException(UNEXPECTED_TASK_STATUS)
                     })
                 .Unwrap();
         }

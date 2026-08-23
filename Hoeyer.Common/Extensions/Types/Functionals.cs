@@ -2,8 +2,5 @@
 
 public static class Functionals
 {
-    public static T Identity<T>(T identity)
-    {
-        return identity;
-    }
+    public static T Identity<T>(T identity) => identity;
 }

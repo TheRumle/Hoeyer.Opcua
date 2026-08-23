@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Hoeyer.OpcUa.Client.Abstractions.Browsing;
+﻿using Hoeyer.OpcUa.Client.Abstractions.Browsing;
 using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Hoeyer.OpcUa.Client.Abstractions.Writing;
 using Hoeyer.OpcUa.Core.Abstractions;
@@ -19,7 +15,7 @@ public sealed class EntityWriter<TEntity>(
 {
     public async Task AssignEntityValues(TEntity entity, CancellationToken cancellationToken = default)
     {
-        EntityNodeStructure valuesToWrite = await browser.GetNodeStructure(cancellationToken);
+        var valuesToWrite = await browser.GetNodeStructure(cancellationToken);
         translator.AssignToStructure(entity,
             (name, value) => valuesToWrite.Properties[name].Value = value);
         var values = valuesToWrite.Properties.Values.Select(CreateWriteValue);
@@ -47,9 +43,9 @@ public sealed class EntityWriter<TEntity>(
         IEnumerable<WriteValue> valuesToWrite)
     {
         var session = await factory.GetSessionForAsync<TEntity>(cancellationToken);
-        WriteResponse? res =
+        var res =
             await session.Session.WriteAsync(null, new WriteValueCollection(valuesToWrite), cancellationToken);
-        foreach (DiagnosticInfo? s in res.DiagnosticInfos.Where(e => !e.IsNullDiagnosticInfo))
+        foreach (var s in res.DiagnosticInfos.Where(e => !e.IsNullDiagnosticInfo))
         {
             logger.LogInformation(s.ToString());
         }

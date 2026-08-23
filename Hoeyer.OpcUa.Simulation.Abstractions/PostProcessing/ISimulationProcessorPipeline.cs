@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Hoeyer.OpcUa.Simulation.Abstractions.Execution;
+﻿using Hoeyer.OpcUa.Simulation.Abstractions.Execution;
 
 namespace Hoeyer.OpcUa.Simulation.Abstractions.PostProcessing;
 

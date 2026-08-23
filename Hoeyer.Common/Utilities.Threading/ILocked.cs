@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Hoeyer.Common.Utilities.Threading;
+﻿namespace Hoeyer.Common.Utilities.Threading;
 
 public interface ILocked<out T>
 {

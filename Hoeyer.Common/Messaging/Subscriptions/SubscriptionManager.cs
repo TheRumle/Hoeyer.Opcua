@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Hoeyer.Common.Messaging.Api;
+﻿using Hoeyer.Common.Messaging.Api;
 
 namespace Hoeyer.Common.Messaging.Subscriptions;
 
@@ -11,7 +10,11 @@ public sealed class SubscriptionManager<T>(IMessageSubscriptionFactory<T> factor
 
     public void Publish(T message)
     {
-        if (_isPaused) return;
+        if (_isPaused)
+        {
+            return;
+        }
+
         var letter = new Message<T>(message);
         foreach (var subscription in Collection.Subscriptions.ToList())
         {

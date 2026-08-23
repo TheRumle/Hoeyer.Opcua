@@ -40,7 +40,7 @@ public sealed class EntitySessionFactory(
             sessionName,
             (uint)config.ClientConfiguration.DefaultSessionTimeout,
             new UserIdentity(new AnonymousIdentityToken()),
-            preferredLocales: null,
+            null,
             token
         );
 

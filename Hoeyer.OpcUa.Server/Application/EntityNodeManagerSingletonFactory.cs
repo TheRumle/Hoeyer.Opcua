@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Hoeyer.OpcUa.Core.Configuration;
+﻿using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Configuration.Errors;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Microsoft.Extensions.DependencyInjection;

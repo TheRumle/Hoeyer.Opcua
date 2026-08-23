@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Hoeyer.Common.Messaging.Api;
+﻿namespace Hoeyer.Common.Messaging.Api;
 
 public interface IMessageSubscription : IDisposable
 {

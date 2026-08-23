@@ -63,13 +63,13 @@ public sealed class EntityBrowser<TEntity>(
         ReadResult values)
     {
         logger.LogDebug("Parsing entity");
-        List<VariableNode> variables = await reader
+        var variables = await reader
             .ReadNodesAsync(session, values.SuccesfulReads.Select(value => value!.NodeId),
                 ct: cancellationToken)
             .SelectAsync(result => result.SuccesfulReads.OfType<VariableNode>())
             .SelectAsync(nodes => nodes.ToList());
 
-        IEntityNode structure = AssignReadValues(variables);
+        var structure = AssignReadValues(variables);
         return structure;
     }
 
@@ -77,7 +77,7 @@ public sealed class EntityBrowser<TEntity>(
     {
         logger.LogDebug("Assigning read values");
         var index = _entityRoot!.NodeId.NamespaceIndex;
-        IEntityNode structure = nodeStructureFactory.Create(index);
+        var structure = nodeStructureFactory.Create(index);
         foreach (var variable in variables)
         {
             logger.LogTrace("Assigning {variableName} to {value}", variable.BrowseName.Name, variable.Value);
@@ -106,7 +106,7 @@ public sealed class EntityBrowser<TEntity>(
     private async Task<Node> FindEntityRoot(CancellationToken cancellationToken = default)
     {
         logger.LogDebug("Looking for entity root...");
-        ReferenceWithId r = await traversalStrategy
+        var r = await traversalStrategy
             .TraverseUntil(Session,
                 ObjectIds.RootFolder,
                 _identityMatcher.Invoke,

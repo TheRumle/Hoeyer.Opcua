@@ -10,7 +10,7 @@ internal sealed class IntegrationFixtureResources<T>(Func<string, IIntegrationTe
 {
     internal IServiceProvider ServiceProvider { get; private set; } = null!;
     internal IIntegrationTestEnvironment ServerEnvironment { get; private set; } = null!;
-    private IServiceScope ServiceScope { get; set; } = null!;
+    private IServiceScope ServiceScope { get; } = null!;
 
     public async Task InitializeAsync()
     {

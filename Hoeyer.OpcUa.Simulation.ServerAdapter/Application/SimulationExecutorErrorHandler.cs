@@ -1,5 +1,4 @@
-﻿using System;
-using Hoeyer.OpcUa.Simulation.Abstractions.Configuration.Exceptions;
+﻿using Hoeyer.OpcUa.Simulation.Abstractions.Configuration.Exceptions;
 using Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
@@ -27,7 +26,7 @@ internal sealed class SimulationExecutorErrorHandler(ILogger<SimulationExecutorE
             AggregateException aggregateException => WrapInSimulationFailureException(aggregateException,
                 "Multiple exceptions were thrown during the execution of the simulation"),
             ArgumentNullException argumentNullException => WrapInSimulationFailureException(argumentNullException,
-                $"The simulation was passed null arguments. Did you forget to provide any args when calling the method?"),
+                "The simulation was passed null arguments. Did you forget to provide any args when calling the method?"),
             ArgumentOutOfRangeException ex => WrapInSimulationFailureException(ex,
                 $"The simulation threw an {nameof(ArgumentOutOfRangeException)}. Did you call the method with the correct number of arguments?"),
             ArgumentException => ServiceResult.Create(new SimulationFailureException(exception.Message),

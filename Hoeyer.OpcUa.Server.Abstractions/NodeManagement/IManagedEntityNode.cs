@@ -4,7 +4,8 @@ using Hoeyer.OpcUa.Core.Abstractions;
 namespace Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 
 /// <summary>
-/// A wrapper around an <see cref="IEntityNode"/> ensuring exposing state-change methods that can be used to securely operate on the node. For changing the state of the node see <see cref="ILocked{T}"/>.
+///     A wrapper around an <see cref="IEntityNode" /> ensuring exposing state-change methods that can be used to securely
+///     operate on the node. For changing the state of the node see <see cref="ILocked{T}" />.
 /// </summary>
 public interface IManagedEntityNode : ILocked<IEntityNode>
 {

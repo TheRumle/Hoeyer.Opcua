@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Hoeyer.OpcUa.Client.Abstractions.Browsing;
+﻿using Hoeyer.OpcUa.Client.Abstractions.Browsing;
 using Hoeyer.OpcUa.Client.Abstractions.Calling;
 using Hoeyer.OpcUa.Client.Abstractions.Calling.Exceptions;
 using Hoeyer.OpcUa.Client.Abstractions.Connection;
@@ -29,7 +25,7 @@ public class MethodCaller<TEntity>(
     /// <inheritdoc />
     public async Task<T> CallMethod<T>(string methodName, CancellationToken token = default, params object[] args)
     {
-        IList<object> res = await CallNode(methodName, token, args);
+        var res = await CallNode(methodName, token, args);
         var returnValue = res[0];
         return returnValue == null ? default! : (T)OpcToCSharpValueParser.ParseOpcValue(returnValue)!;
     }

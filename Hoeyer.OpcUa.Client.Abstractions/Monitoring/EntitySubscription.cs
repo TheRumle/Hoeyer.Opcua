@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Hoeyer.OpcUa.Client.Abstractions.Connection;
+﻿using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 
 public sealed class EntitySubscription : Subscription, IEntitySubscription
 {
-    private readonly List<MonitoredEntityItem> _entityItems = new();
     public readonly MonitoredItemNotificationEventHandler Callback;
+    private readonly List<MonitoredEntityItem> _entityItems = new();
 
     public EntitySubscription(IEntitySession session,
         Action<MonitoredItem, MonitoredItemNotificationEventArgs> callback) : base(session.Session.DefaultSubscription)
@@ -34,7 +31,7 @@ public sealed class EntitySubscription : Subscription, IEntitySubscription
 
     public void AddEntityItems(IEnumerable<MonitoredEntityItem> items)
     {
-        foreach (MonitoredEntityItem? item in items)
+        foreach (var item in items)
         {
             AddEntityItem(item);
         }

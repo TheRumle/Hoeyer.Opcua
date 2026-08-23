@@ -5,8 +5,8 @@ using static Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter.IntegrationTestAdap
 namespace Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 
 /// <summary>
-/// Uses the default integration test environment, dictated by key <see cref="GetSessionIsolatedAdapter"/>.
-/// The environment itself is session-owned and must not be disposed by this data source.
+///     Uses the default integration test environment, dictated by key <see cref="GetSessionIsolatedAdapter" />.
+///     The environment itself is session-owned and must not be disposed by this data source.
 /// </summary>
 public sealed class IntegrationServiceInjectionAttribute : AsyncUntypedDataSourceGeneratorAttribute
 {
@@ -31,7 +31,7 @@ public sealed class IntegrationServiceInjectionAttribute : AsyncUntypedDataSourc
 
     private static async Task<object?[]?> CreateDataUsingScope(DataGeneratorMetadata dataGeneratorMetadata)
     {
-        IIntegrationTestEnvironment testEnvironment = await TestEnvironment;
+        var testEnvironment = await TestEnvironment;
         var scopeContainer = new ScopeContainer(() => testEnvironment.AvailableServices
             .BuildServiceProvider()
             .CreateScope());
@@ -57,7 +57,11 @@ public sealed class IntegrationServiceInjectionAttribute : AsyncUntypedDataSourc
 
     private static object Create(IServiceScope scope, Type type)
     {
-        if (type == typeof(IServiceProvider)) return scope.ServiceProvider;
+        if (type == typeof(IServiceProvider))
+        {
+            return scope.ServiceProvider;
+        }
+
         return scope.ServiceProvider.GetRequiredService(type);
     }
 
@@ -68,7 +72,7 @@ public sealed class IntegrationServiceInjectionAttribute : AsyncUntypedDataSourc
             ParameterMetadata param => param.Type,
             ClassMetadata cls => cls.Type,
             MethodMetadata method => method.Type,
-            _ => throw new InvalidOperationException(
+            var _ => throw new InvalidOperationException(
                 $"Unknown member type: {member.GetType()}")
         };
 

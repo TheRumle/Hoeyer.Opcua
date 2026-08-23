@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Hoeyer.OpcUa.Core.SourceGeneration.Constants;
+﻿using Hoeyer.OpcUa.Core.SourceGeneration.Constants;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
