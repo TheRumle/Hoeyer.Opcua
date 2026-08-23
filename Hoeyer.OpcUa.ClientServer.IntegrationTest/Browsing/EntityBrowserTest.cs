@@ -1,24 +1,21 @@
 ﻿using Hoeyer.OpcUa.Client.Abstractions.Browsing;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing.Reading;
 using Hoeyer.OpcUa.Core.Abstractions;
-using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
-using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using JetBrains.Annotations;
+using Opc.Ua;
 
-namespace Hoeyer.OpcUa.IntegrationTest.AbstractTests;
+namespace Hoeyer.OpcUa.IntegrationTest.Browsing;
 
 [TestSubject(typeof(IEntityBrowser<>))]
 [TestSubject(typeof(INodeReader))]
-[IntegrationAdapterDependentTest]
-[DependsOn<IntegrationEnvironmentHealthTests>]
-public abstract class EntityBrowserTest<T>(IntegrationTestFixture<IEntityBrowser<T>> context)
+public abstract class EntityBrowserTest<T>(IEntityBrowser<T> browser)
 {
     [Test]
     [DisplayName("Can browse entity nodes and translate it to property states and base object")]
     public async Task EntityBrowser_CanCreateEntityNode_AndTranslateIt(
         CancellationToken token)
     {
-        var entity = await context.ExecuteAsync(browser => browser.BrowseEntityNode(token));
+        var entity = await browser.BrowseEntityNode(token);
         await Assert.That(entity).IsNotNull();
         await Assert.That(entity.PropertyStates).IsNotEmpty();
         await Assert.That(entity.BaseObject).IsNotNull();
@@ -28,7 +25,7 @@ public abstract class EntityBrowserTest<T>(IntegrationTestFixture<IEntityBrowser
     [DisplayName("The browsed entity is not a null value")]
     public async Task EntityBrowser_BrowsedEntity_DoesNotHaveNullValues(CancellationToken token)
     {
-        var entity = await context.ExecuteAsync(browser => browser.BrowseEntityNode(token));
+        var entity = await browser.BrowseEntityNode(token);
         var propertyValue = GetNullPropertyValues(entity);
         foreach (var key in propertyValue.Keys)
         {
@@ -44,7 +41,7 @@ public abstract class EntityBrowserTest<T>(IntegrationTestFixture<IEntityBrowser
     {
         var browse = async () =>
         {
-            var entity = await context.ExecuteAsync(browser => browser.BrowseEntityNode(token));
+            var entity = await browser.BrowseEntityNode(token);
             await Assert.That(entity).IsNotNull();
             await Assert.That(entity.PropertyStates).IsNotEmpty();
             await Assert.That(entity.BaseObject).IsNotNull();

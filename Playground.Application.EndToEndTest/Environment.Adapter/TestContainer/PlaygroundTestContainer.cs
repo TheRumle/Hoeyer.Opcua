@@ -5,9 +5,11 @@ using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Images;
 using Hoeyer.OpcUa.Core.Configuration.ConfigurationBuilder;
 using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
-using Playground.Application.EndToEndTest.Environment.Adapter.TestContainer;
+using Hoeyer.OpcUa.IntegrationTest.Fixtures;
+using Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Playground.Application.EndToEndTest.Environment.Adapter.Docker;
+namespace Playground.Application.EndToEndTest.Environment.Adapter.TestContainer;
 
 public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
 {
@@ -34,7 +36,9 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
     public string Host => Container.Hostname;
     public string ServerId => OPCUA_SERVERID;
     public string ServerName => OPCUA_SERVERNAME;
+    public OpcEnvironment OpcEnvironment { get; private set; } = null!;
     public async Task<bool> EnvironmentReady() => await HealthChecker.IsHealthy();
+    public IServiceCollection AvailableServices { get; } = new ServiceCollection();
 
     public async ValueTask DisposeAsync()
     {
@@ -64,6 +68,16 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
             .WithImagePullPolicy(PullPolicy.Missing)
             .WithCleanUp(true)
             .Build();
+
+        OpcEnvironment = new OpcEnvironment
+        {
+            HostName = Host,
+            Port = SimulationPort,
+            OpcUaServerId = ServerId,
+            OpcUaServerName = ServerName,
+            Protocol = Protocol
+        };
+        AvailableServices.AddClientTestServices(OpcEnvironment, [typeof(TestEntity)]);
 
         HealthChecker = new DockerHealthChecker(Container);
 

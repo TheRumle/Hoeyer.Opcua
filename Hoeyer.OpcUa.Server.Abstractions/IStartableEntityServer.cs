@@ -3,5 +3,5 @@
 public interface IStartableEntityServer
 {
     IOpcUaTargetServerSetup ServerInfo { get; }
-    Task<IStartedEntityServer> StartAsync();
+    Task<IStartedEntityServer> StartAsync(CancellationToken token = default);
 }

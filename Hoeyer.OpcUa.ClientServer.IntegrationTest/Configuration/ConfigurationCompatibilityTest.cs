@@ -1,10 +1,11 @@
 ﻿using Hoeyer.OpcUa.Client.Abstractions.Configuration;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 using Hoeyer.OpcUa.Server.Abstractions.Configuration;
+using Opc.Ua;
 
-namespace Hoeyer.OpcUa.IntegrationTest.ConfigurationTest;
+namespace Hoeyer.OpcUa.IntegrationTest.Configuration;
 
-[ClientAndServerServices]
+[ClientAndServerServiceInjection]
 public class ConfigurationCompatibilityTest(
     IClientApplicationConfigurationFactory clientConfigFactory,
     IServerApplicationConfigurationFactory serverConfigFactory)

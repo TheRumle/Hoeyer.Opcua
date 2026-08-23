@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace Hoeyer.OpcUa.Client.Abstractions.Connection;
+﻿namespace Hoeyer.OpcUa.Client.Abstractions.Connection;
 
 public interface IEntitySessionFactory
 {

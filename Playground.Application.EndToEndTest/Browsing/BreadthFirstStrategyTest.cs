@@ -1,5 +1,5 @@
 ﻿using Hoeyer.OpcUa.Client.Application.Browsing;
-using Hoeyer.OpcUa.IntegrationTest.AbstractTests;
+using Hoeyer.OpcUa.IntegrationTest.Browsing;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 
 namespace Playground.Application.EndToEndTest.Browsing;

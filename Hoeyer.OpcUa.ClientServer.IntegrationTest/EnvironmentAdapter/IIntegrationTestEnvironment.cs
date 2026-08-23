@@ -1,14 +1,12 @@
-﻿using Hoeyer.OpcUa.Core.Configuration.ConfigurationBuilder;
+﻿using Microsoft.Extensions.DependencyInjection;
 using TUnit.Core.Interfaces;
 
 namespace Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
 
 public interface IIntegrationTestEnvironment : IAsyncInitializer, IAsyncDisposable
 {
-    int SimulationPort { get; }
-    string Host { get; }
-    WebProtocol Protocol { get; }
-    string ServerId { get; }
-    string ServerName { get; }
+    public IServiceCollection AvailableServices { get; }
+
+    public OpcEnvironment OpcEnvironment { get; }
     public Task<bool> EnvironmentReady();
 }

@@ -14,30 +14,17 @@ internal sealed class IntegrationFixtureResources<T>(Func<string, IIntegrationTe
 
     public async Task InitializeAsync()
     {
-        var context = TestContext.Current!;
-        var key = TestContextExtensions.ComputeKey<T>(context);
+        var key = TestContextExtensions.ComputeKey<T>(TestContext.Current!);
         var adapter = adapterProvider(key);
-        ServerEnvironment = adapter.TestEnvironment;
 
+        ServerEnvironment = adapter.TestEnvironment;
         await ServerEnvironment.InitializeAsync();
 
-        var adapterArgs = new ClientServicesAdapterArgs
-        {
-            HostName = ServerEnvironment.Host,
-            Port = ServerEnvironment.SimulationPort,
-            OpcUaServerId = ServerEnvironment.ServerId,
-            OpcUaServerName = ServerEnvironment.ServerName,
-            Protocol = ServerEnvironment.Protocol
-        };
-
-        var exposedServices = new ClientIntegrationServices(
-            adapter.ApplicationServices, adapterArgs,
-            adapter.EntityAssemblyMarkers,
-            adapter.ClientAssemblyMarkers
-        );
-
-        ServiceScope = exposedServices.ServiceProvider.CreateScope();
-        ServiceProvider = ServiceScope.ServiceProvider;
+        ServiceProvider = ServerEnvironment
+            .AvailableServices
+            .BuildServiceProvider()
+            .CreateScope()
+            .ServiceProvider;
     }
 
 

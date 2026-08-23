@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Frozen;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Frozen;
 using System.Reflection;
 using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Reflection;
@@ -35,6 +32,14 @@ public static class ServiceExtensions
             serviceRegistration.WithOpcUaServer([fromAssembly.Assembly],
                 additionalConfiguration
             );
+
+    public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServer(
+        this OnGoingOpcEntityServiceRegistrationWithModels serviceRegistration,
+        IEnumerable<Type> assembliesContainingLoaders,
+        Action<IServiceProvider, ServerConfiguration>? additionalConfiguration = null)
+        => serviceRegistration.WithOpcUaServer(assembliesContainingLoaders.Select(e => e.Assembly),
+            additionalConfiguration
+        );
 
     public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServer(
         this OnGoingOpcEntityServiceRegistrationWithModels serviceRegistration,

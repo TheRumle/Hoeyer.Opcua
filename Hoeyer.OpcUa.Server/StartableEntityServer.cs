@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Hoeyer.OpcUa.Core.Configuration.Health;
+﻿using Hoeyer.OpcUa.Core.Configuration.Health;
 using Hoeyer.OpcUa.Server.Abstractions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua.Configuration;
@@ -18,7 +16,7 @@ internal sealed class StartableEntityServer(
         applicationInstance ?? throw new ArgumentNullException(nameof(applicationInstance));
 
 
-    public async Task<IStartedEntityServer> StartAsync()
+    public async Task<IStartedEntityServer> StartAsync(CancellationToken token = default)
     {
         if (healthCheckAssignment.IsServerStarted)
         {

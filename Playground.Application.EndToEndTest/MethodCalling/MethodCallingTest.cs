@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.IntegrationTest;
+﻿using Hoeyer.OpcUa.IntegrationTest.Configuration;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using Playground.Modelling.Methods;
 using Playground.Modelling.Models;

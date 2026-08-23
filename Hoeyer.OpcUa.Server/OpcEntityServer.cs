@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Hoeyer.Common.Extensions.LoggingExtensions;
+﻿using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.OpcUa.Core.Extensions.Logging;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.Server.Abstractions;
@@ -27,7 +22,7 @@ internal sealed class OpcEntityServer(
 
     private bool _disposed;
 
-    public DomainMasterNodeManager DomainManager { get; private set; } = null!;
+    public DomainMasterNodeManager? DomainManager { get; private set; } = null!;
 
 
     public override async Task<CallResponse> CallAsync(SecureChannelContext secureChannelContext,
@@ -62,10 +57,68 @@ internal sealed class OpcEntityServer(
         })!;
     }
 
-    protected override ISessionManager CreateSessionManager(IServerInternal server,
-        ApplicationConfiguration configuration) =>
-        new LoggingSessionManager(logger, server, configuration);
 
+    public override async Task<CreateSessionResponse> CreateSessionAsync(
+        SecureChannelContext secureChannelContext,
+        RequestHeader requestHeader,
+        ApplicationDescription clientDescription,
+        string serverUri,
+        string endpointUrl,
+        string sessionName,
+        byte[] clientNonce,
+        byte[] clientCertificate,
+        double requestedSessionTimeout,
+        uint maxResponseMessageSize,
+        CancellationToken ct)
+    {
+        logger.LogInformation(
+            "CreateSessionAsync: ClientName={ClientName}, ApplicationUri={ApplicationUri}, " +
+            "ServerUri={ServerUri}, EndpointUrl={EndpointUrl}, SessionName={SessionName}, " +
+            "RequestedTimeout={RequestedTimeout}, MaxResponseMessageSize={MaxResponseMessageSize}",
+            clientDescription?.ApplicationName?.Text,
+            clientDescription?.ApplicationUri,
+            serverUri,
+            endpointUrl,
+            sessionName,
+            requestedSessionTimeout,
+            maxResponseMessageSize);
+
+        try
+        {
+            var response = await base.CreateSessionAsync(
+                secureChannelContext,
+                requestHeader,
+                clientDescription,
+                serverUri,
+                endpointUrl,
+                sessionName,
+                clientNonce,
+                clientCertificate,
+                requestedSessionTimeout,
+                maxResponseMessageSize,
+                ct);
+
+            logger.LogInformation(
+                "CreateSessionAsync completed: Status={Status}",
+                response?.ResponseHeader?.ServiceResult);
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "CreateSessionAsync FAILED: ClientName={ClientName}, ApplicationUri={ApplicationUri}, " +
+                "ServerUri={ServerUri}, EndpointUrl={EndpointUrl}, SessionName={SessionName}",
+                clientDescription?.ApplicationName?.Text,
+                clientDescription?.ApplicationUri,
+                serverUri,
+                endpointUrl,
+                sessionName);
+
+            throw;
+        }
+    }
 
     public override async Task<ActivateSessionResponse> ActivateSessionAsync(SecureChannelContext secureChannelContext,
         RequestHeader requestHeader,
@@ -140,35 +193,9 @@ internal sealed class OpcEntityServer(
             return;
         }
 
-        DomainManager.Dispose();
+        logger.LogInformation("Closing server...");
+        DomainManager?.Dispose();
         base.Dispose(disposing);
         _disposed = true;
-    }
-
-    private ResponseHeader? LogResponseHeader(ResponseHeader? responseHeader,
-        DiagnosticInfoCollection? diagnosticInfos = null)
-    {
-        if (diagnosticInfos is { Count: > 0 })
-        {
-            logger.LogError("Diagnostics: {@Diagnostics}", diagnosticInfos.Select(e => new
-            {
-                e.AdditionalInfo,
-                e.InnerStatusCode,
-                Message = e.ToString()
-            }).ToArray<object?>());
-        }
-
-        if (responseHeader == null)
-        {
-            logger.LogError("Response header is null!");
-        }
-        else if (StatusCode.IsBad(responseHeader.ServiceResult))
-        {
-            logger.LogError("Header status code is bad: {Code}\n" +
-                            "{@Header}", StatusCodes.GetBrowseName(responseHeader.ServiceResult.Code),
-                responseHeader.ToLoggingObject());
-        }
-
-        return responseHeader;
     }
 }

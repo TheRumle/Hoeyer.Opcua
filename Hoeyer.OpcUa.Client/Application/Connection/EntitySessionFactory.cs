@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Hoeyer.OpcUa.Client.Abstractions.Configuration;
+﻿using Hoeyer.OpcUa.Client.Abstractions.Configuration;
 using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Hoeyer.OpcUa.Client.Extensions;
 using Hoeyer.OpcUa.Core.Configuration;
@@ -27,7 +25,7 @@ public sealed class EntitySessionFactory(
         using var logScope = logger.BeginScope("Creating new session with name {0}", sessionName);
         var config = configurationFactory.CreateClientConfiguration();
 
-        logger.LogDebug("Validation configuration");
+        logger.LogDebug("Validating configuration...");
         await config.ValidateAsync(ApplicationType.Client, token);
 
         logger.LogInformation("Creating session with name {SessionName}", sessionName);
@@ -46,7 +44,8 @@ public sealed class EntitySessionFactory(
             token
         );
 
-        session.ReturnDiagnostics = DiagnosticsMasks.LocalizedText | DiagnosticsMasks.InnerDiagnostics;
+        session.ReturnDiagnostics =
+            DiagnosticsMasks.LocalizedText | DiagnosticsMasks.InnerDiagnostics | DiagnosticsMasks.All;
 
         logger.LogInformation("Session created for sessionName '{Client}'", sessionName);
         return new EntitySession(session);

@@ -75,8 +75,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground.Application.EndT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.ClientServer.IntegrationTest", "Hoeyer.OpcUa.ClientServer.IntegrationTest\Hoeyer.OpcUa.ClientServer.IntegrationTest.csproj", "{AD0FC764-657C-4E2C-B955-584A7C9294E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoeyer.OpcUa.Server.Test", "Hoeyer.OpcUa.Server.Test\Hoeyer.OpcUa.Server.Test.csproj", "{48EE01A2-1D94-4978-9CAD-426E9675C984}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -387,18 +385,6 @@ Global
 		{AD0FC764-657C-4E2C-B955-584A7C9294E8}.Release|x64.Build.0 = Release|Any CPU
 		{AD0FC764-657C-4E2C-B955-584A7C9294E8}.Release|x86.ActiveCfg = Release|Any CPU
 		{AD0FC764-657C-4E2C-B955-584A7C9294E8}.Release|x86.Build.0 = Release|Any CPU
-		{48EE01A2-1D94-4978-9CAD-426E9675C984}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{48EE01A2-1D94-4978-9CAD-426E9675C984}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{48EE01A2-1D94-4978-9CAD-426E9675C984}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{48EE01A2-1D94-4978-9CAD-426E9675C984}.Debug|x64.Build.0 = Debug|Any CPU
-		{48EE01A2-1D94-4978-9CAD-426E9675C984}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{48EE01A2-1D94-4978-9CAD-426E9675C984}.Debug|x86.Build.0 = Debug|Any CPU
-		{48EE01A2-1D94-4978-9CAD-426E9675C984}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{48EE01A2-1D94-4978-9CAD-426E9675C984}.Release|Any CPU.Build.0 = Release|Any CPU
-		{48EE01A2-1D94-4978-9CAD-426E9675C984}.Release|x64.ActiveCfg = Release|Any CPU
-		{48EE01A2-1D94-4978-9CAD-426E9675C984}.Release|x64.Build.0 = Release|Any CPU
-		{48EE01A2-1D94-4978-9CAD-426E9675C984}.Release|x86.ActiveCfg = Release|Any CPU
-		{48EE01A2-1D94-4978-9CAD-426E9675C984}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -435,6 +421,5 @@ Global
 		{8A8CD1D8-EDEE-4B7C-B229-7775F1EB503F} = {D4B7E204-FD8E-456F-B6A9-CC6E715826BC}
 		{AE4D5B35-8BC2-4486-9853-F1AE58007507} = {592D1AA6-E902-4D44-BDDA-CF54EA15B5A0}
 		{AD0FC764-657C-4E2C-B955-584A7C9294E8} = {592D1AA6-E902-4D44-BDDA-CF54EA15B5A0}
-		{48EE01A2-1D94-4978-9CAD-426E9675C984} = {E8FFFC47-3286-4B5E-B95C-1025F8E36D50}
 	EndGlobalSection
 EndGlobal

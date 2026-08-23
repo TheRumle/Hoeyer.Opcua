@@ -7,6 +7,6 @@ public static class AssignLocallyHostedEnvironment
     [Before(TestDiscovery, Order = LOCALHOST_DISCOVERY_ORDER)]
     public static void AssignInstance()
     {
-        IntegrationTestAdapter.AssignFuncFactory(s => new LocalHostedIntegrationTestEnvironmentAdapter());
+        IntegrationTestAdapter.AssignFuncFactory(s => new LocalHostedIntegrationTestEnvironment());
     }
 }

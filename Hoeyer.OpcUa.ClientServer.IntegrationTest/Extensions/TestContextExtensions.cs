@@ -41,8 +41,8 @@ public static class TestContextExtensions
     {
         return (pair.Shared, pair.Key) switch
         {
-            (null, null) => TestKeys.PER_TEST_SESSION_KEY,
-            (SharedType.PerTestSession, _) => TestKeys.PER_TEST_SESSION_KEY,
+            (null, null) => TestKeys.PerTestSessionKey,
+            (SharedType.PerTestSession, _) => TestKeys.PerTestSessionKey,
             (SharedType.Keyed, var k) => k!,
             (SharedType.PerClass, var _) => perClassName,
             (SharedType.PerAssembly, var _) => TestKeys.PER_ASSEMBLY_KEY,
@@ -50,10 +50,4 @@ public static class TestContextExtensions
             var _ => throw new ArgumentOutOfRangeException(nameof(pair), pair, null)
         };
     }
-}
-
-public static class TestKeys
-{
-    public const string PER_TEST_SESSION_KEY = "shared-simulation-environment";
-    public const string PER_ASSEMBLY_KEY = "Assembly-scoped-environment";
 }

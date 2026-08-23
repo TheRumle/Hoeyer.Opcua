@@ -10,7 +10,7 @@ namespace Hoeyer.OpcUa.Core.Test.Application;
 public class EntityTranslatorTest
 {
     [Test]
-    [ServiceCollectionDataSource]
+    [CoreServiceInjection]
     public async Task WhenAssigningValues_ToEntityNode_MethodsDoesNotDisappear(
         IEntityTranslator<AllPropertyTypesEntity> translator,
         IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
@@ -26,7 +26,7 @@ public class EntityTranslatorTest
     }
 
     [Test]
-    [ServiceCollectionDataSource]
+    [CoreServiceInjection]
     public async Task WhenAssigningValues_ToEntityNode_PropertiesDoesNotDisappear(
         IEntityTranslator<AllPropertyTypesEntity> translator,
         IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
@@ -40,7 +40,7 @@ public class EntityTranslatorTest
     }
 
     [Test]
-    [ServiceCollectionDataSource]
+    [CoreServiceInjection]
     public async Task WhenTranslating_ToEntityNode_ListValuesAreTranslatedTo_Arrays(
         IEntityTranslator<AllPropertyTypesEntity> translator,
         IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
@@ -68,7 +68,7 @@ public class EntityTranslatorTest
 
 
     [Test]
-    [ServiceCollectionDataSource]
+    [CoreServiceInjection]
     public async Task WhenTranslating_MultipleTimes_StateIsPreserved(
         IEntityTranslator<AllPropertyTypesEntity> translator,
         IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
@@ -86,7 +86,7 @@ public class EntityTranslatorTest
 
 
     [Test]
-    [ServiceCollectionDataSource]
+    [CoreServiceInjection]
     public async Task When_AssigningToNode_ValuesAre_Equal(
         IEntityTranslator<AllPropertyTypesEntity> translator,
         IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
