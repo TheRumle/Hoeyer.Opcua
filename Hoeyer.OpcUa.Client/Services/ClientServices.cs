@@ -1,5 +1,7 @@
 ﻿using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Messaging.Api;
+using Hoeyer.Common.Messaging.Subscriptions;
+using Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 using Hoeyer.Common.Reflection;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing.Reading;
@@ -114,6 +116,8 @@ public static class ClientServices
 
     private static void RegisterSubscriptionEngine<TEntity>(IServiceCollection services)
     {
+        services.AddSingleton<IMessageSubscriptionFactory<TEntity>, ChannelSubscriptionFactory<TEntity>>();
+        services.AddSingleton<ISubscriptionManager<TEntity>, SubscriptionManager<TEntity>>();
         services.AddServiceAndImplSingleton(typeof(IEntitySubscriptionManager<TEntity>),
             typeof(EntitySubscriptionManager<TEntity>));
         services.AddServiceAndImplTransient(typeof(ICurrentEntityStateChannel<TEntity>),
