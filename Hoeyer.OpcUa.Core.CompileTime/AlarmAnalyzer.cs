@@ -128,22 +128,22 @@ public class AlarmAnalyser() : ConcurrentAnalyzer([Rules.IllegalRange, Rules.Ala
     {
         return ValidateRanges(
             alarmAttributes,
-            attr => attr.AttributeClass!.IsType(MinimumThresholdExceededAlarmAttribute),
-            attr => (
+            filter: attr => attr.AttributeClass!.IsType(MinimumThresholdExceededAlarmAttribute),
+            selector: attr => (
                 lowLow: (double)attr.ConstructorArguments[0].Value!,
                 low: (double)attr.ConstructorArguments[1].Value!
             ),
-            t => t.lowLow <= t.low);
+            isValid: t => t.lowLow <= t.low);
     }
 
     private static int ValidateRanges<TTuple>(
         IEnumerable<AttributeData> attributes,
-        Func<AttributeData, bool> isAttribute,
+        Predicate<AttributeData> filter,
         Func<AttributeData, TTuple> selector,
-        Func<TTuple, bool> isValid)
+        Predicate<TTuple> isValid)
     {
         return attributes
-            .Where(attr => attr.AttributeClass is not null && isAttribute(attr))
+            .Where(attr => attr.AttributeClass is not null && filter(attr))
             .Select(selector)
             .Count(tuple => !isValid(tuple));
     }
