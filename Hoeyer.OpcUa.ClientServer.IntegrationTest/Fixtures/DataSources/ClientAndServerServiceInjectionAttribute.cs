@@ -6,13 +6,14 @@ namespace Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 
 public sealed class ClientAndServerServiceInjectionAttribute : DependencyInjectionDataSourceAttribute<IServiceScope>
 {
+    public readonly ServiceCollection Collection;
     private readonly ServiceProvider _provider;
 
     public ClientAndServerServiceInjectionAttribute()
     {
         var env = OpcEnvironment.Default(8000, "localhost");
-        var collection = new ServiceCollection();
-        _provider = collection
+        this.Collection = new ServiceCollection();
+        _provider = Collection
             .AddClientAndServerTestServices(env, [typeof(TestEntity)]).Collection
             .BuildServiceProvider();
     }
