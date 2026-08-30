@@ -7,24 +7,16 @@ namespace Hoeyer.OpcUa.IntegrationTest.Configuration;
 
 [IntegrationAdapterDependentTest]
 [DependsOn<ConfigurationCompatibilityTest>]
+[DependsOn<HealthyOpcUaServer>]
 [IntegrationServiceInjection]
 public class IntegrationEnvironmentHealthTests(
-    EnvironmentHealthCheck healthCheck,
     IEntitySessionFactory sessionFactory)
 {
     private const int CONNECTION_TIMEOUT = 5000;
 
     [Test]
-    [Timeout(CONNECTION_TIMEOUT)]
-    [DisplayName("The fixture must have a healthy environment")]
-    public async Task TargetEnvironmentIsHealthy(CancellationToken timeout) =>
-        await Assert.That(await healthCheck()).IsTrue();
-
-
-    [Test]
     [DisplayName("Can connect to 1 session")]
     [Timeout(CONNECTION_TIMEOUT)]
-    [DependsOn(nameof(TargetEnvironmentIsHealthy))]
     [NotInParallel(nameof(CanConnectToSessions))]
     public Task CanConnectTo1Session(CancellationToken timeout)
         => CanConnectToSessions(1, timeout);
