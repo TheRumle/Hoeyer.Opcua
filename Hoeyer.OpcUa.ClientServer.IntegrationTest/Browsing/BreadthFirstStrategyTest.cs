@@ -1,8 +1,7 @@
 ﻿using Hoeyer.OpcUa.Client.Application.Browsing;
-using Hoeyer.OpcUa.IntegrationTest.Browsing;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 
-namespace Playground.Application.EndToEndTest.Browsing;
+namespace Hoeyer.OpcUa.IntegrationTest.Browsing;
 
 [InheritsTests]
 [ClassDataSource<IntegrationTestFixture<BreadthFirstStrategy>>(Shared = SharedType.PerClass)]
