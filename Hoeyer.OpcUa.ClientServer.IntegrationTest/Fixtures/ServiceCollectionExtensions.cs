@@ -39,7 +39,6 @@ public static class ServiceCollectionExtensions
                 }))
             .AddSingleton(typeof(ILogger<>), typeof(Logger<>))
             .AddSingleton(services)
-            .AddScoped<IServiceProvider>(p => p)
             .AddOpcUa(conf => conf
                 .WithServerId(args.OpcUaServerId)
                 .WithServerName(args.OpcUaServerName)

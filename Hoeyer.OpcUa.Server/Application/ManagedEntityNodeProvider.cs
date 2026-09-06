@@ -1,12 +1,10 @@
 ﻿using Hoeyer.OpcUa.Core.Abstractions;
-using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Server.Abstractions;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
 internal sealed class ManagedEntityNodeProvider<T>(
-    IApplicationConfigurationRequirements info,
     IEntityLoader<T> value,
     IEntityTranslator<T> translator,
     IEntityNodeStructureFactory<T> structureFactory) : IManagedEntityNodeProvider<T>

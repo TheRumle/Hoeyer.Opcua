@@ -6,11 +6,25 @@ using TUnit.Core.Interfaces;
 namespace Hoeyer.OpcUa.IntegrationTest.Fixtures;
 
 internal sealed class IntegrationFixtureResources<T>(Func<string, IIntegrationTestEnvironmentAdapter> adapterProvider)
-    : IAsyncInitializer, IDisposable
+    : IAsyncInitializer, IAsyncDisposable
 {
     internal IServiceProvider ServiceProvider { get; private set; } = null!;
     internal IIntegrationTestEnvironment ServerEnvironment { get; private set; } = null!;
     private IServiceScope ServiceScope { get; } = null!;
+
+
+    public async ValueTask DisposeAsync()
+    {
+        await ServerEnvironment.DisposeAsync();
+        if (ServiceScope is IAsyncDisposable serviceScopeAsyncDisposable)
+        {
+            await serviceScopeAsyncDisposable.DisposeAsync();
+        }
+        else
+        {
+            ServiceScope.Dispose();
+        }
+    }
 
     public async Task InitializeAsync()
     {
@@ -22,11 +36,7 @@ internal sealed class IntegrationFixtureResources<T>(Func<string, IIntegrationTe
 
         ServiceProvider = ServerEnvironment
             .AvailableServices
-            .BuildServiceProvider()
             .CreateScope()
             .ServiceProvider;
     }
-
-
-    public void Dispose() => ServiceScope?.Dispose();
 }

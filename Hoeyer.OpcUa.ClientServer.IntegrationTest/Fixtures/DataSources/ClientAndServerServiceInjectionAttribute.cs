@@ -12,7 +12,7 @@ public sealed class ClientAndServerServiceInjectionAttribute : DependencyInjecti
     public ClientAndServerServiceInjectionAttribute()
     {
         var env = OpcEnvironment.Default(8000, "localhost");
-        this.Collection = new ServiceCollection();
+        Collection = new ServiceCollection();
         _provider = Collection
             .AddClientAndServerTestServices(env, [typeof(TestEntity)]).Collection
             .BuildServiceProvider();
@@ -22,11 +22,8 @@ public sealed class ClientAndServerServiceInjectionAttribute : DependencyInjecti
 
     public override object? Create(IServiceScope scope, Type type)
     {
-        if (type.IsAssignableTo(typeof(IServiceProvider)))
-        {
-            return scope.ServiceProvider;
-        }
-
+        var singleton = _provider.GetService(type);
+        if (singleton != null) return singleton;
         return scope.ServiceProvider.GetRequiredService(type);
     }
 }

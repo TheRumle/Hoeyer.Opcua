@@ -13,9 +13,16 @@ internal sealed class EntityNodeManager<T>(
     ILogger<EntityNodeManager<T>> logger,
     IEntityNodeAccessConfigurator accessConfigurator,
     IServerInternal server)
-    : CustomNodeManager(server, applicationNamespaceUri.ToString()), IEntityNodeManager<T>
+    : CustomNodeManager(server, applicationNamespaceUri.ToString()),
+        IEntityNodeManager<T>
 {
+    private readonly TaskCompletionSource<bool> _addressSpaceReady =
+        new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+    private Task<IManagedEntityNode<T>> _nodeTask;
     public IManagedEntityNode ManagedEntity { get; private set; } = null!;
+
+    public Task NodeReady => _addressSpaceReady.Task;
 
     public override void CreateAddressSpace(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
@@ -33,10 +40,12 @@ internal sealed class EntityNodeManager<T>(
                 AddEntityStructure(entity, externalReferences);
             });
             base.CreateAddressSpace(externalReferences);
+            _addressSpaceReady.SetResult(true);
         }
         catch (Exception e)
         {
             logger.LogCritical(e, "Failed to create address space for entity");
+            _addressSpaceReady.SetException(e);
         }
     }
 

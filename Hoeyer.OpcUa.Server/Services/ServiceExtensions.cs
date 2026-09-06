@@ -17,11 +17,6 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Server.Services;
 
-public static class ServiceKeys
-{
-    public const string CONFIGURATION_KEY = "SERVER_APPLICATION_CONFIGURATION";
-}
-
 public static class ServiceExtensions
 {
     public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServer(
@@ -75,29 +70,35 @@ public static class ServiceExtensions
         collection.AddServiceAndImplSingleton<IEntityNodeAccessConfigurator, NoAccessRestrictionsConfigurator>();
         collection.AddServiceAndImplSingleton<IServerStartedHealthCheck, HealthCheck>();
         collection.AddSingleton<IHealthCheckAssignment>(p => p.GetRequiredService<HealthCheck>());
+
+        collection.AddSingleton<IOpcEntityServer, OpcEntityServer>();
         collection.AddServiceAndImplSingleton<IOpcUaEntityServerFactory, OpcUaEntityServerFactory>();
         collection.AddSingleton<IStartableEntityServer>(p =>
             p.GetRequiredService<IOpcUaEntityServerFactory>().CreateServer());
-        collection.AddSingleton<OpcEntityServer>();
+
         AddLoaders(serviceRegistration.Collection, assembliesContainingLoaders);
         return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
     }
 
     private static void AddServices<TEntity>(IServiceCollection collection)
     {
-        collection
-            .AddServiceAndImplSingleton<IManagedEntityNodeProvider<TEntity>, ManagedEntityNodeProvider<TEntity>>();
-        collection
-            .AddServiceAndImplSingleton<IEntityNodeManagerFactory<TEntity>,
-                EntityNodeManagerSingletonFactory<TEntity>>();
-        collection.AddServiceAndImplSingleton(typeof(IEntityNodeManagerFactory),
-            typeof(EntityNodeManagerSingletonFactory<TEntity>));
+        collection.AddSingleton<IManagedEntityNodeProvider<TEntity>, ManagedEntityNodeProvider<TEntity>>();
 
-        collection
-            .AddServiceAndImplSingleton<IMaybeInitializedEntityManager<TEntity>,
-                MaybeInitializedEntityManager<TEntity>>();
-        collection.AddSingleton(typeof(IMaybeInitializedEntityManager), typeof(MaybeInitializedEntityManager<TEntity>));
+        collection.AddSingleton<EntityNodeManagerSingletonFactory<TEntity>>();
+
+        collection.AddSingleton<IEntityNodeManagerFactory<TEntity>>(sp =>
+            sp.GetRequiredService<EntityNodeManagerSingletonFactory<TEntity>>());
+
+        collection.AddSingleton<IEntityNodeManagerFactory>(sp =>
+            sp.GetRequiredService<EntityNodeManagerSingletonFactory<TEntity>>());
+
+        collection.AddSingleton<IEntityManagerHolder<TEntity>>(sp =>
+            sp.GetRequiredService<EntityNodeManagerSingletonFactory<TEntity>>());
+
+        collection.AddSingleton<IEntityManagerHolder>(sp =>
+            sp.GetRequiredService<IEntityManagerHolder<TEntity>>());
     }
+
 
     public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServerAsBackgroundService(
         this OnGoingOpcEntityServiceRegistrationWithModels serviceRegistration,

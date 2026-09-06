@@ -4,6 +4,6 @@ using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 namespace Hoeyer.OpcUa.IntegrationTest.Browsing;
 
 [InheritsTests]
-[ClassDataSource<IntegrationTestFixture<BreadthFirstStrategy>>(Shared = SharedType.PerClass)]
+[ClassDataSource<IntegrationTestFixture<BreadthFirstStrategy>>(Shared = SharedType.PerTestSession)]
 public sealed class BreadthFirstStrategyTest(IntegrationTestFixture<BreadthFirstStrategy> fixture)
     : NodeTreeTraverserTest<BreadthFirstStrategy>(fixture);

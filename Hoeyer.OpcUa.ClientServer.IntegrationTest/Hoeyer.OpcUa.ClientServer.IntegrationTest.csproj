@@ -37,6 +37,10 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Hosting"/>
     </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Node.Management\"/>
+    </ItemGroup>
     <PropertyGroup>
         <IsAotCompatible>true</IsAotCompatible>
         <EnableTrimAnalyzer>true</EnableTrimAnalyzer>

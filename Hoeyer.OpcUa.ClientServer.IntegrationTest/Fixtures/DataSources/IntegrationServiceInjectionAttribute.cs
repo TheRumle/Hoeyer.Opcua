@@ -10,60 +10,43 @@ namespace Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 /// </summary>
 public sealed class IntegrationServiceInjectionAttribute : AsyncUntypedDataSourceGeneratorAttribute
 {
+    private static IServiceProvider _singletonProvider = null!;
+
     private static readonly Task<IIntegrationTestEnvironment> TestEnvironment
         = InitializeTestEnvironmentAsync();
+
+    private static async Task<IIntegrationTestEnvironment> InitializeTestEnvironmentAsync()
+    {
+        var environment = GetSessionIsolatedAdapter().TestEnvironment;
+        await environment.InitializeAsync();
+        _singletonProvider = environment.AvailableServices;
+        return environment;
+    }
 
     protected override async IAsyncEnumerable<Func<Task<object?[]?>>> GenerateDataSourcesAsync(
         DataGeneratorMetadata dataGeneratorMetadata)
     {
         yield return () => CreateDataUsingScope(dataGeneratorMetadata);
-
         await Task.CompletedTask;
-    }
-
-
-    private static async Task<IIntegrationTestEnvironment> InitializeTestEnvironmentAsync()
-    {
-        var environment = GetSessionIsolatedAdapter().TestEnvironment;
-        await environment.InitializeAsync().ConfigureAwait(false);
-        return environment;
     }
 
     private static async Task<object?[]?> CreateDataUsingScope(DataGeneratorMetadata dataGeneratorMetadata)
     {
-        var testEnvironment = await TestEnvironment;
-        var scopeContainer = new ScopeContainer(() => testEnvironment.AvailableServices
-            .BuildServiceProvider()
-            .CreateScope());
-
+        await TestEnvironment;
+        var scope = _singletonProvider.CreateAsyncScope();
         dataGeneratorMetadata.TestBuilderContext.Current.Events.OnDispose += async (_, _) =>
         {
-            switch (scopeContainer.Scope)
-            {
-                case IAsyncDisposable asyncDisposable:
-                    await asyncDisposable.DisposeAsync().ConfigureAwait(false);
-                    break;
-                case IDisposable disposable:
-                    disposable.Dispose();
-                    break;
-            }
+            await scope.DisposeAsync();
         };
 
         return dataGeneratorMetadata.MembersToGenerate
             .Select(GetMemberType)
-            .Select(x => Create(scopeContainer.Scope, x))
+            .Select(x => Create(scope, x))
             .ToArray();
     }
 
     private static object Create(IServiceScope scope, Type type)
-    {
-        if (type == typeof(IServiceProvider))
-        {
-            return scope.ServiceProvider;
-        }
-
-        return scope.ServiceProvider.GetRequiredService(type);
-    }
+        => scope.ServiceProvider.GetRequiredService(type);
 
     private static Type GetMemberType(IMemberMetadata member) =>
         member switch
@@ -75,10 +58,4 @@ public sealed class IntegrationServiceInjectionAttribute : AsyncUntypedDataSourc
             var _ => throw new InvalidOperationException(
                 $"Unknown member type: {member.GetType()}")
         };
-
-    private sealed class ScopeContainer(Func<IServiceScope> scopeFactory)
-    {
-        private readonly Lazy<IServiceScope> _scope = new(scopeFactory);
-        public IServiceScope Scope => _scope.Value;
-    }
 }

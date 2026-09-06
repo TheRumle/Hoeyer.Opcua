@@ -5,7 +5,7 @@ using TUnit.Core.Interfaces;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Fixtures;
 
-public class IntegrationTestFixture : IAsyncInitializer, IDisposable
+public class IntegrationTestFixture : IAsyncInitializer, IAsyncDisposable
 {
     private readonly string _id = Guid.NewGuid().ToString();
 
@@ -15,9 +15,9 @@ public class IntegrationTestFixture : IAsyncInitializer, IDisposable
     public IServiceProvider ServiceProvider => _resources.ServiceProvider;
     public IIntegrationTestEnvironment ServerEnvironment => _resources.ServerEnvironment;
 
-    public async Task InitializeAsync() => await _resources.InitializeAsync();
+    public ValueTask DisposeAsync() => _resources.DisposeAsync();
 
-    public void Dispose() => _resources.Dispose();
+    public async Task InitializeAsync() => await _resources.InitializeAsync();
 
     public async Task<TOut> ExecuteWithSessionAsync<TOut>(Func<IEntitySession, IServiceProvider, Task<TOut>> execute) =>
         await execute(await OpenSession(), ServiceProvider);
@@ -34,7 +34,7 @@ public class IntegrationTestFixture : IAsyncInitializer, IDisposable
         .GetRequiredService<IEntitySessionFactory>().GetSessionAsync(_id);
 }
 
-public sealed class IntegrationTestFixture<T> : IAsyncInitializer, IDisposable
+public sealed class IntegrationTestFixture<T> : IAsyncInitializer, IAsyncDisposable
     where T : notnull
 {
     private readonly string _id = Guid.NewGuid().ToString();
@@ -48,14 +48,13 @@ public sealed class IntegrationTestFixture<T> : IAsyncInitializer, IDisposable
 
     public T TestedService => _serviceUnderTest!;
 
+    public ValueTask DisposeAsync() => _resources.DisposeAsync();
+
     public async Task InitializeAsync()
     {
         await _resources.InitializeAsync();
         _serviceUnderTest = _resources.ServiceProvider.GetRequiredService<T>();
     }
-
-
-    public void Dispose() => _resources.Dispose();
 
     public async Task<TOut> ExecuteWithSessionAsync<TOut>(Func<IEntitySession, T, Task<TOut>> execute) =>
         await execute(await OpenSession(), _serviceUnderTest!);

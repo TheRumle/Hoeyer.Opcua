@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Net.Sockets;
-using DotNet.Testcontainers.Builders;
+﻿using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Images;
 using Hoeyer.OpcUa.Core.Configuration.ConfigurationBuilder;
@@ -18,7 +16,7 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
     public const string OPCUA_APPLICATION_NAME = "Simulation";
     private readonly Lazy<Task> _initializeTask;
     private readonly string _containerName;
-    private TcpListener? _portHolder;
+    private readonly IServiceCollection _services = new ServiceCollection();
 
     public PlaygroundTestContainer(WebProtocol webProtocol, string containerName)
     {
@@ -36,15 +34,16 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
     public string Host => Container.Hostname;
     public string ServerId => OPCUA_SERVERID;
     public string ServerName => OPCUA_SERVERNAME;
+    public IServiceProvider Services { get; set; }
     public OpcEnvironment OpcEnvironment { get; private set; } = null!;
     public async Task<bool> EnvironmentReady() => await HealthChecker.IsHealthy();
-    public IServiceCollection AvailableServices { get; } = new ServiceCollection();
+    public IServiceProvider AvailableServices { get; private set; }
+
 
     public async ValueTask DisposeAsync()
     {
         Console.WriteLine($"Disposing {nameof(PlaygroundTestContainer)}");
         await Container.DisposeAsync();
-        _portHolder?.Dispose();
     }
 
     public Task InitializeAsync()
@@ -81,7 +80,8 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
             OpcUaServerName = ServerName,
             Protocol = Protocol
         };
-        AvailableServices.AddClientTestServices(OpcEnvironment, [typeof(TestEntity)]);
+        _services.AddClientTestServices(OpcEnvironment, [typeof(TestEntity)]);
+        AvailableServices = _services.BuildServiceProvider();
 
         HealthChecker = new DockerHealthChecker(Container);
 
@@ -89,10 +89,7 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
         await Container.StartAsync();
 
         await EnvironmentReady();
-
         SimulationPort = Container.GetMappedPublicPort(4840);
-        _portHolder = new TcpListener(IPAddress.Loopback, SimulationPort);
-
         Console.WriteLine($"{nameof(PlaygroundTestContainer)} initialized");
     }
 }

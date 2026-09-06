@@ -6,5 +6,5 @@ public interface IEntityNodeManagerFactory<in T> : IEntityNodeManagerFactory;
 
 public interface IEntityNodeManagerFactory
 {
-    Task<IEntityNodeManager> CreateEntityManager(IServerInternal server);
+    IEntityNodeManager CreateEntityManager(IServerInternal server);
 }

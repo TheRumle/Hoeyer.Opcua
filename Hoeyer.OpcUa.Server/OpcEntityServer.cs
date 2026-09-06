@@ -11,11 +11,19 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server;
 
+public interface IOpcEntityServer : IStandardServer
+{
+    IEnumerable<IEntityManagerHolder> Managers { get; }
+    internal DomainMasterNodeManager? DomainManager { get; }
+
+    public ServerBase AsServerBase();
+}
+
 internal sealed class OpcEntityServer(
     IOpcUaTargetServerSetup applicationProductDetails,
     IEnumerable<IEntityNodeManagerFactory> entityManagerFactories,
     ILogger<OpcEntityServer> logger)
-    : StandardServer
+    : StandardServer, IOpcEntityServer
 {
     private static readonly DateTime BuildDate = DateTime.UtcNow;
     public readonly IOpcUaTargetServerSetup ServerInfo = applicationProductDetails;
@@ -23,42 +31,9 @@ internal sealed class OpcEntityServer(
     private bool _disposed;
 
     public DomainMasterNodeManager? DomainManager { get; private set; }
+    public ServerBase AsServerBase() => this;
 
-
-    public override async Task<CallResponse> CallAsync(SecureChannelContext secureChannelContext,
-        RequestHeader requestHeader,
-        CallMethodRequestCollection methodsToCall, CancellationToken ct)
-    {
-        return await logger
-            .LogCaughtExceptionAs(LogLevel.Error)
-            .WithErrorMessage("An error occured while calling methods")
-            .WithScope(requestHeader.ToLoggingObject().ToString())
-            .WhenExecutingAsync(() => base.CallAsync(secureChannelContext, requestHeader, methodsToCall, ct));
-    }
-
-    protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server,
-        ApplicationConfiguration configuration)
-    {
-        return logger.Try(() =>
-        {
-            Task<IEntityNodeManager>[] managerCreationTasks = entityManagerFactories
-                .Select(async factory => await factory.CreateEntityManager(server))
-                .ToArray();
-
-            Task.WhenAll(managerCreationTasks).Wait();
-            var exceptions =
-                managerCreationTasks.Select(e => e.Exception).Where(e => e != null).ToList();
-
-            if (exceptions.Any())
-            {
-                throw new AggregateException(exceptions);
-            }
-
-            DomainManager = new DomainMasterNodeManager(server, configuration,
-                managerCreationTasks.Select(e => e.Result).ToArray());
-            return DomainManager;
-        })!;
-    }
+    public IEnumerable<IEntityManagerHolder> Managers => entityManagerFactories.OfType<IEntityManagerHolder>();
 
 
     public override async Task<CreateSessionResponse> CreateSessionAsync(
@@ -154,6 +129,31 @@ internal sealed class OpcEntityServer(
             .WithScope(requestHeader.ToLoggingObject().ToString())
             .WhenExecutingAsync(() =>
                 base.CloseSessionAsync(secureChannelContext, requestHeader, deleteSubscriptions, ct));
+    }
+
+    public override async Task<CallResponse> CallAsync(SecureChannelContext secureChannelContext,
+        RequestHeader requestHeader,
+        CallMethodRequestCollection methodsToCall, CancellationToken ct)
+    {
+        return await logger
+            .LogCaughtExceptionAs(LogLevel.Error)
+            .WithErrorMessage("An error occured while calling methods")
+            .WithScope(requestHeader.ToLoggingObject().ToString())
+            .WhenExecutingAsync(() => base.CallAsync(secureChannelContext, requestHeader, methodsToCall, ct));
+    }
+
+    protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server,
+        ApplicationConfiguration configuration)
+    {
+        return logger.Try(() =>
+        {
+            var managers = entityManagerFactories
+                .Select(factory => factory.CreateEntityManager(server))
+                .ToArray();
+
+            DomainManager = new DomainMasterNodeManager(server, configuration, managers);
+            return DomainManager!;
+        })!;
     }
 
     protected override async ValueTask StartApplicationAsync(ApplicationConfiguration configuration,

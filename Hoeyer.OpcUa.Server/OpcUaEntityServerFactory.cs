@@ -1,7 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core.Configuration.Health;
 using Hoeyer.OpcUa.Server.Abstractions;
 using Hoeyer.OpcUa.Server.Abstractions.Configuration;
-using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Configuration;
@@ -13,7 +12,7 @@ internal sealed class OpcUaEntityServerFactory(
     IServerApplicationConfigurationFactory applicationConfigurationFactory,
     IServerStartedHealthCheck assignment,
     IOpcUaTargetServerSetup serverSetup,
-    IEnumerable<IEntityNodeManagerFactory> entityManagerFactories,
+    IOpcEntityServer server,
     ILoggerFactory loggerFactory) : IOpcUaEntityServerFactory
 {
     private StartableEntityServer? _startable;
@@ -35,8 +34,7 @@ internal sealed class OpcUaEntityServerFactory(
             ApplicationType = ApplicationType.Server
         };
 
-        var logger = loggerFactory.CreateLogger<OpcEntityServer>();
-        var server = new OpcEntityServer(serverSetup, entityManagerFactories, logger);
+        var logger = loggerFactory.CreateLogger<StartableEntityServer>();
         _startable = new StartableEntityServer(logger, application, server, assignment);
         return _startable;
     }

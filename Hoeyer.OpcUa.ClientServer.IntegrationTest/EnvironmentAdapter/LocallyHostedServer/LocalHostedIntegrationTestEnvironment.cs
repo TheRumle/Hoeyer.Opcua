@@ -12,11 +12,10 @@ namespace Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter.LocallyHostedServer;
 internal sealed class LocalHostedIntegrationTestEnvironment
     : IIntegrationTestEnvironment
 {
-    private ServiceProvider _serviceProvider = null!;
     private IServerStartedHealthCheck _healthCheck = null!;
 
-    public IServiceProvider Services => _serviceProvider;
-    public IServiceCollection AvailableServices { get; } = new ServiceCollection();
+    private ServiceCollection _serviceCollection = new ServiceCollection();
+    public IServiceProvider AvailableServices { get; private set; } = null!;
     public OpcEnvironment OpcEnvironment { get; private set; } = null!;
 
     public async Task InitializeAsync()
@@ -24,38 +23,31 @@ internal sealed class LocalHostedIntegrationTestEnvironment
         var portListener = new TcpListener(IPAddress.Loopback, 0);
         portListener.Start();
 
-        try
-        {
-            var port = ((IPEndPoint)portListener.LocalEndpoint).Port;
+        var port = ((IPEndPoint)portListener.LocalEndpoint).Port;
 
-            OpcEnvironment = OpcEnvironment.Default(port, "localhost");
+        var services = AddServices(port);
+        AvailableServices = services.BuildServiceProvider();
+        _healthCheck = AvailableServices.GetRequiredService<IServerStartedHealthCheck>();
+        var startableServer = AvailableServices.GetRequiredService<IStartableEntityServer>();
 
-            var testAssemblyMarker = typeof(TestEntity);
-
-            AvailableServices.AddClientAndServerTestServices(
-                OpcEnvironment,
-                [testAssemblyMarker]);
-
-            _serviceProvider = AvailableServices.BuildServiceProvider();
-
-            var server = _serviceProvider.GetRequiredService<IStartableEntityServer>();
-            _healthCheck = _serviceProvider.GetRequiredService<IServerStartedHealthCheck>();
-            var startedServer = await server.StartAsync();
-            await _healthCheck.ServerRunning();
-
-            AvailableServices.AddSingleton(server);
-            AvailableServices.AddSingleton(startedServer);
-            AvailableServices.AddSingleton<EnvironmentHealthCheck>(EnvironmentReady);
-        }
-        finally
-        {
-            portListener.Dispose();
-        }
+        portListener.Stop();
+        await startableServer.StartAsync().ConfigureAwait(false);
     }
-
-    public ValueTask DisposeAsync() =>
-        _serviceProvider?.DisposeAsync() ?? ValueTask.CompletedTask;
 
     public Task<bool> EnvironmentReady() =>
         _healthCheck.ServerRunning();
+
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+
+    private IServiceCollection AddServices(int port)
+    {
+        OpcEnvironment = OpcEnvironment.Default(port, "localhost");
+        var testAssemblyMarker = typeof(TestEntity);
+
+        _serviceCollection
+            .AddSingleton<EnvironmentHealthCheck>(EnvironmentReady)
+            .AddClientAndServerTestServices(OpcEnvironment, [testAssemblyMarker]);
+
+        return _serviceCollection;
+    }
 }

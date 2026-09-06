@@ -19,6 +19,7 @@ namespace Hoeyer.OpcUa.IntegrationTest.Browsing;
 [Timeout(10_0000)]
 [IntegrationAdapterDependentTest]
 [DependsOn<IntegrationEnvironmentHealthTests>]
+[NotInParallel]
 public abstract class NodeTreeTraverserTest<T>(
     IntegrationTestFixture<T> fixture)
     where T : class, INodeTreeTraverser
