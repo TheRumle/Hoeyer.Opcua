@@ -22,8 +22,25 @@ Two main parts:
 
 ## Commands
 - Build: `dotnet build Hoeyer.OpcUa.sln`
-- Unit tests: `dotnet test Hoeyer.UnitTests.slnf` (TUnit - compile-time generated, very fast startup)
-- Other runnable apps live under `Playground.*`; each has its own `Program.cs` and `appsettings.json` at its project root.
+- All tests use TUnit. Docs: https://tunit.dev
+- Unit tests: `dotnet test Hoeyer.UnitTests.slnf`
+- Other runnable apps live under `Playground.*`;
+
+
+## Testing with TUnit
+- `global.json` opts `dotnet test` into the Microsoft.Testing.Platform runner (required on the .NET 10 SDK, where VSTest mode is removed).
+- Preferred invocation to pass test flags (e.g. `--report-trx`): run the test project/app directly, so flags are forwarded to the test app:
+  `dotnet run --project Hoeyer.OpcUa.ClientServer.IntegrationTest -- --report-trx`
+- TUnit writes HTML + TRX reports into `bin\<Config>\<tfm>\TestResults\` in the test project.
+- Known quirk: `dotnet test` may report "Zero tests ran" (exit code 5) on the integration test project - fall back to running the built test executable.
+
+## Integration test environments
+`Hoeyer.OpcUa.ClientServer.IntegrationTest` (net10.0) abstracts where the OPC UA server under test lives, under `EnvironmentAdapter\`:
+- `IIntegrationTestEnvironment` - defines `IServiceProvider AvailableServices`, `OpcEnvironment`, and `Task<bool> EnvironmentReady()`; implements `IAsyncInitializer` + `IAsyncDisposable`.
+- `IntegrationTestAdapter` - static registry to plug in an `IIntegrationTestEnvironmentAdapterFactory` (`AssignAdapter`/`AssignFuncFactory`); adapters are cached per key (`CreateOrGetCached`, `GetSessionIsolatedAdapter`).
+- `LocalHostedIntegrationTestEnvironment` + `AssignLocallyHostedEnvironment` (`[Before(TestDiscovery)]`) - boots an in-process OPC UA server on a free loopback port; the localhost default.
+- `DockerEnvironmentAdapter` + `AssignTestContainerEnvironment` (in `Playground.Application.EndToEndTest`) - containerized alternative backed by Testcontainers; registered with a higher discovery order.
+- `IntegrationAdapterDependentTest` - TUnit `SkipAttribute` that skips tests when no environment adapter/factory is registered (`NoFrameworkAdapterException`).
 
 ## Conventions
 - Libraries target `netstandard2.1`; test/playground apps target `net9.0`/`net10.0` (see each `.csproj`).
@@ -35,6 +52,10 @@ Two main parts:
 ## OPC UA documentation
 Always consult `.opencode/opc-ua-docs.md` for official documentation links and API lookup guidance
 before writing OPC UA code. Prefer the official spec and OPC Foundation source over guessing.
+
+## Known bugs
+`known-bugs.md` at the repo root is the registry of known defects. Check it before touching related code,
+and fix them in severity order (Critical → Medium → Low).
 
 ## General agent rules
 - Verify with build/tests after making changes (`/build`, `/test`).

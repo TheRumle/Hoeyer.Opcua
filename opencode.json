@@ -4,6 +4,9 @@
   "small_model": "ollama/llama3.2",
   "instructions": [
     "AGENTS.md",
+    "known-bugs.md",
+    "fixed-bugs.md",
+    ".opencode/tunit-docs.md",
     ".opencode/opc-ua-docs.md"
   ],
   "provider": {
