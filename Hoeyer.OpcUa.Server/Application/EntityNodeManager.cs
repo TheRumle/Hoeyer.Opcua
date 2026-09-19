@@ -19,20 +19,29 @@ internal sealed class EntityNodeManager<T>(
     private readonly TaskCompletionSource<bool> _addressSpaceReady =
         new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-    private Task<IManagedEntityNode<T>> _nodeTask;
+    private Task<IManagedEntityNode<T>> _nodeTask = null!;
+    private int _setupStarted;
     public IManagedEntityNode ManagedEntity { get; private set; } = null!;
 
     public Task NodeReady => _addressSpaceReady.Task;
 
     public override void CreateAddressSpace(IDictionary<NodeId, IList<IReference>> externalReferences)
     {
+        if (Interlocked.CompareExchange(ref _setupStarted, 1, 0) != 0)
+        {
+            var duplicateSetup = new DuplicateSetupException(typeof(T));
+            logger.LogCritical(duplicateSetup,
+                "Address space setup was attempted more than once for entity {EntityType}", typeof(T).Name);
+            throw duplicateSetup;
+        }
+
         try
         {
             using var scope = logger.BeginScope(nameof(CreateAddressSpace));
             logger.LogDebug("Creating managed entity node");
 
-            var nodeTask = nodeProvider.GetOrCreateManagedEntityNode(NamespaceIndex, NamespaceUris.First());
-            ManagedEntity = nodeTask.Result;
+            _nodeTask = nodeProvider.GetOrCreateManagedEntityNode(NamespaceIndex, NamespaceUris.First());
+            ManagedEntity = _nodeTask.Result;
             accessConfigurator.Configure(ManagedEntity, SystemContext);
             ManagedEntity.ChangeState(entity =>
             {
@@ -40,12 +49,12 @@ internal sealed class EntityNodeManager<T>(
                 AddEntityStructure(entity, externalReferences);
             });
             base.CreateAddressSpace(externalReferences);
-            _addressSpaceReady.SetResult(true);
+            _addressSpaceReady.TrySetResult(true);
         }
         catch (Exception e)
         {
             logger.LogCritical(e, "Failed to create address space for entity");
-            _addressSpaceReady.SetException(e);
+            _addressSpaceReady.TrySetException(e);
         }
     }
 
