@@ -10,19 +10,18 @@ internal sealed class IntegrationFixtureResources<T>(Func<string, IIntegrationTe
 {
     internal IServiceProvider ServiceProvider { get; private set; } = null!;
     internal IIntegrationTestEnvironment ServerEnvironment { get; private set; } = null!;
-    private IServiceScope ServiceScope { get; } = null!;
 
 
     public async ValueTask DisposeAsync()
     {
         await ServerEnvironment.DisposeAsync();
-        if (ServiceScope is IAsyncDisposable serviceScopeAsyncDisposable)
+        if (ServiceProvider is IAsyncDisposable serviceScopeAsyncDisposable)
         {
             await serviceScopeAsyncDisposable.DisposeAsync();
         }
-        else
+        else if (ServiceProvider is IDisposable disposable)
         {
-            ServiceScope.Dispose();
+            disposable.Dispose();
         }
     }
 

@@ -14,8 +14,9 @@ internal sealed class LocalHostedIntegrationTestEnvironment
 {
     private IServerStartedHealthCheck _healthCheck = null!;
 
-    private ServiceCollection _serviceCollection = new ServiceCollection();
-    public IServiceProvider AvailableServices { get; private set; } = null!;
+    private ServiceCollection _serviceCollection = new();
+    private ServiceProvider _serviceProvider;
+    public IServiceProvider AvailableServices => _serviceProvider;
     public OpcEnvironment OpcEnvironment { get; private set; } = null!;
 
     public async Task InitializeAsync()
@@ -26,18 +27,20 @@ internal sealed class LocalHostedIntegrationTestEnvironment
         var port = ((IPEndPoint)portListener.LocalEndpoint).Port;
 
         var services = AddServices(port);
-        AvailableServices = services.BuildServiceProvider();
+        _serviceProvider = services.BuildServiceProvider();
         _healthCheck = AvailableServices.GetRequiredService<IServerStartedHealthCheck>();
         var startableServer = AvailableServices.GetRequiredService<IStartableEntityServer>();
 
-        portListener.Stop();
-        await startableServer.StartAsync().ConfigureAwait(false);
+        await startableServer.StartAsync();
+        await _healthCheck.ServerRunning();
     }
 
-    public Task<bool> EnvironmentReady() =>
-        _healthCheck.ServerRunning();
+    public Task<bool> EnvironmentReady() => _healthCheck.ServerRunning();
 
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    public async ValueTask DisposeAsync()
+    {
+        await _serviceProvider.DisposeAsync();
+    }
 
     private IServiceCollection AddServices(int port)
     {

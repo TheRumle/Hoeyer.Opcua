@@ -65,6 +65,7 @@ public static class ServiceExtensions
             registration.Invoke(entity);
         }
 
+        collection.AddSingleton<ServerApplication>();
         collection.AddServiceAndImplSingleton(typeof(INodeConfigurator<>), typeof(AlarmSetupConfigurator<>));
         collection.AddServiceAndImplSingleton(typeof(INodeConfigurator<>), typeof(AlarmLoggingConfigurator<>));
         collection.AddServiceAndImplSingleton<IEntityNodeAccessConfigurator, NoAccessRestrictionsConfigurator>();
@@ -72,9 +73,7 @@ public static class ServiceExtensions
         collection.AddSingleton<IHealthCheckAssignment>(p => p.GetRequiredService<HealthCheck>());
 
         collection.AddSingleton<IOpcEntityServer, OpcEntityServer>();
-        collection.AddServiceAndImplSingleton<IOpcUaEntityServerFactory, OpcUaEntityServerFactory>();
-        collection.AddSingleton<IStartableEntityServer>(p =>
-            p.GetRequiredService<IOpcUaEntityServerFactory>().CreateServer());
+        collection.AddSingleton<IStartableEntityServer, StartableEntityServer>();
 
         AddLoaders(serviceRegistration.Collection, assembliesContainingLoaders);
         return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
