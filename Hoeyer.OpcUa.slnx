@@ -1,0 +1,54 @@
+<Solution>
+    <Configurations>
+        <Platform Name="Any CPU"/>
+        <Platform Name="x64"/>
+        <Platform Name="x86"/>
+    </Configurations>
+    <Folder Name="/playground/">
+        <Project Path="Playground.Application/Playground.Application.csproj"/>
+        <Project Path="Playground.Clients/Playground.Clients.csproj"/>
+        <Project Path="Playground.Modelling/Playground.Modelling.csproj"/>
+        <Project Path="Playground.Server/Playground.Server.csproj"/>
+        <Project Path="Playground.SimulationServer.Containerized/Playground.SimulationServer.Containerized.csproj"/>
+    </Folder>
+    <Folder Name="/Solution Items/">
+        <File Path="compose.yaml"/>
+        <File Path="Directory.Build.props"/>
+        <File Path="Directory.Packages.props"/>
+    </Folder>
+    <Folder Name="/src/"/>
+    <Folder Name="/src/client/">
+        <Project Path="Hoeyer.OpcUa.Client.Abstractions/Hoeyer.OpcUa.Client.Abstractions.csproj"/>
+        <Project Path="Hoeyer.OpcUa.Client/Hoeyer.OpcUa.Client.csproj"/>
+    </Folder>
+    <Folder Name="/src/compiletime/">
+        <Project Path="Hoeyer.OpcUa.Client.Compiletime/Hoeyer.OpcUa.Client.Compiletime.csproj"/>
+        <Project Path="Hoeyer.OpcUa.Core.Compiletime/Hoeyer.OpcUa.Core.Compiletime.csproj"/>
+        <Project Path="Hoeyer.OpcUa.Core.SourceGeneration/Hoeyer.OpcUa.Core.SourceGeneration.csproj"/>
+        <Project Path="Hoeyer.OpcUa.Simulation.Compiletime/Hoeyer.OpcUa.Simulation.Compiletime.csproj"/>
+    </Folder>
+    <Folder Name="/src/core/">
+        <Project Path="Hoeyer.Common/Hoeyer.Common.csproj"/>
+        <Project Path="Hoeyer.OpcUa.Core.Abstractions/Hoeyer.OpcUa.Core.Abstractions.csproj"/>
+        <Project Path="Hoeyer.OpcUa.Core.Configuration/Hoeyer.OpcUa.Core.Configuration.csproj"/>
+        <Project Path="Hoeyer.OpcUa.Core/Hoeyer.OpcUa.Core.csproj"/>
+    </Folder>
+    <Folder Name="/src/server/">
+        <Project Path="Hoeyer.OpcUa.Server.Abstractions/Hoeyer.OpcUa.Server.Abstractions.csproj"/>
+        <Project Path="Hoeyer.OpcUa.Server/Hoeyer.OpcUa.Server.csproj"/>
+    </Folder>
+    <Folder Name="/src/simulation/">
+        <Project Path="Hoeyer.OpcUa.Simulation.Abstractions/Hoeyer.OpcUa.Simulation.Abstractions.csproj"/>
+        <Project Path="Hoeyer.OpcUa.Simulation.Application/Hoeyer.OpcUa.Simulation.Application.csproj"/>
+        <Project Path="Hoeyer.OpcUa.Simulation.ServerAdapter/Hoeyer.OpcUa.Simulation.ServerAdapter.csproj"/>
+    </Folder>
+    <Folder Name="/test/">
+        <Project Path="Hoeyer.OpcUa.ClientServer.IntegrationTest/Hoeyer.OpcUa.ClientServer.IntegrationTest.csproj"/>
+        <Project Path="Playground.Application.EndToEndTest/Playground.Application.EndToEndTest.csproj"/>
+    </Folder>
+    <Folder Name="/test/unittest/">
+        <Project Path="Hoeyer.Common.Test/Hoeyer.Common.Test.csproj"/>
+        <Project Path="Hoeyer.OpcUa.CompileTime.Test/Hoeyer.OpcUa.CompileTime.Test.csproj"/>
+        <Project Path="Hoeyer.OpcUa.Core.Test/Hoeyer.OpcUa.Core.Test.csproj"/>
+    </Folder>
+</Solution>
