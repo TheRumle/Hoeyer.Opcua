@@ -1,0 +1,8 @@
+{
+  "solution": {
+    "path": "Hoeyer.OpcUa.sln",
+    "projects": [
+      "Playground.Application.EndToEndTest\\Playground.Application.EndToEndTest.csproj"
+    ]
+  }
+}

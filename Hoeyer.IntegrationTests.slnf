@@ -1,0 +1,8 @@
+{
+  "solution": {
+    "path": "Hoeyer.OpcUa.sln",
+    "projects": [
+      "Hoeyer.OpcUaClientServer.IntegrationTest\\Hoeyer.OpcUaClientServer.IntegrationTest.csproj"
+    ]
+  }
+}
