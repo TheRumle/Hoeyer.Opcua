@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using Hoeyer.OpcUa.Core.Configuration.Health;
 using Hoeyer.OpcUa.IntegrationTest.Configuration;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
+using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
 using Hoeyer.OpcUa.Server.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,8 +20,7 @@ internal sealed class LocalHostedIntegrationTestEnvironment
     private IServerStartedHealthCheck _healthCheck = null!;
 
     private ServiceCollection _serviceCollection = new();
-    private ServiceProvider _serviceProvider = null!;
-    public IServiceProvider AvailableServices => _serviceProvider;
+    public IntegrationTestServiceProvider AvailableServices { get; private set; }
     public OpcEnvironment OpcEnvironment { get; private set; } = null!;
 
     public async Task InitializeAsync()
@@ -39,9 +39,9 @@ internal sealed class LocalHostedIntegrationTestEnvironment
             var port = ((IPEndPoint)portListener.LocalEndpoint).Port;
 
             var services = AddServices(port);
-            _serviceProvider = services.BuildServiceProvider();
-            _healthCheck = AvailableServices.GetRequiredService<IServerStartedHealthCheck>();
-            var startableServer = AvailableServices.GetRequiredService<IStartableEntityServer>();
+            AvailableServices = new IntegrationTestServiceProvider(services.BuildServiceProvider());
+            _healthCheck = AvailableServices.SingletonProvider.GetRequiredService<IServerStartedHealthCheck>();
+            var startableServer = AvailableServices.SingletonProvider.GetRequiredService<IStartableEntityServer>();
 
             await startableServer.StartAsync();
             await _healthCheck.ServerRunning();
@@ -70,7 +70,7 @@ internal sealed class LocalHostedIntegrationTestEnvironment
                 return;
             }
 
-            await _serviceProvider.DisposeAsync();
+            await AvailableServices.DisposeAsync();
         }
         finally
         {

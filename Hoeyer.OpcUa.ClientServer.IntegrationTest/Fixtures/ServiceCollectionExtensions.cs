@@ -4,6 +4,7 @@ using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Configuration.ConfigurationBuilder;
 using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
 using Hoeyer.OpcUa.IntegrationTest.TUnitConfiguration.Logging;
+using Hoeyer.OpcUa.Server;
 using Hoeyer.OpcUa.Server.Configuration;
 using Hoeyer.OpcUa.Server.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -74,12 +75,25 @@ public static class ServiceCollectionExtensions
     {
         var clientServices = services.AddClientTestServices(args, entityAssemblyMarkers, clientModelMarker);
         clientServices.WithOpcUaServer(serverModelMarker);
+        services.AddBorrowedHandles();
     }
 
     public static OnGoingOpcEntityServerServiceRegistration AddClientAndServerTestServices(
         this IServiceCollection services,
         OpcEnvironment args,
-        Type[] entityAssemblyMarkers) =>
-        services.AddClientTestServices(args, entityAssemblyMarkers, entityAssemblyMarkers)
+        Type[] entityAssemblyMarkers)
+    {
+        var serverServices = services.AddClientTestServices(args, entityAssemblyMarkers, entityAssemblyMarkers)
             .WithOpcUaServer(entityAssemblyMarkers);
+        services.AddBorrowedHandles();
+        return serverServices;
+    }
+
+    /// <summary>
+    ///     Exposes session-owned services for injection wrapped in <see cref="NonOwned{T}" />, so that a test can
+    ///     observe them without the test runner taking ownership of (and disposing) the shared instance.
+    /// </summary>
+    private static void AddBorrowedHandles(this IServiceCollection services) =>
+        services.AddSingleton(provider =>
+            new NonOwned<IOpcEntityServer>(provider.GetRequiredService<IOpcEntityServer>()));
 }

@@ -1,4 +1,5 @@
 ﻿using Hoeyer.OpcUa.IntegrationTest.Extensions;
+using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
 using Hoeyer.OpcUa.Server;
@@ -36,10 +37,10 @@ public class ManagerHolderTests(
     [IntegrationServiceInjection]
     public async Task ServerHoldsSpecificManagerHolder(
         IEntityManagerHolder<TestEntity> managerHolder,
-        IOpcEntityServer server,
+        NonOwned<IOpcEntityServer> server,
         CancellationToken timeout)
     {
-        await Assert.That(managerHolder as IEntityManagerHolder).IsContainedIn(server.Managers);
+        await Assert.That(managerHolder as IEntityManagerHolder).IsContainedIn(server.Value.Managers);
     }
 
 
@@ -67,9 +68,9 @@ public class ManagerHolderTests(
     [DisplayName($"A {nameof(IOpcEntityServer)} can be provided")]
     [IntegrationServiceInjection]
     public async Task AServerCanBeProvided(
-        IOpcEntityServer server,
+        NonOwned<IOpcEntityServer> server,
         CancellationToken timeout)
     {
-        await Assert.That(server).IsNotNull();
+        await Assert.That(server.Value).IsNotNull();
     }
 }

@@ -2,22 +2,9 @@
 
 Registry of known defects in this repo. Fix in order of severity. After fixing, re-run the
 integration tests (see `.opencode/tunit-docs.md`) to verify, then move the entry to
-`fixed-bugs.md`. Resolved defects (e.g. BUG-001, BUG-002) are archived there. Evidence below is from
-the run on 2026-09-26 (`Hoeyer.OpcUa.ClientServer.IntegrationTest`, 182 tests: 147 ok, 4 failed,
-31 skipped); the 4 failures are BUG-003 and are unchanged from the 2026-09-19 run (184 tests: 149 ok,
-4 failed, 31 skipped).
-
-## Critical
-
-### BUG-003 — Session-open `BadRequestTimeout` at run start + fixture dispose issues
-- Location: `Hoeyer.OpcUa.ClientServer.IntegrationTest/Fixtures/IntegrationFixtureResources.cs:15-26` (+ `LocalHostedIntegrationTestEnvironment`).
-- Symptom (run 2026-09-19 second pass, e.g. port 56604): the 4 still-failing tests ALL fail in the opening wave (t≈08:46:53) at session creation:
-  - browsers: `BadRequestTimeout` `[80850000]` from `UaSCUaBinaryClientChannel.ConnectAsync` (server does not answer Hello/Acknowledge inside the client timeout),
-  - `"Can connect to 1 session"`: full 5 s `[Timeout]` elapsed before its async session-open completed.
-- Evidence against mid-run server teardown: 149 tests passed *after* the failing wave on the same single server, so the server stays reachable — it just fails to serve the opening burst of parallel session opens promptly. Identity is flaky/port-dependent (run 1: 4 connection failures; run 2: same 4, all `BadRequestTimeout`).
-- Related dispose defect (confirmed again, session end): `NullReferenceException` at `IntegrationFixtureResources.DisposeAsync:17` — `ServerEnvironment` is `null` for fixtures disposed without ever initializing (skipped classes still get tracked/disposed). Logged as "Error disposing tracked object at session end".
-- Structural design flaw (latent): every class fixture currently wraps the *same* session-isolated environment (`PerTestSessionKey`) and `DisposeAsync` disposes `ServerEnvironment` (the shared server) whenever *any* class finishes. The comment on `IntegrationServiceInjectionAttribute` already states the intent: "The environment itself is session-owned and must not be disposed by this data source."
-- Fix directions (decision needed): (a) fixtures should only dispose their own `ServiceProvider` scope and the shared environment should be disposed once at session end; (b) address the opening-wave latency — e.g. pre-warm the server after startup (open a throwaway session) or de-serialize the first session opens (`[NotInParallel]`) so the in-process server isn't hammered before it is warm.
+`fixed-bugs.md`. Resolved defects (e.g. BUG-001, BUG-002, BUG-003) are archived there.
+Evidence below is from the run on 2026-09-27 (`Hoeyer.OpcUa.ClientServer.IntegrationTest`,
+184 tests: 184 ok, 0 failed, 0 skipped) after BUG-003 was fixed.
 
 ## Medium
 

@@ -23,6 +23,23 @@ public static class IntegrationTestAdapter
 
     public static void AssignAdapter(IIntegrationTestEnvironmentAdapterFactory adapter) => AdapterFactory = adapter;
 
+    /// <summary>
+    ///     Disposes and forgets every cached environment. Cached environments are shared between test classes, so no
+    ///     single fixture may dispose them; the session owns their lifetime and tears them down once, at the end.
+    /// </summary>
+    public static async ValueTask DisposeCachedEnvironmentsAsync()
+    {
+        foreach (var cacheKey in CreatedAdapters.Keys)
+        {
+            if (!CreatedAdapters.TryRemove(cacheKey, out var adapter))
+            {
+                continue;
+            }
+
+            await adapter.TestEnvironment.DisposeAsync();
+        }
+    }
+
     public static void AssignFuncFactory(Func<string, IIntegrationTestEnvironmentAdapter> adapter)
     {
         AssignAdapter(new FuncBasedFactory(adapter));

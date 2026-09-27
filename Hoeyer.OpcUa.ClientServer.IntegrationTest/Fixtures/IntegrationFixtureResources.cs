@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
 using Hoeyer.OpcUa.IntegrationTest.Extensions;
-using Microsoft.Extensions.DependencyInjection;
+using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 using TUnit.Core.Interfaces;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Fixtures;
@@ -8,7 +8,8 @@ namespace Hoeyer.OpcUa.IntegrationTest.Fixtures;
 internal sealed class IntegrationFixtureResources<T>(Func<string, IIntegrationTestEnvironmentAdapter> adapterProvider)
     : IAsyncInitializer, IAsyncDisposable
 {
-    internal IServiceProvider ServiceProvider { get; private set; } = null!;
+    internal IntegrationTestServiceProvider _integrationTestServiceProvider;
+    internal IServiceProvider ServiceProvider => _integrationTestServiceProvider.SingletonProvider;
     internal IIntegrationTestEnvironment? ServerEnvironment { get; private set; } = null!;
 
 
@@ -32,10 +33,6 @@ internal sealed class IntegrationFixtureResources<T>(Func<string, IIntegrationTe
 
         ServerEnvironment = adapter.TestEnvironment;
         await ServerEnvironment.InitializeAsync();
-
-        ServiceProvider = ServerEnvironment
-            .AvailableServices
-            .CreateScope()
-            .ServiceProvider;
+        _integrationTestServiceProvider = ServerEnvironment.AvailableServices;
     }
 }

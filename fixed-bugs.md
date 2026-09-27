@@ -59,11 +59,74 @@ Registry of resolved defects. Kept for reference; new (still-open) defects live 
     `StartableEntityServer` marks. All three keys now resolve a single `HealthCheck` instance.
 - Verification: solution builds with 0 errors; integration run on 2026-09-26 (182 tests: 147 ok /
   4 failed / 31 skipped) shows no `ObjectDisposedException`/`MasterNodeManager` teardown noise. The
-  remaining 4 failures are BUG-003 (unchanged).
+  remaining 4 failures are BUG-003 (fixed separately below).
+
+## BUG-003 — The shared session server was disposed mid-run by the test runner — FIXED 2026-09-27
+
+- Location: `Hoeyer.OpcUa.ClientServer.IntegrationTest/Configuration/ManagerHolderTests.cs`
+  (root cause), plus the ownership fixes in `IntegrationFixtureResources.cs`,
+  `LocalHostedIntegrationTestEnvironment.cs`, `IntegrationTestAdapter.cs` and the new
+  `EnvironmentAdapter/DisposeCachedEnvironments.cs`.
+- Symptom: session opens failed with `SocketException (10061) ... actively refused it` from
+  `TcpMessageSocket.ConnectAsync` (earlier manifests: `BadRequestTimeout` `[80850000]`, and
+  `[Timeout]` in `EntitySessionFactory`). It looked like an opening-wave latency/warm-up problem and
+  was flaky/port-dependent, so several plausible-but-wrong theories were chased first.
+- How it was actually diagnosed (all measured, not inferred):
+    - An in-harness accept probe showed the server stopped accepting new TCP connections a few
+      seconds after start and stayed dead. `netstat` polling showed the listener socket stayed bound
+      (`LISTENING`) the whole run, i.e. the socket was not closed — so a mid-run teardown had to be
+      identified rather than a warm-up/timing problem.
+    - `AppDomain.CurrentDomain.FirstChanceException` surfaced
+      `ObjectDisposedException: 'System.Threading.SemaphoreSlim'` — the
+      `MasterNodeManager` startup/shutdown semaphore.
+    - Logging `OpcEntityServer.Dispose` with a stack trace gave the decisive frame chain:
+      `TUnit.Core.Tracking.ObjectTracker.UntrackObjects` → `Disposer.DisposeAsync` →
+      `ServerBase.Dispose()` → `OpcEntityServer.Dispose` (with `IsServerStarted == true`).
+- Root cause: **two** lifetime bugs, not one.
+    1. `ManagerHolderTests` declared `IOpcEntityServer` as a *test-injected member*.
+       `IntegrationServiceInjectionAttribute` resolves injected members from the session-owned root
+       provider, and TUnit's `ObjectTracker` treats injected `IDisposable`/`IAsyncDisposable` values
+       as test-owned — so it disposed the one shared OPC UA server when that test finished, killing it
+       for every test that ran afterwards. Confirmed by logging the resolution:
+       `member=IOpcEntityServer -> resolved=OpcEntityServer ... sameAsRootServer=True`.
+    2. Every class fixture wrapped the *same* session-isolated environment and
+       `IntegrationFixtureResources.DisposeAsync` disposed it, so the first finishing class tore down
+       the server for all others. This contradicted the intent already documented on
+       `IntegrationServiceInjectionAttribute` ("The environment itself is session-owned and must not be
+       disposed by this data source"). It also produced the `NullReferenceException` at
+       `IntegrationFixtureResources.DisposeAsync` for fixtures disposed without initializing.
+- Fix:
+    - `ManagerHolderTests` now injects `IServiceProvider` and resolves `IOpcEntityServer` *inside* the
+      test body, so the shared server never enters TUnit's tracked injection graph. Test intent is
+      unchanged.
+    - `IntegrationServiceInjectionAttribute.Create` now **fails fast** if an injected member resolves
+      to a session-owned disposable from the server assembly, with a message explaining the hazard and
+      the `IServiceProvider` remedy — so this cannot regress silently.
+    - `IntegrationFixtureResources.DisposeAsync` disposes only its own scope, never the shared
+      environment; the session-owned environments are disposed once at session end via
+      `IntegrationTestAdapter.DisposeCachedEnvironmentsAsync` driven by `[After(TestSession)]`
+      (`EnvironmentAdapter/DisposeCachedEnvironments.cs`).
+    - `LocalHostedIntegrationTestEnvironment` lifecycle hardened: nullable provider/health check,
+      `AvailableServices` throws a clear error before init instead of `NullReferenceException`,
+      `EnvironmentReady()` returns `false` instead of throwing, locked dispose that always releases the
+      lock and permits re-init, and `GetFreeLoopbackPort()` now *stops* its probe `TcpListener`
+      (previously the port stayed reserved between probing and binding).
+    - `LocalHostedIntegrationTestEnvironment` now advertises `IPAddress.Loopback` (`127.0.0.1`) instead
+      of the name `localhost`. On this machine `localhost` resolves to `::1` **first**, while the OPC
+      SDK server binds IPv4 — so the client could dial `[::1]` and be refused. This was a real
+      address-family mismatch, independent of BUG-003's teardown, and worth fixing on its own.
+- Verification: `Hoeyer.OpcUa.slnx` builds with 0 errors. Integration run on 2026-09-27: **184 tests,
+  184 passed, 0 failed, 0 skipped**, reproduced three times (default parallel, `--maximum-parallel-
+  tests 1`, and a repeat parallel run). The filter that previously passed in isolation still passes,
+  and the 34 dependency-skipped tests now run and pass.
 
 ## Notes
 
-- Verified against `Hoeyer.OpcUa.ClientServer.IntegrationTest` runs on 2026-09-19
-  (184 tests: baseline 143 ok / 4 failed / 37 skipped → post-fix 149 ok / 4 failed /
-  31 skipped; the remaining 4 are tracked as BUG-003 in `known-bugs.md` and are left open by
-  decision of the session).
+- Verified against `Hoeyer.OpcUa.ClientServer.IntegrationTest` runs on 2026-09-27
+  (184 tests: baseline 149 ok / 1 failed / 34 skipped → post-fix 184 ok / 0 failed / 0 skipped).
+- Earlier baselines for context: 2026-09-19 (143 ok / 4 failed / 37 skipped) and 2026-09-26
+  (147 ok / 4 failed / 31 skipped), both with BUG-003 open.
+- Lesson recorded deliberately: a flaky, port-dependent symptom in a *shared-fixture* integration
+  harness should be bisected with an in-harness probe (does the server still accept? is the socket
+  still bound?) before hypothesising about latency, backlog, or warm-up. Two of the three
+  "fix directions" originally proposed for BUG-003 were wrong.
