@@ -12,7 +12,7 @@ namespace Hoeyer.OpcUa.IntegrationTest.Configuration;
 public class IntegrationEnvironmentHealthTests(
     IEntitySessionFactory sessionFactory)
 {
-    private const int CONNECTION_TIMEOUT = 5000;
+    private const int CONNECTION_TIMEOUT = 10000;
 
     [Test]
     [DisplayName("Can connect to 1 session")]

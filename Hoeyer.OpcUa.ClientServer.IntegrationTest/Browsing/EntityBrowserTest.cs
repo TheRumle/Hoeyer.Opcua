@@ -1,11 +1,13 @@
 ﻿using Hoeyer.OpcUa.Client.Abstractions.Browsing;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing.Reading;
 using Hoeyer.OpcUa.Core.Abstractions;
+using Hoeyer.OpcUa.IntegrationTest.Configuration;
 using JetBrains.Annotations;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Browsing;
 
+[DependsOn<IntegrationEnvironmentHealthTests>]
 [TestSubject(typeof(IEntityBrowser<>))]
 [TestSubject(typeof(INodeReader))]
 public abstract class EntityBrowserTest<T>(IEntityBrowser<T> browser)

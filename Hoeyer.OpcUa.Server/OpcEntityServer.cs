@@ -1,4 +1,5 @@
 ﻿using Hoeyer.Common.Extensions.LoggingExtensions;
+using Hoeyer.OpcUa.Core.Configuration.Health;
 using Hoeyer.OpcUa.Core.Extensions.Logging;
 using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.Server.Abstractions;
@@ -22,7 +23,8 @@ public interface IOpcEntityServer : IStandardServer
 internal sealed class OpcEntityServer(
     IOpcUaTargetServerSetup applicationProductDetails,
     IEnumerable<IEntityNodeManagerFactory> entityManagerFactories,
-    ILogger<OpcEntityServer> logger)
+    ILogger<OpcEntityServer> logger,
+    IServerStartedHealthCheck healthCheck)
     : StandardServer, IOpcEntityServer
 {
     private static readonly DateTime BuildDate = DateTime.UtcNow;
@@ -197,7 +199,17 @@ internal sealed class OpcEntityServer(
         }
 
         logger.LogInformation("Closing server...");
-        DomainManager?.Dispose();
+
+        if (healthCheck.IsServerStarted)
+        {
+            DomainManager?.Dispose();
+        }
+        else
+        {
+            logger.LogWarning(
+                "The server never reached a valid started state; skipping disposal of the domain manager to avoid tearing down partially-initialized internals.");
+        }
+
         base.Dispose(disposing);
         _disposed = true;
     }

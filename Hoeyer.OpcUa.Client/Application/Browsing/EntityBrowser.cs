@@ -29,22 +29,19 @@ public sealed class EntityBrowser<TEntity>(
     private readonly EntityDescriptionMatcher<TEntity> _identityMatcher
         = n => browseNameCollection.EntityName.Equals(n.BrowseName.Name);
 
-    private readonly Lazy<ISession>
-        _session = new(() => sessionFactory.GetSession<TEntity>().Session);
-
     private Node? _entityRoot;
 
     public (IEntityNode node, DateTime timeLoaded)? LastState { get; private set; }
-    private ISession Session => _session.Value;
 
     /// <inheritdoc />
     public async Task<IEntityNode> BrowseEntityNode(CancellationToken cancellationToken = default)
     {
         try
         {
+            var session = await GetSession();
             logger.LogInformation("Browsing entity");
-            var values = await ReadEntity(cancellationToken);
-            return await ParseToEntity(Session, cancellationToken, values);
+            var values = await ReadEntity(session, cancellationToken);
+            return await ParseToEntity(session, cancellationToken, values);
         }
         catch (Exception e)
         {
@@ -58,6 +55,12 @@ public sealed class EntityBrowser<TEntity>(
         LastState.HasValue
             ? LastState.Value.node.ToStructureOnly()
             : await BrowseEntityNode(token).SelectAsync(e => e.ToStructureOnly());
+
+    private async Task<ISession> GetSession()
+    {
+        var entitySession = await sessionFactory.GetSessionForAsync<TEntity>();
+        return entitySession.Session;
+    }
 
     private async Task<IEntityNode> ParseToEntity(ISession session, CancellationToken cancellationToken,
         ReadResult values)
@@ -93,25 +96,25 @@ public sealed class EntityBrowser<TEntity>(
         return structure;
     }
 
-    private async Task<ReadResult> ReadEntity(CancellationToken cancellationToken)
+    private async Task<ReadResult> ReadEntity(ISession session, CancellationToken cancellationToken)
     {
         logger.LogInformation("Reading entity from server");
-        _entityRoot ??= await FindEntityRoot(cancellationToken);
+        _entityRoot ??= await FindEntityRoot(session, cancellationToken);
         var descendants = await traversalStrategy
-            .TraverseFrom(_entityRoot.NodeId, Session, cancellationToken)
+            .TraverseFrom(_entityRoot.NodeId, session, cancellationToken)
             .Collect();
-        return await reader.ReadNodesAsync(Session, descendants.Select(e => e.NodeId), ct: cancellationToken);
+        return await reader.ReadNodesAsync(session, descendants.Select(e => e.NodeId), ct: cancellationToken);
     }
 
-    private async Task<Node> FindEntityRoot(CancellationToken cancellationToken = default)
+    private async Task<Node> FindEntityRoot(ISession session, CancellationToken cancellationToken = default)
     {
-        logger.LogDebug("Looking for entity root...");
+        logger.LogInformation("Looking for entity root...");
         var r = await traversalStrategy
-            .TraverseUntil(Session,
+            .TraverseUntil(session,
                 ObjectIds.RootFolder,
                 _identityMatcher.Invoke,
                 cancellationToken);
-        logger.LogDebug("Entity root found at {NodeId}", r.NodeId.ToString());
-        return await reader.ReadNodeAsync(Session, r.NodeId, cancellationToken);
+        logger.LogInformation("Entity root found at {NodeId}", r.NodeId.ToString());
+        return await reader.ReadNodeAsync(session, r.NodeId, cancellationToken);
     }
 }

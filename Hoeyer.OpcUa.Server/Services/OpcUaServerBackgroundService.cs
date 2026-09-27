@@ -3,12 +3,11 @@ using Microsoft.Extensions.Hosting;
 
 namespace Hoeyer.OpcUa.Server.Services;
 
-public sealed class OpcUaServerBackgroundService(IOpcUaEntityServerFactory factory) : BackgroundService
+public sealed class OpcUaServerBackgroundService(IStartableEntityServer server) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var server = factory.CreateServer();
-        await server.StartAsync();
+        await server.StartAsync(stoppingToken);
         await Task.Delay(Timeout.Infinite, stoppingToken);
     }
 }
