@@ -2,18 +2,12 @@
 
 Registry of known defects in this repo. Fix in order of severity. After fixing, re-run the
 integration tests (see `.opencode/tunit-docs.md`) to verify, then move the entry to
-`fixed-bugs.md`. Resolved defects (e.g. BUG-001) are archived there. Evidence below is from
-the run on 2026-09-19 (`Hoeyer.OpcUa.ClientServer.IntegrationTest`, 184 tests: 149 ok, 4 failed,
-31 skipped).
+`fixed-bugs.md`. Resolved defects (e.g. BUG-001, BUG-002) are archived there. Evidence below is from
+the run on 2026-09-26 (`Hoeyer.OpcUa.ClientServer.IntegrationTest`, 182 tests: 147 ok, 4 failed,
+31 skipped); the 4 failures are BUG-003 and are unchanged from the 2026-09-19 run (184 tests: 149 ok,
+4 failed, 31 skipped).
 
 ## Critical
-
-### BUG-002 — Disposing a failed/partially-started server throws on `MasterNodeManager.Dispose`
-- Location: `Hoeyer.OpcUa.Server/OpcEntityServer.cs:200` + `StartableEntityServer.cs:51-67`; exception surfaces from OPC Foundation `MasterNodeManager.Dispose`.
-- Symptom: `System.ObjectDisposedException: Cannot access a disposed object. Object name: 'System.Threading.SemaphoreSlim'` when tearing down after a failed start.
-- Evidence: trace walks `StartableEntityServer.DisposeAsync → OpcEntityServer.Dispose → DomainManager?.Dispose → MasterNodeManager.Dispose → SemaphoreSlim.Wait`.
-- Impact: masks the real error (formerly BUG-001), produces noisy dispose exceptions in every failed run.
-- Fix direction: only dispose server internals when startup reached a valid state; make the server dispose chain tolerant of partial initialization.
 
 ### BUG-003 — Session-open `BadRequestTimeout` at run start + fixture dispose issues
 - Location: `Hoeyer.OpcUa.ClientServer.IntegrationTest/Fixtures/IntegrationFixtureResources.cs:15-26` (+ `LocalHostedIntegrationTestEnvironment`).
@@ -31,15 +25,11 @@ the run on 2026-09-19 (`Hoeyer.OpcUa.ClientServer.IntegrationTest`, 184 tests: 1
 - Location: `Hoeyer.OpcUa.Server/Application/AlarmSetupConfigurator.cs:12-13,50-53`
 - Symptom: `return;` is the first statement in the `ChangeState` lambda → the alarm-creation loop never runs (compiler warns CS0162 unreachable code). `EvaluateAlarm` even if reached throws `NotImplementedException`.
 - Impact: `AlarmsByProperty` handling silently does nothing; any code path touching it crashes.
+- Status: still open — the 2026-09-26 build still emits
+  `AlarmSetupConfigurator.cs(13,13): warning CS0162 Unreachable code detected`.
 - Fix direction: remove the premature return; implement `EvaluateAlarm`.
 
-## Low / code-quality
-
-### BUG-005 — Dead field `EntityNodeManager<T>._nodeTask` (resolved)
-- Location: `Hoeyer.OpcUa.Server/Application/EntityNodeManager.cs:22`
-- Resolved as part of the BUG-001 fix (`fixed-bugs.md`): `_nodeTask` is now assigned in `CreateAddressSpace`. Verify no new CS0414 (assigned-but-unused) warning surfaces; if it does, delete the field and re-assert `NodeReady` via `_addressSpaceReady.Task`. Ensure the shipped build still shows no warnings.
-
-### BUG-006 — Misc nullable/obsolete warnings (log noise, not yet defects)
+### BUG-006 — Misc nullable/obsolete warnings (log noise)
 - `Hoeyer.OpcUa.Client/Extensions/LoggingExtensions.cs:39,43` — possible null deref on `item.Subscription` (CS8602/CS8604).
 - `Hoeyer.OpcUa.Simulation.Application/Services/ServiceCollectionExtension.cs:119,123` — possible null assignment into `args` list (CS8601) around `ExecuteLocalStaticGeneric`.
 - `Hoeyer.OpcUa.Client/Application/Connection/DefaultReconnectStrategy.cs:28` — unused `_` exception variable (CS0168).

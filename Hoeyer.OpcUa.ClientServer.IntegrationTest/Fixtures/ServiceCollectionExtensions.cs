@@ -60,8 +60,8 @@ public static class ServiceCollectionExtensions
                     })
                 .Build())
             .WithEntityModelsFrom(entityAssemblyMarkers)
-            .WithOpcUaClientModelsFrom(clientModelMarker,
-                c => { c.WithEntitySessionFactory<EntitySessionFactory>(); });
+            .WithOpcUaClientConfiguration(clientModelMarker,
+                c => { c.WithEntitySessionFactory<CachedSessionFactory>(); });
     }
 
 

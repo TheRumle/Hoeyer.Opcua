@@ -8,13 +8,13 @@ namespace Hoeyer.OpcUa.IntegrationTest;
 public sealed class DependencyResolutionTest
 {
     private readonly ClientAndServerServiceInjectionAttribute _attribute = new();
-    private IServiceCollection Services => _attribute.Collection;
+    private IServiceCollection Services => ClientAndServerServiceInjectionAttribute.Collection;
 
     private IEnumerable<ServiceDescriptor> Descriptors =>
-        _attribute.Collection.Where(e => e.ImplementationType is { ContainsGenericParameters: false });
+        Services.Where(e => e.ImplementationType is { ContainsGenericParameters: false });
 
     private IEnumerable<ServiceDescriptor> GenericDescriptors =>
-        _attribute.Collection.Where(e =>
+        Services.Where(e =>
             e.ServiceType.IsGenericTypeDefinition &&
             e.ServiceType.GetGenericArguments().Length == 1 &&
             e.ImplementationType is { ContainsGenericParameters: true });

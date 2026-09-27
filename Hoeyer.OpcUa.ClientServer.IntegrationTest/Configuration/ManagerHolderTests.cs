@@ -2,7 +2,7 @@
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
 using Hoeyer.OpcUa.Server;
-using Hoeyer.OpcUa.Server.Application;
+using Hoeyer.OpcUa.Server.Abstractions;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Configuration;
 

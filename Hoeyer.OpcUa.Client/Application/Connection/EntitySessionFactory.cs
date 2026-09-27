@@ -22,33 +22,44 @@ public sealed class EntitySessionFactory(
 
     private async Task<IEntitySession> CreateSession(string sessionName, CancellationToken token)
     {
-        using var logScope = logger.BeginScope("Creating new session with name {0}", sessionName);
+        using var logScope = logger.BeginScope("Creating session {0}", sessionName);
         var config = configurationFactory.CreateClientConfiguration();
 
         logger.LogDebug("Validating configuration...");
         await config.ValidateAsync(ApplicationType.Client, token);
 
-        logger.LogInformation("Creating session with name {SessionName}", sessionName);
-
-        Endpoint ??= CreateEndpoint(config);
-        logger.LogInformation("Using configuration {0}", Endpoint.Description.ToLoggingObject());
-
-        var session = await sessionFactory.CreateAsync(
-            config,
-            Endpoint,
-            false,
-            sessionName,
-            (uint)config.ClientConfiguration.DefaultSessionTimeout,
-            new UserIdentity(new AnonymousIdentityToken()),
-            null,
-            token
-        );
+        var session = await ConnectToServer(sessionName, token, config);
 
         session.ReturnDiagnostics =
             DiagnosticsMasks.LocalizedText | DiagnosticsMasks.InnerDiagnostics | DiagnosticsMasks.All;
 
         logger.LogInformation("Session created for sessionName '{Client}'", sessionName);
         return new EntitySession(session);
+    }
+
+    private async Task<ISession> ConnectToServer(string sessionName, CancellationToken token,
+        ApplicationConfiguration config)
+    {
+        Endpoint ??= CreateEndpoint(config);
+        logger.LogInformation("Using configuration {0} to create session", Endpoint.Description.ToLoggingObject());
+        try
+        {
+            return await sessionFactory.CreateAsync(
+                config,
+                Endpoint,
+                false,
+                sessionName,
+                1000000,
+                new UserIdentity(new AnonymousIdentityToken()),
+                null,
+                token
+            );
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to create session");
+            throw;
+        }
     }
 
 

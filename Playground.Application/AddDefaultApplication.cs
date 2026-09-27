@@ -64,7 +64,7 @@ public static class AddDefaultApplicationExtension
             : builder.Services.AddOpcUa(config);
 
         registration.WithEntityModelsFrom(typeof(Gantry))
-            .WithOpcUaClientModelsFrom(typeof(PositionChangeReactor))
+            .WithOpcUaClientConfiguration(typeof(PositionChangeReactor))
             .WithOpcUaServerAsBackgroundService(typeof(AllPropertiesLoader), (provider, configuration) => { })
             .WithOpcUaSimulationServices(configure =>
             {

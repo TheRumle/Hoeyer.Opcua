@@ -16,17 +16,13 @@ public class CachedSessionFactory(
 
     public async Task<IEntitySession> GetSessionAsync(string clientKey, CancellationToken token = default)
     {
-        logger.BeginScope("SessionDetails: {Dictionary}", new Dictionary<string, object>
-        {
-            { "ClientKey", clientKey }
-        });
-
         if (!_sessions.TryGetValue(clientKey, out var existingSession))
         {
-            logger.LogInformation("No cache hit.");
+            logger.LogInformation("Cache miss, creating new session");
             return _sessions[clientKey] = await entitySessionFactory.GetSessionAsync(clientKey, token);
         }
 
+        logger.LogInformation("Cache hit, using existing session");
         if (SessionIsHealthy(existingSession))
         {
             logger.LogInformation("Session healthy and will be used");

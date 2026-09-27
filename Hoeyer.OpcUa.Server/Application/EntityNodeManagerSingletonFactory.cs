@@ -1,5 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Configuration.Errors;
+using Hoeyer.OpcUa.Server.Abstractions;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Microsoft.Extensions.Logging;
 using Opc.Ua.Server;

@@ -36,6 +36,31 @@ Registry of resolved defects. Kept for reference; new (still-open) defects live 
 - Verification: no more duplicated server starts in traces; server starts exactly once per
   test session.
 
+## BUG-002 — Disposing a failed/partially-started server throws on `MasterNodeManager.Dispose` — FIXED 2026-09-26
+
+- Location: `Hoeyer.OpcUa.Server/OpcEntityServer.cs` (`Dispose(bool)`) +
+  `Hoeyer.OpcUa.Server/Services/ServiceExtensions.cs` (health-check registration).
+- Symptom: `System.ObjectDisposedException: Cannot access a disposed object. Object name:
+  'System.Threading.SemaphoreSlim'` when tearing down after a failed start. Trace walked
+  `StartableEntityServer.DisposeAsync → OpcEntityServer.Dispose → DomainManager?.Dispose →
+  MasterNodeManager.Dispose → SemaphoreSlim.Wait`.
+- Root cause: a failed/partial start already tears down the master node manager internals, so
+  `OpcEntityServer.Dispose` disposing `DomainManager` a second time re-entered
+  `MasterNodeManager.Dispose` and its `m_startupShutdownSemaphoreSlim.Wait()` threw on the
+  already-disposed semaphore. This masked the original start error and added a dispose exception
+  to every failed run.
+- Fix:
+  - `OpcEntityServer` now takes `IServerStartedHealthCheck` and only calls
+    `DomainManager?.Dispose()` when `healthCheck.IsServerStarted`; otherwise it logs a warning and
+    skips, leaving the already-torn-down internals alone. `base.Dispose` still runs.
+  - Hardened the health-check registration: `AddServiceAndImplSingleton<IServerStartedHealthCheck,
+    HealthCheck>()` created one `HealthCheck` per descriptor, and `IHealthCheckAssignment` mapped to
+    the concrete type — so the interfaces could observe a *different* instance than the one
+    `StartableEntityServer` marks. All three keys now resolve a single `HealthCheck` instance.
+- Verification: solution builds with 0 errors; integration run on 2026-09-26 (182 tests: 147 ok /
+  4 failed / 31 skipped) shows no `ObjectDisposedException`/`MasterNodeManager` teardown noise. The
+  remaining 4 failures are BUG-003 (unchanged).
+
 ## Notes
 
 - Verified against `Hoeyer.OpcUa.ClientServer.IntegrationTest` runs on 2026-09-19
