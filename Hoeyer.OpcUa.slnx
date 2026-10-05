@@ -56,7 +56,7 @@
     </Folder>
     <Folder Name="/test/unittest/">
         <Project Path="Hoeyer.Common.Test/Hoeyer.Common.Test.csproj"/>
-        <Project Path="Hoeyer.OpcUa.CompileTime.Test/Hoeyer.OpcUa.CompileTime.Test.csproj"/>
+        <Project Path="Hoeyer.OpcUa.Compiletime.Test/Hoeyer.OpcUa.Compiletime.Test.csproj"/>
         <Project Path="Hoeyer.OpcUa.Core.Test/Hoeyer.OpcUa.Core.Test.csproj"/>
     </Folder>
 </Solution>

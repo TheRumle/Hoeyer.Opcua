@@ -4,7 +4,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
-        <RootNamespace>Hoeyer.OpcUa.CompileTime.Test</RootNamespace>
+        <RootNamespace>Hoeyer.OpcUa.Compiletime.Test</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

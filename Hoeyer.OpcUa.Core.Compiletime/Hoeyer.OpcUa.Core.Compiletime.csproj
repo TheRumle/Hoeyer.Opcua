@@ -6,9 +6,9 @@
         <LangVersion>latest</LangVersion>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <IsRoslynComponent>true</IsRoslynComponent>
-        <PackageId>Hoeyer.OpcUa.CompileTime</PackageId>
+        <PackageId>Hoeyer.OpcUa.Compiletime</PackageId>
         <NoWarn>RS2003</NoWarn>
-        <RootNamespace>Hoeyer.OpcUa.Core.CompileTime</RootNamespace>
+        <RootNamespace>Hoeyer.OpcUa.Core.Compiletime</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
