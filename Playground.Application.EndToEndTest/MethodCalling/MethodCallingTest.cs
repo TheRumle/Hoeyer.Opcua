@@ -5,7 +5,7 @@ using Playground.Modelling.Models;
 
 namespace Playground.Application.EndToEndTest.MethodCalling;
 
-[DependsOn<IntegrationEnvironmentHealthTests>]
+[DependsOn<SessionConnectionTest>]
 [ClassDataSource<IntegrationTestFixture<IGantryMethods>>]
 public class MethodCallingTest(IntegrationTestFixture<IGantryMethods> methods)
 {

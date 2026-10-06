@@ -1,16 +1,13 @@
 ﻿using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Abstractions.Connection;
-using Hoeyer.OpcUa.Fixtures.Server;
-using Hoeyer.OpcUa.Fixtures.Server.Attributes;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Configuration;
 
-[ServerFixtureDependentTest]
 [DependsOn<ConfigurationCompatibilityTest>]
-[DependsOn<HealthyOpcUaServer>]
+[DependsOn<ServerHealtchTest>]
 [IntegrationServiceInjection]
-public class IntegrationEnvironmentHealthTests(
+public class SessionConnectionTest(
     IEntitySessionFactory sessionFactory)
 {
     private const int CONNECTION_TIMEOUT = 10000;

@@ -7,7 +7,7 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Browsing;
 
-[DependsOn<IntegrationEnvironmentHealthTests>]
+[DependsOn<SessionConnectionTest>]
 [TestSubject(typeof(IEntityBrowser<>))]
 [TestSubject(typeof(INodeReader))]
 public abstract class EntityBrowserTest<T>(IEntityBrowser<T> browser)
@@ -58,6 +58,6 @@ public abstract class EntityBrowserTest<T>(IEntityBrowser<T> browser)
     {
         return entity.PropertyStates
             .Where(e => e.Value is null or Variant { Value: null })
-            .ToDictionary<PropertyState, string, object>(prop => prop.BrowseName.Name, prop => null!)!;
+            .ToDictionary<PropertyState, string, object>(prop => prop.BrowseName.Name, prop => default);
     }
 }

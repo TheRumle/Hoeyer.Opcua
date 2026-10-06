@@ -3,7 +3,7 @@
 namespace Hoeyer.OpcUa.IntegrationTest.Configuration;
 
 [IntegrationServiceInjection]
-public sealed class HealthyOpcUaServer(
+public sealed class ServerHealtchTest(
     EnvironmentHealthCheck healthCheck
 )
 {

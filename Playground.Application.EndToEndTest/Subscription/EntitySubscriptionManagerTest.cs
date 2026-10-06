@@ -2,8 +2,6 @@
 using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 using Hoeyer.OpcUa.Client.Abstractions.Writing;
 using Hoeyer.OpcUa.Client.Application.Subscriptions;
-using Hoeyer.OpcUa.Fixtures.Server;
-using Hoeyer.OpcUa.Fixtures.Server.Attributes;
 using Hoeyer.OpcUa.IntegrationTest.Configuration;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using JetBrains.Annotations;
@@ -12,8 +10,7 @@ using Playground.Modelling.Models;
 namespace Playground.Application.EndToEndTest.Subscription;
 
 [TestSubject(typeof(CurrentEntityStateChannel<>))]
-[DependsOn<IntegrationEnvironmentHealthTests>]
-[ServerFixtureDependentTest]
+[DependsOn<SessionConnectionTest>]
 [ClassDataSource<IsolatedServerFixture>(Shared = SharedType.PerClass)]
 [Timeout(10000)]
 public sealed class EntitySubscriptionManagerTest(IsolatedServerFixture fixture)

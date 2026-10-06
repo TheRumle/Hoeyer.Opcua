@@ -6,8 +6,6 @@ using Hoeyer.OpcUa.Client.Abstractions.Browsing;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing.Exceptions;
 using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Core.Abstractions;
-using Hoeyer.OpcUa.Fixtures.Server;
-using Hoeyer.OpcUa.Fixtures.Server.Attributes;
 using Hoeyer.OpcUa.IntegrationTest.Configuration;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using JetBrains.Annotations;
@@ -18,8 +16,7 @@ namespace Hoeyer.OpcUa.IntegrationTest.Browsing;
 [TestSubject(typeof(INodeTreeTraverser))]
 [TestSubject(typeof(ConcurrentBrowse))]
 [Timeout(10_0000)]
-[ServerFixtureDependentTest]
-[DependsOn<IntegrationEnvironmentHealthTests>]
+[DependsOn<SessionConnectionTest>]
 [NotInParallel]
 public abstract class NodeTreeTraverserTest<T>(
     IntegrationTestFixture<T> fixture)

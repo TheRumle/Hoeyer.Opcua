@@ -1,15 +1,12 @@
-﻿using Hoeyer.OpcUa.Fixtures.Common;
-using Hoeyer.OpcUa.Fixtures.Common.TUnit.Configuration.Assertions;
+﻿using Hoeyer.OpcUa.Fixtures.Common.TUnit.Configuration.Assertions;
 using Hoeyer.OpcUa.Fixtures.Common.Utils;
-using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
-using Hoeyer.OpcUa.Server;
 using Hoeyer.OpcUa.Server.Abstractions;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Configuration;
 
-[DependsOn<HealthyOpcUaServer>]
+[DependsOn<ServerHealtchTest>]
 [IntegrationServiceInjection]
 public class ManagerHolderTests(
     IEnumerable<IEntityManagerHolder> managerHolders)
@@ -24,7 +21,7 @@ public class ManagerHolderTests(
     }
 
     [Test]
-    [DependsOn<HealthyOpcUaServer>]
+    [DependsOn<ServerHealtchTest>]
     [Category("Managers are healthy")]
     [InstanceMethodDataSource(nameof(GetManagers))]
     public async Task NodesAreHealthy(IEntityManagerHolder holder, CancellationToken timeout)
