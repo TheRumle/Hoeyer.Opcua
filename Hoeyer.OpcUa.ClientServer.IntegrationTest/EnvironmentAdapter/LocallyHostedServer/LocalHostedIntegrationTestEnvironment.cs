@@ -5,7 +5,6 @@ using Hoeyer.OpcUa.Fixtures.Common;
 using Hoeyer.OpcUa.Fixtures.Common.Utils;
 using Hoeyer.OpcUa.IntegrationTest.Configuration;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
-using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
 using Hoeyer.OpcUa.Server.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
