@@ -4,7 +4,6 @@ using Hoeyer.Common.Messaging.Api;
 using Hoeyer.Common.Messaging.Subscriptions;
 using Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 using JetBrains.Annotations;
-using TUnit.Core.Interfaces;
 
 namespace Hoeyer.Common.Test.Messaging;
 
@@ -20,14 +19,20 @@ public abstract class SubscriptionSystemTest(IMessageSubscriptionFactory<int> fa
 
     public static IEnumerable<Func<(int consumers, int messages)>> IncreasingLoad()
     {
-        for (var i = 1; i < 13; i++)
+        int[] consumers = [1, 10, 25, 50, 100, 150, 250, 500, 1000];
+        int[] messages = [10, 25, 50, 100, 150, 250, 500, 1000, 1500];
+        
+        foreach (var consumer in consumers)
         {
-            for (var j = 1; j < i; j++)
+            foreach (var message in messages)
             {
-                yield return () => ((int)Math.Pow(i, 2), (int)Math.Pow(j, 2));
+                var first = consumer;
+                var second = message;
+                yield return () => (first, second);
             }
         }
     }
+
 
     [Test]
     public async Task WhenSubscriptionPaused_DoesNotCallSubscriber()
@@ -71,13 +76,15 @@ public abstract class SubscriptionSystemTest(IMessageSubscriptionFactory<int> fa
     }
 
     [Test]
+    [NotInParallel]
     [MethodDataSource(nameof(IncreasingLoad))]
-    public void CanHandleManyRequests_With_Changing_Subscribers(int consumers, int requests)
+    [DisplayName("$consumers consumers consuming $requests requests")]
+    public void CanHandleManyRequests_With_Changing_Subscribers(int consumers, int requests, CancellationToken token)
     {
         List<TestSubscriber> subscribers = new();
         for (var i = 0; i < consumers; i++)
         {
-            var s = new TestSubscriber(10, CancellationToken.None);
+            var s = new TestSubscriber(10, token);
             subscribers.Add(s);
             var sub = publisher.Subscribe(s);
             s.MessageSubscription = sub;
