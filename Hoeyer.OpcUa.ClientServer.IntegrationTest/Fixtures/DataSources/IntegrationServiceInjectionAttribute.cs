@@ -1,5 +1,4 @@
-﻿using Hoeyer.OpcUa.Fixtures.Server;
-using Hoeyer.OpcUa.Fixtures.Server.ServerFixture;
+﻿using Hoeyer.OpcUa.Fixtures.Server.ServerFixture;
 using Microsoft.Extensions.DependencyInjection;
 using static Hoeyer.OpcUa.Fixtures.Server.ServerFixture.ServerFixtureAdapter;
 

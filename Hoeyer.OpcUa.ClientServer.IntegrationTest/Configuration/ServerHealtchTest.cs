@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
+﻿using Hoeyer.OpcUa.Fixtures.Server;
+using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Configuration;
 

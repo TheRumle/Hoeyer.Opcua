@@ -52,6 +52,7 @@
     </Folder>
     <Folder Name="/test/">
         <Project Path="Hoeyer.OpcUa.ClientServer.IntegrationTest/Hoeyer.OpcUa.ClientServer.IntegrationTest.csproj" />
+        <Project Path="Hoeyer.OpcUa.Server.Test/Hoeyer.OpcUa.Server.Test.csproj" />
         <Project Path="Playground.Application.EndToEndTest/Playground.Application.EndToEndTest.csproj" />
     </Folder>
     <Folder Name="/test/testfixtures/">
@@ -62,6 +63,5 @@
         <Project Path="Hoeyer.Common.Test/Hoeyer.Common.Test.csproj" />
         <Project Path="Hoeyer.OpcUa.Compiletime.Test/Hoeyer.OpcUa.Compiletime.Test.csproj" />
         <Project Path="Hoeyer.OpcUa.Core.Test/Hoeyer.OpcUa.Core.Test.csproj" />
-        <Project Path="Hoeyer.OpcUa.Server.Test/Hoeyer.OpcUa.Server.Test.csproj" />
     </Folder>
 </Solution>
