@@ -5,7 +5,7 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Configuration;
 
-[ClientAndServerServiceInjection]
+[ServiceInjection]
 public class ConfigurationCompatibilityTest(
     IClientApplicationConfigurationFactory clientConfigFactory,
     IServerApplicationConfigurationFactory serverConfigFactory)

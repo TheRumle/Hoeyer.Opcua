@@ -18,11 +18,6 @@ public static class AssignTestContainerEnvironment
 
     private sealed class DockerEnvironmentAdapter(string containerId) : IIntegrationTestEnvironmentAdapter
     {
-        public IServiceCollection ApplicationServices => new ServiceCollection();
-
-        public Type[] ClientAssemblyMarkers => [typeof(Gantry)];
-        public Type[] EntityAssemblyMarkers => [typeof(IGantryMethods)];
-
         public IIntegrationTestEnvironment TestEnvironment { get; } =
             new PlaygroundTestContainer(WebProtocol.OpcTcp, containerId);
     }

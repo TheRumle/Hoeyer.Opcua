@@ -41,8 +41,7 @@ internal sealed class StartableEntityServer(
         catch (Exception e)
         {
             healthCheckAssignment.MarkFailed(e);
-            logger.LogCritical(e, "Failed to start the server: {}", e.Message);
-            throw new OpcUaEntityServerException($"Failed to start the server due to error: {e.Message}", e);
+            throw;
         }
 
         return this;

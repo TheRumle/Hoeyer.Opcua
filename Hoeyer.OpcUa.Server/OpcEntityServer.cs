@@ -12,14 +12,6 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server;
 
-public interface IOpcEntityServer : IStandardServer
-{
-    IEnumerable<IEntityManagerHolder> Managers { get; }
-    internal DomainMasterNodeManager? DomainManager { get; }
-
-    public ServerBase AsServerBase();
-}
-
 internal sealed class OpcEntityServer(
     IOpcUaTargetServerSetup applicationProductDetails,
     IEnumerable<IEntityNodeManagerFactory> entityManagerFactories,
@@ -32,7 +24,7 @@ internal sealed class OpcEntityServer(
 
     private bool _disposed;
 
-    public DomainMasterNodeManager? DomainManager { get; private set; }
+    public IDomainMasterNodeManager? DomainManager { get; private set; }
     public ServerBase AsServerBase() => this;
 
     public IEnumerable<IEntityManagerHolder> Managers => entityManagerFactories.OfType<IEntityManagerHolder>();
@@ -153,8 +145,9 @@ internal sealed class OpcEntityServer(
                 .Select(factory => factory.CreateEntityManager(server))
                 .ToArray();
 
-            DomainManager = new DomainMasterNodeManager(server, configuration, managers);
-            return DomainManager!;
+            var manager = new DomainMasterNodeManager(server, configuration, managers);
+            DomainManager = manager;
+            return manager;
         })!;
     }
 
@@ -166,6 +159,11 @@ internal sealed class OpcEntityServer(
             logger.LogInformation("Starting application with configuration {@Configuration}",
                 configuration.ToLoggingObject());
             await base.StartApplicationAsync(configuration, cancellationToken);
+        }
+        catch (ServiceResultException e) when (e.InnerException?.Message.Contains($"[{nameof(ManagerAlreadyInitializedException)}]") ?? false)
+        {
+            logger.LogCritical(e, "The entity manager has been initialized more than once.");
+            throw e.InnerException;
         }
         catch (Exception e)
         {

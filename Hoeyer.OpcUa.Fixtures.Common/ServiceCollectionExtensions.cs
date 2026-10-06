@@ -8,7 +8,7 @@ namespace Hoeyer.OpcUa.Fixtures.Common;
 
 public static class ServiceCollectionExtensions
 {
-    public static OnGoingOpcEntityServiceRegistrationWithModels AddCoreServices(
+    public static OnGoingOpcEntityServiceRegistrationWithModels AddCoreTestServices(
         this IServiceCollection services,
         OpcEnvironment args,
         Type[] entityAssemblyMarkers)

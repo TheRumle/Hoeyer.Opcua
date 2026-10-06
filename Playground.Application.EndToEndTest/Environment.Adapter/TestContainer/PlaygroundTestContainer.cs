@@ -7,7 +7,6 @@ using Hoeyer.OpcUa.Fixtures.Common.Utils;
 using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Playground.Application.EndToEndTest.Environment.Adapter.TestContainer;
 
@@ -18,8 +17,6 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
     public const string OPCUA_APPLICATION_NAME = "Simulation";
     private readonly Lazy<Task> _initializeTask;
     private readonly string _containerName;
-    private readonly IServiceCollection _services = new ServiceCollection();
-
     public PlaygroundTestContainer(WebProtocol webProtocol, string containerName)
     {
         Protocol = webProtocol;
@@ -83,8 +80,7 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
             OpcUaServerName = ServerName,
             Protocol = Protocol
         };
-        _services.AddClientTestServices(OpcEnvironment, [typeof(TestEntity)]);
-        AvailableServices = new TestServiceCollection(_services);
+        AvailableServices = new TestServiceCollection(services => services.AddClientTestServices(OpcEnvironment, [typeof(TestEntity)]));
 
         HealthChecker = new DockerHealthChecker(Container);
 

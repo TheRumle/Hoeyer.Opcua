@@ -3,18 +3,18 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Hoeyer.OpcUa.Fixtures.Common.Utils;
 
 
-public sealed class TestServiceCollection : IAsyncDisposable
+public sealed class TestServiceCollection
 {
     public readonly IServiceProvider ServiceProvider;
 
-    public TestServiceCollection(IServiceCollection collection)
+    public TestServiceCollection(Action<IServiceCollection> configure)
     {
-        IServiceCollection newCollection = new ServiceCollection();
+        IServiceCollection collection = new ServiceCollection();
+        configure(collection);
         foreach (var descriptor in collection.Where(NotNonOwnedType).ToArray())
         {
-            newCollection.Add(descriptor);
             var nonOwnedType = typeof(NonOwned<>).MakeGenericType(descriptor.ServiceType);
-            newCollection.Add(new ServiceDescriptor(
+            collection.Add(new ServiceDescriptor(
                 nonOwnedType,
                 sp =>
                 {
@@ -25,23 +25,11 @@ public sealed class TestServiceCollection : IAsyncDisposable
                 },
                 descriptor.Lifetime));
         }
-        
-        ServiceProvider = newCollection.BuildServiceProvider();
+        collection.AddSingleton(collection);
+        ServiceProvider = collection.BuildServiceProvider();
     }
 
     private static bool NotNonOwnedType(ServiceDescriptor descriptor) =>
         !(descriptor.ServiceType.IsGenericType &&
         descriptor.ServiceType.GetGenericTypeDefinition() == typeof(NonOwned<>));
-
-    public async ValueTask DisposeAsync()
-    {
-        if (ServiceProvider is IAsyncDisposable serviceScopeAsyncDisposable)
-        {
-            await serviceScopeAsyncDisposable.DisposeAsync();
-        }
-        else if (ServiceProvider is IDisposable disposable)
-        {
-            disposable.Dispose();
-        }
-    }
 }

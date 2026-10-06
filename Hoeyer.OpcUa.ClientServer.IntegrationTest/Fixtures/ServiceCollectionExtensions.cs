@@ -2,8 +2,6 @@
 using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Fixtures.Common;
-using Hoeyer.OpcUa.Fixtures.Common.Utils;
-using Hoeyer.OpcUa.Server;
 using Hoeyer.OpcUa.Server.Configuration;
 using Hoeyer.OpcUa.Server.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,9 +22,8 @@ public static class ServiceCollectionExtensions
         Type[] entityAssemblyMarkers,
         Type[] clientModelMarker)
     {
-        return services.AddCoreServices(args, entityAssemblyMarkers)
-            .WithOpcUaClientConfiguration(clientModelMarker,
-                c => { c.WithEntitySessionFactory<CachedSessionFactory>(); });
+        return services.AddCoreTestServices(args, entityAssemblyMarkers)
+            .WithOpcUaClientConfiguration(clientModelMarker, c => { c.WithEntitySessionFactory<CachedSessionFactory>(); });
     }
 
 
@@ -39,7 +36,6 @@ public static class ServiceCollectionExtensions
     {
         var clientServices = services.AddClientTestServices(args, entityAssemblyMarkers, clientModelMarker);
         clientServices.WithOpcUaServer(serverModelMarker);
-        services.AddBorrowedHandles();
     }
 
     public static OnGoingOpcEntityServerServiceRegistration AddClientAndServerTestServices(
@@ -49,15 +45,8 @@ public static class ServiceCollectionExtensions
     {
         var serverServices = services.AddClientTestServices(args, entityAssemblyMarkers, entityAssemblyMarkers)
             .WithOpcUaServer(entityAssemblyMarkers);
-        services.AddBorrowedHandles();
         return serverServices;
     }
 
-    /// <summary>
-    ///     Exposes session-owned services for injection wrapped in <see cref="NonOwned{T}" />, so that a test can
-    ///     observe them without the test runner taking ownership of (and disposing) the shared instance.
-    /// </summary>
-    private static void AddBorrowedHandles(this IServiceCollection services) =>
-        services.AddSingleton(provider =>
-            new NonOwned<IOpcEntityServer>(provider.GetRequiredService<IOpcEntityServer>()));
+
 }

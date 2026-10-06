@@ -16,11 +16,9 @@ internal sealed class LocalHostedIntegrationTestEnvironment
 {
     private readonly SemaphoreSlim _initializationLock = new(1, 1);
     private bool _initialized;
-    private bool _disposed;
 
     private IServerStartedHealthCheck _healthCheck = null!;
 
-    private readonly ServiceCollection _serviceCollection = new();
     public TestServiceCollection AvailableServices { get; private set; }
     public OpcEnvironment OpcEnvironment { get; private set; } = null!;
 
@@ -39,8 +37,8 @@ internal sealed class LocalHostedIntegrationTestEnvironment
 
             var port = ((IPEndPoint)portListener.LocalEndpoint).Port;
 
-            var services = AddServices(port);
-            AvailableServices = new TestServiceCollection(services);
+            AvailableServices = new TestServiceCollection(services => ConfigureServices(services, port));
+            
             _healthCheck = AvailableServices.ServiceProvider.GetRequiredService<IServerStartedHealthCheck>();
             var startableServer = AvailableServices.ServiceProvider.GetRequiredService<IStartableEntityServer>();
 
@@ -56,39 +54,13 @@ internal sealed class LocalHostedIntegrationTestEnvironment
 
     public Task<bool> EnvironmentReady() => _healthCheck.ServerRunning();
 
-    public async ValueTask DisposeAsync()
-    {
-        if (_disposed)
-        {
-            return;
-        }
-
-        await _initializationLock.WaitAsync();
-        try
-        {
-            if (_disposed || !_initialized)
-            {
-                return;
-            }
-
-            await AvailableServices.DisposeAsync();
-        }
-        finally
-        {
-            _disposed = true;
-            _initializationLock.Release();
-        }
-    }
-
-    private IServiceCollection AddServices(int port)
+    private void ConfigureServices(IServiceCollection collection, int port)
     {
         OpcEnvironment = OpcEnvironment.Default(port, "localhost");
         var testAssemblyMarker = typeof(TestEntity);
 
-        _serviceCollection
+        collection
             .AddSingleton<EnvironmentHealthCheck>(EnvironmentReady)
             .AddClientAndServerTestServices(OpcEnvironment, [testAssemblyMarker]);
-
-        return _serviceCollection;
     }
 }

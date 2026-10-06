@@ -4,7 +4,7 @@ using TUnit.Core.Interfaces;
 
 namespace Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
 
-public interface IIntegrationTestEnvironment : IAsyncInitializer, IAsyncDisposable
+public interface IIntegrationTestEnvironment : IAsyncInitializer
 {
     public TestServiceCollection AvailableServices { get; }
     public OpcEnvironment OpcEnvironment { get; }

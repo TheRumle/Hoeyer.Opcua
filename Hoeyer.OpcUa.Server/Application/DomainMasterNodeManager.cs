@@ -1,11 +1,11 @@
-﻿using Hoeyer.OpcUa.Core.Abstractions;
+﻿using Hoeyer.OpcUa.Server.Abstractions;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Opc.Ua;
 using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server.Application;
 
-internal sealed class DomainMasterNodeManager : MasterNodeManager
+internal sealed class DomainMasterNodeManager : MasterNodeManager, IDomainMasterNodeManager
 {
     /// <inheritdoc />
     public DomainMasterNodeManager(IServerInternal server, ApplicationConfiguration applicationConfiguration,
@@ -15,7 +15,7 @@ internal sealed class DomainMasterNodeManager : MasterNodeManager
         Nodes = additionalManagers.Select(e => e.ManagedEntity);
     }
 
-    public IEnumerable<IManagedEntityNode> Nodes { get; set; }
+    public IEnumerable<IEntityNodeManager> Managers => this.NodeManagers.OfType<IEntityNodeManager>();
 
-    public IEnumerable<IEntityNode> ManagedEntities => Nodes.Select(e => e.Select(node => node));
+    public IEnumerable<IManagedEntityNode> Nodes { get; set; }
 }

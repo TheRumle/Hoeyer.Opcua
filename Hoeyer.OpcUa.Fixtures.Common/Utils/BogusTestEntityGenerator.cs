@@ -2,7 +2,7 @@
 using System.Reflection;
 using Bogus;
 
-namespace Hoeyer.OpcUa.IntegrationTest.Alarms;
+namespace Hoeyer.OpcUa.Fixtures.Common.Utils;
 
 public static class BogusTestEntityGenerator
 {

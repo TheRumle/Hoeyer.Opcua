@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Bogus;
+using Hoeyer.OpcUa.Fixtures.Common.Utils;
 using Hoeyer.OpcUa.Server.Abstractions;
 
-namespace Hoeyer.OpcUa.IntegrationTest.Alarms;
+namespace Hoeyer.OpcUa.Fixtures.Server;
 
 public abstract class
     GeneratingLoader<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : IEntityLoader<T>
