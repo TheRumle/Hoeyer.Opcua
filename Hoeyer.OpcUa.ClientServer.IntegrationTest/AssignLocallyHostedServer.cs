@@ -1,7 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core.Configuration.Health;
 using Hoeyer.OpcUa.Fixtures.Server;
 using Hoeyer.OpcUa.Fixtures.Server.ServerFixture;
-using Hoeyer.OpcUa.IntegrationTest.Configuration;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
 using Microsoft.Extensions.DependencyInjection;
