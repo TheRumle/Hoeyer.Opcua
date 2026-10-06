@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
+﻿using Hoeyer.OpcUa.Fixtures.Common;
+using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 using TUnit.Core.Interfaces;
 
 namespace Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;

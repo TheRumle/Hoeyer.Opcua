@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using TUnit.Assertions.Core;
 
-namespace Hoeyer.OpcUa.IntegrationTest.Extensions;
+namespace Hoeyer.OpcUa.Fixtures.Common.TUnit.Configuration.Assertions;
 
 public static class IsContainedInAssertionExtensions
 {

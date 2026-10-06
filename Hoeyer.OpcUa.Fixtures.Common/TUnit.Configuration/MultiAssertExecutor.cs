@@ -1,6 +1,6 @@
 ﻿using TUnit.Core.Interfaces;
 
-namespace Hoeyer.OpcUa.IntegrationTest.TUnitConfiguration;
+namespace Hoeyer.OpcUa.Fixtures.Common.TUnit.Configuration;
 
 public sealed class MultiAssertExecutor : ITestExecutor
 {

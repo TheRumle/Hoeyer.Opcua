@@ -1,6 +1,6 @@
 ﻿using TUnit.Assertions.Core;
 
-namespace Hoeyer.OpcUa.IntegrationTest.Extensions;
+namespace Hoeyer.OpcUa.Fixtures.Common.TUnit.Configuration.Assertions;
 
 public sealed class IsContainedInAssertion<T>(
     AssertionContext<T> context,

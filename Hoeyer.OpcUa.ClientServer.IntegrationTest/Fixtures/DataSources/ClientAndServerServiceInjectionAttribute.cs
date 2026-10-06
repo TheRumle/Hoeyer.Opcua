@@ -1,4 +1,4 @@
-﻿using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
+﻿using Hoeyer.OpcUa.Fixtures.Common;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +9,7 @@ public sealed class ClientAndServerServiceInjectionAttribute : DependencyInjecti
     public static readonly IServiceCollection Collection = new ServiceCollection()
         .AddClientAndServerTestServices(OpcEnvironment.Default(8000, "localhost"), [typeof(TestEntity)]).Collection;
 
-    private ServiceProvider _provider => Collection.BuildServiceProvider();
+    private static ServiceProvider _provider => Collection.BuildServiceProvider();
 
     public override IServiceScope CreateScope(DataGeneratorMetadata dataGeneratorMetadata) => _provider.CreateScope();
 

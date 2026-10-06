@@ -1,8 +1,8 @@
-﻿using System.Net.Sockets;
-using DotNet.Testcontainers.Builders;
+﻿using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Images;
 using Hoeyer.OpcUa.Core.Configuration.ConfigurationBuilder;
+using Hoeyer.OpcUa.Fixtures.Common;
 using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
@@ -29,13 +29,13 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
 
     public DockerHealthChecker HealthChecker { get; set; } = null!;
 
-    public IContainer Container { get; private set; } = null!;
+    public IContainer? Container { get; private set; }
     public WebProtocol Protocol { get; }
 
     public int SimulationPort { get; private set; }
-    public string Host => Container.Hostname;
-    public string ServerId => OPCUA_SERVERID;
-    public string ServerName => OPCUA_SERVERNAME;
+    public string Host => Container!.Hostname;
+    public static string ServerId => OPCUA_SERVERID;
+    private static string ServerName => OPCUA_SERVERNAME;
     public IServiceProvider Services { get; set; }
     public OpcEnvironment OpcEnvironment { get; private set; } = null!;
     public async Task<bool> EnvironmentReady() => await HealthChecker.IsHealthy();
@@ -46,7 +46,7 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
     public async ValueTask DisposeAsync()
     {
         Console.WriteLine($"Disposing {nameof(PlaygroundTestContainer)}");
-        await Container.DisposeAsync();
+        if (Container is not null) await Container.DisposeAsync();
     }
 
     public Task InitializeAsync()
@@ -57,30 +57,6 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
         }
 
         return _initializeTask.Value;
-    }
-
-    /// <summary>
-    ///     A TCP connect detects a stopped or unpublished container, which is the realistic failure mode here. It
-    ///     cannot detect a server that is wedged but still bound, since the kernel still completes the handshake;
-    ///     that needs an OPC UA round-trip, which is not worth paying on every test.
-    /// </summary>
-    public async Task<bool> IsUsable()
-    {
-        if (Container is null)
-        {
-            return false;
-        }
-
-        try
-        {
-            using var client = new TcpClient();
-            await client.ConnectAsync(Host, SimulationPort).WaitAsync(TimeSpan.FromSeconds(2));
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
     }
 
     private async Task StartAndWaitForHealth()

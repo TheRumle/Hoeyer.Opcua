@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using TUnit.Core.Interfaces;
 
-namespace Playground.Application.EndToEndTest;
+namespace Hoeyer.OpcUa.Fixtures.Common.TUnit.Configuration;
 
 public class ParallelLimit : IParallelLimit
 {

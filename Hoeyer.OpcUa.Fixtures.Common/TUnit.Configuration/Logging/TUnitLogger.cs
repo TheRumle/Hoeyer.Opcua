@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using Microsoft.Extensions.Logging;
 
-namespace Hoeyer.OpcUa.IntegrationTest.TUnitConfiguration.Logging;
+namespace Hoeyer.OpcUa.Fixtures.Common.TUnit.Configuration.Logging;
 
 public sealed class TUnitLogger(
     string categoryName,

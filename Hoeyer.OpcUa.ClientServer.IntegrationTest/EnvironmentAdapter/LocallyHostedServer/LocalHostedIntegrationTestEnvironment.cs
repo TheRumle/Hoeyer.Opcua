@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using Hoeyer.OpcUa.Core.Configuration.Health;
+using Hoeyer.OpcUa.Fixtures.Common;
 using Hoeyer.OpcUa.IntegrationTest.Configuration;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
@@ -19,7 +20,7 @@ internal sealed class LocalHostedIntegrationTestEnvironment
 
     private IServerStartedHealthCheck _healthCheck = null!;
 
-    private ServiceCollection _serviceCollection = new();
+    private readonly ServiceCollection _serviceCollection = new();
     public IntegrationTestServiceProvider AvailableServices { get; private set; }
     public OpcEnvironment OpcEnvironment { get; private set; } = null!;
 

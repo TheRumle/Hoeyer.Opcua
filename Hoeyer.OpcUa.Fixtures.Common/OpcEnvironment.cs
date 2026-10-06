@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core.Configuration.ConfigurationBuilder;
 
-namespace Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
+namespace Hoeyer.OpcUa.Fixtures.Common;
 
 public sealed record OpcEnvironment
 {
