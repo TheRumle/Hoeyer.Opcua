@@ -7,6 +7,7 @@ using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Application.NodeStructure;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Configuration.Health;
+using Hoeyer.OpcUa.Core.Configuration.Modelling;
 using Hoeyer.OpcUa.Server.Abstractions;
 using Hoeyer.OpcUa.Server.Abstractions.Configuration;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
@@ -41,7 +42,9 @@ public static class ServiceExtensions
         IEnumerable<Assembly> assembliesContainingLoaders,
         Action<IServiceProvider, ServerConfiguration>? additionalConfiguration = null)
     {
+        
         var collection = serviceRegistration.Collection;
+        AddLoaders(serviceRegistration.Collection, serviceRegistration.EntityCollection, assembliesContainingLoaders);
 
         collection.AddSingleton(typeof(IEntityNodeStructureFactory<>), typeof(ReflectionBasedEntityStructureFactory<>));
         collection.AddServiceAndImplSingleton<IOpcUaTargetServerSetup, OpcUaTargetServerSetup>();
@@ -75,7 +78,6 @@ public static class ServiceExtensions
         collection.AddSingleton<IOpcEntityServer, OpcEntityServer>();
         collection.AddSingleton<IStartableEntityServer, StartableEntityServer>();
 
-        AddLoaders(serviceRegistration.Collection, assembliesContainingLoaders);
         return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
     }
 
@@ -113,35 +115,24 @@ public static class ServiceExtensions
         return serverConfig;
     }
 
-    private static void AddLoaders(IServiceCollection collection, IEnumerable<Assembly> assemblies)
+    private static void AddLoaders(IServiceCollection collection, EntityTypesCollection types, IEnumerable<Assembly> assemblies)
     {
-        var loaderType = typeof(IEntityLoader<>);
-        var loaders = assemblies.SelectMany(assembly =>
-            {
-                try
-                {
-                    return assembly.GetTypes();
-                }
-                catch (ReflectionTypeLoadException ex)
-                {
-                    return ex.Types.Where(t => t != null).ToArray();
-                }
-            })
+        var wantedInterfaces = types
+            .ModelledEntities
+            .Select(entity => typeof(IEntityLoader<>).MakeGenericType(entity))
+            .ToHashSet();
+        
+        var loaders = assemblies.SelectMany(assembly => assembly.GetTypes())
             .Where(type => type is { IsInterface: false, IsAbstract: false })
             .Select(type =>
             {
-                var foundLoaderInterface = type
-                    .GetInterfaces()
-                    .FirstOrDefault(@interface => @interface.Namespace == loaderType.Namespace
-                                                  && @interface.IsConstructedGenericType &&
-                                                  @interface.GetGenericTypeDefinition() == loaderType);
-
-                if (foundLoaderInterface is null)
+                var implementedInterface = wantedInterfaces.FirstOrDefault(e => e.IsAssignableFrom(type));
+                if (implementedInterface is not null)
                 {
-                    return default;
+                    return (Service: implementedInterface, Implementation: type);
+                    
                 }
-
-                return (Service: foundLoaderInterface, Implementation: type);
+                return default;
             })
             .Where(result => result.Service is not null);
 

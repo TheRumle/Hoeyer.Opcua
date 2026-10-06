@@ -12,7 +12,7 @@ namespace Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 public sealed class ServiceInjectionAttribute : DependencyInjectionDataSourceAttribute<IServiceScope>
 {
 
-    private static readonly TestServiceCollection Services = new(ConfigureServices);
+    public static readonly TestServiceCollection Services = new(ConfigureServices);
     private static void ConfigureServices(IServiceCollection collection)
     {
         collection.AddClientAndServerTestServices(OpcEnvironment.Default(8000, "localhost"), [typeof(TestEntity)]);

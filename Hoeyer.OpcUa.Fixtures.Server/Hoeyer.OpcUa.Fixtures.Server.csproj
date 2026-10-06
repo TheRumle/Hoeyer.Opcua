@@ -7,7 +7,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\Hoeyer.OpcUa.Fixtures.Common\Hoeyer.OpcUa.Fixtures.Common.csproj" />
-        <ProjectReference Include="..\Hoeyer.OpcUa.Server.Abstractions\Hoeyer.OpcUa.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj"/>
     </ItemGroup>
 
 </Project>

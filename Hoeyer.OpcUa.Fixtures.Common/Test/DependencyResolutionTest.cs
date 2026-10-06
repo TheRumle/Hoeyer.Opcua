@@ -1,12 +1,11 @@
-﻿using Hoeyer.Common.Extensions.Types;
-using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
-using Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
+using Hoeyer.Common.Extensions.Types;
+using Hoeyer.OpcUa.Fixtures.Common.TUnit.Configuration.DisplayName;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hoeyer.OpcUa.IntegrationTest;
+namespace Hoeyer.OpcUa.Fixtures.Common.Test;
 
-[ServiceInjection]
-public sealed class DependencyResolutionTest(IServiceCollection services)
+[DisplayName("Dependency resolution test")]
+public abstract class DependencyResolutionTest(IServiceCollection services, Type assemblyMarker)
 {
     private IEnumerable<ServiceDescriptor> Descriptors =>
         services.Where(e => e.ImplementationType is { ContainsGenericParameters: false });
@@ -49,11 +48,13 @@ public sealed class DependencyResolutionTest(IServiceCollection services)
         return new(
             serviceDescriptor,
             DisplayName: DescriptionOf(serviceDescriptor),
-            Categories: [serviceDescriptor.Lifetime.ToString(), ..additionalCategories]
+            Categories: [serviceDescriptor.Lifetime.ToString(), .. additionalCategories]
         );
     }
 
     [Test]
+    [ArgumentDisplayFormatter<ServiceDescriptorFormatter>]
+    [DisplayName("The generic service $descriptor should be resolvable within a scope")]
     [InstanceMethodDataSource(nameof(ProvidableWithScope))]
     public async Task ShouldBeProvidableWithScope(ServiceDescriptor descriptor)
     {
@@ -63,6 +64,8 @@ public sealed class DependencyResolutionTest(IServiceCollection services)
     }
 
     [Test]
+    [ArgumentDisplayFormatter<ServiceDescriptorFormatter>]
+    [DisplayName("The generic service $descriptor should be resolvable with no scope")]
     [InstanceMethodDataSource(nameof(ProvidableWithNoScope))]
     public async Task ShouldBeProvidableWithNoScope(ServiceDescriptor descriptor)
     {
@@ -88,22 +91,26 @@ public sealed class DependencyResolutionTest(IServiceCollection services)
 
 
     [Test]
+    [ArgumentDisplayFormatter<ServiceDescriptorFormatter>]
+    [DisplayName("The service $descriptor should be resolvable within a scope")]
     [InstanceMethodDataSource(nameof(GenericsProvidableWithScope))]
     public async Task GenericShouldBeProvidableWithScope(ServiceDescriptor descriptor)
     {
         await using var asyncScope = services.BuildServiceProvider().CreateAsyncScope();
         var provider = asyncScope.ServiceProvider;
-        var serviceType = descriptor.ServiceType.MakeGenericType(typeof(TestEntity));
+        var serviceType = descriptor.ServiceType.MakeGenericType(assemblyMarker);
 
         await Assert.That(() => provider.GetRequiredService(serviceType)).ThrowsNothing();
     }
 
     [Test]
+    [ArgumentDisplayFormatter<ServiceDescriptorFormatter>]
+    [DisplayName("The service $descriptor should be resolvable without a scope")]
     [InstanceMethodDataSource(nameof(GenericsProvidableWithNoScope))]
     public async Task GenericShouldBeProvidableWithNoScope(ServiceDescriptor descriptor)
     {
         var provider = services.BuildServiceProvider();
-        var serviceType = descriptor.ServiceType.MakeGenericType(typeof(TestEntity));
+        var serviceType = descriptor.ServiceType.MakeGenericType(assemblyMarker);
         await Assert.That(() => provider.GetRequiredService(serviceType)).ThrowsNothing();
     }
 }
