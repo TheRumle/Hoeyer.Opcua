@@ -1,15 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
+namespace Hoeyer.OpcUa.Fixtures.Common.Utils;
 
-public sealed class IntegrationTestServiceProvider : IAsyncDisposable
+
+public sealed class TestDependencyProvider(IServiceProvider singletonProvider) : IAsyncDisposable
 {
-    public readonly IServiceProvider SingletonProvider;
-
-    public IntegrationTestServiceProvider(IServiceProvider singletonProvider)
-    {
-        SingletonProvider = singletonProvider;
-    }
+    public readonly IServiceProvider SingletonProvider = singletonProvider;
 
     public async ValueTask DisposeAsync()
     {

@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
+﻿using Hoeyer.OpcUa.Fixtures.Common.Utils;
+using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
 using Microsoft.Extensions.DependencyInjection;
 using static Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter.IntegrationTestAdapter;
 
@@ -10,7 +11,7 @@ namespace Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 /// </summary>
 public sealed class IntegrationServiceInjectionAttribute : AsyncUntypedDataSourceGeneratorAttribute
 {
-    private static IntegrationTestServiceProvider integrationServiceProvider = null!;
+    private static TestDependencyProvider _dependencyProvider = null!;
 
     private static readonly Task<IIntegrationTestEnvironment> TestEnvironment
         = InitializeTestEnvironmentAsync();
@@ -19,7 +20,7 @@ public sealed class IntegrationServiceInjectionAttribute : AsyncUntypedDataSourc
     {
         var environment = GetSessionIsolatedAdapter().TestEnvironment;
         await environment.InitializeAsync();
-        integrationServiceProvider = environment.AvailableServices;
+        _dependencyProvider = environment.AvailableServices;
         return environment;
     }
 
@@ -33,7 +34,7 @@ public sealed class IntegrationServiceInjectionAttribute : AsyncUntypedDataSourc
     private static async Task<object?[]?> CreateDataUsingScope(DataGeneratorMetadata dataGeneratorMetadata)
     {
         await TestEnvironment;
-        var scope = integrationServiceProvider.SingletonProvider.CreateAsyncScope();
+        var scope = _dependencyProvider.SingletonProvider.CreateAsyncScope();
         dataGeneratorMetadata.TestBuilderContext.Current.Events.OnDispose += async (_, _) =>
         {
             await scope.DisposeAsync();
@@ -41,7 +42,7 @@ public sealed class IntegrationServiceInjectionAttribute : AsyncUntypedDataSourc
 
         return dataGeneratorMetadata.MembersToGenerate
             .Select(GetMemberType)
-            .Select(x => integrationServiceProvider.Create(scope, x))
+            .Select(x => _dependencyProvider.Create(scope, x))
             .ToArray();
     }
 

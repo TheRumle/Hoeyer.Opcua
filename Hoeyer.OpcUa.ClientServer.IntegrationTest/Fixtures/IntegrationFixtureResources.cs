@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
+﻿using Hoeyer.OpcUa.Fixtures.Common.Utils;
+using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
 using Hoeyer.OpcUa.IntegrationTest.Extensions;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 using TUnit.Core.Interfaces;
@@ -18,14 +19,14 @@ namespace Hoeyer.OpcUa.IntegrationTest.Fixtures;
 internal sealed class IntegrationFixtureResources<T>(Func<string, IIntegrationTestEnvironmentAdapter> adapterProvider)
     : IAsyncInitializer, IAsyncDisposable
 {
-    private IntegrationTestServiceProvider? _integrationTestServiceProvider;
+    private TestDependencyProvider? _integrationTestServiceProvider;
     private IIntegrationTestEnvironment? _serverEnvironment;
 
     internal IServiceProvider ServiceProvider => InitializedServiceProvider?.SingletonProvider!;
 
     internal IIntegrationTestEnvironment ServerEnvironment => _serverEnvironment!;
 
-    private IntegrationTestServiceProvider? InitializedServiceProvider => _integrationTestServiceProvider;
+    private TestDependencyProvider? InitializedServiceProvider => _integrationTestServiceProvider;
 
     /// <summary>
     ///     Intentionally does nothing. The environment and its service provider are session-owned; see the remarks on

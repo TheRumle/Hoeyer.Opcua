@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using Hoeyer.OpcUa.Core.Configuration.Health;
 using Hoeyer.OpcUa.Fixtures.Common;
+using Hoeyer.OpcUa.Fixtures.Common.Utils;
 using Hoeyer.OpcUa.IntegrationTest.Configuration;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
@@ -21,7 +22,7 @@ internal sealed class LocalHostedIntegrationTestEnvironment
     private IServerStartedHealthCheck _healthCheck = null!;
 
     private readonly ServiceCollection _serviceCollection = new();
-    public IntegrationTestServiceProvider AvailableServices { get; private set; }
+    public TestDependencyProvider AvailableServices { get; private set; }
     public OpcEnvironment OpcEnvironment { get; private set; } = null!;
 
     public async Task InitializeAsync()
@@ -40,7 +41,7 @@ internal sealed class LocalHostedIntegrationTestEnvironment
             var port = ((IPEndPoint)portListener.LocalEndpoint).Port;
 
             var services = AddServices(port);
-            AvailableServices = new IntegrationTestServiceProvider(services.BuildServiceProvider());
+            AvailableServices = new TestDependencyProvider(services.BuildServiceProvider());
             _healthCheck = AvailableServices.SingletonProvider.GetRequiredService<IServerStartedHealthCheck>();
             var startableServer = AvailableServices.SingletonProvider.GetRequiredService<IStartableEntityServer>();
 

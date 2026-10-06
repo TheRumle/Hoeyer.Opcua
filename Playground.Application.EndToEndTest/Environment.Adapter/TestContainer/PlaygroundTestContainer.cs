@@ -3,9 +3,9 @@ using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Images;
 using Hoeyer.OpcUa.Core.Configuration.ConfigurationBuilder;
 using Hoeyer.OpcUa.Fixtures.Common;
+using Hoeyer.OpcUa.Fixtures.Common.Utils;
 using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
-using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -40,7 +40,7 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
     public OpcEnvironment OpcEnvironment { get; private set; } = null!;
     public async Task<bool> EnvironmentReady() => await HealthChecker.IsHealthy();
 
-    public IntegrationTestServiceProvider AvailableServices { get; private set; }
+    public TestDependencyProvider AvailableServices { get; private set; }
 
 
     public async ValueTask DisposeAsync()
@@ -84,7 +84,7 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
             Protocol = Protocol
         };
         _services.AddClientTestServices(OpcEnvironment, [typeof(TestEntity)]);
-        AvailableServices = new IntegrationTestServiceProvider(_services.BuildServiceProvider());
+        AvailableServices = new TestDependencyProvider(_services.BuildServiceProvider());
 
         HealthChecker = new DockerHealthChecker(Container);
 
