@@ -1,6 +1,6 @@
 ﻿using TUnit.Core.Interfaces;
 
-namespace Hoeyer.OpcUa.IntegrationTest.Extensions;
+namespace Hoeyer.OpcUa.Fixtures.Server.FixtureKeys;
 
 public static class TestContextExtensions
 {
@@ -27,7 +27,7 @@ public static class TestContextExtensions
 
         if (usedDataSource == null)
         {
-            throw new Exception($"Could not extract {nameof(ClassDataSourceAttribute)} from {typeof(T).Name}");
+            throw new InvalidOperationException($"Could not extract {nameof(ClassDataSourceAttribute)} from {typeof(T).Name}");
         }
 
         return (usedDataSource?.Shared, usedDataSource?.Key).ExtractAdapterKey(

@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.OpcUa.IntegrationTest.Extensions;
+﻿namespace Hoeyer.OpcUa.Fixtures.Server.FixtureKeys;
 
 public static class TestKeys
 {

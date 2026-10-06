@@ -1,6 +1,6 @@
 using Hoeyer.OpcUa.Fixtures.Common;
-using Hoeyer.OpcUa.Fixtures.Server;
 using Hoeyer.OpcUa.Fixtures.Common.Utils;
+using Hoeyer.OpcUa.Fixtures.Server.ServerFixture;
 using Hoeyer.OpcUa.Server.Test.Fixtures.Entities;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -4,19 +4,20 @@ using DotNet.Testcontainers.Images;
 using Hoeyer.OpcUa.Core.Configuration.ConfigurationBuilder;
 using Hoeyer.OpcUa.Fixtures.Common;
 using Hoeyer.OpcUa.Fixtures.Common.Utils;
-using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
+using Hoeyer.OpcUa.Fixtures.Server.ServerFixture;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
 
 namespace Playground.Application.EndToEndTest.Environment.Adapter.TestContainer;
 
-public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
+public sealed class PlaygroundTestContainer : IServerFixture
 {
     public const string OPCUA_SERVERID = "HostedSimulation";
     public const string OPCUA_SERVERNAME = "HostedSimulation";
     public const string OPCUA_APPLICATION_NAME = "Simulation";
     private readonly Lazy<Task> _initializeTask;
     private readonly string _containerName;
+
     public PlaygroundTestContainer(WebProtocol webProtocol, string containerName)
     {
         Protocol = webProtocol;
@@ -33,11 +34,10 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
     public string Host => Container!.Hostname;
     public static string ServerId => OPCUA_SERVERID;
     private static string ServerName => OPCUA_SERVERNAME;
-    public IServiceProvider Services { get; set; }
     public OpcEnvironment OpcEnvironment { get; private set; } = null!;
     public async Task<bool> EnvironmentReady() => await HealthChecker.IsHealthy();
 
-    public TestServiceCollection AvailableServices { get; private set; }
+    public IServiceProvider AvailableServices { get; private set; }
 
 
     public async ValueTask DisposeAsync()
@@ -80,8 +80,8 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
             OpcUaServerName = ServerName,
             Protocol = Protocol
         };
-        AvailableServices = new TestServiceCollection(services => services.AddClientTestServices(OpcEnvironment, [typeof(TestEntity)]));
-
+        var services = new TestServiceCollection(services => services.AddClientTestServices(OpcEnvironment, [typeof(TestEntity)]));
+        AvailableServices = services.ServiceProvider;
         HealthChecker = new DockerHealthChecker(Container);
 
         Console.WriteLine("Attempting to start {0}...", _containerName);

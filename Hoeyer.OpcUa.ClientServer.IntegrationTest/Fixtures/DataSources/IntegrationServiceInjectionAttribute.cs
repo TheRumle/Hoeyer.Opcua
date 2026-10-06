@@ -1,27 +1,27 @@
-﻿using Hoeyer.OpcUa.Fixtures.Common.Utils;
-using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
+﻿using Hoeyer.OpcUa.Fixtures.Server;
+using Hoeyer.OpcUa.Fixtures.Server.ServerFixture;
 using Microsoft.Extensions.DependencyInjection;
-using static Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter.IntegrationTestAdapter;
+using static Hoeyer.OpcUa.Fixtures.Server.ServerFixture.ServerFixtureAdapter;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 
 /// <summary>
-///     Uses the default integration test environment, dictated by key <see cref="GetSessionIsolatedAdapter" />.
+///     Uses the default integration test environment, dictated by key <see cref="ServerFixtureAdapter.GetSessionSharedServerFixture" />.
 ///     The environment itself is session-owned and must not be disposed by this data source.
 /// </summary>
 public sealed class IntegrationServiceInjectionAttribute : AsyncUntypedDataSourceGeneratorAttribute
 {
-    private static TestServiceCollection _serviceCollection = null!;
+    private static IServiceProvider _provider = null!;
 
-    private static readonly Task<IIntegrationTestEnvironment> TestEnvironment
+    private static readonly Task<IServerFixture> TestEnvironment
         = InitializeTestEnvironmentAsync();
 
-    private static async Task<IIntegrationTestEnvironment> InitializeTestEnvironmentAsync()
+    private static async Task<IServerFixture> InitializeTestEnvironmentAsync()
     {
-        var environment = GetSessionIsolatedAdapter().TestEnvironment;
-        await environment.InitializeAsync();
-        _serviceCollection = environment.AvailableServices;
-        return environment;
+        var serverFixture = GetSessionSharedServerFixture();
+        await serverFixture.InitializeAsync();
+        _provider = serverFixture.AvailableServices;
+        return serverFixture;
     }
 
     protected override async IAsyncEnumerable<Func<Task<object?[]?>>> GenerateDataSourcesAsync(
@@ -34,7 +34,7 @@ public sealed class IntegrationServiceInjectionAttribute : AsyncUntypedDataSourc
     private static async Task<object?[]?> CreateDataUsingScope(DataGeneratorMetadata dataGeneratorMetadata)
     {
         await TestEnvironment;
-        var scope = _serviceCollection.ServiceProvider.CreateAsyncScope();
+        var scope = _provider.CreateAsyncScope();
         dataGeneratorMetadata.TestBuilderContext.Current.Events.OnDispose += async (_, _) =>
         {
             await scope.DisposeAsync();

@@ -1,13 +1,14 @@
 ﻿using Hoeyer.OpcUa.Fixtures.Common;
 using Hoeyer.OpcUa.Fixtures.Common.Utils;
-using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
+using Hoeyer.OpcUa.Fixtures.Server;
+using Hoeyer.OpcUa.Fixtures.Server.ServerFixture;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 
 /// <summary>
-///     This class does not start any <see cref="IIntegrationTestEnvironment"/> and injects services based on looks at the registered services of <see cref="ServiceCollectionExtensions.AddClientAndServerTestServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Hoeyer.OpcUa.Fixtures.Common.OpcEnvironment,System.Type[])"/>
+///     This class does not start any <see cref="IServerFixture"/> and injects services based on looks at the registered services of <see cref="ServiceCollectionExtensions.AddClientAndServerTestServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Hoeyer.OpcUa.Fixtures.Common.OpcEnvironment,System.Type[])"/>
 /// </summary>
 public sealed class ServiceInjectionAttribute : DependencyInjectionDataSourceAttribute<IServiceScope>
 {

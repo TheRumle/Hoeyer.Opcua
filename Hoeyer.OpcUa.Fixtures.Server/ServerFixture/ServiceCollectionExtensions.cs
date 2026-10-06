@@ -2,7 +2,7 @@ using Hoeyer.OpcUa.Fixtures.Common;
 using Hoeyer.OpcUa.Server.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hoeyer.OpcUa.Fixtures.Server;
+namespace Hoeyer.OpcUa.Fixtures.Server.ServerFixture;
 
 public static class ServiceCollectionExtensions
 {

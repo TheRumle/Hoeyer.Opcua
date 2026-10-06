@@ -1,21 +1,20 @@
 ﻿using Hoeyer.OpcUa.Client.Abstractions.Connection;
-using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
+using Hoeyer.OpcUa.Fixtures.Server;
+using Hoeyer.OpcUa.Fixtures.Server.ServerFixture;
 using Microsoft.Extensions.DependencyInjection;
 using TUnit.Core.Interfaces;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Fixtures;
 
-public class IntegrationTestFixture : IAsyncInitializer, IAsyncDisposable
+public class IsolatedServerFixture : IAsyncInitializer
 {
     private readonly string _id = Guid.NewGuid().ToString();
 
-    private readonly IntegrationFixtureResources<IntegrationTestFixture> _resources =
-        new(IntegrationTestAdapter.CreateOrGetCached);
+    private readonly IntegrationFixtureResources<IServerFixture> _resources =
+        new(ServerFixtureAdapter.CreateOrGetCached);
 
     public IServiceProvider ServiceProvider => _resources.ServiceProvider;
-    public IIntegrationTestEnvironment ServerEnvironment => _resources.ServerEnvironment;
-
-    public ValueTask DisposeAsync() => _resources.DisposeAsync();
+    public IServerFixture ServerEnvironment => _resources.ServerEnvironment;
 
     public async Task InitializeAsync() => await _resources.InitializeAsync();
 
@@ -34,21 +33,19 @@ public class IntegrationTestFixture : IAsyncInitializer, IAsyncDisposable
         .GetRequiredService<IEntitySessionFactory>().GetSessionAsync(_id);
 }
 
-public sealed class IntegrationTestFixture<T> : IAsyncInitializer, IAsyncDisposable
+public sealed class IntegrationTestFixture<T> : IAsyncInitializer
     where T : notnull
 {
     private readonly string _id = Guid.NewGuid().ToString();
 
     private readonly IntegrationFixtureResources<IntegrationTestFixture<T>> _resources =
-        new(IntegrationTestAdapter.CreateOrGetCached);
+        new(ServerFixtureAdapter.CreateOrGetCached);
 
     private T? _serviceUnderTest;
     public IServiceProvider ServiceProvider => _resources.ServiceProvider;
-    public IIntegrationTestEnvironment ServerEnvironment => _resources.ServerEnvironment;
+    public IServerFixture ServerEnvironment => _resources.ServerEnvironment;
 
-    public T TestedService => _serviceUnderTest!;
-
-    public ValueTask DisposeAsync() => _resources.DisposeAsync();
+    public T TestedService => _serviceUnderTest;
 
     public async Task InitializeAsync()
     {
@@ -57,14 +54,14 @@ public sealed class IntegrationTestFixture<T> : IAsyncInitializer, IAsyncDisposa
     }
 
     public async Task<TOut> ExecuteWithSessionAsync<TOut>(Func<IEntitySession, T, Task<TOut>> execute) =>
-        await execute(await OpenSession(), _serviceUnderTest!);
+        await execute(await OpenSession(), _serviceUnderTest);
 
-    public async Task<TOut> ExecuteAsync<TOut>(Func<T, Task<TOut>> execute) => await execute.Invoke(_serviceUnderTest!);
+    public async Task<TOut> ExecuteAsync<TOut>(Func<T, Task<TOut>> execute) => await execute.Invoke(_serviceUnderTest);
 
     public async Task ExecuteActionAsync(Func<IEntitySession, Task> action) =>
         await action.Invoke(await OpenSession());
 
-    public TWanted GetService<TWanted>() where TWanted : notnull => ServiceProvider.GetService<TWanted>()!;
+    public TWanted GetService<TWanted>() where TWanted : notnull => ServiceProvider.GetService<TWanted>();
 
     public async Task<IEntitySession> OpenSession() => await ServiceProvider
         .GetRequiredService<IEntitySessionFactory>().GetSessionAsync(_id);

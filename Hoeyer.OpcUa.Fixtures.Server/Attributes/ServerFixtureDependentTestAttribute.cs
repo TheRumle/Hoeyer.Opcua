@@ -1,6 +1,8 @@
-﻿namespace Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
+﻿using Hoeyer.OpcUa.Fixtures.Server.ServerFixture;
 
-public sealed class IntegrationAdapterDependentTest()
+namespace Hoeyer.OpcUa.Fixtures.Server.Attributes;
+
+public sealed class ServerFixtureDependentTestAttribute()
     : SkipAttribute(NoFrameworkAdapterException.ErrorMessage)
 {
     private static readonly Task EnvironmentCheckTask = CheckEnvironmentAsync();
@@ -11,7 +13,7 @@ public sealed class IntegrationAdapterDependentTest()
         try
         {
             //create one, but never initialize environment.
-            var integrationEnv = IntegrationTestAdapter.CreateOrGetCached(nameof(IntegrationAdapterDependentTest));
+            var integrationEnv = ServerFixtureAdapter.CreateOrGetCached(nameof(ServerFixtureDependentTestAttribute));
             if (integrationEnv == null!)
             {
                 return Task.FromException(new NoFrameworkAdapterException());

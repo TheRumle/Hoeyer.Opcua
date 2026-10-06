@@ -1,11 +1,12 @@
 ﻿using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Abstractions.Connection;
-using Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
+using Hoeyer.OpcUa.Fixtures.Server;
+using Hoeyer.OpcUa.Fixtures.Server.Attributes;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Configuration;
 
-[IntegrationAdapterDependentTest]
+[ServerFixtureDependentTest]
 [DependsOn<ConfigurationCompatibilityTest>]
 [DependsOn<HealthyOpcUaServer>]
 [IntegrationServiceInjection]
