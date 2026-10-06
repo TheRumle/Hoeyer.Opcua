@@ -6,7 +6,7 @@ namespace Hoeyer.OpcUa.IntegrationTest.EnvironmentAdapter;
 
 public interface IIntegrationTestEnvironment : IAsyncInitializer, IAsyncDisposable
 {
-    public TestDependencyProvider AvailableServices { get; }
+    public TestServiceCollection AvailableServices { get; }
     public OpcEnvironment OpcEnvironment { get; }
     public Task<bool> EnvironmentReady();
 }

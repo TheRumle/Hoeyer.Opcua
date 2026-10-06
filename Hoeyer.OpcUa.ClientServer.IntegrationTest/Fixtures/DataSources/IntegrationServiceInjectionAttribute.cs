@@ -11,7 +11,7 @@ namespace Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 /// </summary>
 public sealed class IntegrationServiceInjectionAttribute : AsyncUntypedDataSourceGeneratorAttribute
 {
-    private static TestDependencyProvider _dependencyProvider = null!;
+    private static TestServiceCollection _serviceCollection = null!;
 
     private static readonly Task<IIntegrationTestEnvironment> TestEnvironment
         = InitializeTestEnvironmentAsync();
@@ -20,7 +20,7 @@ public sealed class IntegrationServiceInjectionAttribute : AsyncUntypedDataSourc
     {
         var environment = GetSessionIsolatedAdapter().TestEnvironment;
         await environment.InitializeAsync();
-        _dependencyProvider = environment.AvailableServices;
+        _serviceCollection = environment.AvailableServices;
         return environment;
     }
 
@@ -34,7 +34,7 @@ public sealed class IntegrationServiceInjectionAttribute : AsyncUntypedDataSourc
     private static async Task<object?[]?> CreateDataUsingScope(DataGeneratorMetadata dataGeneratorMetadata)
     {
         await TestEnvironment;
-        var scope = _dependencyProvider.SingletonProvider.CreateAsyncScope();
+        var scope = _serviceCollection.ServiceProvider.CreateAsyncScope();
         dataGeneratorMetadata.TestBuilderContext.Current.Events.OnDispose += async (_, _) =>
         {
             await scope.DisposeAsync();
@@ -42,7 +42,7 @@ public sealed class IntegrationServiceInjectionAttribute : AsyncUntypedDataSourc
 
         return dataGeneratorMetadata.MembersToGenerate
             .Select(GetMemberType)
-            .Select(x => _dependencyProvider.Create(scope, x))
+            .Select(x => scope.ServiceProvider.GetService(x))
             .ToArray();
     }
 

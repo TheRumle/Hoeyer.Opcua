@@ -40,7 +40,7 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
     public OpcEnvironment OpcEnvironment { get; private set; } = null!;
     public async Task<bool> EnvironmentReady() => await HealthChecker.IsHealthy();
 
-    public TestDependencyProvider AvailableServices { get; private set; }
+    public TestServiceCollection AvailableServices { get; private set; }
 
 
     public async ValueTask DisposeAsync()
@@ -84,7 +84,7 @@ public sealed class PlaygroundTestContainer : IIntegrationTestEnvironment
             Protocol = Protocol
         };
         _services.AddClientTestServices(OpcEnvironment, [typeof(TestEntity)]);
-        AvailableServices = new TestDependencyProvider(_services.BuildServiceProvider());
+        AvailableServices = new TestServiceCollection(_services);
 
         HealthChecker = new DockerHealthChecker(Container);
 

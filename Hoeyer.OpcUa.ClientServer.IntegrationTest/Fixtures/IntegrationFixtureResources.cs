@@ -19,14 +19,14 @@ namespace Hoeyer.OpcUa.IntegrationTest.Fixtures;
 internal sealed class IntegrationFixtureResources<T>(Func<string, IIntegrationTestEnvironmentAdapter> adapterProvider)
     : IAsyncInitializer, IAsyncDisposable
 {
-    private TestDependencyProvider? _integrationTestServiceProvider;
+    private TestServiceCollection? _integrationTestServiceProvider;
     private IIntegrationTestEnvironment? _serverEnvironment;
 
-    internal IServiceProvider ServiceProvider => InitializedServiceProvider?.SingletonProvider!;
+    internal IServiceProvider ServiceProvider => InitializedServiceProvider?.ServiceProvider!;
 
     internal IIntegrationTestEnvironment ServerEnvironment => _serverEnvironment!;
 
-    private TestDependencyProvider? InitializedServiceProvider => _integrationTestServiceProvider;
+    private TestServiceCollection? InitializedServiceProvider => _integrationTestServiceProvider;
 
     /// <summary>
     ///     Intentionally does nothing. The environment and its service provider are session-owned; see the remarks on
