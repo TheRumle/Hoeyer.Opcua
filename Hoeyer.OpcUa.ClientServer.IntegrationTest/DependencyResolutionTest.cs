@@ -5,16 +5,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.IntegrationTest;
 
-public sealed class DependencyResolutionTest
+[ServiceInjection]
+public sealed class DependencyResolutionTest(IServiceCollection services)
 {
-    private readonly ClientAndServerServiceInjectionAttribute _attribute = new();
-    private IServiceCollection Services => ClientAndServerServiceInjectionAttribute.Collection;
-
     private IEnumerable<ServiceDescriptor> Descriptors =>
-        Services.Where(e => e.ImplementationType is { ContainsGenericParameters: false });
+        services.Where(e => e.ImplementationType is { ContainsGenericParameters: false });
 
     private IEnumerable<ServiceDescriptor> GenericDescriptors =>
-        Services.Where(e =>
+        services.Where(e =>
             e.ServiceType.IsGenericTypeDefinition &&
             e.ServiceType.GetGenericArguments().Length == 1 &&
             e.ImplementationType is { ContainsGenericParameters: true });
@@ -41,7 +39,7 @@ public sealed class DependencyResolutionTest
         return $"[ServiceType: {s.ServiceType.GetFriendlyTypeName()}, ImplType: {implType}, Lifetime: {s.Lifetime}]";
     }
 
-    private TestDataRow<ServiceDescriptor> CreateDataRow(
+    private static TestDataRow<ServiceDescriptor> CreateDataRow(
         ServiceDescriptor serviceDescriptor)
     {
         string[] additionalCategories = serviceDescriptor.ServiceType.IsGenericTypeDefinition
@@ -59,7 +57,7 @@ public sealed class DependencyResolutionTest
     [InstanceMethodDataSource(nameof(ProvidableWithScope))]
     public async Task ShouldBeProvidableWithScope(ServiceDescriptor descriptor)
     {
-        await using var asyncScope = Services.BuildServiceProvider().CreateAsyncScope();
+        await using var asyncScope = services.BuildServiceProvider().CreateAsyncScope();
         var provider = asyncScope.ServiceProvider;
         await Assert.That(() => provider.GetRequiredService(descriptor.ServiceType)).ThrowsNothing();
     }
@@ -68,7 +66,7 @@ public sealed class DependencyResolutionTest
     [InstanceMethodDataSource(nameof(ProvidableWithNoScope))]
     public async Task ShouldBeProvidableWithNoScope(ServiceDescriptor descriptor)
     {
-        var provider = Services.BuildServiceProvider();
+        var provider = services.BuildServiceProvider();
         await Assert.That(() => provider.GetRequiredService(descriptor.ServiceType)).ThrowsNothing();
     }
 
@@ -93,7 +91,7 @@ public sealed class DependencyResolutionTest
     [InstanceMethodDataSource(nameof(GenericsProvidableWithScope))]
     public async Task GenericShouldBeProvidableWithScope(ServiceDescriptor descriptor)
     {
-        await using var asyncScope = Services.BuildServiceProvider().CreateAsyncScope();
+        await using var asyncScope = services.BuildServiceProvider().CreateAsyncScope();
         var provider = asyncScope.ServiceProvider;
         var serviceType = descriptor.ServiceType.MakeGenericType(typeof(TestEntity));
 
@@ -104,7 +102,7 @@ public sealed class DependencyResolutionTest
     [InstanceMethodDataSource(nameof(GenericsProvidableWithNoScope))]
     public async Task GenericShouldBeProvidableWithNoScope(ServiceDescriptor descriptor)
     {
-        var provider = Services.BuildServiceProvider();
+        var provider = services.BuildServiceProvider();
         var serviceType = descriptor.ServiceType.MakeGenericType(typeof(TestEntity));
         await Assert.That(() => provider.GetRequiredService(serviceType)).ThrowsNothing();
     }
