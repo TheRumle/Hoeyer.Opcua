@@ -1,4 +1,4 @@
-namespace Hoeyer.OpcUa.Fixtures.Common;
+namespace Hoeyer.OpcUa.Fixtures.Common.Utils;
 
 /// <summary>
 ///     Hands a session-owned service to a test without transferring ownership of it.

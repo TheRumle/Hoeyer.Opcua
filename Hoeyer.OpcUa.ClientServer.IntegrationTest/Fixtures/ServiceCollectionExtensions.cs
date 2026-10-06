@@ -2,6 +2,7 @@
 using Hoeyer.OpcUa.Client.Services;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Fixtures.Common;
+using Hoeyer.OpcUa.Fixtures.Common.Utils;
 using Hoeyer.OpcUa.Server;
 using Hoeyer.OpcUa.Server.Configuration;
 using Hoeyer.OpcUa.Server.Services;
