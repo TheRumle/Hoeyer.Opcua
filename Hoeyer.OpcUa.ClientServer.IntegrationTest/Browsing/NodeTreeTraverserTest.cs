@@ -98,7 +98,7 @@ public abstract class NodeTreeTraverserTest<T>(
     }
 
     [Test]
-    [DisplayName("Can find entity root for $browseNameCollection")]
+    [DisplayName("Can find entity root for all entities")]
     public async Task CanFindReferencesForAllNodes(CancellationToken token)
     {
         var browseNameCollections = fixture.GetService<IEnumerable<IBrowseNameCollection>>();
@@ -107,7 +107,6 @@ public abstract class NodeTreeTraverserTest<T>(
 
         foreach (var browseNameCollection in browseNameCollections)
         {
-            using var assertScope = Assert.Multiple();
             await strategy.TraverseUntil(session.Session, ObjectIds.RootFolder,
                 node => browseNameCollection.EntityName.Equals(node.BrowseName.Name),
                 token);
