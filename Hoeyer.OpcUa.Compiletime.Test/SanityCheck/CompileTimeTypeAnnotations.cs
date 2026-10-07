@@ -1,9 +1,9 @@
 ﻿using Hoeyer.Common.Reflection;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures;
+using Hoeyer.OpcUa.Compiletime.Test.Fixtures;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.SanityCheck;
+namespace Hoeyer.OpcUa.Compiletime.Test.SanityCheck;
 
 public class CompileTimeTypeAnnotations
 {

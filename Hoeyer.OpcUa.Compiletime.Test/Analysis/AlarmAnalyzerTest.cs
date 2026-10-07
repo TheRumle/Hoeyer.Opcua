@@ -1,9 +1,10 @@
 ﻿using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.Core.CompileTime;
+using Hoeyer.OpcUa.Core.Abstractions.Alarm;
+using Hoeyer.OpcUa.Core.Compiletime;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
+namespace Hoeyer.OpcUa.Compiletime.Test.Analysis;
 
 [InheritsTests]
 [TestSubject(typeof(AlarmAnalyser))]

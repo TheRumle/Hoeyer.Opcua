@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core;
 
-namespace Hoeyer.OpcUa.Server.Test.Fixtures.Entities;
+namespace Hoeyer.OpcUa.Fixtures.Server.Entities;
 
 [OpcUaEntity]
 public class AlarmTestEntity;

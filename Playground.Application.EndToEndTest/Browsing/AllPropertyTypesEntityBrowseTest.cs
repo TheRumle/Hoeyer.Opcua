@@ -1,13 +1,13 @@
 ﻿using Hoeyer.OpcUa.Client.Abstractions.Browsing;
+using Hoeyer.OpcUa.Fixtures.Server.ServerFixture;
 using Hoeyer.OpcUa.IntegrationTest.Browsing;
-using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using Playground.Modelling.Models;
 
 namespace Playground.Application.EndToEndTest.Browsing;
 
 [Category("Browser tests")]
 [InheritsTests]
-[ClassDataSource<IsolatedServerFixture<IEntityBrowser<AllPropertyTypesEntity>>>(Shared = SharedType.PerTestSession)]
+[ClassDataSource<RuntimeSelectedServer>(Shared = SharedType.PerTestSession)]
 public sealed class AllPropertyTypesEntityBrowseTest(
-    IsolatedServerFixture<IEntityBrowser<AllPropertyTypesEntity>> context)
-    : EntityBrowserTest<AllPropertyTypesEntity>(context.TestedService);
+    RuntimeSelectedServer context)
+    : EntityBrowserTest<AllPropertyTypesEntity>(context.GetService<IEntityBrowser<AllPropertyTypesEntity>>());

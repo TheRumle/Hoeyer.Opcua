@@ -1,4 +1,6 @@
-﻿namespace Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
+﻿using Hoeyer.OpcUa.Core.Abstractions.Alarm;
+
+namespace Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 
 public interface IOpcAlarm
 {

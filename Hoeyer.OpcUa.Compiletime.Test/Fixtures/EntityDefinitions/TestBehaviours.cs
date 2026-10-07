@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Hoeyer.OpcUa.Core;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
+namespace Hoeyer.OpcUa.Compiletime.Test.Fixtures.EntityDefinitions;
 
 public static class TestBehaviours
 {

@@ -8,7 +8,7 @@ using Hoeyer.OpcUa.Simulation.Abstractions.Services;
 using Hoeyer.OpcUa.Simulation.ServerAdapter;
 using Hoeyer.OpcUa.Simulation.Services;
 using Opc.Ua;
-using Playground.Application.host.healthcheck;
+using Playground.Application.Host.Healthcheck;
 using Playground.Clients;
 using Playground.Modelling.Models;
 using Playground.Server;

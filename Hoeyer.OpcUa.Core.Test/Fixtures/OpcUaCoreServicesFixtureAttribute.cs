@@ -12,7 +12,7 @@ public class OpcUaCoreServicesFixtureAttribute : DependencyInjectionDataSourceAt
     public OpcUaCoreServicesFixtureAttribute()
     {
         var services = new ServiceCollection();
-        OpcEnvironment env = OpcEnvironment.Default(10, "localhost");
+        var env = OpcEnvironment.Default(10, "localhost");
         OnGoingOpcEntityServiceRegistration = services.AddCoreTestServices(env, [typeof(AllPropertyTypesEntity)]);
     }
 

@@ -1,12 +1,12 @@
-﻿using Hoeyer.OpcUa.CompileTime.Test.Drivers;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;
+﻿using Hoeyer.OpcUa.Compiletime.Test.Drivers;
+using Hoeyer.OpcUa.Compiletime.Test.Fixtures.EntityDefinitions;
+using Hoeyer.OpcUa.Compiletime.Test.Fixtures.Generators;
 using Hoeyer.OpcUa.Core;
-using Hoeyer.OpcUa.Core.CompileTime;
+using Hoeyer.OpcUa.Core.Compiletime;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
+namespace Hoeyer.OpcUa.Compiletime.Test.Analysis;
 
 [TestSubject(typeof(EntityBehaviourAnalyzer))]
 public class EntityBehaviourAnalyzerTest

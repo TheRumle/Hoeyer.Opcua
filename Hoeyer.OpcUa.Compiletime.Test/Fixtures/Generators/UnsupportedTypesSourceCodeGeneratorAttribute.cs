@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
+using Hoeyer.OpcUa.Compiletime.Test.Fixtures.EntityDefinitions;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;
+namespace Hoeyer.OpcUa.Compiletime.Test.Fixtures.Generators;
 
 [SuppressMessage("Design", "S3993", Justification = "TUnits' attributeusage must not and cannot be overwritten.")]
 public sealed class UnsupportedTypesSourceCodeGeneratorAttribute : DataSourceGeneratorAttribute<EntitySourceCode>

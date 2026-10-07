@@ -2,7 +2,7 @@
 
 namespace Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
 
-public sealed class TestEntityLoader : IEntityLoader<TestEntity>
+public sealed class TestEntityLoader : IEntityLoader<DifferentFieldsEntity>
 {
-    public ValueTask<TestEntity> LoadCurrentState() => new(TestEntity.CreateRandom());
+    public ValueTask<DifferentFieldsEntity> LoadCurrentState() => new(DifferentFieldsEntity.CreateRandom());
 }

@@ -7,10 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Hoeyer.OpcUa.Core.CompileTime {
-    using System;
-    
-    
+namespace Hoeyer.OpcUa.Core.Compiletime {
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>

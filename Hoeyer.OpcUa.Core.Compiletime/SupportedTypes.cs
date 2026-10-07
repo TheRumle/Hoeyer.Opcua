@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.Core.CompileTime;
+namespace Hoeyer.OpcUa.Core.Compiletime;
 
 public static class SupportedTypes
 {

@@ -27,27 +27,11 @@ public static class TestContextExtensions
 
         if (usedDataSource == null)
         {
-            throw new InvalidOperationException($"Could not extract {nameof(ClassDataSourceAttribute)} from {typeof(T).Name}");
+            throw new InvalidOperationException(
+                $"Could not extract {nameof(ClassDataSourceAttribute)} from {typeof(T).Name}");
         }
 
-        return (usedDataSource?.Shared, usedDataSource?.Key).ExtractAdapterKey(
-            metadata.TestDetails.ClassType.Name,
-            metadata.TestDetails.TestName
-        );
-    }
-
-    public static string ExtractAdapterKey(this (SharedType? Shared, string? Key) pair, string perClassName,
-        string perTestName)
-    {
-        return (pair.Shared, pair.Key) switch
-        {
-            (null, null) => TestKeys.PerTestSessionKey,
-            (SharedType.PerTestSession, var _) => TestKeys.PerTestSessionKey,
-            (SharedType.Keyed, var k) => k!,
-            (SharedType.PerClass, var _) => perClassName,
-            (SharedType.PerAssembly, var _) => TestKeys.PER_ASSEMBLY_KEY,
-            (SharedType.None, var _) => perTestName,
-            var _ => throw new ArgumentOutOfRangeException(nameof(pair), pair, null)
-        };
+        return (usedDataSource?.Shared, usedDataSource?.Key)
+            .ExtractFixtureKey(metadata.TestDetails.ClassType.Name, metadata.TestDetails.TestName);
     }
 }

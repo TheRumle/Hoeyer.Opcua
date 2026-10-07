@@ -33,9 +33,8 @@ public sealed class PlaygroundTestContainer : IServerFixture
     public int SimulationPort { get; private set; }
     public string Host => Container!.Hostname;
     public static string ServerId => OPCUA_SERVERID;
-    private static string ServerName => OPCUA_SERVERNAME;
     public OpcEnvironment OpcEnvironment { get; private set; } = null!;
-    public async Task<bool> EnvironmentReady() => await HealthChecker.IsHealthy();
+    private static string ServerName => OPCUA_SERVERNAME;
 
     public IServiceProvider AvailableServices { get; private set; }
 
@@ -43,7 +42,10 @@ public sealed class PlaygroundTestContainer : IServerFixture
     public async ValueTask DisposeAsync()
     {
         Console.WriteLine($"Disposing {nameof(PlaygroundTestContainer)}");
-        if (Container is not null) await Container.DisposeAsync();
+        if (Container is not null)
+        {
+            await Container.DisposeAsync();
+        }
     }
 
     public Task InitializeAsync()
@@ -55,6 +57,8 @@ public sealed class PlaygroundTestContainer : IServerFixture
 
         return _initializeTask.Value;
     }
+
+    public async Task<bool> EnvironmentReady() => await HealthChecker.IsHealthy();
 
     private async Task StartAndWaitForHealth()
     {
@@ -80,7 +84,8 @@ public sealed class PlaygroundTestContainer : IServerFixture
             OpcUaServerName = ServerName,
             Protocol = Protocol
         };
-        var services = new TestServiceCollection(services => services.AddClientTestServices(OpcEnvironment, [typeof(TestEntity)]));
+        var services = new TestServiceCollection(services =>
+            services.AddClientTestServices(OpcEnvironment, [typeof(DifferentFieldsEntity)]));
         AvailableServices = services.ServiceProvider;
         HealthChecker = new DockerHealthChecker(Container);
 

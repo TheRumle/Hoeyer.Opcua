@@ -1,16 +1,18 @@
 ﻿using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Abstractions.Connection;
-using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
+using Hoeyer.OpcUa.Fixtures.Server.ServerFixture;
+using Hoeyer.OpcUa.Server.Test;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Configuration;
 
 [DependsOn<ConfigurationCompatibilityTest>]
-[DependsOn<ServerHealtchTest>]
-[IntegrationServiceInjection]
+[DependsOn<ServerHealthTest>]
+[ClassDataSource<RuntimeSelectedServer>(Shared = SharedType.PerTestSession)]
 public class SessionConnectionTest(
-    IEntitySessionFactory sessionFactory)
+    RuntimeSelectedServer serverFixture)
 {
     private const int CONNECTION_TIMEOUT = 10000;
+    private IEntitySessionFactory sessionFactory => serverFixture.GetService<IEntitySessionFactory>();
 
     [Test]
     [DisplayName("Can connect to 1 session")]

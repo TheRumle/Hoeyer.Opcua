@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures;
+﻿namespace Hoeyer.OpcUa.Compiletime.Test.Fixtures;
 
 public class TypesWithEmptyCtorScanner<T, TAssemblyToken>
 {

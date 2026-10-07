@@ -21,7 +21,7 @@ public abstract class SubscriptionSystemTest(IMessageSubscriptionFactory<int> fa
     {
         int[] consumers = [1, 10, 25, 50, 100, 150, 250, 500, 1000];
         int[] messages = [10, 25, 50, 100, 150, 250, 500];
-        
+
         foreach (var consumer in consumers)
         {
             foreach (var message in messages)

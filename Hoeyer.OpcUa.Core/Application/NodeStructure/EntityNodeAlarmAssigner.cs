@@ -1,4 +1,5 @@
 ﻿using System.Collections.Frozen;
+using Hoeyer.OpcUa.Core.Abstractions.Alarm;
 using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 using Opc.Ua;
 

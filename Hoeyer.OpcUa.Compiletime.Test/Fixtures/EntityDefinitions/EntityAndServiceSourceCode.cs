@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
+﻿namespace Hoeyer.OpcUa.Compiletime.Test.Fixtures.EntityDefinitions;
 
 /// <summary>
 ///     Represent source code for both an Entity and an accompagnying service that depends on the source code definition of
