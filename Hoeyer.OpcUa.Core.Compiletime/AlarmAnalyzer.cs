@@ -1,11 +1,11 @@
-﻿using Hoeyer.OpcUa.Core.CompileTime.Extensions;
+﻿using Hoeyer.OpcUa.Core.Compiletime.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using static Hoeyer.OpcUa.Core.CompileTime.CodeDomain.WellKnown.FullyQualifiedAttribute;
+using static Hoeyer.OpcUa.Core.Compiletime.CodeDomain.WellKnown.FullyQualifiedAttribute;
 
-namespace Hoeyer.OpcUa.Core.CompileTime;
+namespace Hoeyer.OpcUa.Core.Compiletime;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AlarmAnalyser() : ConcurrentAnalyzer([Rules.IllegalRange, Rules.AlarmNotCompatibleWithType])
@@ -38,7 +38,7 @@ public class AlarmAnalyser() : ConcurrentAnalyzer([Rules.IllegalRange, Rules.Ala
     private static IEnumerable<Diagnostic> FindViolations(List<AttributeData> alarms,
         PropertyDeclarationSyntax propertySyntax, SemanticModel semanticModel)
     {
-        var typeMismatch = CreatePropertyTypeIncompatibilityDiagnostic(alarms, propertySyntax, semanticModel);
+        var typeMismatch = CreatePropertyTypeIncompatibilityDiagnostic(propertySyntax, semanticModel);
         if (typeMismatch is not null)
         {
             return [typeMismatch];
@@ -52,7 +52,6 @@ public class AlarmAnalyser() : ConcurrentAnalyzer([Rules.IllegalRange, Rules.Ala
     }
 
     private static Diagnostic? CreatePropertyTypeIncompatibilityDiagnostic(
-        List<AttributeData> alarms,
         PropertyDeclarationSyntax propertySyntax,
         SemanticModel semanticModel)
     {

@@ -1,9 +1,10 @@
 ﻿using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Core.Abstractions.Alarm;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
 
 [OpcUaEntity]
-public sealed record TestEntity
+public sealed record DifferentFieldsEntity
 {
     public enum EnumValue
     {
@@ -28,10 +29,10 @@ public sealed record TestEntity
     public EnumValue EnumVal { get; set; }
 
 
-    public static TestEntity CreateRandom()
+    public static DifferentFieldsEntity CreateRandom()
     {
         Random _random = new();
-        return new TestEntity
+        return new DifferentFieldsEntity
         {
             Integer = _random.Next(),
             Long = _random.NextInt64(),

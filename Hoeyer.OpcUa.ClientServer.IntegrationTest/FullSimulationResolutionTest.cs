@@ -7,4 +7,5 @@ namespace Hoeyer.OpcUa.IntegrationTest;
 
 [InheritsTests]
 public sealed class FullSimulationResolutionTest() : DependencyResolutionTest(
-    ServiceInjectionAttribute.Services.ServiceProvider.GetRequiredService<IServiceCollection>(), typeof(TestEntity));
+    ServiceInjectionAttribute.Services.ServiceProvider.GetRequiredService<IServiceCollection>(),
+    typeof(DifferentFieldsEntity));

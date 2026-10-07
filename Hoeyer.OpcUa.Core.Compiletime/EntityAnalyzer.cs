@@ -1,10 +1,10 @@
-﻿using Hoeyer.OpcUa.Core.CompileTime.Extensions;
+﻿using Hoeyer.OpcUa.Core.Compiletime.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Hoeyer.OpcUa.Core.CompileTime;
+namespace Hoeyer.OpcUa.Core.Compiletime;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class EntityAnalyzer() : ConcurrentAnalyzer([
@@ -123,7 +123,7 @@ public sealed class EntityAnalyzer() : ConcurrentAnalyzer([
 
             MethodDeclarationSyntax method => GetMethodMemberSupport(method, model),
 
-            var other => [MemberTypeSupport.Success(other!)]
+            var other => [MemberTypeSupport.Success(other)]
         };
     }
 

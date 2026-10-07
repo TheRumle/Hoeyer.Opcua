@@ -23,7 +23,8 @@ public static class ServiceCollectionExtensions
         Type[] clientModelMarker)
     {
         return services.AddCoreTestServices(args, entityAssemblyMarkers)
-            .WithOpcUaClientConfiguration(clientModelMarker, c => { c.WithEntitySessionFactory<CachedSessionFactory>(); });
+            .WithOpcUaClientConfiguration(clientModelMarker,
+                c => { c.WithEntitySessionFactory<CachedSessionFactory>(); });
     }
 
 
@@ -47,6 +48,4 @@ public static class ServiceCollectionExtensions
             .WithOpcUaServer(entityAssemblyMarkers);
         return serverServices;
     }
-
-
 }

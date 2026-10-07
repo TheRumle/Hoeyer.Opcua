@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
+﻿using Hoeyer.OpcUa.Core.Abstractions.Alarm;
+using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 
 namespace Hoeyer.OpcUa.Core;
 

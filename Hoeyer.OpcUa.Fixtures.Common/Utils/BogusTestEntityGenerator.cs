@@ -38,7 +38,7 @@ public static class BogusTestEntityGenerator
             type = underlyingType;
         }
 
-        object? numberType = ExtractDefaultType(faker, type);
+        var numberType = ExtractDefaultType(faker, type);
         if (numberType is not null)
         {
             return numberType;
@@ -52,10 +52,10 @@ public static class BogusTestEntityGenerator
 
         return type switch
         {
-            _ when type.IsEnum => GenerateEnumValue(faker, type),
-            _ when TryGetCollectionElementType(type, out var elementType) =>
+            var _ when type.IsEnum => GenerateEnumValue(faker, type),
+            var _ when TryGetCollectionElementType(type, out var elementType) =>
                 GenerateCollection(faker, type, elementType),
-            _ => throw new NotSupportedException($"Type {type} is not supported")
+            var _ => throw new NotSupportedException($"Type {type} is not supported")
         };
     }
 
@@ -63,13 +63,13 @@ public static class BogusTestEntityGenerator
     {
         object? specialStructType = type switch
         {
-            _ when type == typeof(Guid) => Guid.NewGuid(),
-            _ when type == typeof(DateTime) => faker.Date.Past(),
-            _ when type == typeof(DateTimeOffset) => new DateTimeOffset(faker.Date.Past()),
-            _ when type == typeof(TimeSpan) => TimeSpan.FromSeconds(faker.Random.Int(0, 100000)),
-            _ when type == typeof(DateOnly) => DateOnly.FromDateTime(faker.Date.Past()),
-            _ when type == typeof(TimeOnly) => TimeOnly.FromDateTime(faker.Date.Recent()),
-            _ => null
+            var _ when type == typeof(Guid) => Guid.NewGuid(),
+            var _ when type == typeof(DateTime) => faker.Date.Past(),
+            var _ when type == typeof(DateTimeOffset) => new DateTimeOffset(faker.Date.Past()),
+            var _ when type == typeof(TimeSpan) => TimeSpan.FromSeconds(faker.Random.Int(0, 100000)),
+            var _ when type == typeof(DateOnly) => DateOnly.FromDateTime(faker.Date.Past()),
+            var _ when type == typeof(TimeOnly) => TimeOnly.FromDateTime(faker.Date.Recent()),
+            var _ => null
         };
         return specialStructType;
     }
@@ -78,17 +78,17 @@ public static class BogusTestEntityGenerator
     {
         object? numberType = type switch
         {
-            _ when type == typeof(string) => faker.Lorem.Word(),
-            _ when type == typeof(int) => faker.Random.Int(),
-            _ when type == typeof(long) => faker.Random.Long(),
-            _ when type == typeof(short) => faker.Random.Short(),
-            _ when type == typeof(byte) => faker.Random.Byte(),
-            _ when type == typeof(float) => faker.Random.Float(),
-            _ when type == typeof(double) => faker.Random.Double(),
-            _ when type == typeof(decimal) => faker.Random.Decimal(),
-            _ when type == typeof(bool) => faker.Random.Bool(),
-            _ when type == typeof(char) => faker.Random.Char(),
-            _ => null
+            var _ when type == typeof(string) => faker.Lorem.Word(),
+            var _ when type == typeof(int) => faker.Random.Int(),
+            var _ when type == typeof(long) => faker.Random.Long(),
+            var _ when type == typeof(short) => faker.Random.Short(),
+            var _ when type == typeof(byte) => faker.Random.Byte(),
+            var _ when type == typeof(float) => faker.Random.Float(),
+            var _ when type == typeof(double) => faker.Random.Double(),
+            var _ when type == typeof(decimal) => faker.Random.Decimal(),
+            var _ when type == typeof(bool) => faker.Random.Bool(),
+            var _ when type == typeof(char) => faker.Random.Char(),
+            var _ => null
         };
         return numberType;
     }
@@ -125,7 +125,9 @@ public static class BogusTestEntityGenerator
             .ToList();
 
         if (collectionType.IsArray)
+        {
             return CreateArray(elementType, elements);
+        }
 
         return collectionType.GetGenericTypeDefinition() switch
         {
@@ -139,7 +141,7 @@ public static class BogusTestEntityGenerator
                           || type == typeof(ISet<>)
                 => CreateHashSet(elementType, elements),
 
-            _ => throw new NotSupportedException(
+            var _ => throw new NotSupportedException(
                 $"Collection type {collectionType} is not supported")
         };
     }

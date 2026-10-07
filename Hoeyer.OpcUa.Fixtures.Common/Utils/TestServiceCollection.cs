@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Fixtures.Common.Utils;
 
-
 public sealed class TestServiceCollection
 {
     public readonly IServiceProvider ServiceProvider;
@@ -25,11 +24,12 @@ public sealed class TestServiceCollection
                 },
                 descriptor.Lifetime));
         }
+
         collection.AddSingleton(collection);
         ServiceProvider = collection.BuildServiceProvider();
     }
 
     private static bool NotNonOwnedType(ServiceDescriptor descriptor) =>
         !(descriptor.ServiceType.IsGenericType &&
-        descriptor.ServiceType.GetGenericTypeDefinition() == typeof(NonOwned<>));
+          descriptor.ServiceType.GetGenericTypeDefinition() == typeof(NonOwned<>));
 }

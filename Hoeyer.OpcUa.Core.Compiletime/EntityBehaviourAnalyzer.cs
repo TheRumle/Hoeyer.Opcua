@@ -1,10 +1,10 @@
-﻿using Hoeyer.OpcUa.Core.CompileTime.Extensions;
+﻿using Hoeyer.OpcUa.Core.Compiletime.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Hoeyer.OpcUa.Core.CompileTime;
+namespace Hoeyer.OpcUa.Core.Compiletime;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class EntityBehaviourAnalyzer()
@@ -66,7 +66,7 @@ public sealed class EntityBehaviourAnalyzer()
 
         var argumentViolations = methods.SelectMany(method => method.ParameterList.Parameters
                 .Select(param => param.Type!)
-                .Where(methodParam => !SupportedTypes.IsSupported(methodParam!, model)))
+                .Where(methodParam => !SupportedTypes.IsSupported(methodParam, model)))
             .Select(methodParam => createDiagnostic.Invoke(methodParam));
 
         return returnTypeViolations.Concat(argumentViolations);

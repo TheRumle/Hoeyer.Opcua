@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Hoeyer.OpcUa.Fixtures.Common\Hoeyer.OpcUa.Fixtures.Common.csproj" />
-        <ProjectReference Include="..\Hoeyer.OpcUa.Fixtures.Server\Hoeyer.OpcUa.Fixtures.Server.csproj" />
+        <ProjectReference Include="..\Hoeyer.OpcUa.Fixtures.Common\Hoeyer.OpcUa.Fixtures.Common.csproj"/>
+        <ProjectReference Include="..\Hoeyer.OpcUa.Fixtures.Server\Hoeyer.OpcUa.Fixtures.Server.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Server\Hoeyer.OpcUa.Server.csproj"/>
         <ProjectReference Include="..\Hoeyer.OpcUa.Simulation.ServerAdapter\Hoeyer.OpcUa.Simulation.ServerAdapter.csproj"/>
     </ItemGroup>

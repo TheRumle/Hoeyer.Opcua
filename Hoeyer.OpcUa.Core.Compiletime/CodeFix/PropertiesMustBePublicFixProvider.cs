@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.Core.CompileTime.CodeFix;
+namespace Hoeyer.OpcUa.Core.Compiletime.CodeFix;
 
 /// <summary>
 ///     Provides fixes for HOEYERUA0001 - OpcUa entities' properties must be fully public./>

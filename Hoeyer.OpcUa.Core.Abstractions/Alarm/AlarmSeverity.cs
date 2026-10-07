@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.OpcUa.Core;
+﻿namespace Hoeyer.OpcUa.Core.Abstractions.Alarm;
 
 public enum AlarmSeverity
 {

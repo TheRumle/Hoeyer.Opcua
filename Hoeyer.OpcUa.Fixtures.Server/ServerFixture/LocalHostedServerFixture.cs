@@ -13,10 +13,10 @@ public sealed class LocalHostedServerFixture(Action<IServiceCollection, OpcEnvir
 {
     private readonly SemaphoreSlim _initializationLock = new(1, 1);
     private bool _initialized;
+    private TestServiceCollection ConfiguredServices { get; set; } = null!;
 
     public IServiceProvider AvailableServices => ConfiguredServices.ServiceProvider;
-    private TestServiceCollection ConfiguredServices { get; set; } = null!;
-    
+
     public async Task InitializeAsync()
     {
         await _initializationLock.WaitAsync();
@@ -34,7 +34,7 @@ public sealed class LocalHostedServerFixture(Action<IServiceCollection, OpcEnvir
 
             var env = OpcEnvironment.Default(port, "localhost");
             ConfiguredServices = new TestServiceCollection(services => configureServices(services, env));
-            
+
             var healthCheck = ConfiguredServices.ServiceProvider.GetRequiredService<IServerStartedHealthCheck>();
             var startableServer = ConfiguredServices.ServiceProvider.GetRequiredService<IStartableEntityServer>();
 
@@ -44,7 +44,7 @@ public sealed class LocalHostedServerFixture(Action<IServiceCollection, OpcEnvir
         }
         finally
         {
-            _initializationLock.Release();  
+            _initializationLock.Release();
         }
     }
 

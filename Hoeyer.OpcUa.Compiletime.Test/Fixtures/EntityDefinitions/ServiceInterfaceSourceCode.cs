@@ -1,4 +1,4 @@
-﻿namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
+﻿namespace Hoeyer.OpcUa.Compiletime.Test.Fixtures.EntityDefinitions;
 
 public record ServiceInterfaceSourceCode(string Type, string SourceCodeString, EntitySourceCode EntityDefinition)
 {

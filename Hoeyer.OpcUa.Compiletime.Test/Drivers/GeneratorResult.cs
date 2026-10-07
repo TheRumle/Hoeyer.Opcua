@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.Drivers;
+namespace Hoeyer.OpcUa.Compiletime.Test.Drivers;
 
 public record GeneratorResult(
     IEnumerable<Diagnostic> Diagnostics,

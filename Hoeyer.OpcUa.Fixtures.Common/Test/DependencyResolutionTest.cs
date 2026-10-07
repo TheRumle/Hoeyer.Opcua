@@ -45,9 +45,9 @@ public abstract class DependencyResolutionTest(IServiceCollection services, Type
             ? ["Open generic"]
             : [];
 
-        return new(
+        return new TestDataRow<ServiceDescriptor>(
             serviceDescriptor,
-            DisplayName: DescriptionOf(serviceDescriptor),
+            DescriptionOf(serviceDescriptor),
             Categories: [serviceDescriptor.Lifetime.ToString(), .. additionalCategories]
         );
     }

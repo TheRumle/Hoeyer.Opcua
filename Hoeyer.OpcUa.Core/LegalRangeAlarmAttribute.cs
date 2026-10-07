@@ -1,4 +1,6 @@
-﻿namespace Hoeyer.OpcUa.Core;
+﻿using Hoeyer.OpcUa.Core.Abstractions.Alarm;
+
+namespace Hoeyer.OpcUa.Core;
 
 [AttributeUsage(AttributeTargets.Property)]
 public class LegalRangeAlarmAttribute(

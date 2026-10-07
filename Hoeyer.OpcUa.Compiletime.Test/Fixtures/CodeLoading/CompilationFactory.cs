@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.CodeLoading;
+namespace Hoeyer.OpcUa.Compiletime.Test.Fixtures.CodeLoading;
 
 public sealed class CompilationFactory(string compilationName)
 {

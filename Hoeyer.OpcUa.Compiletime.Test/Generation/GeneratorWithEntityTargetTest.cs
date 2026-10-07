@@ -1,10 +1,10 @@
-﻿using Hoeyer.OpcUa.CompileTime.Test.Drivers;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;
+﻿using Hoeyer.OpcUa.Compiletime.Test.Drivers;
+using Hoeyer.OpcUa.Compiletime.Test.Fixtures.EntityDefinitions;
+using Hoeyer.OpcUa.Compiletime.Test.Fixtures.Generators;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.Generation;
+namespace Hoeyer.OpcUa.Compiletime.Test.Generation;
 
 [InheritsTests]
 public abstract class GeneratorWithEntityTargetTest(IIncrementalGenerator generator)

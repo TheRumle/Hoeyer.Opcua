@@ -1,4 +1,5 @@
 ﻿using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Core.Abstractions.Alarm;
 
 namespace Playground.Modelling.Models;
 

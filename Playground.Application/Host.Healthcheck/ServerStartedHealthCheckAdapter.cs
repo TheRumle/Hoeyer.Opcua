@@ -1,7 +1,7 @@
 ﻿using Hoeyer.OpcUa.Core.Configuration.Health;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Playground.Application.host.healthcheck;
+namespace Playground.Application.Host.Healthcheck;
 
 public sealed class ServerStartedHealthCheckAdapter(
     IServerStartedHealthCheck serverStarted,

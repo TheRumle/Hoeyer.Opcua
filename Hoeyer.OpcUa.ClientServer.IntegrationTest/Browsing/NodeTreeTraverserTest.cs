@@ -4,11 +4,10 @@ using Hoeyer.Common.Extensions.Collection;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing.Exceptions;
+using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.IntegrationTest.Configuration;
-using Hoeyer.OpcUa.IntegrationTest.Extensions;
-using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using JetBrains.Annotations;
 using Opc.Ua;
 
@@ -19,10 +18,16 @@ namespace Hoeyer.OpcUa.IntegrationTest.Browsing;
 [Timeout(10_0000)]
 [DependsOn<SessionConnectionTest>]
 [NotInParallel]
-public abstract class NodeTreeTraverserTest<T>(
-    IsolatedServerFixture<T> fixture)
-    where T : class, INodeTreeTraverser
+public abstract class NodeTreeTraverserTest
 {
+    protected abstract INodeTreeTraverser TestedService { get; }
+
+    private Task<IEntitySession> OpenedSession => field ??= GetSession();
+
+    protected abstract Task<IEntitySession> GetSession();
+    protected abstract IEnumerable<IBrowseNameCollection> GetBrowseNameCollection();
+
+
     public static IEnumerable<Func<NodeId>> PresentObjects()
     {
         IEnumerable<NodeId> ids =
@@ -35,8 +40,8 @@ public abstract class NodeTreeTraverserTest<T>(
     [Test]
     public async Task WhenTraversingWithNoMatch_ThrowsEntityBrowseException(CancellationToken token)
     {
-        var strategy = fixture.TestedService;
-        var session = await fixture.OpenSession();
+        var strategy = TestedService;
+        var session = await OpenedSession;
         var shouldFail = async () =>
             await strategy.TraverseUntil(session.Session, ObjectIds.RootFolder, e => false, token);
         await Assert.ThrowsAsync<EntityBrowseException>(shouldFail);
@@ -46,18 +51,18 @@ public abstract class NodeTreeTraverserTest<T>(
     [InstanceMethodDataSource(nameof(PresentObjects))]
     public async Task WhenTraversingWithMatch_DoesNotThrowNotFound(NodeId id, CancellationToken token)
     {
-        var result = await fixture.ExecuteWithSessionAsync((session, strategy) =>
-        {
-            return strategy.TraverseUntil(session.Session, ObjectIds.RootFolder, e => e.NodeId.Equals(id), token);
-        });
+        var session = await OpenedSession;
+        var result = await TestedService
+            .TraverseUntil(session.Session, ObjectIds.RootFolder, e => e.NodeId.Equals(id), token);
+
         await Assert.That(result).IsNotNull();
     }
 
     [Test]
     public async Task WhenTraversing_DoesNotGiveDuplicateNodes(CancellationToken token)
     {
-        var strategy = fixture.TestedService;
-        var session = await fixture.OpenSession();
+        var strategy = TestedService;
+        var session = await OpenedSession;
 
         var duplicates = await strategy
             .TraverseFrom(ObjectIds.RootFolder, session.Session, token)
@@ -80,10 +85,10 @@ public abstract class NodeTreeTraverserTest<T>(
     [InstanceMethodDataSource(nameof(PresentObjects))]
     public async Task WhenLookingForSelf_DoesNotThrowNotFound(NodeId id, CancellationToken token)
     {
-        var result = await fixture.ExecuteWithSessionAsync((session, strategy) =>
-        {
-            return strategy.TraverseUntil(session.Session, id, e => e.NodeId.Equals(id), token);
-        });
+        var session = await OpenedSession;
+        var result = await TestedService
+            .TraverseUntil(session.Session, ObjectIds.RootFolder, e => e.NodeId.Equals(id), token);
+
         await Assert.That(result).IsNotNull();
     }
 
@@ -91,8 +96,8 @@ public abstract class NodeTreeTraverserTest<T>(
     [SuppressMessage("Maintainability", "S108", Justification = "The test must consume the traversal results")]
     public async Task WhenTraversingFromRoot_DoesNotLoopForever(CancellationToken ct)
     {
-        var strategy = fixture.TestedService;
-        var session = await fixture.OpenSession();
+        var strategy = TestedService;
+        var session = await OpenedSession;
         await foreach (var _ in strategy.TraverseFrom(ObjectIds.RootFolder, session.Session, ct))
         {
         }
@@ -102,11 +107,10 @@ public abstract class NodeTreeTraverserTest<T>(
     [DisplayName("Can find entity root for all entities")]
     public async Task CanFindReferencesForAllNodes(CancellationToken token)
     {
-        var browseNameCollections = fixture.GetService<IEnumerable<IBrowseNameCollection>>();
-        var session = await fixture.OpenSession();
-        var strategy = fixture.TestedService;
+        var session = await OpenedSession;
+        var strategy = TestedService;
 
-        foreach (var browseNameCollection in browseNameCollections)
+        foreach (var browseNameCollection in GetBrowseNameCollection())
         {
             await strategy.TraverseUntil(session.Session, ObjectIds.RootFolder,
                 node => browseNameCollection.EntityName.Equals(node.BrowseName.Name),

@@ -1,4 +1,5 @@
-﻿using Opc.Ua;
+﻿using Hoeyer.OpcUa.Core.Abstractions.Alarm;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core;
 
@@ -6,7 +7,8 @@ namespace Hoeyer.OpcUa.Core;
 public abstract class LimitAlarmAttribute<T> : OpcAlarmAttribute
     where T : IComparable<T>
 {
-    protected LimitAlarmAttribute(T lowLow,
+    protected LimitAlarmAttribute(
+        T lowLow,
         T low,
         T high,
         T highHigh,
@@ -19,12 +21,12 @@ public abstract class LimitAlarmAttribute<T> : OpcAlarmAttribute
         HighHigh = highHigh;
         if (LowLow.CompareTo(low) > 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(lowLow) + " was greater that " + nameof(low));
+            throw new ArgumentOutOfRangeException(nameof(lowLow), nameof(lowLow) + " was greater that " + nameof(low));
         }
 
         if (High.CompareTo(HighHigh) > 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(lowLow) + " was greater that " + nameof(low));
+            throw new ArgumentOutOfRangeException(nameof(highHigh), nameof(highHigh) + " was greater that " + nameof(low));
         }
     }
 

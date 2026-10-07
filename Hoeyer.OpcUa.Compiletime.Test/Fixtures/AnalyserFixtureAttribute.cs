@@ -1,9 +1,9 @@
-﻿using Hoeyer.OpcUa.Core.CompileTime;
+﻿using Hoeyer.OpcUa.Core.Compiletime;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures;
+namespace Hoeyer.OpcUa.Compiletime.Test.Fixtures;
 
-internal sealed class AnalyserFixture : DataSourceGeneratorAttribute<DiagnosticAnalyzer>
+internal sealed class AnalyserFixtureAttribute : DataSourceGeneratorAttribute<DiagnosticAnalyzer>
 {
     private readonly TypesWithEmptyCtorScanner<DiagnosticAnalyzer, ConcurrentAnalyzer> _scanner = new();
 

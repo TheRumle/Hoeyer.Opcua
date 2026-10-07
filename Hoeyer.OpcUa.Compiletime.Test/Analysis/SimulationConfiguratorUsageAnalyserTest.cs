@@ -1,10 +1,10 @@
 ﻿using Hoeyer.Common.Extensions;
-using Hoeyer.OpcUa.CompileTime.Test.Drivers;
+using Hoeyer.OpcUa.Compiletime.Test.Drivers;
 using Hoeyer.OpcUa.Simulation.Abstractions.Configuration;
 using Hoeyer.OpcUa.Simulation.SourceGeneration;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
+namespace Hoeyer.OpcUa.Compiletime.Test.Analysis;
 
 public sealed class SimulationConfiguratorUsageAnalyserTest
 {

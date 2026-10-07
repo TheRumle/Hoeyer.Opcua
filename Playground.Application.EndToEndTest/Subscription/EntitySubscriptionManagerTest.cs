@@ -2,8 +2,8 @@
 using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 using Hoeyer.OpcUa.Client.Abstractions.Writing;
 using Hoeyer.OpcUa.Client.Application.Subscriptions;
+using Hoeyer.OpcUa.Fixtures.Server.ServerFixture;
 using Hoeyer.OpcUa.IntegrationTest.Configuration;
-using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using JetBrains.Annotations;
 using Playground.Modelling.Models;
 
@@ -11,9 +11,9 @@ namespace Playground.Application.EndToEndTest.Subscription;
 
 [TestSubject(typeof(CurrentEntityStateChannel<>))]
 [DependsOn<SessionConnectionTest>]
-[ClassDataSource<IsolatedServerFixture>(Shared = SharedType.PerClass)]
+[ClassDataSource<RuntimeSelectedServer>(Shared = SharedType.PerClass)]
 [Timeout(10000)]
-public sealed class EntitySubscriptionManagerTest(IsolatedServerFixture fixture)
+public sealed class EntitySubscriptionManagerTest(RuntimeSelectedServer fixture)
 {
     private const string EXPECTED_STRING_VALUE = "Hetsratsratsralo there";
     private static readonly int NumberOfGantryPropsChanged = 1;

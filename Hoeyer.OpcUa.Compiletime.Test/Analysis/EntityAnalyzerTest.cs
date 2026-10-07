@@ -1,9 +1,9 @@
-﻿using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.Generators;
-using Hoeyer.OpcUa.Core.CompileTime;
+﻿using Hoeyer.OpcUa.Compiletime.Test.Fixtures.EntityDefinitions;
+using Hoeyer.OpcUa.Compiletime.Test.Fixtures.Generators;
+using Hoeyer.OpcUa.Core.Compiletime;
 using JetBrains.Annotations;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.Analysis;
+namespace Hoeyer.OpcUa.Compiletime.Test.Analysis;
 
 [TestSubject(typeof(EntityAnalyzer))]
 [InheritsTests]

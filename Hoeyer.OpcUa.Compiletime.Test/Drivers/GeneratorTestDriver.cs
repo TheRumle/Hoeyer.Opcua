@@ -1,10 +1,10 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.CodeLoading;
+using Hoeyer.OpcUa.Compiletime.Test.Fixtures.CodeLoading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.Drivers;
+namespace Hoeyer.OpcUa.Compiletime.Test.Drivers;
 
 public sealed class GeneratorTestDriver(IIncrementalGenerator generator, Action<string>? logger = null)
 {

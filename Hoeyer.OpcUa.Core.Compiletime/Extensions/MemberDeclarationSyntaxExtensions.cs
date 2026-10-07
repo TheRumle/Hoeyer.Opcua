@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Hoeyer.OpcUa.Core.CompileTime.Extensions;
+namespace Hoeyer.OpcUa.Core.Compiletime.Extensions;
 
 public static class MemberDeclarationSyntaxExtensions
 {

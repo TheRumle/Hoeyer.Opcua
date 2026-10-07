@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Hoeyer.OpcUa.Core.CompileTime.CodeDomain;
+namespace Hoeyer.OpcUa.Core.Compiletime.CodeDomain;
 
 public static class SymbolDisplayFormats
 {

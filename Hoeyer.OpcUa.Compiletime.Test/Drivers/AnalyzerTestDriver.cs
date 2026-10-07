@@ -1,11 +1,11 @@
 ﻿using Hoeyer.Common.Extensions;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.CodeLoading;
-using Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
+using Hoeyer.OpcUa.Compiletime.Test.Fixtures.CodeLoading;
+using Hoeyer.OpcUa.Compiletime.Test.Fixtures.EntityDefinitions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.Drivers;
+namespace Hoeyer.OpcUa.Compiletime.Test.Drivers;
 
 public sealed class AnalyzerTestDriver<T>(T analyzer, Action<string>? logger = null)
     where T : DiagnosticAnalyzer
@@ -14,13 +14,13 @@ public sealed class AnalyzerTestDriver<T>(T analyzer, Action<string>? logger = n
 
     public Task<AnalyzerResult> RunAnalyzerOn(EntitySourceCode entitySourceCode,
         CancellationToken cancellationToken = default) => CreateAnalyzerResultTask(
-        [CSharpSyntaxTree.ParseText(entitySourceCode.SourceCodeString)],
+        [CSharpSyntaxTree.ParseText(entitySourceCode.SourceCodeString, cancellationToken: cancellationToken)],
         cancellationToken
     );
 
     public Task<AnalyzerResult> RunAnalyzerOn(string sourceCode,
         CancellationToken cancellationToken = default) => CreateAnalyzerResultTask(
-        [CSharpSyntaxTree.ParseText(sourceCode)],
+        [CSharpSyntaxTree.ParseText(sourceCode, cancellationToken: cancellationToken)],
         cancellationToken
     );
 
@@ -28,8 +28,8 @@ public sealed class AnalyzerTestDriver<T>(T analyzer, Action<string>? logger = n
         EntityAndServiceSourceCode sourceCode,
         CancellationToken cancellationToken = default)
     {
-        var left = CSharpSyntaxTree.ParseText(sourceCode.EntitySourceCode);
-        var right = CSharpSyntaxTree.ParseText(sourceCode.ServiceSourceCode);
+        var left = CSharpSyntaxTree.ParseText(sourceCode.EntitySourceCode, cancellationToken: cancellationToken);
+        var right = CSharpSyntaxTree.ParseText(sourceCode.ServiceSourceCode, cancellationToken: cancellationToken);
 
         return CreateAnalyzerResultTask([left, right], cancellationToken);
     }
@@ -42,7 +42,10 @@ public sealed class AnalyzerTestDriver<T>(T analyzer, Action<string>? logger = n
         }
 
         var compilation = _compilationFactory.CreateCompilation(trees);
-        var errs = compilation.GetDiagnostics().Where(e => e.Severity == DiagnosticSeverity.Error).ToList();
+        var errs = compilation.GetDiagnostics(cancellationToken)
+            .Where(e => e.Severity == DiagnosticSeverity.Error)
+            .ToList();
+
         if (errs.Any())
         {
             throw new InvalidTestSourceException("There were compilation errors for the given syntax tree(s): \n\n " +

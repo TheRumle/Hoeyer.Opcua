@@ -3,7 +3,7 @@ using Hoeyer.OpcUa.Client.SourceGeneration.Generation;
 using Hoeyer.OpcUa.Core.SourceGeneration.Generation;
 using Microsoft.CodeAnalysis;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures;
+namespace Hoeyer.OpcUa.Compiletime.Test.Fixtures;
 
 [SuppressMessage("Design", "S3993", Justification = "TUnits' attributeusage must not and cannot be overwritten.")]
 internal sealed class

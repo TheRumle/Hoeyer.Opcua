@@ -8,6 +8,11 @@ namespace Hoeyer.OpcUa.Fixtures.Common;
 
 public static class ServiceCollectionExtensions
 {
+    private static readonly string PkiRoot = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "OPC Foundation",
+        "pki");
+
     public static OnGoingOpcEntityServiceRegistrationWithModels AddCoreTestServices(
         this IServiceCollection services,
         OpcEnvironment args,
@@ -44,10 +49,4 @@ public static class ServiceCollectionExtensions
                 .Build())
             .WithEntityModelsFrom(entityAssemblyMarkers);
     }
-    
-    private static readonly string PkiRoot = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "OPC Foundation",
-        "pki");
-
 }

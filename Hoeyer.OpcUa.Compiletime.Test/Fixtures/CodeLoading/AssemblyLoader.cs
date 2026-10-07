@@ -6,7 +6,7 @@ using Hoeyer.OpcUa.Simulation.Abstractions.Configuration;
 using Microsoft.CodeAnalysis;
 using Assembly = System.Reflection.Assembly;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.CodeLoading;
+namespace Hoeyer.OpcUa.Compiletime.Test.Fixtures.CodeLoading;
 
 public static class AssemblyLoader
 {
@@ -36,14 +36,14 @@ public static class AssemblyLoader
             .AsParallel()
             .SelectMany(m => m.GetCustomAttributesData().SelectMany(a => new HashSet<Type>([
                     a.AttributeType,
-                    ..a.ConstructorArguments.Select(arg => arg.ArgumentType)
+                    .. a.ConstructorArguments.Select(arg => arg.ArgumentType)
                 ]))
             );
     }
 
     public static HashSet<Assembly> GetAssembliesContainedIn(Type type)
     {
-        List<Type> otherTypes = [..type.GenericTypeArguments, ..type.CustomAttributes.Select(e => e.AttributeType)];
+        List<Type> otherTypes = [.. type.GenericTypeArguments, .. type.CustomAttributes.Select(e => e.AttributeType)];
         if (type.BaseType != null)
         {
             otherTypes.Add(type.BaseType);

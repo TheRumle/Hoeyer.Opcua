@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 
-namespace Hoeyer.OpcUa.CompileTime.Test.Fixtures.EntityDefinitions;
+namespace Hoeyer.OpcUa.Compiletime.Test.Fixtures.EntityDefinitions;
 
 public static class EntitySourceCodeDefinitions
 {
