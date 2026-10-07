@@ -7,7 +7,7 @@ namespace Playground.Application.EndToEndTest.Browsing;
 
 [Category("Browser tests")]
 [InheritsTests]
-[ClassDataSource<IntegrationTestFixture<IEntityBrowser<AllPropertyTypesEntity>>>(Shared = SharedType.PerTestSession)]
+[ClassDataSource<IsolatedServerFixture<IEntityBrowser<AllPropertyTypesEntity>>>(Shared = SharedType.PerTestSession)]
 public sealed class AllPropertyTypesEntityBrowseTest(
-    IntegrationTestFixture<IEntityBrowser<AllPropertyTypesEntity>> context)
+    IsolatedServerFixture<IEntityBrowser<AllPropertyTypesEntity>> context)
     : EntityBrowserTest<AllPropertyTypesEntity>(context.TestedService);

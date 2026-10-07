@@ -7,6 +7,7 @@ using Hoeyer.OpcUa.Client.Abstractions.Browsing.Exceptions;
 using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.IntegrationTest.Configuration;
+using Hoeyer.OpcUa.IntegrationTest.Extensions;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using JetBrains.Annotations;
 using Opc.Ua;
@@ -19,7 +20,7 @@ namespace Hoeyer.OpcUa.IntegrationTest.Browsing;
 [DependsOn<SessionConnectionTest>]
 [NotInParallel]
 public abstract class NodeTreeTraverserTest<T>(
-    IntegrationTestFixture<T> fixture)
+    IsolatedServerFixture<T> fixture)
     where T : class, INodeTreeTraverser
 {
     public static IEnumerable<Func<NodeId>> PresentObjects()

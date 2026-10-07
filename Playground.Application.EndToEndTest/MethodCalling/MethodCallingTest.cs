@@ -6,8 +6,8 @@ using Playground.Modelling.Models;
 namespace Playground.Application.EndToEndTest.MethodCalling;
 
 [DependsOn<SessionConnectionTest>]
-[ClassDataSource<IntegrationTestFixture<IGantryMethods>>]
-public class MethodCallingTest(IntegrationTestFixture<IGantryMethods> methods)
+[ClassDataSource<IsolatedServerFixture<IGantryMethods>>]
+public class MethodCallingTest(IsolatedServerFixture<IGantryMethods> methods)
 {
     [Test]
     public async Task WhenCallingVoidTask_DoesNotThrow()

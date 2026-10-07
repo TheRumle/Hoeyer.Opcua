@@ -6,7 +6,7 @@ namespace Hoeyer.OpcUa.IntegrationTest.Browsing;
 
 [Category("Browser tests")]
 [InheritsTests]
-[ClassDataSource<IntegrationTestFixture<IEntityBrowser<TestEntity>>>(Shared = SharedType.PerTestSession)]
+[ClassDataSource<IsolatedServerFixture<IEntityBrowser<TestEntity>>>(Shared = SharedType.PerTestSession)]
 public sealed class TestEntityBrowseTest(
-    IntegrationTestFixture<IEntityBrowser<TestEntity>> context)
+    IsolatedServerFixture<IEntityBrowser<TestEntity>> context)
     : EntityBrowserTest<TestEntity>(context.TestedService);

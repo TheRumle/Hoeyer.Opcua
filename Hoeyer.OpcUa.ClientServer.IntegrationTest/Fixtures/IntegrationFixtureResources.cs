@@ -1,9 +1,13 @@
-﻿using Hoeyer.OpcUa.Fixtures.Server;
-using Hoeyer.OpcUa.Fixtures.Server.FixtureKeys;
+﻿using Hoeyer.OpcUa.Fixtures.Server.FixtureKeys;
 using Hoeyer.OpcUa.Fixtures.Server.ServerFixture;
 using TUnit.Core.Interfaces;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Fixtures;
+
+public interface IIntegrationFixtureResources : IAsyncInitializer
+{
+    IServiceProvider ServiceProvider { get; }
+}
 
 /// <summary>
 ///     Borrows the session-owned integration test environment for the duration of a test class.
@@ -15,22 +19,18 @@ namespace Hoeyer.OpcUa.IntegrationTest.Fixtures;
 ///         session state here would tear the shared environment down for every class that runs afterwards.
 ///     </para>
 /// </summary>
-internal sealed class IntegrationFixtureResources<T>(Func<string, IServerFixture> adapterProvider)
-    : IAsyncInitializer
+internal sealed class IntegrationFixtureResources<T>(Func<string, IServerFixture> adapterProvider) : IIntegrationFixtureResources
 {
-    private IServerFixture? _serverEnvironment;
-    internal IServiceProvider ServiceProvider { get; private set; }
-
-    internal IServerFixture ServerEnvironment => _serverEnvironment!;
+    private IServerFixture _environment;
+    public IServiceProvider ServiceProvider { get; private set; }
 
     public async Task InitializeAsync()
     {
         var key = TestContextExtensions.ComputeKey<T>(TestContext.Current!);
         var fixture = adapterProvider(key);
 
-        var environment = fixture;
-        await environment.InitializeAsync();
-        _serverEnvironment = environment;
-        ServiceProvider = environment.AvailableServices;
+        _environment = fixture;
+        await _environment.InitializeAsync();
+        ServiceProvider = _environment.AvailableServices;
     }
 }

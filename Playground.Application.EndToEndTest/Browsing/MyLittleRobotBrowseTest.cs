@@ -7,6 +7,6 @@ namespace Playground.Application.EndToEndTest.Browsing;
 
 [Category("Browser tests")]
 [InheritsTests]
-[ClassDataSource<IntegrationTestFixture<IEntityBrowser<MyLittleRobot>>>(Shared = SharedType.PerTestSession)]
-public sealed class MyLittleRobotBrowseTest(IntegrationTestFixture<IEntityBrowser<MyLittleRobot>> context)
+[ClassDataSource<IsolatedServerFixture<IEntityBrowser<MyLittleRobot>>>(Shared = SharedType.PerTestSession)]
+public sealed class MyLittleRobotBrowseTest(IsolatedServerFixture<IEntityBrowser<MyLittleRobot>> context)
     : EntityBrowserTest<MyLittleRobot>(context.TestedService);

@@ -8,6 +8,6 @@ namespace Playground.Application.EndToEndTest.Browsing;
 [Category("Readonly")]
 [Category("Browser tests")]
 [InheritsTests]
-[ClassDataSource<IntegrationTestFixture<IEntityBrowser<Gantry>>>(Shared = SharedType.PerTestSession)]
-public sealed class GantryBrowseTest(IntegrationTestFixture<IEntityBrowser<Gantry>> context)
+[ClassDataSource<IsolatedServerFixture<IEntityBrowser<Gantry>>>(Shared = SharedType.PerTestSession)]
+public sealed class GantryBrowseTest(IsolatedServerFixture<IEntityBrowser<Gantry>> context)
     : EntityBrowserTest<Gantry>(context.TestedService);
