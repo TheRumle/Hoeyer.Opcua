@@ -20,6 +20,7 @@ internal sealed class OpcEntityServer(
     : StandardServer, IOpcEntityServer
 {
     private static readonly DateTime BuildDate = DateTime.UtcNow;
+    public ISystemContext DefaultContext => ServerInternal.DefaultSystemContext;
     public readonly IOpcUaTargetServerSetup ServerInfo = applicationProductDetails;
 
     private bool _disposed;

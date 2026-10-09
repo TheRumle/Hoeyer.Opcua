@@ -16,6 +16,7 @@ public sealed class EntityNodePropertyAssigner<T>(IBrowseNameCollection<T> entit
             .GetProperties()
             .Select(e => CreateTypeInfo(entity, e))
             .ToList();
+        
         var errors = VerifyProperties(properties);
         if (errors.Length != 0)
         {

@@ -31,7 +31,11 @@ public static class TestContextExtensions
                 $"Could not extract {nameof(ClassDataSourceAttribute)} from {typeof(T).Name}");
         }
 
-        return (usedDataSource?.Shared, usedDataSource?.Key)
-            .ExtractFixtureKey(metadata.TestDetails.ClassType.Name, metadata.TestDetails.TestName);
+        return ServerFixtureKeyExtractor.ExtractFixtureKey(
+            usedDataSource.Shared,
+            usedDataSource.Key,
+            metadata.TestDetails.ClassType.Name,
+            metadata.TestDetails.TestName
+        );
     }
 }

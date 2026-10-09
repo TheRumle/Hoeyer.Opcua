@@ -15,7 +15,7 @@ public static class AssignServerAndServerServices
         ServerFixtureSelector.AssignServerFixtureFactory(adapterKey =>
             new LocalHostedServerFixture((collection, opcEnvironment) =>
             {
-                var testAssemblyMarker = typeof(IServerFixtureMarker);
+                var testAssemblyMarker = typeof(IServerFixture);
                 collection.AddSingleton<EnvironmentHealthCheck>(factory =>
                     {
                         return () => factory.GetRequiredService<IServerStartedHealthCheck>().ServerRunning();

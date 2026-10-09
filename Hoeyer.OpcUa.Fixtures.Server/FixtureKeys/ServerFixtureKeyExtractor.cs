@@ -2,9 +2,6 @@ namespace Hoeyer.OpcUa.Fixtures.Server.FixtureKeys;
 
 public static class ServerFixtureKeyExtractor
 {
-    public static string ExtractFixtureKey(this (SharedType? Shared, string? Key) pair, TestDetails testDetails)
-        => pair.ExtractFixtureKey(testDetails.ClassType.Name, testDetails.TestName);
-
     public static string ExtractFixtureKey(
         SharedType? shared,
         string? key,
@@ -23,8 +20,4 @@ public static class ServerFixtureKeyExtractor
             var _ => throw new ArgumentOutOfRangeException(nameof(shared), shared, "The fixture key cannot be computed")
         };
     }
-
-    public static string ExtractFixtureKey(this (SharedType? Shared, string? Key) pair, string classTypeName,
-        string testName) =>
-        ExtractFixtureKey(pair.Shared, pair.Key, classTypeName, testName);
 }

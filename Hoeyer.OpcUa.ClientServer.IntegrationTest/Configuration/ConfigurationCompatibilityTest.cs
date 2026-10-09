@@ -1,18 +1,18 @@
 ﻿using Hoeyer.OpcUa.Client.Abstractions.Configuration;
-using Hoeyer.OpcUa.IntegrationTest.Fixtures.DataSources;
 using Hoeyer.OpcUa.Server.Abstractions.Configuration;
+using Hoeyer.OpcUa.Server.Test;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Configuration;
 
-[ServiceInjection]
+[Fixtures.DataSources.ServiceInjection]
 public class ConfigurationCompatibilityTest(
     IClientApplicationConfigurationFactory clientConfigFactory,
     IServerApplicationConfigurationFactory serverConfigFactory)
 {
     [Test]
     [DependsOn(nameof(ValidationForClientMustSucceed))]
-    [DependsOn(nameof(ValidationForServerMustSucceed))]
+    [DependsOn<ApplicationConfigurationTest>(nameof(ApplicationConfigurationTest.ValidationForServerMustSucceed))]
     [DisplayName("Client and server configuration must have same application details")]
     public async Task ClientServerConfigurationEquivalence()
     {
@@ -35,11 +35,5 @@ public class ConfigurationCompatibilityTest(
         await clientConfiguration.ValidateAsync(ApplicationType.Client, cancellationToken);
     }
 
-    [Test]
-    [DisplayName("Server configuration must be validatable")]
-    public async Task ValidationForServerMustSucceed(CancellationToken cancellationToken = default)
-    {
-        var clientConfiguration = serverConfigFactory.CreateServerConfiguration();
-        await clientConfiguration.ValidateAsync(ApplicationType.Server, cancellationToken);
-    }
+
 }

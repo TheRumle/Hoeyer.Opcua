@@ -45,6 +45,10 @@ public sealed class EntityNodeAlarmAssigner<T>(IEntityTypeModel<T> model) : IEnt
         alarmNode.BrowseName = new QualifiedName(alarm.BrowseName, property.BrowseName.NamespaceIndex);
         alarmNode.DisplayName = alarmNode.BrowseName.Name;
         alarmNode.TypeDefinitionId = ObjectTypeIds.LimitAlarmType;
+        alarmNode.InputNode = new PropertyState<NodeId>(alarmNode)
+        {
+            Value = property.NodeId
+        };
 
         return alarmNode;
     }

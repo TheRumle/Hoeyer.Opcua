@@ -2,13 +2,11 @@
 using Hoeyer.OpcUa.Server.Abstractions;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Hoeyer.OpcUa.Server.Services;
-using Microsoft.Extensions.Logging;
 using Opc.Ua.Configuration;
 
 namespace Hoeyer.OpcUa.Server;
 
 internal sealed class StartableEntityServer(
-    ILogger<StartableEntityServer> logger,
     ServerApplication applicationInstance,
     IOpcEntityServer entityServer,
     IServerStartedHealthCheck healthCheckAssignment)
