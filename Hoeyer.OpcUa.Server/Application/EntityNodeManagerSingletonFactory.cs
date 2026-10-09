@@ -9,7 +9,7 @@ namespace Hoeyer.OpcUa.Server.Application;
 
 internal sealed class EntityNodeManagerSingletonFactory<T>(
     IApplicationConfigurationRequirements info,
-    ILogger<EntityNodeManager<T>> logger,
+    ILoggerFactory loggerFactory,
     IManagedEntityNodeProvider<T> nodeProvider,
     IEnumerable<INodeConfigurator<T>> nodeConfigurators,
     IEntityNodeAccessConfigurator accessConfigurator)
@@ -32,6 +32,7 @@ internal sealed class EntityNodeManagerSingletonFactory<T>(
             throw new InvalidUaConfigurationException(uriString + " is not a valid URI");
         }
 
+        var logger = loggerFactory.CreateLogger<EntityNodeManager<T>>();
         var manager = new EntityNodeManager<T>(
             uri,
             nodeProvider,

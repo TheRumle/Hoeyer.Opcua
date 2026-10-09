@@ -61,8 +61,8 @@ public class EntityTranslatorTest
 
         Func<string, object> propertyFor = name => node.PropertyByBrowseName[name].Value;
         using var assertion = Assert.Multiple();
-        await Assert.That(propertyFor(nameof(AllPropertyTypesEntity.IntList))).IsTypeOf<int[]>();
-        await Assert.That(propertyFor(nameof(AllPropertyTypesEntity.StringList))).IsTypeOf<string[]>();
+        await Assert.That(propertyFor(nameof(AllPropertyTypesEntity.IntList))).IsTypeOf<List<int>>();
+        await Assert.That(propertyFor(nameof(AllPropertyTypesEntity.StringList))).IsTypeOf<List<string>>();
     }
 
 
@@ -105,14 +105,14 @@ public class EntityTranslatorTest
     {
         using (Assert.Multiple())
         {
-            await Assert.That(entity.Integer).IsEquivalentTo(node.PropertyByBrowseName["Integer"].Value);
-            await Assert.That(entity.Long).IsEquivalentTo(node.PropertyByBrowseName["Long"].Value);
-            await Assert.That(entity.String).IsEquivalentTo(node.PropertyByBrowseName["String"].Value);
-            await Assert.That(entity.Guid).IsEquivalentTo(node.PropertyByBrowseName["Guid"].Value);
-            await Assert.That(entity.Double).IsEquivalentTo(node.PropertyByBrowseName["Double"].Value);
-            await Assert.That(entity.Float).IsEquivalentTo(node.PropertyByBrowseName["Float"].Value);
-            await Assert.That(entity.Bool).IsEquivalentTo(node.PropertyByBrowseName["Bool"].Value);
-            await Assert.That(entity.IntList).IsEquivalentTo((int[])node.PropertyByBrowseName["IntList"].Value);
+            await Assert.That(entity.Integer).IsEquivalentTo(node.PropertyByBrowseName[nameof(AllPropertyTypesEntity.Integer)].Value);
+            await Assert.That(entity.Long).IsEquivalentTo(node.PropertyByBrowseName[nameof(AllPropertyTypesEntity.Long)].Value);
+            await Assert.That(entity.String).IsEquivalentTo(node.PropertyByBrowseName[nameof(AllPropertyTypesEntity.String)].Value);
+            await Assert.That(entity.Guid).IsEquivalentTo(node.PropertyByBrowseName[nameof(AllPropertyTypesEntity.Guid)].Value);
+            await Assert.That(entity.Double).IsEquivalentTo(node.PropertyByBrowseName[nameof(AllPropertyTypesEntity.Double)].Value);
+            await Assert.That(entity.Float).IsEquivalentTo(node.PropertyByBrowseName[nameof(AllPropertyTypesEntity.Float)].Value);
+            await Assert.That(entity.Bool).IsEquivalentTo(node.PropertyByBrowseName[nameof(AllPropertyTypesEntity.Bool)].Value);
+            await Assert.That(entity.IntList).IsEquivalentTo(node.PropertyByBrowseName[nameof(AllPropertyTypesEntity.IntList)].Value);
         }
     }
 }

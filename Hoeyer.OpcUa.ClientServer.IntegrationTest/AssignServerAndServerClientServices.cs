@@ -1,5 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core.Configuration.Health;
 using Hoeyer.OpcUa.Fixtures.Server;
+using Hoeyer.OpcUa.Fixtures.Server.Entities;
 using Hoeyer.OpcUa.Fixtures.Server.ServerFixture;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures;
 using Hoeyer.OpcUa.IntegrationTest.Fixtures.TestEntities;
@@ -16,12 +17,12 @@ public static class AssignServerAndServerClientServices
         ServerFixtureSelector.AssignServerFixtureFactory(adapterKey =>
             new LocalHostedServerFixture((collection, opcEnvironment) =>
             {
-                var testAssemblyMarker = typeof(DifferentFieldsEntity);
+                Type[] testAssemblyMarker = [typeof(DifferentFieldsEntity), typeof(AlarmTestEntity)];
                 collection.AddSingleton<EnvironmentHealthCheck>(factory =>
                     {
                         return () => factory.GetRequiredService<IServerStartedHealthCheck>().ServerRunning();
                     })
-                    .AddClientAndServerTestServices(opcEnvironment, [testAssemblyMarker]);
+                    .AddClientAndServerTestServices(opcEnvironment, testAssemblyMarker);
             }));
     }
 }

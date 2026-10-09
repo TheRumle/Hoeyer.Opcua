@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using Hoeyer.OpcUa.Core.Extensions.Reflection;
+using Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Application.NodeStructure;
@@ -43,12 +43,13 @@ internal sealed record OpcMethodTypeInfo : IOpcTypeInfo
     private static void CreateInputArguments(string methodName, IEnumerable<(Type type, string name)> arguments,
         BaseObjectState parent, MethodState method)
     {
-        var inputArguments = arguments.Select(e =>
+        var inputArguments = arguments.Select(type =>
         {
-            var (id, rank) = e.type.GetOpcTypeInfo();
+            var data = OpcTypeInfoUtils.ConstructOpcTypeInfo(type.type);
+            var (id, rank) = (data.TypeId, data.Rank);
             return new Argument
             {
-                Name = e.name,
+                Name = type.name,
                 DataType = id,
                 ValueRank = rank
             };
@@ -70,7 +71,7 @@ internal sealed record OpcMethodTypeInfo : IOpcTypeInfo
 
     private void CreateReturnValueNode(string methodName, Type returnType, BaseObjectState parent, MethodState method)
     {
-        var (typeId, valueRank) = returnType.GetOpcTypeInfo();
+        var (_, valueRank, typeId) = OpcTypeInfoUtils.ConstructOpcTypeInfo(returnType);
 
         Argument[] value =
         [

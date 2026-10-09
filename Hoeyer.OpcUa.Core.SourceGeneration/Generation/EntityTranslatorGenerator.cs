@@ -53,7 +53,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
                          WellKnown.FullyQualifiedInterface.IEntityNode.WithGlobalPrefix + " node)");
 
         writer.WriteLine("{");
-        WriteAssignments(writer, typeContext.Node, typeContext.SemanticModel);
+        WriteAssignments(writer, typeContext.Node);
         writer.WriteLine("}");
 
         writer.WriteLine("public void AssignToStructure(" + entityName + " state, ");
@@ -133,7 +133,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
                              WellKnown.FullyQualifiedInterface.DataTypeTranslator.WithGlobalPrefix + ".");
             if (listInterface is not null)
             {
-                var genericArg = listInterface.TypeArguments.First()!.Name;
+                var genericArg = listInterface.TypeArguments.First().Name;
                 writer.Write("TranslateToCollection<").Write(type)
                     .Write(", ").Write(genericArg).Write(">(").Write("state, ")
                     .Write("_browseNameLookup.PropertyNames[").Write("\"").Write(name).Write("\"]);");
@@ -149,20 +149,14 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
     }
 
 
-    private static void WriteAssignments(SourceCodeWriter writer, TypeDeclarationSyntax syntax, SemanticModel model)
+    private static void WriteAssignments(SourceCodeWriter writer, TypeDeclarationSyntax syntax)
     {
         foreach (var property in syntax.Members.OfType<PropertyDeclarationSyntax>())
         {
             var propName = property.Identifier.Text;
-            var listInterface = GetListInterface(model.GetDeclaredSymbol(property)!, model);
-
-            var toList = listInterface is not null
-                ? $".{nameof(Enumerable.ToArray)}()"
-                : "";
 
             writer.WriteLine("node.PropertyByBrowseName[_browseNameLookup.PropertyNames[" + "\"" + propName + "\"" +
-                             "]].Value = state." + propName + toList +
-                             ";");
+                             "]].Value = state." + propName + ";");
         }
     }
 
