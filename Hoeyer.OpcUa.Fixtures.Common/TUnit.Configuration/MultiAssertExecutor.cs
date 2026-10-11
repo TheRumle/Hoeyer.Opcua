@@ -1,9 +1,11 @@
-﻿using TUnit.Core.Interfaces;
+﻿using System.Diagnostics;
+using TUnit.Core.Interfaces;
 
 namespace Hoeyer.OpcUa.Fixtures.Common.TUnit.Configuration;
 
 public sealed class MultiAssertExecutor : ITestExecutor
 {
+    [StackTraceHidden]
     public ValueTask ExecuteTest(TestContext context, Func<ValueTask> action)
     {
         using (Assert.Multiple())
