@@ -2,7 +2,7 @@
 using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 using Hoeyer.OpcUa.Core.Configuration.Modelling;
-using Hoeyer.OpcUa.Core.Test.Fixtures;
+using Hoeyer.OpcUa.Fixtures.Core.Fixtures;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Core.Test.Application;

@@ -1,9 +1,13 @@
-﻿namespace Hoeyer.OpcUa.Core.Test.Fixtures.TestEntities;
+﻿using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Core.Abstractions;
+using TypeInfo = Opc.Ua.TypeInfo;
+
+namespace Hoeyer.OpcUa.Fixtures.Core.Fixtures.TestEntities;
 
 [OpcUaEntity]
 public sealed record AllPropertyTypesEntity
 {
-    public enum EnumValue
+    public enum EnumValueProp
     {
         start = 10,
         middle = 15,
@@ -21,7 +25,7 @@ public sealed record AllPropertyTypesEntity
     public float Float { get; set; }
     public bool Bool { get; set; }
 
-    public EnumValue EnumVal { get; set; }
+    public EnumValueProp EnumVal { get; set; }
 
 
     public static AllPropertyTypesEntity CreateRandom()

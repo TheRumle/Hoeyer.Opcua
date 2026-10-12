@@ -9,20 +9,21 @@ public sealed class CertificateBasedSecurityConfigurationFactory(IApplicationCon
     {
         var options = targetServerInfo.CertificateConfiguration;
 
-        var securityConfiguration =
-            config.SecurityConfiguration ?? new SecurityConfiguration();
+        var securityConfiguration = config.SecurityConfiguration;
 
         securityConfiguration.ApplicationCertificate ??=
             new CertificateIdentifier();
+        
 
-        securityConfiguration.ApplicationCertificate.Certificate ??=
-            CertificateFactory
-                .CreateCertificate(
-                    config.ApplicationUri,
-                    config.ApplicationName,
-                    options.CertificateSubjectName,
-                    null)
-                .CreateForRSA();
+        //TODO
+        //securityConfiguration.ApplicationCertificate.Certificate ??=
+        //    CertificateFactory
+        //        .CreateCertificate(
+        //            config.ApplicationUri,
+        //            config.ApplicationName,
+        //            options.CertificateSubjectName,
+        //            null)
+        //        .CreateForRSA();
 
         securityConfiguration.ApplicationCertificate.StoreType =
             options.StoreType;
@@ -57,13 +58,8 @@ public sealed class CertificateBasedSecurityConfigurationFactory(IApplicationCon
         securityConfiguration.AddAppCertToTrustedStore =
             options.AddAppCertToTrustedStore;
 
-        config.CertificateValidator ??= new CertificateValidator();
-
-        if (options.AcceptRejectedCertificates)
-        {
-            config.CertificateValidator.CertificateValidation +=
-                (_, e) => e.Accept = true;
-        }
+        //TODO
+        config.CertificateManager ??= new CertificateManager(null);
 
         config.SecurityConfiguration = securityConfiguration;
 

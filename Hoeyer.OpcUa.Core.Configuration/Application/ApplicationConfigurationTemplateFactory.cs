@@ -20,7 +20,7 @@ internal sealed class ApplicationConfigurationTemplateFactory(
                 AddAppCertToTrustedStore = true
             },
 
-            TransportConfigurations = new TransportConfigurationCollection(),
+            TransportConfigurations = [new TransportConfiguration()],
 
             TransportQuotas = new TransportQuotas
             {

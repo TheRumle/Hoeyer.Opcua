@@ -15,7 +15,7 @@ public sealed class AlarmAnalyzerTest() : DiagnosticAnalyzerTest(new AlarmAnalys
 {
     private const string ENTITY_CLASS = "EntityClass";
 
-    private const string ALARM_USINGS = "using Hoeyer.OpcUa.Core; using Hoeyer.OpcUa.Core.Abstractions;";
+    private const string ALARM_USINGS = "using Hoeyer.OpcUa.Core; using Hoeyer.OpcUa.Core.Abstractions; using Hoeyer.OpcUa.Core.Abstractions.Alarm;";
 
     [Test]
     [DisplayName(

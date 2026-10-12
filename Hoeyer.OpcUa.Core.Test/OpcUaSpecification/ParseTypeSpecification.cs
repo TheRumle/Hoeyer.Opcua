@@ -36,7 +36,7 @@ public sealed class ParseTypeSpecification
     {
         return
         [
-            () => (typeof(Test), DataTypes.Enumeration),
+            () => (typeof(Test), DataTypeIds.Enumeration),
             () => (typeof(bool), DataTypeIds.Boolean),
             () => (typeof(byte), DataTypeIds.Byte),
             () => (typeof(short), DataTypeIds.Int16),
@@ -56,7 +56,7 @@ public sealed class ParseTypeSpecification
     {
         return
         [
-            () => (typeof(List<Test>), DataTypes.Enumeration),
+            () => (typeof(List<Test>), DataTypeIds.Enumeration),
             () => (typeof(List<bool>), DataTypeIds.Boolean),
             () => (typeof(List<byte>), DataTypeIds.Byte),
             () => (typeof(List<short>), DataTypeIds.Int16),

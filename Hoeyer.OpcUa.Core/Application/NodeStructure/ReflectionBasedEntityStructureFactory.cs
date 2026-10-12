@@ -25,7 +25,7 @@ public sealed class ReflectionBasedEntityStructureFactory<T>(
         {
             BrowseName = new QualifiedName(browseName, applicationNamespaceIndex),
             NodeId = new NodeId(browseName, applicationNamespaceIndex),
-            DisplayName = browseName
+            DisplayName = new LocalizedText(browseName)
         };
         entity.AccessRestrictions = AccessRestrictionType.None;
         var properties = entityNodePropertyAssigner.AssignProperties(entity).ToList();

@@ -9,7 +9,7 @@ public sealed class EntityNodeAlarmAssigner<T>(IEntityTypeModel<T> model) : IEnt
 {
     public AlarmCollection AssignAlarms(IEnumerable<PropertyState> properties)
     {
-        var propertyStates = properties.ToDictionary(property => property.BrowseName.Name, property => property);
+        var propertyStates = properties.ToDictionary(property => property.BrowseName.Name!, property => property);
         var alarms = GetAlarms(propertyStates).ToFrozenDictionary(e => e.property, e => e.alarm);
         return new AlarmCollection(alarms);
     }
@@ -37,27 +37,30 @@ public sealed class EntityNodeAlarmAssigner<T>(IEntityTypeModel<T> model) : IEnt
         LimitAlarmAttribute<double> alarm)
     {
         var alarmNode = new ExclusiveLimitAlarmState(property);
-        alarmNode.LowLowLimit = CreateLimitNode(alarm.LowLow, alarmNode);
-        alarmNode.LowLimit = CreateLimitNode(alarm.Low, alarmNode);
-        alarmNode.HighHighLimit = CreateLimitNode(alarm.HighHigh, alarmNode);
-        alarmNode.HighLimit = CreateLimitNode(alarm.High, alarmNode);
-        alarmNode.Severity = CreateLimitNode(TranslateSeverity(alarm.Severity), alarmNode);
+        alarmNode.LowLowLimit = CreateLimitNode<double, VariantBuilder>(alarm.LowLow, alarmNode);
+        alarmNode.LowLimit = CreateLimitNode<double, VariantBuilder>(alarm.Low, alarmNode);
+        alarmNode.HighHighLimit = CreateLimitNode<double, VariantBuilder>(alarm.HighHigh, alarmNode);
+        alarmNode.HighLimit = CreateLimitNode<double, VariantBuilder>(alarm.High, alarmNode);
+        alarmNode.Severity = CreateLimitNode<ushort, VariantBuilder>(TranslateSeverity(alarm.Severity), alarmNode);
         alarmNode.BrowseName = new QualifiedName(alarm.BrowseName, property.BrowseName.NamespaceIndex);
-        alarmNode.DisplayName = alarmNode.BrowseName.Name;
+        alarmNode.DisplayName = new LocalizedText(alarmNode.BrowseName.Name);
         alarmNode.TypeDefinitionId = ObjectTypeIds.LimitAlarmType;
-        alarmNode.InputNode = new PropertyState<NodeId>(alarmNode)
-        {
-            Value = property.NodeId
-        };
+        alarmNode.InputNode = PropertyState<NodeId>.With<VariantBuilder>(alarmNode);
+        alarmNode.InputNode.Value = property.NodeId;
 
         return alarmNode;
     }
 
-    private static PropertyState<TValue> CreateLimitNode<TValue>
+    private static PropertyState<T> CreateLimitNode<T, TVariantBuilder>
     (
-        TValue value,
+        T value,
         ExclusiveLimitAlarmState alarmNode
-    ) => new(alarmNode) { Value = value };
+    ) where TVariantBuilder : struct, IVariantBuilder<T>
+    {
+        var state = PropertyState<T>.With<TVariantBuilder>(alarmNode);
+        state.Value = value;
+        return state;
+    }
 
     private static ushort TranslateSeverity(AlarmSeverity alarmSeverity) =>
         alarmSeverity switch

@@ -29,7 +29,7 @@ public sealed class ReflectionBasedEntityStructureFactoryTest(
     [DisplayName("Browse name '$propertyBrowseName' is the contained in browse name collection")]
     public async Task CreatedBrowseNamesMatchExpected(string propertyBrowseName)
     {
-        var expectedBrowseNames = browseNames.PropertyNames.Values;
+        var expectedBrowseNames = browseNames.PropertyToBrowseName.Values;
         await Assert.That(expectedBrowseNames).Contains(propertyBrowseName);
     }
 }

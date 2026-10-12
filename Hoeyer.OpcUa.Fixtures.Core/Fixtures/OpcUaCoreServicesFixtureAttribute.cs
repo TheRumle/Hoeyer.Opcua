@@ -1,9 +1,9 @@
 ﻿using Hoeyer.OpcUa.Core.Configuration;
-using Hoeyer.OpcUa.Core.Test.Fixtures.TestEntities;
 using Hoeyer.OpcUa.Fixtures.Common;
+using Hoeyer.OpcUa.Fixtures.Core.Fixtures.TestEntities;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hoeyer.OpcUa.Core.Test.Fixtures;
+namespace Hoeyer.OpcUa.Fixtures.Core.Fixtures;
 
 public class OpcUaCoreServicesFixtureAttribute : DependencyInjectionDataSourceAttribute<IServiceScope>
 {
@@ -13,7 +13,8 @@ public class OpcUaCoreServicesFixtureAttribute : DependencyInjectionDataSourceAt
     {
         var services = new ServiceCollection();
         var env = OpcEnvironment.Default(10, "localhost");
-        OnGoingOpcEntityServiceRegistration = services.AddCoreTestServices(env, [typeof(AllPropertyTypesEntity)]);
+        OnGoingOpcEntityServiceRegistration = services
+            .AddCoreTestServices(env, [typeof(AllPropertyTypesEntity)]);
     }
 
     public IServiceCollection ServiceCollection => OnGoingOpcEntityServiceRegistration.Collection;

@@ -1,5 +1,4 @@
 ﻿using Hoeyer.OpcUa.Core.Abstractions;
-using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 
@@ -28,10 +27,9 @@ public static class DataTypeToTypeTranslator
 
         var collectionValues = p.Value switch
         {
-            Variant v => OpcToCSharpValueParser.ParseToArray<T>(v),
             T singleton => [singleton],
             IEnumerable<T> enumerable => enumerable.ToArray(),
-            var _ => throw new ArgumentException($"The specified value type '{p.Value.GetType()}' is not supported:")
+            var v => OpcToCSharpValueParser.ParseToArray<T>(v),
         };
 
         return collectionValues.Aggregate(new TCollection(), (current, element) =>

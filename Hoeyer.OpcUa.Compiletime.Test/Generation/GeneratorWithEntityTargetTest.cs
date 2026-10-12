@@ -43,3 +43,4 @@ public abstract class GeneratorWithEntityTargetTest(IIncrementalGenerator genera
             "The generator should not be responsible for analyzing source code, only production of generated code.");
     }
 }
+

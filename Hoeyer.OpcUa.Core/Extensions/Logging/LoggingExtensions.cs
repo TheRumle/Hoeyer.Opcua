@@ -21,7 +21,7 @@ public static class LoggingExtensions
             {
                 configuration.SecurityConfiguration?.SupportedSecurityPolicies
             },
-            KnownDiscoveryUrls = configuration.ClientConfiguration?.WellKnownDiscoveryUrls?.Select(e => e).ToArray()
+            KnownDiscoveryUrls = configuration.ClientConfiguration?.WellKnownDiscoveryUrls.ToArray()?.Select(e => e).ToArray()
         });
     }
 

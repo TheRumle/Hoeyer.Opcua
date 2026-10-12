@@ -1,5 +1,5 @@
 ﻿using Hoeyer.OpcUa.Core.Configuration.Application;
-using Hoeyer.OpcUa.Core.Test.Fixtures;
+using Hoeyer.OpcUa.Fixtures.Core.Fixtures;
 
 namespace Hoeyer.OpcUa.Core.Test.Application;
 

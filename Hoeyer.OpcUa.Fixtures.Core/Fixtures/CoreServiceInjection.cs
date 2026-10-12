@@ -1,7 +1,7 @@
 ﻿using Hoeyer.Common.Extensions.Types;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hoeyer.OpcUa.Core.Test.Fixtures;
+namespace Hoeyer.OpcUa.Fixtures.Core.Fixtures;
 
 public class CoreServiceInjection : DependencyInjectionDataSourceAttribute<IServiceScope>
 {

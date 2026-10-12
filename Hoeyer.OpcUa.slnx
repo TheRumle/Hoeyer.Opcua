@@ -12,6 +12,10 @@
         <Project Path="Playground.SimulationServer.Containerized/Playground.SimulationServer.Containerized.csproj" />
     </Folder>
     <Folder Name="/Solution Items/">
+        <File Path=".opencode/command/build.md" />
+        <File Path=".opencode/command/test.md" />
+        <File Path=".opencode/opc-ua-docs.md" />
+        <File Path=".opencode/tunit-docs.md" />
         <File Path="AGENTS.md" />
         <File Path="compose.yaml" />
         <File Path="Directory.Build.props" />
@@ -57,6 +61,7 @@
     </Folder>
     <Folder Name="/test/testfixtures/">
         <Project Path="Hoeyer.OpcUa.Fixtures.Common/Hoeyer.OpcUa.Fixtures.Common.csproj" />
+        <Project Path="Hoeyer.OpcUa.Fixtures.Core/Hoeyer.OpcUa.Fixtures.Core.csproj" />
         <Project Path="Hoeyer.OpcUa.Fixtures.Server/Hoeyer.OpcUa.Fixtures.Server.csproj" />
     </Folder>
     <Folder Name="/test/unittest/">

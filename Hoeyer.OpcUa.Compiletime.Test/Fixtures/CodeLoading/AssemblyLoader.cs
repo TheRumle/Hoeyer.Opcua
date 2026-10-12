@@ -20,8 +20,6 @@ public static class AssemblyLoader
         typeof(EntityNode).Assembly,
         typeof(OpcUaEntityMethodsAttribute<>).Assembly,
         typeof(OpcMethodArgumentsAttribute<,>).Assembly,
-        typeof(HealthCheck).Assembly,
-        typeof(ISimulation<,>).Assembly
     ];
 
     public static readonly IReadOnlySet<MetadataReference> CoreMetadataReferences = CoreAssemblies

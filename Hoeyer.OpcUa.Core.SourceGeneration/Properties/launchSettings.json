@@ -3,7 +3,7 @@
   "profiles": {
     "DebugRoslynSourceGenerator": {
       "commandName": "DebugRoslynComponent",
-      "targetProject": "../Playground/Playground.csproj"
+      "targetProject": "../Hoeyer.OpcUa.Fixtures.Core/Hoeyer.OpcUa.Fixtures.Core.csproj"
     }
   }
 }

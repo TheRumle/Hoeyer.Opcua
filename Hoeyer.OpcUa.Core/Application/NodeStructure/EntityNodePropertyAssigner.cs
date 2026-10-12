@@ -1,11 +1,12 @@
 ﻿using System.Reflection;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
+using Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Application.NodeStructure;
 
-public sealed class EntityNodePropertyAssigner<T>(IBrowseNameCollection<T> entityModel)
+public sealed class EntityNodePropertyAssigner<T>(IBrowseNameCollection<T> entityModel, IPropertyStateFactory<T> propertyStateFactory)
     : IEntityNodePropertyAssigner<T>
 {
     private static readonly Type Type = typeof(T);
@@ -17,18 +18,16 @@ public sealed class EntityNodePropertyAssigner<T>(IBrowseNameCollection<T> entit
             .Select(e => CreateTypeInfo(entity, e))
             .ToList();
         
-        var errors = VerifyProperties(properties);
-        if (errors.Length != 0)
-        {
-            throw new AggregateException(errors);
-        }
-
         AssignReferences(properties, entity);
         return properties.Select(e => e.OpcProperty);
     }
 
-    private OpcPropertyTypeInfo CreateTypeInfo(BaseObjectState entity, PropertyInfo e) =>
-        new(entityModel.PropertyNames[e.Name], e, entity);
+    private OpcPropertyTypeInfo CreateTypeInfo(BaseObjectState entity, PropertyInfo e)
+    {
+        var browseName = entityModel.PropertyToBrowseName[e.Name];
+        var state = propertyStateFactory.ConstructPropertyState(browseName, e, entity);
+        return new(e,state);
+    }
 
     private static void AssignReferences(IEnumerable<IOpcTypeInfo> values, BaseObjectState entity)
     {
@@ -44,16 +43,5 @@ public sealed class EntityNodePropertyAssigner<T>(IBrowseNameCollection<T> entit
             entity.AddChild(pr.InstanceState);
             entity.AddReference(referenceTypeid, false, pr.InstanceState.NodeId);
         }
-    }
-
-    private static Exception[] VerifyProperties(IList<OpcPropertyTypeInfo> properties)
-    {
-        return properties
-            .Where(e => e.TypeId is null)
-            .Select(Exception (e) =>
-                new InvalidEntityConfigurationException(
-                    Type.FullName!,
-                    $"The property {e.PropertyInfo.Name} is of type {e.PropertyInfo.PropertyType.FullName} and could not be translated to NodeId representing the type."))
-            .ToArray();
     }
 }

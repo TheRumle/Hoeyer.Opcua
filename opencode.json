@@ -6,6 +6,7 @@
     "AGENTS.md",
     "known-bugs.md",
     "fixed-bugs.md",
+    ".opencode/migration-guide-link.txt",
     ".opencode/tunit-docs.md",
     ".opencode/opc-ua-docs.md"
   ],

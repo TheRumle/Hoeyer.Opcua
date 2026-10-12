@@ -1,0 +1,1 @@
+﻿https://github.com/OPCFoundation/UA-.NETStandard/blob/master/docs/MigrationGuide.md

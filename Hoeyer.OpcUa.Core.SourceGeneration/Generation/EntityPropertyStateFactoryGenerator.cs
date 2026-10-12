@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Hoeyer.OpcUa.Core.SourceGeneration.Generation;
 
+[Generator]
 public class EntityPropertyStateFactoryGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
@@ -20,16 +21,16 @@ public class EntityPropertyStateFactoryGenerator : IIncrementalGenerator
             {
                 foreach (var (code, symbol) in compilations)
                 {
-                    productionContext.AddSource(symbol.Name + "Translator.g.cs", code.ToString());
+                    productionContext.AddSource(symbol.Name + "PropertyStateFactory.g.cs", code);
                 }
             });
     }
 
-    private static (SourceCodeWriter writer, INamedTypeSymbol symbol) CreateSourceCode(TypeContext typeContext)
+    private static (string writer, INamedTypeSymbol symbol) CreateSourceCode(TypeContext typeContext)
     {
         var symbol = typeContext.SemanticModel.GetDeclaredSymbol(typeContext.Node)!;
         var entityName = symbol.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
-        var className = entityName + "PropertyStateFactory";
+        var className = symbol.Name + "PropertyStateFactory";
         
         IPropertySymbol[] properties = typeContext.Node.Members.OfType<PropertyDeclarationSyntax>()
             .Select(prop => typeContext.SemanticModel.GetDeclaredSymbol(prop))
@@ -37,29 +38,37 @@ public class EntityPropertyStateFactoryGenerator : IIncrementalGenerator
             .Where(p => p!.Type.TypeKind == TypeKind.Enum)
             .ToArray()!;
         
-        var x = $$"""
-                  public sealed class {{className}}(
-                      IEntityTypeModel<{{entityName}}> model
-                  ) : FieldPropertyStateFactory, IPropertyStateFactory<{{entityName}}>
-                  {
-                      protected override PropertyState HandleEnumeration(
-                          BaseInstanceState parent,
-                          string browseName,
-                          PropertyInfo propertyInfo
-                      )
+        var text = $$"""
+                  using System.Reflection;
+                  using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
+                  using Hoeyer.OpcUa.Core.Application.NodeStructure;
+                  using Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
+                  using Opc.Ua;
+                  namespace {{WellKnown.CoreServiceName}}.Generated {
+                      
+                      
+                      public sealed class {{className}}(
+                          IEntityTypeModel<{{entityName}}> model
+                      ) : FieldPropertyStateFactory, IPropertyStateFactory<{{entityName}}>
                       {
-                          if (model.BrowseNameToEnumProperty.TryGetValue(browseName, out var type))
+                          protected override PropertyState HandleEnumeration(
+                              BaseInstanceState parent,
+                              string browseName,
+                              PropertyInfo propertyInfo
+                          )
                           {
-                              //PropName
-                              {{string.Join("\n", CreatePropertyCode(properties))}}
+                              if (model.BrowseNameToEnumProperty.TryGetValue(browseName, out var type))
+                              {
+                                  {{string.Join("\n", CreatePropertyCode(properties))}}
+                              }
+    
+                              throw new InvalidOperationException("There was no enum property with browsename " + browseName + " for entity {{entityName}}");
                           }
-
-                          throw new InvalidOperationException("There was enum property with browsename " + browseName);
                       }
                   }
                   """;
-        
-        throw new NotImplementedException();
+
+        return (text, symbol);
     }
 
     private static IEnumerable<string> CreatePropertyCode(IPropertySymbol[] properties)
@@ -70,9 +79,7 @@ public class EntityPropertyStateFactoryGenerator : IIncrementalGenerator
             return $$"""
                      if (type == typeof({{typeName}}))
                      {
-                         //PropName
-                         return PropertyState<{{typeName}}}>
-                             .With<EnumVariantConverter<{{typeName}}>>(parent);
+                         return PropertyState<{{typeName}}>.With<EnumVariantConverter<{{typeName}}>>(parent);
                      }
                      """;
         });

@@ -1,5 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core.SourceGeneration.Constants;
 using Hoeyer.OpcUa.Core.SourceGeneration.Generation.IncrementalProvider;
+using Hoeyer.OpcUa.Core.SourceGeneration.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -9,6 +10,11 @@ namespace Hoeyer.OpcUa.Core.SourceGeneration.Generation;
 [Generator]
 public class EntityTranslatorGenerator : IIncrementalGenerator
 {
+    private static FullyQualifiedTypeName BrowseNameLookupType(string entityName) => WellKnown.FullyQualifiedInterface.EntityBrowseNameCollection(entityName);
+    private static readonly FullyQualifiedTypeName AggregatedConverter = WellKnown.VariantConverter.Aggregated;
+    private const string BrowseNameLookup = "_browseNameLookup";
+    private const string Converter = "_converter";
+    
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var decoratedRecordsProvider = context
@@ -31,8 +37,12 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         var symbol = typeContext.SemanticModel.GetDeclaredSymbol(typeContext.Node)!;
         var entityName = symbol.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
         var className = symbol.Name + "Translator";
-        var browseNameLookupType = WellKnown.FullyQualifiedInterface.EntityBrowseNameCollection(entityName);
-
+        
+        IPropertySymbol[] properties = typeContext.Node.Members.OfType<PropertyDeclarationSyntax>()
+            .Select(prop => typeContext.SemanticModel.GetDeclaredSymbol(prop))
+            .Where(p => p is not null)
+            .ToArray()!;
+        
         var writer = new SourceCodeWriter();
         writer.WriteLine("namespace " + WellKnown.CoreServiceName + ".Generated {");
 
@@ -40,20 +50,18 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
             .EntityTranslatorInterfaceOf(entityName).WithGlobalPrefix);
 
         writer.WriteLine("{");
-        writer.WriteLine("private readonly " + browseNameLookupType.WithGlobalPrefix + " _browseNameLookup;");
-        writer.WriteLine("public " + className + "( " +
-                         browseNameLookupType.WithGlobalPrefix +
-                         " browseNameLookup)");
-        writer.WriteLine("{");
-        writer.WriteLine("this._browseNameLookup = browseNameLookup;");
-        writer.WriteLine("}");
+        writer.WriteLine("private readonly " + BrowseNameLookupType(entityName).WithGlobalPrefix + $" {BrowseNameLookup};");
+        writer.WriteLine("private readonly " + AggregatedConverter.WithGlobalPrefix + $" {Converter};");
+        
+        //Constructor
+        WriteConstructor(writer, className, BrowseNameLookupType(entityName));
 
 
         writer.WriteLine("public void AssignToNode( " + entityName + " state, " +
                          WellKnown.FullyQualifiedInterface.IEntityNode.WithGlobalPrefix + " node)");
 
         writer.WriteLine("{");
-        WriteAssignments(writer, typeContext.Node);
+        WriteAssignments(writer, properties);
         writer.WriteLine("}");
 
         writer.WriteLine("public void AssignToStructure(" + entityName + " state, ");
@@ -87,6 +95,22 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         writer.WriteLine("}"); //class end
 
         return (writer, symbol);
+    }
+
+    private static void WriteConstructor(
+        SourceCodeWriter writer,
+        string className,
+        FullyQualifiedTypeName browseNameLookupType)
+    {
+        writer.WriteLine("public " + className + "(");
+        writer.WriteLine(browseNameLookupType.WithGlobalPrefix + " browseNameLookup,");
+        writer.WriteLine(AggregatedConverter.WithGlobalPrefix + " converter");
+        writer.Write(")");
+        
+        writer.WriteLine("{");
+        writer.WriteLine($"this.{BrowseNameLookup} = browseNameLookup;");
+        writer.WriteLine($"this.{Converter} = converter;");
+        writer.WriteLine("}");
     }
 
     private static void WriteCopyMethod(TypeContext typeContext, SourceCodeWriter writer, string entityName)
@@ -136,12 +160,12 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
                 var genericArg = listInterface.TypeArguments.First().Name;
                 writer.Write("TranslateToCollection<").Write(type)
                     .Write(", ").Write(genericArg).Write(">(").Write("state, ")
-                    .Write("_browseNameLookup.PropertyNames[").Write("\"").Write(name).Write("\"]);");
+                    .Write("_browseNameLookup.PropertyToBrowseName[").Write("\"").Write(name).Write("\"]);");
             }
             else
             {
                 writer.Write("TranslateToSingle<").Write(type).Write(">").Write("(state, ")
-                    .Write("_browseNameLookup.PropertyNames[").Write("\"").Write(name).Write("\"]);");
+                    .Write("_browseNameLookup.PropertyToBrowseName[").Write("\"").Write(name).Write("\"]);");
             }
 
             writer.WriteLine();
@@ -149,14 +173,14 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
     }
 
 
-    private static void WriteAssignments(SourceCodeWriter writer, TypeDeclarationSyntax syntax)
+    private static void WriteAssignments(SourceCodeWriter writer, IPropertySymbol[] propertySymbols)
     {
-        foreach (var property in syntax.Members.OfType<PropertyDeclarationSyntax>())
+        foreach (var property in propertySymbols)
         {
-            var propName = property.Identifier.Text;
-
-            writer.WriteLine("node.PropertyByBrowseName[_browseNameLookup.PropertyNames[" + "\"" + propName + "\"" +
-                             "]].Value = state." + propName + ";");
+            var propName = property.Name;
+            var convertFromSingle = "_converter.Convert(state." + propName + ")";
+            writer.WriteLine("node.PropertyByBrowseName[_browseNameLookup.PropertyToBrowseName[" + "\"" + propName + "\"" +
+                             "]].Value = " + convertFromSingle + ";");
         }
     }
 

@@ -22,4 +22,6 @@ public record FullyQualifiedTypeName
     public string WithGlobalPrefix { get; }
 
     public bool Matches(string other) => WithGlobalPrefix.Equals(other) || WithoutGlobalPrefix.Equals(other);
+
+    public override string ToString() => WithGlobalPrefix;
 }

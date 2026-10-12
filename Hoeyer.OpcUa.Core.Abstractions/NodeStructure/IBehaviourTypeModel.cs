@@ -1,12 +1,11 @@
-﻿using System.Collections.Frozen;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 
 public interface IBehaviourTypeModel
 {
-    FrozenSet<Type> BehaviourInterfaces { get; }
-    FrozenSet<MethodInfo> Methods { get; }
+    IReadOnlyCollection<Type> BehaviourInterfaces { get; }
+    IReadOnlyCollection<MethodInfo> Methods { get; }
 }
 
 public interface IBehaviourTypeModel<T> : IBehaviourTypeModel;

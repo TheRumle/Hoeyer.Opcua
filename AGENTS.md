@@ -6,11 +6,25 @@ source generation to provide a code-first workflow: a C# class annotated with
 `OpcUaEntityAttribute` defines an OPC UA Node (an "entity"), and client + server artifacts
 are generated from it.
 
-Two main parts:
-1. Client - services that browse/write/read the defined entities.
-2. Server - spins up a basic server, mainly for testing and small simulations.
+Three main parts:
+1. Core - dynamic creation of models (entities) and translation to/from OpcUa nodes into C# classes. 
+2. Client - services that browse/write/read the defined entities.
+3. Server - spins up a basic server, mainly for testing and small simulations.
 
-## Solution layout (root = this folder, `Hoeyer.OpcUa.sln`)
+## Test driven development 
+### Refactorings
+Before any refactor begins, we must make sure that we do not regress behavior of the component being refactored. 
+Therefore, the component should be covered by automatic tests before refactoring begins. Even if tests exists, they might not be sufficient. 
+It is important that the test created this way verifies existing behavior, not expected behavior. Even if the refactoring of the component is not working and has to be reverted, the unit test can remain.
+
+### New functionality
+New functionality should be developed in a test driven manner. 
+The overall functionality shall be defined in an automatic integration test so that we can easily debug during development of the feature. Unit tests shall also be created where relevant.
+
+### Unit testing
+The core libraries are suitable candidates for unit testing, but many parts of the server and client libraries are not.
+
+## Solution layout (root = this folder, `Hoeyer.OpcUa.slnx`)
 - `Hoeyer.OpcUa.Core{,.Abstractions,.Configuration,.SourceGeneration}` - entity model, DI/options configuration, Roslyn source generator.
 - `Hoeyer.OpcUa.Server{,.Abstractions}` - the OPC UA server (`OpcEntityServer`, `StartableEntityServer`).
 - `Hoeyer.OpcUa.Client{,.Abstractions}` - client-side services to the defined entities.

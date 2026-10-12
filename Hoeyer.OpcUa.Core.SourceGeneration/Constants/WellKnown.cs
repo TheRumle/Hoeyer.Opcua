@@ -11,6 +11,23 @@ internal static class WellKnown
 
     private static FullyQualifiedTypeName CoreTypeName(string className) => new("Hoeyer.OpcUa.Core." + className);
 
+    public static class VariantConverter
+    {
+        public static FullyQualifiedTypeName Aggregated =>
+            new("Hoeyer.OpcUa.Core.Application.OpcTypeMappers.AggregateVariantConverter");
+
+    }
+    
+    public static class PropertyFactoryName
+    {
+        public static FullyQualifiedTypeName AbstractFactory =>
+            new("Hoeyer.OpcUa.Core.Application.NodeStructure.FieldPropertyStateFactory");
+        
+        public static FullyQualifiedTypeName PropertyStateFactoryOf(string entityName) =>
+            new($"Hoeyer.OpcUa.Core.Abstractions.NodeStructure.IPropertyStateFactory<{entityName}>");
+
+    }
+
     public static class FullyQualifiedInterface
     {
         public static FullyQualifiedTypeName IEntityNode =>

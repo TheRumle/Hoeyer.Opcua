@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core.Abstractions;
-using Hoeyer.OpcUa.Core.Test.Fixtures;
-using Hoeyer.OpcUa.Core.Test.Fixtures.TestEntities;
+using Hoeyer.OpcUa.Fixtures.Core.Fixtures;
+using Hoeyer.OpcUa.Fixtures.Core.Fixtures.TestEntities;
 using JetBrains.Annotations;
 
 namespace Hoeyer.OpcUa.Core.Test.Application;
@@ -53,7 +53,7 @@ public class EntityTranslatorTest
             ],
             Integer = 321312,
             String = "hello",
-            EnumVal = AllPropertyTypesEntity.EnumValue.start,
+            EnumVal = AllPropertyTypesEntity.EnumValueProp.start,
             Guid = Guid.NewGuid(),
             Bool = false,
             StringList = ["five hundred", "Cigarettes"]

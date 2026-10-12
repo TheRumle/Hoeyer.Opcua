@@ -1,6 +1,8 @@
 ﻿using Hoeyer.Common.Extensions;
 using Hoeyer.OpcUa.Compiletime.Test.Fixtures.CodeLoading;
 using Hoeyer.OpcUa.Compiletime.Test.Fixtures.EntityDefinitions;
+using Hoeyer.OpcUa.Core;
+using Hoeyer.OpcUa.Core.Abstractions.Alarm;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;

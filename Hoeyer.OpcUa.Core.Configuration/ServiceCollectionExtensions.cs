@@ -1,11 +1,14 @@
-﻿using Hoeyer.Common.Architecture;
+﻿using System.ComponentModel;
+using Hoeyer.Common.Architecture;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 using Hoeyer.OpcUa.Core.Application.NodeStructure;
+using Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 using Hoeyer.OpcUa.Core.Configuration.Application;
 using Hoeyer.OpcUa.Core.Configuration.ConfigurationBuilder;
 using Hoeyer.OpcUa.Core.Configuration.Modelling;
 using Hoeyer.OpcUa.Core.Configuration.Options;
+using Hoeyer.OpcUa.Core.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -50,8 +53,7 @@ public static class ServiceCollectionExtensions
         ApplicationConfigurationSetup? configureOpcUaApplicationConfiguration)
     {
         services.AddSingleton(configureOpcUaApplicationConfiguration ?? (_ => { }));
-        services.AddSingleton<IApplicationConfigurationRequirements>(p =>
-            p.GetRequiredService<IApplicationRequirementsFactory>().Get());
+        services.AddSingleton<IApplicationConfigurationRequirements>(p => p.GetRequiredService<IApplicationRequirementsFactory>().Get());
         services.AddSingleton<IApplicationConfigurationTemplateFactory, ApplicationConfigurationTemplateFactory>();
         services.AddSingleton<IApplicationSecurityConfigurationFactory, CertificateBasedSecurityConfigurationFactory>();
     }
@@ -91,6 +93,8 @@ public static class ServiceCollectionExtensions
             typeof(EntityNodePropertyAssigner<>));
         services.AddServiceAndImplSingleton(typeof(IEntityNodeAlarmAssigner<>), typeof(EntityNodeAlarmAssigner<>));
         AddTranslators(services);
+        
+        services.AddVariantConverters([..markers, typeof(GuidConverter)]);
         return services;
     }
 
@@ -98,6 +102,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddKeyedSingleton(ServiceKeys.MODELLING, markers.Select(m => new AssemblyMarker(m)));
         services.AddSingleton<EntityTypesCollection>();
+        services.AddPropertyTranslators(markers.SelectMany(e => e.Assembly.GetTypes()));
         return services;
     }
 
@@ -108,5 +113,24 @@ public static class ServiceCollectionExtensions
         {
             services.AddSingleton(translator.Service, translator.Impl);
         }
+    }
+
+    private static void AddPropertyTranslators(this IServiceCollection collection, IEnumerable<Type> assemblyTypes)
+    {
+        var propertyStateFactories = assemblyTypes
+            .Where(type => type is { IsAbstract: false, IsInterface: false, IsPublic: true })
+            .Select(type => (ImplType: type, ServiceType: GetIsPropertyStateFactoryInterface(type)))
+            .Where(tuple => tuple.ServiceType is not null)
+            .ToArray();
+
+        foreach (var (implType, serviceType) in propertyStateFactories)
+        {
+            collection.AddSingleton(serviceType!, implType);
+        }
+    }
+ 
+    private static Type? GetIsPropertyStateFactoryInterface(Type type)
+    {
+        return type.GetInterfaces().FirstOrDefault(i =>i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IPropertyStateFactory<>));
     }
 }
