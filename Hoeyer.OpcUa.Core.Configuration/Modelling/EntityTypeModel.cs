@@ -10,24 +10,15 @@ namespace Hoeyer.OpcUa.Core.Configuration.Modelling;
 
 public sealed class EntityTypeModel<TEntity> : IEntityTypeModel<TEntity>
 {
-    public EntityTypeModel(Type marker) : this([new AssemblyMarker(marker)],
-        new EntityTypesCollection([new AssemblyMarker(marker)]), typeof(TEntity))
-    {
-    }
 
-    public EntityTypeModel(AssemblyMarker markers) : this([markers], new EntityTypesCollection([markers]),
-        typeof(TEntity))
-    {
-    }
-
-    public EntityTypeModel([FromKeyedServices(ServiceKeys.MODELLING)] IEnumerable<AssemblyMarker> markers,
+    public EntityTypeModel(
+        [FromKeyedServices(ServiceKeys.MODELLING)] ServiceAssemblyMarkerCollection markers,
         EntityTypesCollection collection) : this(markers, collection, typeof(TEntity))
     {
     }
 
     public EntityTypeModel(
-        [FromKeyedServices(ServiceKeys.MODELLING)]
-        IEnumerable<AssemblyMarker> markers,
+        [FromKeyedServices(ServiceKeys.MODELLING)] ServiceAssemblyMarkerCollection markers,
         EntityTypesCollection entityTypes,
         Type entity)
     {

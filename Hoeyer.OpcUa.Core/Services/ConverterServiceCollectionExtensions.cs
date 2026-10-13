@@ -7,38 +7,32 @@ namespace Hoeyer.OpcUa.Core.Services;
 
 public static class ConverterServiceCollectionExtensions
 {
-    public static IServiceCollection AddVariantConverters(
+    public static IServiceCollection AddVariantBuilders(
         this IServiceCollection services,
         params ICollection<Type> assemblyMarkers)
     {
-        var assemblyTypes = assemblyMarkers.SelectMany(e => e.Assembly.GetTypes()).ToArray();
-        
-        var variantBuilderImplementors = AddVariantBuilderImplementations(services, assemblyTypes);
-        
-        services.AddSingleton<VariantConverterCollection>(provider => CreateConverterCollection(provider, variantBuilderImplementors));
-        services.AddSingleton<AggregateVariantConverter>();
-        
-        return services;
-    }
-    
-    private static Type[] AddVariantBuilderImplementations(IServiceCollection services, IEnumerable<Type> assemblyTypes)
-    {
-        var implementations = assemblyTypes
-            .Where(t => t is {IsGenericTypeDefinition: false, IsClass: false, IsAbstract: false } && t.GetInterfaces().Any(IsVariantBuilder))
+        var assemblyTypes = assemblyMarkers
+            .SelectMany(e => e.Assembly.GetTypes())
+            .Distinct()
+            .OrderBy(e => e.FullName)
             .ToArray();
 
-        // Register every concrete implementation as a singleton.
-        foreach (var implementation in implementations)
+        foreach (var types in assemblyTypes
+                     .Where(t => t is { IsGenericTypeDefinition: false, IsClass: false, IsAbstract: false })
+                     .SelectMany(VariantBuilderInterfaces))
         {
-            services.AddSingleton(implementation);
+            services.AddSingleton(types.service, types.serviceImpl);
         }
 
-        return implementations;
+        services.AddSingleton<VariantConverterCollection>(provider => CreateConverterCollection(provider, assemblyTypes));
+        services.AddSingleton<AggregateVariantConverter>();
+        return services;
     }
+
 
     private static VariantConverterCollection CreateConverterCollection(
         IServiceProvider provider,
-        Type[] variantBuilderImplementors)
+        Type[] assemblyTypes)
     {
         var defaultBuilders = typeof(VariantBuilder)
             .GetInterfaces()
@@ -51,11 +45,16 @@ public static class ConverterServiceCollectionExtensions
             .SelectMany(service => service.BrowseNameToEnumProperty.Values)
             .ToDictionary(propertyType => propertyType, CreateEnumVariantConverter);
 
-        var otherConverters = variantBuilderImplementors
-            .Select(provider.GetRequiredService)
+        var otherConverters = assemblyTypes
+            .Where(t => t is { IsGenericTypeDefinition: false, IsClass: false, IsAbstract: false })
             .SelectMany(VariantBuilderInterfaces)
+            .Select(types => (
+                provider.GetRequiredService(types.serviceImpl),
+                types.service)
+            )
             .Select(VariantGenericArg)
-            .ToDictionary(tuple => tuple.service, tuple => tuple.serviceImpl);
+            .Where(e => !defaultBuilders.Keys.Contains(e.variantArg)) //remove duplicate
+            .ToDictionary(tuple => tuple.variantArg, tuple => tuple.implTypes);
 
         var result = defaultBuilders
             .Concat(enumConverters)
@@ -66,12 +65,12 @@ public static class ConverterServiceCollectionExtensions
     }
 
 
-    private static (object serviceImpl, Type service) VariantGenericArg((object serviceImpl, Type service) arg) =>
-        (arg.serviceImpl, arg.service.GetGenericArguments()[0]);
+    private static (object implTypes, Type variantArg) VariantGenericArg((object implTypes, Type variantArg) arg) =>
+        (arg.implTypes, arg.variantArg.GetGenericArguments()[0]);
 
-    private static IEnumerable<(object serviceImpl, Type service)> VariantBuilderInterfaces(object serviceImpl)
+    private static IEnumerable<(Type serviceImpl, Type service)> VariantBuilderInterfaces(Type serviceImpl)
     {
-        return serviceImpl.GetType()
+        return serviceImpl
             .GetInterfaces()
             .Where(IsVariantBuilder)
             .Select(service => (serviceImpl, service));

@@ -4,5 +4,5 @@ public sealed record AssemblyMarker(Type Marker)
 {
     public Type Marker { get; } = Marker;
 
-    public IEnumerable<Type> TypesInAssembly { get; } = Marker.Assembly.GetExportedTypes();
+    public Type[] TypesInAssembly { get; } = Marker.Assembly.GetExportedTypes();
 }

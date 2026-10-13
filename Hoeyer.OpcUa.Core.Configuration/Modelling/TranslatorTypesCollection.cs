@@ -12,8 +12,7 @@ public sealed class TranslatorTypesCollection
     private static readonly Type NonGenericTranslatorInterface = typeof(IEntityTranslator<>);
 
     public TranslatorTypesCollection(
-        [FromKeyedServices(ServiceKeys.MODELLING)]
-        IEnumerable<AssemblyMarker> markers,
+        [FromKeyedServices(ServiceKeys.MODELLING)] ServiceAssemblyMarkerCollection markers,
         EntityTypesCollection collection)
     {
         Translators = markers.SelectMany(e => e.TypesInAssembly)

@@ -10,11 +10,13 @@ namespace Hoeyer.OpcUa.Core.SourceGeneration.Generation;
 [Generator]
 public class EntityTranslatorGenerator : IIncrementalGenerator
 {
-    private static FullyQualifiedTypeName BrowseNameLookupType(string entityName) => WellKnown.FullyQualifiedInterface.EntityBrowseNameCollection(entityName);
+    private static FullyQualifiedTypeName BrowseNameLookupType(string entityName) =>
+        WellKnown.FullyQualifiedInterface.EntityBrowseNameCollection(entityName);
+
     private static readonly FullyQualifiedTypeName AggregatedConverter = WellKnown.VariantConverter.Aggregated;
     private const string BrowseNameLookup = "_browseNameLookup";
     private const string Converter = "_converter";
-    
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var decoratedRecordsProvider = context
@@ -37,12 +39,12 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         var symbol = typeContext.SemanticModel.GetDeclaredSymbol(typeContext.Node)!;
         var entityName = symbol.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
         var className = symbol.Name + "Translator";
-        
+
         IPropertySymbol[] properties = typeContext.Node.Members.OfType<PropertyDeclarationSyntax>()
             .Select(prop => typeContext.SemanticModel.GetDeclaredSymbol(prop))
             .Where(p => p is not null)
             .ToArray()!;
-        
+
         var writer = new SourceCodeWriter();
         writer.WriteLine("namespace " + WellKnown.CoreServiceName + ".Generated {");
 
@@ -50,9 +52,10 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
             .EntityTranslatorInterfaceOf(entityName).WithGlobalPrefix);
 
         writer.WriteLine("{");
-        writer.WriteLine("private readonly " + BrowseNameLookupType(entityName).WithGlobalPrefix + $" {BrowseNameLookup};");
+        writer.WriteLine("private readonly " + BrowseNameLookupType(entityName).WithGlobalPrefix +
+                         $" {BrowseNameLookup};");
         writer.WriteLine("private readonly " + AggregatedConverter.WithGlobalPrefix + $" {Converter};");
-        
+
         //Constructor
         WriteConstructor(writer, className, BrowseNameLookupType(entityName));
 
@@ -61,7 +64,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
                          WellKnown.FullyQualifiedInterface.IEntityNode.WithGlobalPrefix + " node)");
 
         writer.WriteLine("{");
-        WriteAssignments(writer, properties);
+        WriteAssignments(writer, properties, typeContext.SemanticModel);
         writer.WriteLine("}");
 
         writer.WriteLine("public void AssignToStructure(" + entityName + " state, ");
@@ -106,7 +109,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         writer.WriteLine(browseNameLookupType.WithGlobalPrefix + " browseNameLookup,");
         writer.WriteLine(AggregatedConverter.WithGlobalPrefix + " converter");
         writer.Write(")");
-        
+
         writer.WriteLine("{");
         writer.WriteLine($"this.{BrowseNameLookup} = browseNameLookup;");
         writer.WriteLine($"this.{Converter} = converter;");
@@ -149,23 +152,20 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         {
             var name = member.Identifier.Text;
             var propertySymbol = semanticModel.GetDeclaredSymbol(member)!;
-            var type = propertySymbol.Type.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
-
-
+            var propertyTypeName =
+                propertySymbol.Type.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
+            var getBrowseName = $"_browseNameLookup.PropertyToBrowseName[\"{name}\"]";
+            var getPropertyValue = $"state.PropertyByBrowseName[{getBrowseName}].Value";
+            
             var listInterface = GetListInterface(propertySymbol, semanticModel);
-            writer.WriteLine("var " + name + " = " +
-                             WellKnown.FullyQualifiedInterface.DataTypeTranslator.WithGlobalPrefix + ".");
             if (listInterface is not null)
             {
                 var genericArg = listInterface.TypeArguments.First().Name;
-                writer.Write("TranslateToCollection<").Write(type)
-                    .Write(", ").Write(genericArg).Write(">(").Write("state, ")
-                    .Write("_browseNameLookup.PropertyToBrowseName[").Write("\"").Write(name).Write("\"]);");
+                writer.Write($"var {name} = {Converter}.ConvertToCollectionType<{genericArg}, List<{genericArg}>>({getPropertyValue});");
             }
             else
             {
-                writer.Write("TranslateToSingle<").Write(type).Write(">").Write("(state, ")
-                    .Write("_browseNameLookup.PropertyToBrowseName[").Write("\"").Write(name).Write("\"]);");
+                writer.Write($"var {name} = {Converter}.ConvertToType<{propertyTypeName}>({getPropertyValue});");
             }
 
             writer.WriteLine();
@@ -173,14 +173,30 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
     }
 
 
-    private static void WriteAssignments(SourceCodeWriter writer, IPropertySymbol[] propertySymbols)
+    private static void WriteAssignments(
+        SourceCodeWriter writer,
+        IPropertySymbol[] propertySymbols,
+        SemanticModel model
+    )
     {
         foreach (var property in propertySymbols)
         {
+            string convert = "";
             var propName = property.Name;
-            var convertFromSingle = "_converter.Convert(state." + propName + ")";
-            writer.WriteLine("node.PropertyByBrowseName[_browseNameLookup.PropertyToBrowseName[" + "\"" + propName + "\"" +
-                             "]].Value = " + convertFromSingle + ";");
+
+            var genericListArg = GetListInterface(property, model)?.TypeArguments[0];
+            if (genericListArg is not null)
+            {
+                convert = $"{Converter}.ConvertCollectionVariant(state." + propName + ")";
+            }
+            else
+            {
+                convert = $"{Converter}.ConvertToVariant(state." + propName + ")";
+            }
+            
+            writer.WriteLine("node.PropertyByBrowseName[_browseNameLookup.PropertyToBrowseName[" + "\"" + propName +
+                             "\"" +
+                             "]].Value = " + convert + ";");
         }
     }
 

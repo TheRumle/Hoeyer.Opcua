@@ -3,7 +3,8 @@
 namespace Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 
 public sealed class VariantConverterCollection(Dictionary<Type, object> collection)
-{        
+{
+    
     public IVariantBuilder<T> Get<T>()
     {
         if (collection.TryGetValue(typeof(T), out var converter))

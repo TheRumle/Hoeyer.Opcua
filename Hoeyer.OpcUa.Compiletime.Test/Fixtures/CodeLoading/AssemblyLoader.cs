@@ -1,8 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Abstractions;
-using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Simulation.Abstractions;
-using Hoeyer.OpcUa.Simulation.Abstractions.Configuration;
 using Microsoft.CodeAnalysis;
 using Assembly = System.Reflection.Assembly;
 

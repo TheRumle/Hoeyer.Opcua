@@ -7,7 +7,7 @@ namespace Hoeyer.OpcUa.Core.Configuration.Modelling;
 
 public sealed class EntityTypesCollection
 {
-    public EntityTypesCollection([FromKeyedServices(ServiceKeys.MODELLING)] IEnumerable<AssemblyMarker> markers)
+    public EntityTypesCollection([FromKeyedServices(ServiceKeys.MODELLING)] ServiceAssemblyMarkerCollection markers)
     {
         var markerTypes = markers.SelectMany(e => e.TypesInAssembly).ToList();
         ModelledEntities = markerTypes

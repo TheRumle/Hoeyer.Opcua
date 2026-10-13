@@ -33,6 +33,7 @@ public sealed record AllPropertyTypesEntity
         Random _random = new();
         return new AllPropertyTypesEntity
         {
+            EnumVal = EnumValueProp.start,
             Integer = _random.Next(),
             Long = _random.NextInt64(),
             String = Guid.NewGuid().ToString(),

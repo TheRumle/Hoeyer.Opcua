@@ -18,5 +18,10 @@ public readonly struct EnumVariantConverter<T> : IVariantBuilder<T>
             : throw new InvalidOperationException($"Invalid enum value: {enumeration.Value}({enumeration.Symbol ?? "No string representation"})");
     }
     
-    public Variant WithValue(T value) => Variant.From(value);
+    public Variant WithValue(T value)
+    {
+        var v = Variant.From(value);
+        v.ConvertTo(BuiltInType.Enumeration);
+        return v;
+    }
 }

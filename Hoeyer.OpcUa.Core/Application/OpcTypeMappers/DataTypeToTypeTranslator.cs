@@ -1,4 +1,5 @@
 ﻿using Hoeyer.OpcUa.Core.Abstractions;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 
@@ -25,10 +26,9 @@ public static class DataTypeToTypeTranslator
             return [];
         }
 
-        var collectionValues = p.Value switch
+        T[] collectionValues = p.Value switch
         {
-            T singleton => [singleton],
-            IEnumerable<T> enumerable => enumerable.ToArray(),
+            var v when v.TypeInfo.ValueRank != ValueRanks.Scalar => [OpcToCSharpValueParser.ParseTo<T>(v)],
             var v => OpcToCSharpValueParser.ParseToArray<T>(v),
         };
 
