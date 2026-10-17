@@ -19,7 +19,7 @@ internal static class WellKnown
     public static class PropertyFactoryName
     {
         public static FullyQualifiedTypeName AbstractFactory =>
-            new("Hoeyer.OpcUa.Core.Application.NodeStructure.FieldPropertyStateFactory");
+            new("Hoeyer.OpcUa.Core.Application.NodeStructure.PropertyStateFactory");
 
         public static FullyQualifiedTypeName PropertyStateFactoryOf(string entityName) =>
             new($"Hoeyer.OpcUa.Core.Abstractions.NodeStructure.IPropertyStateFactory<{entityName}>");

@@ -135,6 +135,7 @@ public static class ServiceCollectionExtensions
 
     private static void AddModelFactory(IServiceCollection collection, Type[] assemblyTypes)
     {
+        collection.AddSingleton<IMethodStateFactory, MethodStateFactory>();
         collection.AddServiceAndImplSingleton(typeof(IEntityNodeStructureFactory<>),
             typeof(ReflectionBasedEntityStructureFactory<>));
         collection.AddServiceAndImplSingleton(typeof(IEntityNodeMethodAssigner<>), typeof(EntityNodeMethodAssigner<>));

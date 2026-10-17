@@ -5,7 +5,7 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Application.NodeStructure;
 
-public abstract class FieldPropertyStateFactory : IPropertyStateFactory
+public abstract class PropertyStateFactory : IPropertyStateFactory
 {
     private readonly record struct PropertyStateCreationContext(
         OpcTypeInfo TypeInfo,
@@ -54,10 +54,10 @@ public abstract class FieldPropertyStateFactory : IPropertyStateFactory
     {
         var inner = HandleEnumeration(context.Parent, context.BrowseName, propertyInfo);
         return WithDefaultValues(
-                context.TypeInfo,
-                context.NodeId,
-                context.BrowseName,
-                inner);
+            context.TypeInfo,
+            context.NodeId,
+            context.BrowseName,
+            inner);
     }
 
     protected abstract PropertyState HandleEnumeration(
@@ -68,7 +68,8 @@ public abstract class FieldPropertyStateFactory : IPropertyStateFactory
     private static PropertyState Create<T, TBuilder>(
         PropertyStateCreationContext context
     ) where TBuilder : struct, IVariantBuilder<T> =>
-        WithDefaultValues(context.TypeInfo, context.NodeId, context.BrowseName, PropertyState<T>.With<TBuilder>(context.Parent));
+        WithDefaultValues(context.TypeInfo, context.NodeId, context.BrowseName,
+            PropertyState<T>.With<TBuilder>(context.Parent));
 
 
     private static PropertyState ThrowNotSupported(OpcTypeInfo typeInfo) =>

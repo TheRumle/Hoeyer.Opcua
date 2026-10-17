@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
-using Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Application.NodeStructure;
@@ -19,29 +18,21 @@ public sealed class EntityNodePropertyAssigner<T>(IBrowseNameCollection<T> entit
             .ToList();
         
         AssignReferences(properties, entity);
-        return properties.Select(e => e.OpcProperty);
+        return properties;
     }
 
-    private OpcPropertyTypeInfo CreateTypeInfo(BaseObjectState entity, PropertyInfo e)
+    private PropertyState CreateTypeInfo(BaseObjectState entity, PropertyInfo e)
     {
         var browseName = entityModel.PropertyToBrowseName[e.Name];
-        var state = propertyStateFactory.ConstructPropertyState(browseName, e, entity);
-        return new(e,state);
+        return propertyStateFactory.ConstructPropertyState(browseName, e, entity);
     }
 
-    private static void AssignReferences(IEnumerable<IOpcTypeInfo> values, BaseObjectState entity)
+    private static void AssignReferences(IEnumerable<BaseInstanceState> values, BaseObjectState entity)
     {
-        foreach (var pr in values)
+        foreach (var nodeState in values)
         {
-            var referenceTypeid = pr switch
-            {
-                OpcMethodTypeInfo => ReferenceTypeIds.HasComponent,
-                OpcPropertyTypeInfo => ReferenceTypeIds.HasProperty,
-                var _ => throw new ArgumentOutOfRangeException(pr.GetType().Name + " is not a handled case")
-            };
-
-            entity.AddChild(pr.InstanceState);
-            entity.AddReference(referenceTypeid, false, pr.InstanceState.NodeId);
+            entity.AddChild(nodeState);
+            entity.AddReference(ReferenceTypeIds.HasProperty, false, nodeState.NodeId);
         }
     }
 }

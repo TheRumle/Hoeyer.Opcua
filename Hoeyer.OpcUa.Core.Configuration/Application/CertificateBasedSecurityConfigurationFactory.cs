@@ -11,29 +11,8 @@ public sealed class CertificateBasedSecurityConfigurationFactory(
     public SecurityConfiguration Configure(ApplicationConfiguration configuration)
     {
         var options = targetServerInfo.CertificateConfiguration;
-
         var securityConfiguration = configuration.SecurityConfiguration;
-
-        securityConfiguration.ApplicationCertificate ??=
-            new CertificateIdentifier();
         
-
-        //TODO
-        //securityConfiguration.ApplicationCertificate.Certificate ??=
-        //    CertificateFactory
-        //        .CreateCertificate(
-        //            config.ApplicationUri,
-        //            config.ApplicationName,
-        //            options.CertificateSubjectName,
-        //            null)
-        //        .CreateForRSA();
-
-        securityConfiguration.ApplicationCertificate.StoreType =
-            options.StoreType;
-
-        securityConfiguration.ApplicationCertificate.StorePath =
-            options.OwnStorePath;
-
         securityConfiguration.TrustedPeerCertificates =
             new CertificateTrustList
             {
@@ -60,7 +39,7 @@ public sealed class CertificateBasedSecurityConfigurationFactory(
 
         securityConfiguration.AddAppCertToTrustedStore = options.AddAppCertToTrustedStore;
 
-        configuration.CertificateManager ??= new CertificateManager(telemetryContext);
+        configuration.CertificateManager = new CertificateManager(telemetryContext);
 
         configuration.SecurityConfiguration = securityConfiguration;
 
