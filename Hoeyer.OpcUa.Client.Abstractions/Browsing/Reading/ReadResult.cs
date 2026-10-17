@@ -6,7 +6,7 @@ public sealed class ReadResult
 {
     public readonly bool AllSuccess;
 
-    public ReadResult(IEnumerable<(Node? node, ServiceResult result)> values)
+    public ReadResult(IEnumerable<(Node node, ServiceResult result)> values)
     {
         var nodes = values.ToList();
         SuccesfulReads = nodes.Where(e => e.result.IsGood()).Select(e => e.node).ToList();
