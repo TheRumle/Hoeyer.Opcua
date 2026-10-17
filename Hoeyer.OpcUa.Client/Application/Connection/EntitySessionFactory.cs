@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.Client.Abstractions.Configuration;
+﻿using Hoeyer.Common.Utilities.Providers;
+using Hoeyer.OpcUa.Client.Abstractions.Configuration;
 using Hoeyer.OpcUa.Client.Abstractions.Connection;
 using Hoeyer.OpcUa.Client.Extensions;
 using Hoeyer.OpcUa.Core.Configuration;
@@ -9,6 +10,7 @@ using Opc.Ua.Client;
 namespace Hoeyer.OpcUa.Client.Application.Connection;
 
 public sealed class EntitySessionFactory(
+    ICultureInfoProvider cultureInfoProvider,
     IApplicationConfigurationRequirements applicationOptions,
     IClientApplicationConfigurationFactory configurationFactory,
     ISessionFactory sessionFactory,
@@ -51,7 +53,7 @@ public sealed class EntitySessionFactory(
                 sessionName,
                 1000000,
                 new UserIdentity(new AnonymousIdentityToken()),
-                null,
+                [cultureInfoProvider.CurrentCulture().TwoLetterISOLanguageName],
                 token
             );
         }

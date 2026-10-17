@@ -11,6 +11,7 @@ using Opc.Ua.Client;
 namespace Hoeyer.OpcUa.Client.Application.Calling;
 
 public class MethodCaller<TEntity>(
+    VariantConverter converter,
     ILogger<MethodCaller<TEntity>> logger,
     IEntityBrowser<TEntity> browser,
     IEntitySessionFactory factory,
@@ -19,20 +20,18 @@ public class MethodCaller<TEntity>(
 {
     public async Task CallMethod(string methodName,
         CancellationToken token = default,
-        params object[] args) =>
-        await CallNode(browseNameCollection.MethodNames[methodName], token, args);
+        params Variant[] args) =>
+        await CallNode(browseNameCollection.MethodNames[methodName], args, token);
 
     /// <inheritdoc />
-    public async Task<T> CallMethod<T>(string methodName, CancellationToken token = default, params object[] args)
+    public async Task<T> CallMethod<T>(string methodName, CancellationToken token = default, params Variant[] args)
     {
-        var res = await CallNode(methodName, token, args);
-        var returnValue = res[0];
-        return returnValue == null ? default! : (T)OpcToCSharpValueParser.ParseOpcValue(returnValue)!;
+        var res = await CallNode(methodName, args, token);
+        return converter.ConvertToType<T>( res[0]);
     }
 
 
-    private async Task<IList<object>> CallNode(string methodName, CancellationToken token = default,
-        params object[] args)
+    private async Task<IList<Variant>> CallNode(string methodName, Variant[] args, CancellationToken token = default)
     {
         try
         {
@@ -57,32 +56,35 @@ public class MethodCaller<TEntity>(
         }
     }
 
-    private async Task<IList<object>> PerformCall(
+    private async Task<IList<Variant>> PerformCall(
         string methodName,
-        object[] args,
+        Variant[] args,
         CancellationToken token)
     {
         var entityNode = await browser.GetNodeStructure(token);
-        var methodToCall = entityNode.Methods[methodName]
-                           ?? throw EntityMethodCallException.NoCallMethodModelled(
-                               entityNode.EntityName,
-                               methodName);
+        NodeId methodToCall = entityNode.Methods[methodName];
+        if (methodToCall == default(NodeId))
+        {
+            throw EntityMethodCallException.NoCallMethodModelled(
+                entityNode.EntityName,
+                methodName);
+        }
 
         var session = await factory.GetSessionForAsync<TEntity>(token);
-
-        var callArgument = args.Length == 1
-            ? args[0]
-            : args;
 
         var response = await session.Session.CallAsync(
             entityNode.NodeId,
             methodToCall,
             token,
-            callArgument);
+            args);
 
-        return response
-               ?? throw EntityMethodCallException.NullResponse(
-                   entityNode.EntityName,
-                   methodName);
+        if (response == default(ArrayOf<Variant>))
+        {
+            throw EntityMethodCallException.NullResponse(
+                entityNode.EntityName,
+                methodName);
+        }
+
+        return response.ToList();
     }
 }

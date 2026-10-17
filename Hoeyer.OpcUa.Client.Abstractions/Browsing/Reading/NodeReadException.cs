@@ -1,6 +1,5 @@
 ﻿using Hoeyer.Common.Extensions;
 using Opc.Ua;
-using static Hoeyer.OpcUa.Client.Abstractions.StatusCodeExtensions;
 
 namespace Hoeyer.OpcUa.Client.Abstractions.Browsing.Reading;
 
@@ -22,14 +21,14 @@ public sealed class NodeReadException : Exception
 
     public NodeReadException(IEnumerable<NodeId> toRead, ServiceResultException cause)
         : this(
-            $"Failed reading [{toRead.ToCommaSeparatedString()}] due to failure '{GetStatusCodeName(cause.StatusCode)}' with cause " +
+            $"Failed reading [{toRead.ToCommaSeparatedString()}] due to failure '{cause.StatusCode}' with cause " +
             cause.Message + $" and payload: {cause.Data}. See {cause.HelpLink}")
     {
     }
 
     public NodeReadException(IEnumerable<NodeId> toRead, IList<ServiceResultException> cause)
         : this(
-            $"Failed reading [{toRead.ToCommaSeparatedString()}] due to failures '{cause.Select(e => GetStatusCodeName(e.StatusCode)).SeparateBy(", ")}' with reasons {cause.Select((e, index) => (e.Message, index)).Aggregate("\n", (current, elem) => current + elem.index + ". " + elem.Message + ", ")}. \n " +
+            $"Failed reading [{toRead.ToCommaSeparatedString()}] due to failures '{cause.Select(e => e.StatusCode).SeparateBy(", ")}' with reasons {cause.Select((e, index) => (e.Message, index)).Aggregate("\n", (current, elem) => current + elem.index + ". " + elem.Message + ", ")}. \n " +
             $"The payloads were: {cause.Select((e, index) => (e, index)).Aggregate("\n", (current, elem) => current + elem.index + ". " + $"{elem.e.Data}. See {elem.e.HelpLink}")}")
     {
     }

@@ -26,4 +26,10 @@ internal static class WellKnown
         public static readonly FullyQualifiedTypeName MethodCallerType =
             new("Hoeyer.OpcUa.Client.Abstractions.Calling.IMethodCaller");
     }
+
+    public static class VariantConverter
+    {
+        public static FullyQualifiedTypeName Aggregated =>
+            new("Hoeyer.OpcUa.Core.Application.OpcTypeMappers.VariantConverter");
+    }
 }

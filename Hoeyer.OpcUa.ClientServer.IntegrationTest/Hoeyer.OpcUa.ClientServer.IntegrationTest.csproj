@@ -40,10 +40,6 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Hosting"/>
     </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Extensions\"/>
-    </ItemGroup>
     <PropertyGroup>
         <IsAotCompatible>true</IsAotCompatible>
         <EnableTrimAnalyzer>true</EnableTrimAnalyzer>

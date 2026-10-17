@@ -11,7 +11,7 @@ public sealed class GeneratorTestDriver(IIncrementalGenerator generator, Action<
     private readonly CompilationFactory _compilationFactory = new(generator.GetType().Name);
 
     [SuppressMessage("csharpsquid", "S3220",
-        Justification = "Cannot match the suggested function which uses ISourceGenerator")]
+        Justification = "Cannot match the suggested function which uses ISourceGenerator that is deprecated")]
     private readonly CSharpGeneratorDriver _driver = CSharpGeneratorDriver.Create(generator);
 
     public GeneratorResult RunGeneratorOn(string sourceCode)

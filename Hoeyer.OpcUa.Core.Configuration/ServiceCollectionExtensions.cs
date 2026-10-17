@@ -1,4 +1,5 @@
 ﻿using Hoeyer.Common.Architecture;
+using Hoeyer.Common.Utilities.Providers;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 using Hoeyer.OpcUa.Core.Application.NodeStructure;
@@ -34,6 +35,7 @@ public static class ServiceCollectionExtensions
     )
     {
         var entityServerConfiguration = configurationBuilder.Invoke(ApplicationRequirementBuilder.Create());
+        services.AddSingleton<ICultureInfoProvider, InvariantCultureInfoProvider>();
         services.AddSingleton<IApplicationRequirementsFactory>(new DefaultFactory(() => entityServerConfiguration));
         services.AddApplicationConfiguration(configureOpcUaApplicationConfiguration);
 

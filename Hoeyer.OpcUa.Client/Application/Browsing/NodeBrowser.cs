@@ -6,10 +6,16 @@ namespace Hoeyer.OpcUa.Client.Application.Browsing;
 
 public class NodeBrowser : INodeBrowser
 {
-    public Task<BrowseResponse> BrowseById(ISession session, IEnumerable<NodeId> ids,
-        NodeClass filter = NodeClass.Unspecified, CancellationToken ct = default)
+    public ValueTask<BrowseResponse> BrowseById(ISession session, IEnumerable<NodeId> ids,
+        NodeClass filter = NodeClass.Unspecified, CancellationToken ct = default) =>
+        IdBrowse(session, ids, filter, ct);
+    
+    public ValueTask<BrowseResponse> BrowseById(ISession session, NodeId id, CancellationToken ct = default) =>
+        BrowseById(session, [id], filter: NodeClass.Unspecified, ct: ct);
+
+    private static ValueTask<BrowseResponse> IdBrowse(ISession session, IEnumerable<NodeId> ids, NodeClass filter, CancellationToken ct)
     {
-        var toBrowse = ids.Select(e => new BrowseDescription
+        List<BrowseDescription> toBrowse = ids.Select(e => new BrowseDescription
         {
             BrowseDirection = BrowseDirection.Forward,
             NodeId = e,
@@ -21,23 +27,10 @@ public class NodeBrowser : INodeBrowser
             null,
             null,
             250u,
-            new BrowseDescriptionCollection(toBrowse),
+            toBrowse,
             ct);
     }
 
-    /// <inheritdoc />
-    public Task<BrowseResponse> BrowseById(ISession session, NodeId id, CancellationToken ct = default) =>
-        session.BrowseAsync(
-            null,
-            null,
-            250u,
-            new BrowseDescriptionCollection([
-                new BrowseDescription
-                {
-                    BrowseDirection = BrowseDirection.Forward,
-                    NodeId = id,
-                    ResultMask = (uint)BrowseResultMask.All,
-                    NodeClassMask = (uint)NodeClass.Unspecified
-                }
-            ]), ct);
+    
+        
 }

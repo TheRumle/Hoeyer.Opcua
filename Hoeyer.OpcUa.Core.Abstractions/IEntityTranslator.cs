@@ -6,11 +6,11 @@ public interface IEntityTranslator<T>
     public void AssignToNode(T state, IEntityNode node);
 
     /// <summary>
-    ///     Providing a property name and its value and invokes <see cref="assignment" /> using it.
+    ///     Providing a property name and its value and invokes <see cref="structure" /> using it.
     /// </summary>
     /// <param name="state">The entity used for the assignment</param>
-    /// <param name="assignment">An assignment based on name and value</param>
-    public void AssignToStructure(T state, Action<string, object> assignment);
+    /// <param name="structure">A structure to assign the entity state into</param>
+    public void AssignToStructure(T state, EntityNodeStructure structure);
 
     public T Copy(T state);
 }

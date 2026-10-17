@@ -54,10 +54,10 @@ public abstract class EntityBrowserTest<T>(IEntityBrowser<T> browser)
         await Task.WhenAll(first, second);
     }
 
-    private static Dictionary<string, object?> GetNullPropertyValues(IEntityNode entity)
+    private static Dictionary<string, PropertyState> GetNullPropertyValues(IEntityNode entity)
     {
         return entity.PropertyStates
-            .Where(e => e.Value is null or Variant { Value: null })
-            .ToDictionary<PropertyState, string, object>(prop => prop.BrowseName.Name, prop => default);
+            .Where(e => e.Value.IsNull || e.Value.IsEmptyArray)
+            .ToDictionary(prop => prop.BrowseName.Name!, prop => prop);
     }
 }

@@ -68,10 +68,10 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
         writer.WriteLine("}");
 
         writer.WriteLine("public void AssignToStructure(" + entityName + " state, ");
-        writer.WriteLine("global::System.Action<string, object> assignmentAction");
+        writer.WriteLine($"{WellKnown.FullyQualifiedInterface.NodeStructure.WithGlobalPrefix} nodeStructure");
         writer.WriteLine(")");
         writer.WriteLine("{");
-        WriteStateAssignment(writer, typeContext.Node, typeContext.SemanticModel);
+        WriteStateAssignment(writer, properties, typeContext.SemanticModel);
         writer.WriteLine("}");
 
 
@@ -156,12 +156,13 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
                 propertySymbol.Type.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
             var getBrowseName = $"_browseNameLookup.PropertyToBrowseName[\"{name}\"]";
             var getPropertyValue = $"state.PropertyByBrowseName[{getBrowseName}].Value";
-            
+
             var listInterface = GetListInterface(propertySymbol, semanticModel);
             if (listInterface is not null)
             {
                 var genericArg = listInterface.TypeArguments.First().Name;
-                writer.Write($"var {name} = {Converter}.ConvertToCollectionType<{genericArg}, List<{genericArg}>>({getPropertyValue});");
+                writer.Write(
+                    $"var {name} = {Converter}.ConvertToCollectionType<{genericArg}, List<{genericArg}>>({getPropertyValue});");
             }
             else
             {
@@ -193,33 +194,40 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
             {
                 convert = $"{Converter}.ConvertToVariant(state." + propName + ")";
             }
-            
+
             writer.WriteLine("node.PropertyByBrowseName[_browseNameLookup.PropertyToBrowseName[" + "\"" + propName +
                              "\"" +
                              "]].Value = " + convert + ";");
         }
     }
 
-    private static void WriteStateAssignment(SourceCodeWriter writer,
-        TypeDeclarationSyntax syntax, SemanticModel model)
+    private static void WriteStateAssignment(
+        SourceCodeWriter writer,
+        IPropertySymbol[] propertySymbols,
+        SemanticModel model)
     {
-        foreach (var property in syntax.Members.OfType<PropertyDeclarationSyntax>())
+        foreach (var property in propertySymbols)
         {
-            var propName = property.Identifier.Text;
-            var listInterface = GetListInterface(model.GetDeclaredSymbol(property)!, model);
+            var propName = property.Name;
+            string convert = "";
 
-            var toList = listInterface is not null
-                ? $".{nameof(Enumerable.ToArray)}()"
-                : "";
-
-            writer.WriteLine("assignmentAction(\"" + propName + "\", state." + propName + toList + ");");
+            var listInterface = GetListInterface(property, model)?.TypeArguments[0];
+            if (listInterface is not null)
+            {
+                convert = $"{Converter}.ConvertCollectionVariant(state." + propName + ")";
+            }
+            else
+            {
+                convert = $"{Converter}.ConvertToVariant(state." + propName + ")";
+            }
+            writer.WriteLine($"nodeStructure.Properties[\"{propName}\"].Value = {convert};");
         }
     }
 
 
     private static INamedTypeSymbol? GetListInterface(IPropertySymbol typeSymbol, SemanticModel model)
     {
-        var ilistType = model.Compilation.GetTypeByMetadataName("System.Collections.Generic.IList`1");
+        var ilistType = model.Compilation.GetTypeByMetadataName("System.Collections.Generic.IEnumerable`1");
         return typeSymbol.Type.AllInterfaces
             .FirstOrDefault(i => i.OriginalDefinition.Equals(ilistType, SymbolEqualityComparer.Default));
     }

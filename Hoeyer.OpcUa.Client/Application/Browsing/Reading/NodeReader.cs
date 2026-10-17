@@ -19,10 +19,11 @@ internal sealed class NodeReader(ILogger<NodeReader> logger) : INodeReader
 
         logger.LogTrace("Reading nodes {nodes}", string.Join(", ", idList));
         var responseTuples = await session.ReadNodesAsync(idList, filter, ct: ct);
-        var zipped = responseTuples
+        var (x, y) = (responseTuples.Item1.ToArray()!, responseTuples.Item2.ToArray()!);
+       var zipped = (x, y)
             .Zip().ToList();
 
-        var variables = zipped
+        List<VariableNode> variables = zipped
             .Where(readResponse => readResponse.second.IsGood())
             .Select(readResponse => readResponse.first)
             .OfType<VariableNode>()
@@ -37,11 +38,11 @@ internal sealed class NodeReader(ILogger<NodeReader> logger) : INodeReader
             {
                 logger.LogTrace("Assigning {variable} to {value}", variables[i].BrowseName.Name,
                     readValues[i].WrappedValue);
-                variables[i]!.Value = readValues[i].WrappedValue;
+                variables[i].Value = readValues[i].WrappedValue;
             }
         }
 
-        return new ReadResult(zipped!);
+        return new ReadResult(zipped);
     }
 
     public async Task<Node> ReadNodeAsync(ISession session, NodeId nodeId, CancellationToken ct = default)

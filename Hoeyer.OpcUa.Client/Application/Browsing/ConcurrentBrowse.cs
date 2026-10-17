@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.OpcUa.Client.Abstractions.Browsing;
+using Hoeyer.OpcUa.Core.Extensions;
 using Opc.Ua;
 using Opc.Ua.Client;
 using INodeBrowser = Hoeyer.OpcUa.Client.Abstractions.Browsing.INodeBrowser;
@@ -53,7 +54,7 @@ internal sealed class ConcurrentBrowse(INodeBrowser browser, IProducerConsumerCo
         return await browser.BrowseById(session, visiting.Select(e => e.NodeId), ct: cancellationToken)
             .SelectAsync(browseResults => browseResults
                 .Results
-                .SelectMany<BrowseResult, ReferenceDescription>(browseResult => browseResult.References)
+                .SelectMany<BrowseResult, ReferenceDescription>(browseResult => browseResult.References.Select(r => r))
                 .Select(reference => new ReferenceWithId(session, reference))
                 .Where(e => _visited.TryAdd(e.NodeId, e))
                 .ToList());

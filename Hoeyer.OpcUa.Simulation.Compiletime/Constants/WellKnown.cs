@@ -31,9 +31,6 @@ internal static class WellKnown
     {
         public const string SIMULATION_INTERFACE_NAME = "ISimulation";
 
-        public static readonly FullyQualifiedTypeName MethodCallerType =
-            new("Hoeyer.OpcUa.Client.Abstractions.Calling.IMethodCaller");
-
         public static readonly FullyQualifiedTypeName IArgsContainer =
             SimulationApiName(".IArgsContainer");
 

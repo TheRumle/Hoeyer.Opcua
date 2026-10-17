@@ -25,7 +25,7 @@ public static class ConverterServiceCollectionExtensions
         }
 
         services.AddSingleton<VariantConverterCollection>(provider => CreateConverterCollection(provider, assemblyTypes));
-        services.AddSingleton<AggregateVariantConverter>();
+        services.AddSingleton<VariantConverter>();
         return services;
     }
 

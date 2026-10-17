@@ -5,7 +5,6 @@ using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 using Hoeyer.OpcUa.Client.Extensions;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Microsoft.Extensions.Logging;
-using Opc.Ua;
 using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Subscriptions;
@@ -31,7 +30,7 @@ internal sealed class EntitySubscriptionManager<T>(
         var session = await sessionFactory.GetSessionForAsync<T>(cancellationToken);
         (EntitySubscription, MonitoredItems) =
             await monitorFactory.CreateAndMonitorAll(session, CurrentNodeState, HandleChange, cancellationToken);
-        await session.Session.PublishAsync(null, new SubscriptionAcknowledgementCollection(), cancellationToken);
+        await session.Session.PublishAsync(null, [], cancellationToken);
         return subscriptionManager.Subscribe(consumer);
     }
 
@@ -50,7 +49,7 @@ internal sealed class EntitySubscriptionManager<T>(
 
         var propertyIdentity = CurrentNodeState.PropertyByBrowseName[propertyName].ToIdentityTuple();
         await monitorFactory.MonitorProperty(EntitySubscription, propertyIdentity, cancellationToken);
-        await session.Session.PublishAsync(null, new SubscriptionAcknowledgementCollection(), cancellationToken);
+        await session.Session.PublishAsync(null, [], cancellationToken);
         return subscriptionManager.Subscribe(consumer);
     }
 
@@ -63,17 +62,17 @@ internal sealed class EntitySubscriptionManager<T>(
 
         try
         {
-            var properties = CurrentNodeState!.PropertyByBrowseName!;
+            var properties = CurrentNodeState!.PropertyByBrowseName;
             if (!properties.TryGetValue(item.DisplayName, out var propertyToChange))
             {
                 logger.LogInformation("Entity does not have any property named {Item}", item.DisplayName);
                 return;
             }
 
-            var values = item.DequeueValues().ToArray();
+            var values = item.DequeueValues().Select(e => e.WrappedValue);
             foreach (var value in values)
             {
-                propertyToChange.Value = value.Value;
+                propertyToChange.Value = value;
                 subscriptionManager.Publish(translator.Translate(CurrentNodeState));
             }
         }

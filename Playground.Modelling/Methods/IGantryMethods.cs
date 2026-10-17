@@ -11,4 +11,7 @@ public interface IGantryMethods
     Task<int> PlaceContainer(Position position);
     Task PickUpContainer(Position position);
     public Task AssignContainer(Guid guid);
+    public Task AssignContainers(List<Guid> guids);
+    public Task X(int a, int b);
+    public Task Y();
 }

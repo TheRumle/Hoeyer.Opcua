@@ -13,7 +13,7 @@ internal static class WellKnown
     public static class VariantConverter
     {
         public static FullyQualifiedTypeName Aggregated =>
-            new("Hoeyer.OpcUa.Core.Application.OpcTypeMappers.AggregateVariantConverter");
+            new("Hoeyer.OpcUa.Core.Application.OpcTypeMappers.VariantConverter");
     }
 
     public static class PropertyFactoryName
@@ -30,6 +30,10 @@ internal static class WellKnown
         public static FullyQualifiedTypeName IEntityNode =>
             CoreApiTypeName("IEntityNode");
 
+        public static FullyQualifiedTypeName NodeStructure =>
+            CoreApiTypeName("EntityNodeStructure");
+
+        
         private static FullyQualifiedTypeName CoreTypeName(string className) => new("Hoeyer.OpcUa.Core." + className);
 
         public static FullyQualifiedTypeName DataTypeTranslator =>

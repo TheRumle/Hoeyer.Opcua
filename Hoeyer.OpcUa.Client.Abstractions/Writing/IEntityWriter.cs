@@ -1,10 +1,6 @@
 ﻿namespace Hoeyer.OpcUa.Client.Abstractions.Writing;
 
-public interface IEntityWriter
-{
-    public Task AssignEntityProperties(IEnumerable<(string propertyName, object propertyValue)> entityState,
-        CancellationToken cancellationToken = default);
-}
+public interface IEntityWriter;
 
 public interface IEntityWriter<in T> : IEntityWriter
 {
