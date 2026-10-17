@@ -9,36 +9,36 @@ public static class ServiceCollectionExtensions
         =>
             collection.AddServiceAndImpl(service, impl, ServiceLifetime.Singleton);
 
-    public static IServiceCollection AddServiceAndImplTransient(this IServiceCollection collection, Type service,
-        Type impl)
-        =>
-            collection.AddServiceAndImpl(service, impl, ServiceLifetime.Transient);
-
-    public static IServiceCollection AddServiceAndImplScoped(this IServiceCollection collection, Type service,
-        Type impl)
-        =>
-            collection.AddServiceAndImpl(service, impl, ServiceLifetime.Scoped);
-
-
     public static IServiceCollection AddServiceAndImplSingleton<T>(this IServiceCollection collection, Type impl)
         =>
             collection.AddServiceAndImpl(typeof(T), impl, ServiceLifetime.Singleton);
-
-    public static IServiceCollection AddServiceAndImplTransient<T>(this IServiceCollection collection, Type impl)
-        =>
-            collection.AddServiceAndImpl(typeof(T), impl, ServiceLifetime.Transient);
-
-    public static IServiceCollection AddServiceAndImplScoped<T>(this IServiceCollection collection, Type impl)
-        =>
-            collection.AddServiceAndImpl(typeof(T), impl, ServiceLifetime.Scoped);
 
     public static IServiceCollection AddServiceAndImplSingleton<TService, TImpl>(this IServiceCollection collection)
         =>
             collection.AddServiceAndImpl(typeof(TService), typeof(TImpl), ServiceLifetime.Singleton);
 
+    public static IServiceCollection AddServiceAndImplTransient(this IServiceCollection collection, Type service,
+        Type impl)
+        =>
+            collection.AddServiceAndImpl(service, impl, ServiceLifetime.Transient);
+
+
+    public static IServiceCollection AddServiceAndImplTransient<T>(this IServiceCollection collection, Type impl)
+        =>
+            collection.AddServiceAndImpl(typeof(T), impl, ServiceLifetime.Transient);
+
     public static IServiceCollection AddServiceAndImplTransient<TService, TImpl>(this IServiceCollection collection)
         =>
             collection.AddServiceAndImpl(typeof(TService), typeof(TImpl), ServiceLifetime.Transient);
+
+    public static IServiceCollection AddServiceAndImplScoped<T>(this IServiceCollection collection, Type impl)
+        =>
+            collection.AddServiceAndImpl(typeof(T), impl, ServiceLifetime.Scoped);
+
+    public static IServiceCollection AddServiceAndImplScoped(this IServiceCollection collection, Type service,
+        Type impl)
+        =>
+            collection.AddServiceAndImpl(service, impl, ServiceLifetime.Scoped);
 
     public static IServiceCollection AddServiceAndImplScoped<TService, TImpl>(this IServiceCollection collection)
         =>

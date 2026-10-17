@@ -1,8 +1,12 @@
-﻿using Opc.Ua;
+﻿using System.Diagnostics.CodeAnalysis;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 
-public interface IEntityNodeAlarmAssigner<T>
+[SuppressMessage("Maintainability", checkId: "S2326", Justification = "Used for injection and modelling")]
+public interface IEntityNodeAlarmAssigner<T> : IEntityNodeAlarmAssigner;
+
+public interface IEntityNodeAlarmAssigner
 {
     public AlarmCollection AssignAlarms(IEnumerable<PropertyState> properties);
 }

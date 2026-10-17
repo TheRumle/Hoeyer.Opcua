@@ -8,11 +8,11 @@ public sealed class CertificateBasedSecurityConfigurationFactory(
     )
     : IApplicationSecurityConfigurationFactory
 {
-    public SecurityConfiguration Configure(ApplicationConfiguration config)
+    public SecurityConfiguration Configure(ApplicationConfiguration configuration)
     {
         var options = targetServerInfo.CertificateConfiguration;
 
-        var securityConfiguration = config.SecurityConfiguration;
+        var securityConfiguration = configuration.SecurityConfiguration;
 
         securityConfiguration.ApplicationCertificate ??=
             new CertificateIdentifier();
@@ -60,9 +60,9 @@ public sealed class CertificateBasedSecurityConfigurationFactory(
 
         securityConfiguration.AddAppCertToTrustedStore = options.AddAppCertToTrustedStore;
 
-        config.CertificateManager ??= new CertificateManager(telemetryContext);
+        configuration.CertificateManager ??= new CertificateManager(telemetryContext);
 
-        config.SecurityConfiguration = securityConfiguration;
+        configuration.SecurityConfiguration = securityConfiguration;
 
         return securityConfiguration;
     }

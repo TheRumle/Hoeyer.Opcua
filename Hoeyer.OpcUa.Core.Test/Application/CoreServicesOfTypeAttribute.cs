@@ -7,13 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Core.Test.Application;
 
-public class CoreServicesOfType<T>(
+public class CoreServicesOfTypeAttribute<T>(
     Type wantedGenericService,
     IServiceCollection collection) : DataSourceGeneratorAttribute<GenericImplementation<T>> where T : class
 {
     private readonly IServiceProvider _serviceProvider = collection.BuildServiceProvider();
 
-    public CoreServicesOfType(Type wantedGenericService) : this(
+    public CoreServicesOfTypeAttribute(Type wantedGenericService) : this(
         wantedGenericService,
         new OpcUaCoreServicesFixtureAttribute().ServiceCollection)
     {

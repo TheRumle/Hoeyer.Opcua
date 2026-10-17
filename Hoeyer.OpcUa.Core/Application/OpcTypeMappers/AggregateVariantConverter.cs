@@ -1,7 +1,9 @@
-﻿using Opc.Ua;
+﻿using System.Diagnostics.CodeAnalysis;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 
+[SuppressMessage("Maintainability", checkId: "S2325", Justification = "The functional surface is used in generated code and must be injectable")]
 public sealed class AggregateVariantConverter(VariantConverterCollection converterCollection)
 {
     public Variant ConvertCollectionVariant(IEnumerable<bool> data) => Variant.From(data.ToArray());

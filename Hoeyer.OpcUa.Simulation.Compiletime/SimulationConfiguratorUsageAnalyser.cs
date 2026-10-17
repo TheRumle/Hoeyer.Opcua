@@ -35,7 +35,7 @@ public sealed class SimulationConfiguratorUsageAnalyser : DiagnosticAnalyzer
             return;
         }
 
-        var symbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
+        var symbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax, context.CancellationToken);
         if (symbol is not
             {
                 IsAbstract: false,
@@ -106,7 +106,7 @@ public sealed class SimulationConfiguratorUsageAnalyser : DiagnosticAnalyzer
         InputArgumentStructureInfo inputArgInfo, ITypeSymbol actualReturnType)
     {
         //Is always a task
-        if (simulatedMethod!.ReturnType is not INamedTypeSymbol { Arity: 1 } taskReturn)
+        if (simulatedMethod.ReturnType is not INamedTypeSymbol { Arity: 1 } taskReturn)
         {
             reporter.ReportDiagnostic(SimulationRules.MustBeActionSimulation);
             return;

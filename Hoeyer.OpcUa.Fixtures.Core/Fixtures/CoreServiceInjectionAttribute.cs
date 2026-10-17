@@ -3,7 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Fixtures.Core.Fixtures;
 
-public class CoreServiceInjection : DependencyInjectionDataSourceAttribute<IServiceScope>
+[AttributeUsage(AttributeTargets.Class|AttributeTargets.Method)]
+public sealed class CoreServiceInjectionAttribute : DependencyInjectionDataSourceAttribute<IServiceScope>
 {
     private readonly IServiceProvider _serviceProvider = CreateSharedServiceProvider();
 

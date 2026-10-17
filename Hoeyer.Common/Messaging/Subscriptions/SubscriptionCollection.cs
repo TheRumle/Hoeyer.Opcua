@@ -31,12 +31,4 @@ public sealed class SubscriptionCollection<T> : ISubscriptionCollection<T>
     {
         _subscriptions.TryRemove(messageSubscription, out var _);
     }
-
-    [Pure]
-    public IMessageSubscription<T> CreateSubscriptionFor(IMessageConsumer<T> subscriber)
-    {
-        var subscription = _subscriptionFactory.Invoke(subscriber);
-        _subscriptions.TryAdd(subscription.SubscriptionId, subscription);
-        return subscription;
-    }
 }

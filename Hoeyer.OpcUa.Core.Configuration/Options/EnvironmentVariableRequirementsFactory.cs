@@ -26,7 +26,7 @@ internal class EnvironmentVariableRequirementsFactory(
         var certificateOptionsValue = certificateOptions.Value;
 
         logger.LogInformation(
-            "Creating application requirements from OpcUa options {Options} and certificate information with root {certificateOptions}",
+            "Creating application requirements from OpcUa options {Options} and certificate information with root {CertificateOptions}",
             uaOptionsValue, certificateOptionsValue);
         var applicationUri = uaOptionsValue.ApplicationUri.StartsWith('/')
             ? uaOptionsValue.ApplicationUri
@@ -56,13 +56,13 @@ internal class EnvironmentVariableRequirementsFactory(
             RejectedStorePath = Path.Combine(root, "Issuer"),
             TrustedStorePath = Path.Combine(root, "Rejected"),
             AcceptRejectedCertificates = certificateOptionsValue.AcceptRejectedCertificates ??
-                                         throw new NullReferenceException(
+                                         throw new ArgumentException(
                                              $"{nameof(CertificateConfigurationOptions)} had null value in {nameof(CertificateConfigurationOptions.AcceptRejectedCertificates)}"),
             AddAppCertToTrustedStore = certificateOptionsValue.AddAppCertToTrustedStore ??
-                                       throw new NullReferenceException(
+                                       throw new ArgumentException(
                                            $"{nameof(CertificateConfigurationOptions)} had null value in {nameof(CertificateConfigurationOptions.AddAppCertToTrustedStore)}"),
             AutoAcceptUntrustedCertificates = certificateOptionsValue.AutoAcceptUntrustedCertificates ??
-                                              throw new NullReferenceException(
+                                              throw new ArgumentException(
                                                   $"{nameof(CertificateConfigurationOptions)} had null value in {nameof(CertificateConfigurationOptions.AutoAcceptUntrustedCertificates)}"),
             StoreType = CertificateStoreType.Directory
         };

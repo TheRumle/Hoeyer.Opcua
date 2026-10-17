@@ -98,6 +98,4 @@ public abstract class FieldPropertyStateFactory : IPropertyStateFactory
         state.DisplayName = new LocalizedText(browseName);
         return state;
     }
-
-    public PropertyState ContructPropertyState(string browseName, PropertyInfo propertyInfo, BaseInstanceState parent) => throw new NotImplementedException();
 }

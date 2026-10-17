@@ -35,14 +35,23 @@ public static class AssemblyExtensions
         return type.GetCustomAttributes().FirstOrDefault(e => e.GetType().IsClosedGenericOf(genericAttribute));
     }
 
-    public static bool IsAnnotatedWith<T>(this Type type) where T : Attribute
+    public static bool IsAnnotatedWith<T>(this Type type) where T : Attribute => IsAnnotatedWith(type, typeof(T));
+
+    public static bool IsAnnotatedWith(this Type type, Type attribute)
     {
         if (type == null)
         {
             throw new ArgumentNullException(nameof(type));
         }
 
-        if (type.GetCustomAttributes<T>().Any() || type.GetInterfaces().Any(i => i.GetCustomAttribute<T>() != null))
+        if (attribute == null || attribute.IsAssignableFrom(typeof(Attribute)))
+        {
+            throw new ArgumentNullException(nameof(attribute),
+                $"{nameof(attribute)} was not assignable to {nameof(Attribute)}");
+
+        }
+
+        if (type.GetCustomAttributes(attribute).Any() || type.GetInterfaces().Any(i => i.GetCustomAttribute(attribute) != null))
         {
             return true;
         }
@@ -50,7 +59,7 @@ public static class AssemblyExtensions
         var baseType = type.BaseType;
         while (baseType != null)
         {
-            if (baseType.GetCustomAttribute<T>() != null)
+            if (baseType.GetCustomAttribute(attribute) != null)
             {
                 return true;
             }

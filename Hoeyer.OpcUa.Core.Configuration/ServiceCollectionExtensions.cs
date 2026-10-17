@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Hoeyer.Common.Architecture;
+﻿using Hoeyer.Common.Architecture;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Abstractions.NodeStructure;
 using Hoeyer.OpcUa.Core.Application.NodeStructure;
@@ -28,17 +27,6 @@ public static class ServiceCollectionExtensions
         return applicationBuilder.Services.AddOpcUaFromOptions(configureOpcUaDefaults);
     }
 
-    public static OnGoingOpcEntityServiceRegistrationWithModels WithEntityModelsFrom(
-        this OnGoingOpcEntityServiceRegistration registration,
-        params IEnumerable<Type> markerTypes)
-    {
-        var assemblies = markerTypes.Select(e => new AssemblyMarker(e)).ToArray();
-        registration.Collection.WithEntityModelsFrom(assemblies);
-        return new OnGoingOpcEntityServiceRegistrationWithModels(
-            registration.Collection,
-            registration.Collection.BuildServiceProvider()
-                .GetRequiredService<EntityTypesCollection>());
-    }
 
     public static OnGoingOpcEntityServiceRegistration AddOpcUa(this IServiceCollection services,
         Func<IApplicationTargetConfigurationBuilder, IApplicationConfigurationRequirements> configurationBuilder,
@@ -89,45 +77,59 @@ public static class ServiceCollectionExtensions
     }
 
     public static OnGoingOpcEntityServiceRegistrationWithModels WithEntityModelsFrom(
-        this IServiceCollection collection,
-        params AssemblyMarker[] assemblyMarkers
-    )
+        this OnGoingOpcEntityServiceRegistration registration,
+        params IEnumerable<Type> markerTypes)
     {
-        var assemblyTypes = assemblyMarkers.SelectMany(e => e.TypesInAssembly).ToArray();
-        collection.AddKeyedSingleton(ServiceKeys.MODELLING, new ServiceAssemblyMarkerCollection(assemblyMarkers));
-        collection.AddSingleton<EntityTypesCollection>();
-        collection.AddSingleton<TranslatorTypesCollection>();
-        
-        var provider = collection.BuildServiceProvider();
-        var entityTypesCollection = provider.GetRequiredService<EntityTypesCollection>();
-        
-        AddTypeModel(collection, entityTypesCollection);
-        AddModelFactory(collection, assemblyTypes);
-
-        var translatorCollection = provider.GetRequiredService<TranslatorTypesCollection>();
-        foreach (var translator in translatorCollection.Translators)
-        {
-            collection.AddSingleton(translator.Service, translator.Impl);
-        }
-
-        return new OnGoingOpcEntityServiceRegistrationWithModels
-        (
-            collection,
-            entityTypesCollection
-        );
+        var assemblies = markerTypes.Select(e => new AssemblyMarker(e)).ToArray();
+        registration.Collection.WithEntityModelsFrom(assemblies);
+        return new OnGoingOpcEntityServiceRegistrationWithModels(
+            registration.Collection,
+            registration.Collection.BuildServiceProvider()
+                .GetRequiredService<EntityTypesCollection>());
     }
 
-    private static void AddTypeModel(this IServiceCollection collection, EntityTypesCollection entities)
+
+    extension(IServiceCollection collection)
     {
-        collection.AddSingleton(typeof(IBrowseNameCollection<>), typeof(EntityTypeModel<>));
-        collection.AddSingleton(typeof(IEntityTypeModel<>), typeof(EntityTypeModel<>));
-        collection.AddSingleton(typeof(IBehaviourTypeModel<>), typeof(EntityTypeModel<>));
-        foreach (var entity in entities.ModelledEntities)
+        public OnGoingOpcEntityServiceRegistrationWithModels WithEntityModelsFrom(params AssemblyMarker[] assemblyMarkers
+        )
         {
-            collection.AddSingleton(
-                typeof(IBrowseNameCollection),
-                provider => provider.GetRequiredService(typeof(IBrowseNameCollection<>).MakeGenericType(entity))
+            var assemblyTypes = assemblyMarkers.SelectMany(e => e.TypesInAssembly).ToArray();
+            collection.AddKeyedSingleton(ServiceKeys.MODELLING, new ServiceAssemblyMarkerCollection(assemblyMarkers));
+            collection.AddSingleton<EntityTypesCollection>();
+            collection.AddSingleton<TranslatorTypesCollection>();
+        
+            var provider = collection.BuildServiceProvider();
+            var entityTypesCollection = provider.GetRequiredService<EntityTypesCollection>();
+        
+            AddTypeModel(collection, entityTypesCollection);
+            AddModelFactory(collection, assemblyTypes);
+
+            var translatorCollection = provider.GetRequiredService<TranslatorTypesCollection>();
+            foreach (var translator in translatorCollection.Translators)
+            {
+                collection.AddSingleton(translator.Service, translator.Impl);
+            }
+
+            return new OnGoingOpcEntityServiceRegistrationWithModels
+            (
+                collection,
+                entityTypesCollection
             );
+        }
+
+        private void AddTypeModel(EntityTypesCollection entities)
+        {
+            collection.AddSingleton(typeof(IBrowseNameCollection<>), typeof(EntityTypeModel<>));
+            collection.AddSingleton(typeof(IEntityTypeModel<>), typeof(EntityTypeModel<>));
+            collection.AddSingleton(typeof(IBehaviourTypeModel<>), typeof(EntityTypeModel<>));
+            foreach (var entity in entities.ModelledEntities)
+            {
+                collection.AddSingleton(
+                    typeof(IBrowseNameCollection),
+                    provider => provider.GetRequiredService(typeof(IBrowseNameCollection<>).MakeGenericType(entity))
+                );
+            }
         }
     }
 
@@ -141,15 +143,6 @@ public static class ServiceCollectionExtensions
         collection.AddServiceAndImplSingleton(typeof(IEntityNodeAlarmAssigner<>), typeof(EntityNodeAlarmAssigner<>));
         collection.AddVariantBuilders([.. assemblyTypes, typeof(UuidConverter)]);
         collection.AddPropertyStateFactories(assemblyTypes);
-    }
-
-    private static void AddTranslators(IServiceCollection services)
-    {
-        var translatorCollection = services.BuildServiceProvider().GetRequiredService<TranslatorTypesCollection>();
-        foreach (var translator in translatorCollection.Translators)
-        {
-            services.AddSingleton(translator.Service, translator.Impl);
-        }
     }
 
     private static void AddPropertyStateFactories(this IServiceCollection collection, IEnumerable<Type> assemblyTypes)

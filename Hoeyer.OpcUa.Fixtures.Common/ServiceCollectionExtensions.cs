@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using System.Diagnostics.Metrics;
-using System.Reflection;
-using Hoeyer.OpcUa.Core.Configuration;
+﻿using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Configuration.ConfigurationBuilder;
 using Hoeyer.OpcUa.Fixtures.Common.TUnit.Configuration.Logging;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,19 +20,19 @@ public static class ServiceCollectionExtensions
         Type[] entityAssemblyMarkers)
     {
         return services
-            .AddSingleton<TUnitLoggerProvider>()
             .AddSingleton(typeof(ILogger<>), typeof(Logger<>))
+            .AddSingleton<ILoggerProvider, TUnitLoggerProvider>()
             .AddSingleton(services)
             .AddSingleton<ILoggerFactory>(p =>
                 LoggerFactory.Create(builder =>
                 {
                     builder.ClearProviders();
                     builder.SetMinimumLevel(LogLevel.Debug);
-                    builder.AddProvider(p.GetRequiredService<TUnitLoggerProvider>());
+                    builder.AddProvider(p.GetRequiredService<ILoggerProvider>());
                 }))
             .AddSingleton<ITelemetryContext>(p =>
             {
-                var loggerFactory = p.GetRequiredService<TUnitLoggerProvider>();
+                var loggerFactory = p.GetRequiredService<ILoggerProvider>();
                 return DefaultTelemetry.Create(configure =>
                 {
                     configure.AddProvider(loggerFactory).SetMinimumLevel(LogLevel.Debug);

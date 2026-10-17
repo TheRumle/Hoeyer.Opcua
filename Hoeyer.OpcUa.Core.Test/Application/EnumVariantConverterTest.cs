@@ -4,10 +4,10 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Test.Application;
 
-[TestSubject(typeof(EnumVariantConverter<TestEnum>))]
+[TestSubject(typeof(EnumVariantConverter<TestValues>))]
 public sealed class EnumVariantConverterTest
 {
-    private enum TestEnum
+    private enum TestValues
     {
         First = 1,
         Second = 10
@@ -16,10 +16,10 @@ public sealed class EnumVariantConverterTest
     [Test]
     public async Task CanParseEnumToEnum()
     {
-        var value = TestEnum.Second;
+        var value = TestValues.Second;
         var variant = Variant.From(value);
 
-        var result = new EnumVariantConverter<TestEnum>()
+        var result = new EnumVariantConverter<TestValues>()
             .GetValue(variant);
 
         await Assert.That(result).IsEqualTo(value);
@@ -28,12 +28,12 @@ public sealed class EnumVariantConverterTest
     [Test]
     public async Task CanConvertEnumToVariant()
     {
-        var value = TestEnum.Second;
+        var value = TestValues.Second;
 
-        var variant = new EnumVariantConverter<TestEnum>()
+        var variant = new EnumVariantConverter<TestValues>()
             .WithValue(value);
 
-        var result = new EnumVariantConverter<TestEnum>()
+        var result = new EnumVariantConverter<TestValues>()
             .GetValue(variant);
 
         await Assert.That(result).IsEqualTo(value);
@@ -45,7 +45,7 @@ public sealed class EnumVariantConverterTest
         var variant = Variant.From("Not an enum");
 
         await Assert.That(() =>
-                new EnumVariantConverter<TestEnum>().GetValue(variant))
+                new EnumVariantConverter<TestValues>().GetValue(variant))
             .Throws<InvalidOperationException>();
     }
 
@@ -56,7 +56,7 @@ public sealed class EnumVariantConverterTest
         variant.ConvertTo(BuiltInType.Enumeration);
 
         await Assert.That(() =>
-                new EnumVariantConverter<TestEnum>().GetValue(variant))
+                new EnumVariantConverter<TestValues>().GetValue(variant))
             .Throws<InvalidOperationException>();
     }
 }

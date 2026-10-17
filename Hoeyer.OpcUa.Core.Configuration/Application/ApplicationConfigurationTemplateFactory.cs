@@ -5,7 +5,6 @@ namespace Hoeyer.OpcUa.Core.Configuration.Application;
 internal sealed class ApplicationConfigurationTemplateFactory(
     IApplicationSecurityConfigurationFactory securityConfigurationFactory,
     IApplicationConfigurationRequirements targetServerInfo,
-    ITelemetryContext context,
     ApplicationConfigurationSetup setup)
     : IApplicationConfigurationTemplateFactory
 {

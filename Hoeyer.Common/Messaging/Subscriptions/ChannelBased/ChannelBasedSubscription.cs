@@ -14,7 +14,6 @@ public sealed record ChannelBasedSubscription<T> : IMessageSubscription<T>
     private readonly ILogger _logger;
     private readonly IDisposable? _loggingScope;
     private readonly Action? _onDispose;
-    private readonly Task _processingTask;
 
     public ChannelBasedSubscription(Guid id,
         IMessageConsumer<T> consumer,
@@ -27,10 +26,10 @@ public sealed record ChannelBasedSubscription<T> : IMessageSubscription<T>
         _consumer = consumer;
         _channel = channel;
         _logger = logger;
-        _processingTask = ProcessQueueAsync(_cts.Token);
         ConsumerName = _consumer.GetType().Name;
 
-        _processingTask.ContinueWith(
+        var processingTask = ProcessQueueAsync(_cts.Token);
+        processingTask.ContinueWith(
             t => _logger.LogError(t.Exception, "Subscription processing failed."),
             TaskContinuationOptions.OnlyOnFaulted);
 
@@ -67,7 +66,7 @@ public sealed record ChannelBasedSubscription<T> : IMessageSubscription<T>
         }
 
         IsCancelled = true;
-        _cts.Cancel();
+        _cts.Dispose();
         _channel.Writer.TryComplete();
         _logger.LogDebug("Subscription cancelled");
         _onDispose?.Invoke();
@@ -89,9 +88,9 @@ public sealed record ChannelBasedSubscription<T> : IMessageSubscription<T>
                 _consumer.Consume(message);
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException e)
         {
-            _logger.LogInformation("Subscription cancelled.");
+            _logger.LogInformation(e, "Subscription cancelled");
         }
         catch (Exception ex)
         {

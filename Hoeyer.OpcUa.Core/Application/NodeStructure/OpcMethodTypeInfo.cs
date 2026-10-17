@@ -5,6 +5,10 @@ namespace Hoeyer.OpcUa.Core.Application.NodeStructure;
 
 internal sealed record OpcMethodTypeInfo : IOpcTypeInfo
 {
+
+    public BaseInstanceState InstanceState { get; private set; }
+    public MethodState Method { get; set; }
+    
     public OpcMethodTypeInfo(BaseObjectState parent, string methodName, Type? returnType,
         IEnumerable<ParameterInfo> arguments)
         : this(parent, methodName, returnType, arguments.Select(e => (Type: e.ParameterType, name: e.Name)))
@@ -12,10 +16,6 @@ internal sealed record OpcMethodTypeInfo : IOpcTypeInfo
         InstanceState = parent;
         throw new NotImplementedException("Not yet migrated to 2.0");
     }
-
-
-    public BaseInstanceState InstanceState { get; private set; }
-    public MethodState Method { get; set; }
 
 
     public OpcMethodTypeInfo(BaseObjectState parent, string methodName, Type? returnType,

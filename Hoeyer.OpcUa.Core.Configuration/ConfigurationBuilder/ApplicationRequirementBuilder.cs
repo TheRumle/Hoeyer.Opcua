@@ -27,7 +27,7 @@ public class ApplicationRequirementBuilder : IApplicationTargetConfigurationBuil
             throw new ArgumentException($"The host uri {host} is not a base of application {applicationUri}");
         }
 
-        return new ApplicationConfigurationRequirements(_serverId, _serverName, host, applicationUri, _security);
+        return new ApplicationConfigurationRequirements(_serverId, _serverName, host, applicationUri, _security!);
     }
 
     public IServerNameStep WithServerId(string serverId)
@@ -99,6 +99,6 @@ public class ApplicationRequirementBuilder : IApplicationTargetConfigurationBuil
         return additionalPath;
     }
 
-    public IApplicationTargetConfigurationBuildable WithDefaultSecurityConfiguration() =>
+    public static IApplicationTargetConfigurationBuildable WithDefaultSecurityConfiguration() =>
         throw new NotImplementedException();
 }

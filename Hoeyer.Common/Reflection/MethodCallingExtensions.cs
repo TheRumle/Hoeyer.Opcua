@@ -7,7 +7,7 @@ public static class MethodCallingExtensions
 {
     public static StaticRegistration CreateStaticMethodInvoker(this Type t, string name, IServiceCollection collection)
     {
-        var m = t.GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Public);
+        var m = t.GetMethod(name, BindingFlags.Public | BindingFlags.Static | BindingFlags.Public);
         return new StaticRegistration(m, collection);
     }
 

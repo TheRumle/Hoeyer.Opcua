@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.OpcUa.Fixtures.Core.Fixtures;
 
+[AttributeUsage(AttributeTargets.Class| AttributeTargets.Constructor | AttributeTargets.Method)]
 public class OpcUaCoreServicesFixtureAttribute : DependencyInjectionDataSourceAttribute<IServiceScope>
 {
     public readonly OnGoingOpcEntityServiceRegistration OnGoingOpcEntityServiceRegistration;

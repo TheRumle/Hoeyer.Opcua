@@ -7,7 +7,7 @@ public sealed class BrowseNameAttribute : Attribute
     {
         if (string.IsNullOrEmpty(browseName))
         {
-            throw new ArgumentOutOfRangeException(nameof(browseName) + " was null or empty.");
+            throw new ArgumentOutOfRangeException(nameof(browseName), "The browse name must not be null or empty.");
         }
 
         BrowseName = browseName;
