@@ -8,13 +8,16 @@ using Opc.Ua;
 namespace Hoeyer.OpcUa.Core.Test.Application;
 
 [TestSubject(typeof(IEntityTranslator<>))]
-public class EntityTranslatorTest
+[CoreServiceInjection]
+[Category("IEntityTranslator test")]
+public class EntityTranslatorTest(
+    IEntityTranslator<AllPropertyTypesEntity> translator,
+    IEntityNodeStructureFactory<AllPropertyTypesEntity> structure
+)
 {
     [Test]
-    [CoreServiceInjection]
-    public async Task WhenAssigningValues_ToEntityNode_MethodsDoesNotDisappear(
-        IEntityTranslator<AllPropertyTypesEntity> translator,
-        IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
+    [DisplayName("Methods are excluded when translating entity to Ua node")]
+    public async Task WhenAssigningValues_ToEntityNode_MethodsDoesNotDisappear()
     {
         var node = structure.Create(2);
         var entity = AllPropertyTypesEntity.CreateRandom();
@@ -27,10 +30,8 @@ public class EntityTranslatorTest
     }
 
     [Test]
-    [CoreServiceInjection]
-    public async Task WhenAssigningValues_ToEntityNode_PropertiesDoesNotDisappear(
-        IEntityTranslator<AllPropertyTypesEntity> translator,
-        IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
+    [DisplayName("All property nodes are included when translating to Ua node")]
+    public async Task WhenAssigningValues_ToEntityNode_PropertiesDoesNotDisappear()
     {
         var node = structure.Create(2);
         var entity = AllPropertyTypesEntity.CreateRandom();
@@ -41,10 +42,8 @@ public class EntityTranslatorTest
     }
 
     [Test]
-    [CoreServiceInjection]
-    public async Task WhenTranslating_ToEntityNode_ListValuesAreTranslatedTo_Arrays(
-        IEntityTranslator<AllPropertyTypesEntity> translator,
-        IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
+    [DisplayName("All property nodes are included when translating to Ua node")]
+    public async Task WhenTranslating_ToEntityNode_ListValuesAreTranslatedTo_Arrays()
     {
         var node = structure.Create(2);
         translator.AssignToNode(new AllPropertyTypesEntity
@@ -61,7 +60,9 @@ public class EntityTranslatorTest
             StringList = ["five hundred", "Cigarettes"]
         }, node);
 
-        List<TTarget> PropertyFor<TTarget>(string name) => node.PropertyByBrowseName[name].Value.CastTo<ArrayOf<TTarget>>().ToList();
+        List<TTarget> PropertyFor<TTarget>(string name) =>
+            node.PropertyByBrowseName[name].Value.CastTo<ArrayOf<TTarget>>().ToList();
+
         using var assertion = Assert.Multiple();
         await Assert.That(PropertyFor<int>(nameof(AllPropertyTypesEntity.IntList))).IsTypeOf<List<int>>();
         await Assert.That(PropertyFor<string>(nameof(AllPropertyTypesEntity.StringList))).IsTypeOf<List<string>>();
@@ -69,10 +70,8 @@ public class EntityTranslatorTest
 
 
     [Test]
-    [CoreServiceInjection]
-    public async Task WhenTranslating_MultipleTimes_StateIsPreserved(
-        IEntityTranslator<AllPropertyTypesEntity> translator,
-        IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
+    [DisplayName("When translating back and fourth values are preserved and the operation is idempotent")]
+    public async Task WhenTranslating_MultipleTimes_StateIsPreserved()
     {
         var node = structure.Create(2);
         var entity = AllPropertyTypesEntity.CreateRandom();
@@ -87,10 +86,7 @@ public class EntityTranslatorTest
 
 
     [Test]
-    [CoreServiceInjection]
-    public async Task When_AssigningToNode_ValuesAre_Equal(
-        IEntityTranslator<AllPropertyTypesEntity> translator,
-        IEntityNodeStructureFactory<AllPropertyTypesEntity> structure)
+    public async Task When_AssigningToNode_ValuesAre_Equal()
     {
         //Arrange
         var node = structure.Create(2);
@@ -105,7 +101,6 @@ public class EntityTranslatorTest
 
     private static async Task AssertPropertiesEqual(AllPropertyTypesEntity entity, IEntityNode node)
     {
-
         await Assert.That(node.PropertyByBrowseName[nameof(AllPropertyTypesEntity.Integer)].Value).VariantEquals(entity.Integer);
         await Assert.That(node.PropertyByBrowseName[nameof(AllPropertyTypesEntity.Integer)].Value).VariantEquals(entity.Integer);
         await Assert.That(node.PropertyByBrowseName[nameof(AllPropertyTypesEntity.Long)].Value).VariantEquals(entity.Long);

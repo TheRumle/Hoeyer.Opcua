@@ -227,7 +227,7 @@ public class EntityTranslatorGenerator : IIncrementalGenerator
 
     private static INamedTypeSymbol? GetListInterface(IPropertySymbol typeSymbol, SemanticModel model)
     {
-        var ilistType = model.Compilation.GetTypeByMetadataName("System.Collections.Generic.List`1");
+        var ilistType = model.Compilation.GetTypeByMetadataName("System.Collections.Generic.IList`1");
         return typeSymbol.Type.AllInterfaces
             .FirstOrDefault(i => i.OriginalDefinition.Equals(ilistType, SymbolEqualityComparer.Default));
     }
