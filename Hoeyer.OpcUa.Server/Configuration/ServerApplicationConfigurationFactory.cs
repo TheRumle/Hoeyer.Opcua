@@ -12,55 +12,56 @@ internal sealed class ServerApplicationConfigurationFactory(
 )
     : IServerApplicationConfigurationFactory
 {
-    private static readonly IEnumerable<ServerSecurityPolicy> DefaultSupportedSecurityPolicies =
+    private static readonly ServerSecurityPolicy[] DefaultSupportedSecurityPolicies =
         new List<(string Uri, MessageSecurityMode Mode)>
         {
-            ("http://opcfoundation.org/UA/SecurityPolicy#None", MessageSecurityMode.None)
-            //("http://opcfoundation.org/UA/SecurityPolicy#Basic256", MessageSecurityMode.Sign),
-            //("http://opcfoundation.org/UA/SecurityPolicy#Basic256", MessageSecurityMode.SignAndEncrypt),
-            //("http://opcfoundation.org/UA/SecurityPolicy#Basic256", MessageSecurityMode.SignAndEncrypt),
-            //("http://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256", MessageSecurityMode.Sign),
-            //("http://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256", MessageSecurityMode.SignAndEncrypt),
-            //("http://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256", MessageSecurityMode.SignAndEncrypt),
-            //("http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15", MessageSecurityMode.Sign),
-            //("http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15", MessageSecurityMode.SignAndEncrypt),
-            //("http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15", MessageSecurityMode.SignAndEncrypt),
-            //("http://opcfoundation.org/UA/SecurityPolicy#Aes128_Sha256_RsaOaep", MessageSecurityMode.Sign),
-            //("http://opcfoundation.org/UA/SecurityPolicy#Aes128_Sha256_RsaOaep", MessageSecurityMode.SignAndEncrypt),
-            //("http://opcfoundation.org/UA/SecurityPolicy#Aes128_Sha256_RsaOaep", MessageSecurityMode.SignAndEncrypt),
-            //("http://opcfoundation.org/UA/SecurityPolicy#Aes256_Sha256_RsaPss", MessageSecurityMode.Sign),
-            //("http://opcfoundation.org/UA/SecurityPolicy#Aes256_Sha256_RsaPss", MessageSecurityMode.SignAndEncrypt),
-            //("http://opcfoundation.org/UA/SecurityPolicy#Aes256_Sha256_RsaPss", MessageSecurityMode.SignAndEncrypt),
-            //("http://opcfoundation.org/UA/SecurityPolicy#Https", MessageSecurityMode.Sign),
-            //("http://opcfoundation.org/UA/SecurityPolicy#Https", MessageSecurityMode.SignAndEncrypt),
-            //("http://opcfoundation.org/UA/SecurityPolicy#Https", MessageSecurityMode.SignAndEncrypt)
+            ("https://opcfoundation.org/UA/SecurityPolicy#None", MessageSecurityMode.None)
+            //("https://opcfoundation.org/UA/SecurityPolicy#Basic256", MessageSecurityMode.Sign),
+            //("https://opcfoundation.org/UA/SecurityPolicy#Basic256", MessageSecurityMode.SignAndEncrypt),
+            //("https://opcfoundation.org/UA/SecurityPolicy#Basic256", MessageSecurityMode.SignAndEncrypt),
+            //("https://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256", MessageSecurityMode.Sign),
+            //("https://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256", MessageSecurityMode.SignAndEncrypt),
+            //("https://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256", MessageSecurityMode.SignAndEncrypt),
+            //("https://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15", MessageSecurityMode.Sign),
+            //("https://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15", MessageSecurityMode.SignAndEncrypt),
+            //("https://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15", MessageSecurityMode.SignAndEncrypt),
+            //("https://opcfoundation.org/UA/SecurityPolicy#Aes128_Sha256_RsaOaep", MessageSecurityMode.Sign),
+            //("https://opcfoundation.org/UA/SecurityPolicy#Aes128_Sha256_RsaOaep", MessageSecurityMode.SignAndEncrypt),
+            //("https://opcfoundation.org/UA/SecurityPolicy#Aes128_Sha256_RsaOaep", MessageSecurityMode.SignAndEncrypt),
+            //("https://opcfoundation.org/UA/SecurityPolicy#Aes256_Sha256_RsaPss", MessageSecurityMode.Sign),
+            //("https://opcfoundation.org/UA/SecurityPolicy#Aes256_Sha256_RsaPss", MessageSecurityMode.SignAndEncrypt),
+            //("https://opcfoundation.org/UA/SecurityPolicy#Aes256_Sha256_RsaPss", MessageSecurityMode.SignAndEncrypt),
+            //("https://opcfoundation.org/UA/SecurityPolicy#Https", MessageSecurityMode.Sign),
+            //("https://opcfoundation.org/UA/SecurityPolicy#Https", MessageSecurityMode.SignAndEncrypt),
+            //("https://opcfoundation.org/UA/SecurityPolicy#Https", MessageSecurityMode.SignAndEncrypt)
         }.Select(e => new ServerSecurityPolicy
         {
             SecurityPolicyUri = e.Uri,
             SecurityMode = e.Mode
-        }).ToList();
+        }).ToArray();
 
-    private static readonly IReadOnlyCollection<UserTokenPolicy> SupportedTokenPolicies = new List<UserTokenPolicy>
+    private static readonly UserTokenPolicy[] SupportedTokenPolicies = new List<UserTokenPolicy>
     {
         new(UserTokenType.Anonymous),
         new(UserTokenType.UserName),
         new(UserTokenType.Certificate),
         new(UserTokenType.IssuedToken)
-    };
-
-    private static readonly ServerSecurityPolicyCollection SecurityPolicyCollection =
-        new(DefaultSupportedSecurityPolicies);
+    }.ToArray();
 
     public ApplicationConfiguration CreateServerConfiguration()
     {
         try
         {
             var template = templateFactory.CreateTemplate();
-            var templated = new ApplicationConfiguration(template.Configuration);
-            templated.ServerConfiguration ??= new ServerConfiguration();
-            templated.SecurityConfiguration ??= new SecurityConfiguration();
-            additionalConfigure?.Invoke(templated);
-            return ConfigureRoot(templated);
+            var templateCopy = new ApplicationConfiguration(template.Configuration);
+            templateCopy.ServerConfiguration ??= new ServerConfiguration();
+            templateCopy.ApplicationType = ApplicationType.Server;
+            additionalConfigure?.Invoke(templateCopy);
+            
+            var configuration = templateCopy.ServerConfiguration;
+            ConfigureServer(configuration);
+
+            return templateCopy;
         }
         catch (Exception e)
         {
@@ -68,33 +69,22 @@ internal sealed class ServerApplicationConfigurationFactory(
         }
     }
 
-    private ApplicationConfiguration ConfigureRoot(ApplicationConfiguration config)
+    private void ConfigureServer(ServerConfiguration configuration)
     {
-        config.ApplicationType = ApplicationType.Server;
-        SetupServerConfiguration(config, targetServerSetup.Endpoints);
-        return config;
-    }
-
-
-    private ServerConfiguration SetupServerConfiguration(ApplicationConfiguration appConfig, ISet<Uri> endpoints)
-    {
-        var configuration = appConfig.ServerConfiguration;
-        configuration.BaseAddresses ??= new StringCollection(endpoints.Select(e => e.AbsoluteUri));
+        configuration.BaseAddresses = targetServerSetup.Endpoints.Select(e => e.AbsoluteUri).ToArray();
         if (configuration.BaseAddresses is not { Count: > 0 })
         {
-            configuration.BaseAddresses = new StringCollection(endpoints.Select(e => e.AbsoluteUri));
+            configuration.BaseAddresses = targetServerSetup.Endpoints.Select(e => e.AbsoluteUri).ToArray();
         }
 
         if (configuration.SecurityPolicies is not { Count: > 0 })
         {
-            configuration.SecurityPolicies = SecurityPolicyCollection;
+            configuration.SecurityPolicies = DefaultSupportedSecurityPolicies.ToArray();
         }
 
         if (configuration.UserTokenPolicies is not { Count: > 0 })
         {
-            configuration.UserTokenPolicies = new UserTokenPolicyCollection(SupportedTokenPolicies);
+            configuration.UserTokenPolicies = SupportedTokenPolicies.ToArray();
         }
-
-        return configuration;
     }
 }

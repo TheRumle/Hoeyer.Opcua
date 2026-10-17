@@ -49,7 +49,7 @@ public class EntityPropertyStateFactoryGenerator : IIncrementalGenerator
                       
                       public sealed class {{className}}(
                           IEntityTypeModel<{{entityName}}> model
-                      ) : FieldPropertyStateFactory, IPropertyStateFactory<{{entityName}}>
+                      ) : {{WellKnown.PropertyFactoryName.AbstractFactory}}, {{WellKnown.PropertyFactoryName.PropertyStateFactoryOf(entityName)}}
                       {
                           protected override PropertyState HandleEnumeration(
                               BaseInstanceState parent,

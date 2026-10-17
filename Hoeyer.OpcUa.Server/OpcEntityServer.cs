@@ -1,11 +1,9 @@
 ﻿using Hoeyer.Common.Extensions.LoggingExtensions;
 using Hoeyer.OpcUa.Core.Configuration.Health;
 using Hoeyer.OpcUa.Core.Extensions.Logging;
-using Hoeyer.OpcUa.Core.Services.OpcUaServices;
 using Hoeyer.OpcUa.Server.Abstractions;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Hoeyer.OpcUa.Server.Application;
-using Hoeyer.OpcUa.Server.Extensions;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
 using Opc.Ua.Server;
@@ -13,11 +11,12 @@ using Opc.Ua.Server;
 namespace Hoeyer.OpcUa.Server;
 
 internal sealed class OpcEntityServer(
+    ITelemetryContext telemetryContext,
     IOpcUaTargetServerSetup applicationProductDetails,
     IEnumerable<IEntityNodeManagerFactory> entityManagerFactories,
     ILogger<OpcEntityServer> logger,
     IServerStartedHealthCheck healthCheck)
-    : StandardServer, IOpcEntityServer
+    : StandardServer(telemetryContext), IOpcEntityServer
 {
     private static readonly DateTime BuildDate = DateTime.UtcNow;
     public ISystemContext DefaultContext => ServerInternal.DefaultSystemContext;
@@ -29,114 +28,7 @@ internal sealed class OpcEntityServer(
     public ServerBase AsServerBase() => this;
 
     public IEnumerable<IEntityManagerHolder> Managers => entityManagerFactories.OfType<IEntityManagerHolder>();
-
-
-    public override async Task<CreateSessionResponse> CreateSessionAsync(
-        SecureChannelContext secureChannelContext,
-        RequestHeader requestHeader,
-        ApplicationDescription clientDescription,
-        string serverUri,
-        string endpointUrl,
-        string sessionName,
-        byte[] clientNonce,
-        byte[] clientCertificate,
-        double requestedSessionTimeout,
-        uint maxResponseMessageSize,
-        CancellationToken ct)
-    {
-        logger.LogInformation(
-            "CreateSessionAsync: ClientName={ClientName}, ApplicationUri={ApplicationUri}, " +
-            "ServerUri={ServerUri}, EndpointUrl={EndpointUrl}, SessionName={SessionName}, " +
-            "RequestedTimeout={RequestedTimeout}, MaxResponseMessageSize={MaxResponseMessageSize}",
-            clientDescription?.ApplicationName?.Text,
-            clientDescription?.ApplicationUri,
-            serverUri,
-            endpointUrl,
-            sessionName,
-            requestedSessionTimeout,
-            maxResponseMessageSize);
-
-        try
-        {
-            var response = await base.CreateSessionAsync(
-                secureChannelContext,
-                requestHeader,
-                clientDescription,
-                serverUri,
-                endpointUrl,
-                sessionName,
-                clientNonce,
-                clientCertificate,
-                requestedSessionTimeout,
-                maxResponseMessageSize,
-                ct);
-
-            logger.LogInformation(
-                "CreateSessionAsync completed: Status={Status}",
-                response?.ResponseHeader?.ServiceResult);
-
-            return response;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(
-                ex,
-                "CreateSessionAsync FAILED: ClientName={ClientName}, ApplicationUri={ApplicationUri}, " +
-                "ServerUri={ServerUri}, EndpointUrl={EndpointUrl}, SessionName={SessionName}",
-                clientDescription?.ApplicationName?.Text,
-                clientDescription?.ApplicationUri,
-                serverUri,
-                endpointUrl,
-                sessionName);
-
-            throw;
-        }
-    }
-
-    public override async Task<ActivateSessionResponse> ActivateSessionAsync(SecureChannelContext secureChannelContext,
-        RequestHeader requestHeader,
-        SignatureData clientSignature, SignedSoftwareCertificateCollection clientSoftwareCertificates,
-        StringCollection localeIds, ExtensionObject userIdentityToken, SignatureData userTokenSignature,
-        CancellationToken ct)
-    {
-        return await logger
-            .LogCaughtExceptionAs(LogLevel.Error)
-            .WithErrorMessage("An error occured while calling methods")
-            .WithScope("Activating session for {@SessionDetails}", new
-            {
-                ClientSignature = clientSignature.Signature,
-                UserTokenSignature = userTokenSignature.Signature,
-                UserIdentityToken = userIdentityToken.Body,
-                RequestHeader = requestHeader.ToLoggingObject()
-            })
-            .WhenExecutingAsync(async () => await base.ActivateSessionAsync(secureChannelContext, requestHeader,
-                clientSignature,
-                clientSoftwareCertificates, localeIds, userIdentityToken, userTokenSignature, ct));
-    }
-
-    public override async Task<CloseSessionResponse> CloseSessionAsync(SecureChannelContext secureChannelContext,
-        RequestHeader requestHeader, bool deleteSubscriptions,
-        CancellationToken ct)
-    {
-        return await logger
-            .LogCaughtExceptionAs(LogLevel.Error)
-            .WithErrorMessage("An error occured while calling methods")
-            .WithScope(requestHeader.ToLoggingObject().ToString())
-            .WhenExecutingAsync(() =>
-                base.CloseSessionAsync(secureChannelContext, requestHeader, deleteSubscriptions, ct));
-    }
-
-    public override async Task<CallResponse> CallAsync(SecureChannelContext secureChannelContext,
-        RequestHeader requestHeader,
-        CallMethodRequestCollection methodsToCall, CancellationToken ct)
-    {
-        return await logger
-            .LogCaughtExceptionAs(LogLevel.Error)
-            .WithErrorMessage("An error occured while calling methods")
-            .WithScope(requestHeader.ToLoggingObject().ToString())
-            .WhenExecutingAsync(() => base.CallAsync(secureChannelContext, requestHeader, methodsToCall, ct));
-    }
-
+    
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server,
         ApplicationConfiguration configuration)
     {
@@ -168,8 +60,7 @@ internal sealed class OpcEntityServer(
         }
         catch (Exception e)
         {
-            logger.LogCritical(e, " A critical error occured when trying to start the OpcEntityServer.");
-            throw new OpcUaEntityServiceConfigurationException([e]);
+            throw new OpcUaEntityServerException("A critical error occured when trying to start the OpcEntityServer.", e);
         }
     }
 

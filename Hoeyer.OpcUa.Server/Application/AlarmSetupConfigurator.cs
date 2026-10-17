@@ -9,7 +9,6 @@ internal sealed class AlarmSetupConfigurator<T> : INodeConfigurator<T>
     {
         managed.ChangeState(entityNode =>
         {
-            return;
             var index = entityNode.BaseObject.NodeId.NamespaceIndex;
             foreach (var (property, alarmNode) in entityNode.AlarmsByProperty)
             {
@@ -19,7 +18,7 @@ internal sealed class AlarmSetupConfigurator<T> : INodeConfigurator<T>
                 );
 
                 alarmNode.Create(context, nodeId, alarmNode.BrowseName, alarmNode.DisplayName, true);
-                alarmNode.InputNode.Value = property.NodeId;
+                alarmNode.InputNode!.Value = property.NodeId;
 
                 alarmNode.SetEnableState(context, true);
 
@@ -27,7 +26,7 @@ internal sealed class AlarmSetupConfigurator<T> : INodeConfigurator<T>
                     context,
                     entityNode.BaseObject,
                     EventSeverity.Min,
-                    "Initialized");
+                    new LocalizedText("Initialized"));
 
                 property.OnWriteValue +=
                     (systemContext, node, range, encoding,
@@ -36,7 +35,8 @@ internal sealed class AlarmSetupConfigurator<T> : INodeConfigurator<T>
                         ref timestamp
                     ) =>
                     {
-                        if (value is double val)
+                        double val = value.GetDouble();
+                        if (val is not 0)
                         {
                             EvaluateAlarm(val, alarmNode);
                         }
@@ -47,7 +47,7 @@ internal sealed class AlarmSetupConfigurator<T> : INodeConfigurator<T>
         });
     }
 
-    private void EvaluateAlarm(double val, LimitAlarmState alarmNode)
+    private static void EvaluateAlarm(double val, LimitAlarmState alarmNode)
     {
         throw new NotImplementedException();
     }
