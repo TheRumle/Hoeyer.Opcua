@@ -1,4 +1,3 @@
-using Opc.Ua;
 using TypeInfo = Opc.Ua.TypeInfo;
 
 namespace Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
@@ -11,11 +10,5 @@ public static class OpcTypeInfoUtils
         var typeId = TypeInfo.GetDataTypeId(type);
         var builtInType = TypeInfo.GetBuiltInType(typeId);
         return new(builtInType, rank, typeId);
-    }
-
-    public static (NodeId TypeId, int Rank) ToOpcTypeTuple(this Type type)
-    {
-        var data = ConstructOpcTypeInfo(type);
-        return (data.TypeId, data.Rank);
     }
 }

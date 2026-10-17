@@ -4,14 +4,15 @@ using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Test.Application;
 
-[TestSubject(typeof(OpcToCSharpValueParser))]
-public sealed class OpcToCSharpValueParserTest
+[TestSubject(typeof(UuidConverter))]
+public sealed class UuidConverterTest
 {
     [Test]
     public async Task CanParseGuidToGuid()
     {
         var value = new Uuid(Guid.NewGuid());
-        var guid = OpcToCSharpValueParser.ParseTo<Guid>(value);
+        var guid = new UuidConverter().GetValue(Variant.From(value));
         await Assert.That(guid).IsNotEqualTo(Guid.Empty);
+        await Assert.That(guid.ToString()).IsEqualTo(value.ToString());
     }
 }

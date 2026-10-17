@@ -2,7 +2,10 @@
 
 namespace Hoeyer.OpcUa.Core.Configuration.Application;
 
-public sealed class CertificateBasedSecurityConfigurationFactory(IApplicationConfigurationRequirements targetServerInfo)
+public sealed class CertificateBasedSecurityConfigurationFactory(
+    IApplicationConfigurationRequirements targetServerInfo,
+    ITelemetryContext telemetryContext
+    )
     : IApplicationSecurityConfigurationFactory
 {
     public SecurityConfiguration Configure(ApplicationConfiguration config)
@@ -55,11 +58,9 @@ public sealed class CertificateBasedSecurityConfigurationFactory(IApplicationCon
         securityConfiguration.AutoAcceptUntrustedCertificates =
             options.AutoAcceptUntrustedCertificates;
 
-        securityConfiguration.AddAppCertToTrustedStore =
-            options.AddAppCertToTrustedStore;
+        securityConfiguration.AddAppCertToTrustedStore = options.AddAppCertToTrustedStore;
 
-        //TODO
-        config.CertificateManager ??= new CertificateManager(null);
+        config.CertificateManager ??= new CertificateManager(telemetryContext);
 
         config.SecurityConfiguration = securityConfiguration;
 

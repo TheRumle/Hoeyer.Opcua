@@ -12,6 +12,8 @@ using Hoeyer.OpcUa.Core.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Core.Configuration;
 
@@ -54,8 +56,15 @@ public static class ServiceCollectionExtensions
         ApplicationConfigurationSetup? configureOpcUaApplicationConfiguration)
     {
         services.AddSingleton(configureOpcUaApplicationConfiguration ?? (_ => { }));
-        services.AddSingleton<IApplicationConfigurationRequirements>(p =>
-            p.GetRequiredService<IApplicationRequirementsFactory>().Get());
+        services.AddSingleton<ITelemetryContext>(provider =>
+        {
+            var loggerFactory = provider.GetRequiredService<ILoggerProvider>();
+            return DefaultTelemetry.Create(configure =>
+            {
+                configure.AddProvider(loggerFactory).SetMinimumLevel(LogLevel.Debug);
+            });
+        });
+        services.AddSingleton<IApplicationConfigurationRequirements>(p => p.GetRequiredService<IApplicationRequirementsFactory>().Get());
         services.AddSingleton<IApplicationConfigurationTemplateFactory, ApplicationConfigurationTemplateFactory>();
         services.AddSingleton<IApplicationSecurityConfigurationFactory, CertificateBasedSecurityConfigurationFactory>();
     }

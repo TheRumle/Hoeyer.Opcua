@@ -28,7 +28,6 @@ public sealed class AggregateVariantConverter(VariantConverterCollection convert
     public Variant ConvertCollectionVariant(IEnumerable<DataValue> data) => Variant.From(data.ToArray());
     public Variant ConvertCollectionVariant(IEnumerable<Variant> data) => Variant.From(data.ToArray());
     public Variant ConvertToVariant<T>(T data) => converterCollection.Get<T>().WithValue(data);
-    
     public T ConvertToType<T>(Variant v) => converterCollection.Get<T>().GetValue(v);
 
     public TCollection ConvertToCollectionType<T, TCollection>(Variant v) where TCollection : ICollection<T>, new()
