@@ -3,6 +3,7 @@
 namespace Hoeyer.OpcUa.Core.Configuration.Application;
 
 internal sealed class ApplicationConfigurationTemplateFactory(
+    ITelemetryContext context,
     IApplicationSecurityConfigurationFactory securityConfigurationFactory,
     IApplicationConfigurationRequirements targetServerInfo,
     ApplicationConfigurationSetup setup)
@@ -10,7 +11,7 @@ internal sealed class ApplicationConfigurationTemplateFactory(
 {
     public ApplicationConfigurationTemplate CreateTemplate()
     {
-        var configuration = new ApplicationConfiguration
+        var configuration = new ApplicationConfiguration(context)
         {
             ApplicationName = targetServerInfo.ApplicationName,
             ApplicationUri = targetServerInfo.ApplicationNamespace.ToString(),
