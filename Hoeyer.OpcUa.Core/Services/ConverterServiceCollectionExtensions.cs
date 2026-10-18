@@ -1,4 +1,5 @@
-﻿using Hoeyer.OpcUa.Core.Abstractions;
+﻿using Hoeyer.Common.Architecture;
+using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Application.OpcTypeMappers;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua;
@@ -21,7 +22,7 @@ public static class ConverterServiceCollectionExtensions
                      .Where(t => t is { IsGenericTypeDefinition: false, IsClass: false, IsAbstract: false })
                      .SelectMany(VariantBuilderInterfaces))
         {
-            services.AddSingleton(types.service, types.serviceImpl);
+            services.AddServiceAndImplSingleton(types.service, types.serviceImpl);
         }
 
         services.AddSingleton<VariantConverterCollection>(provider => CreateConverterCollection(provider, assemblyTypes));

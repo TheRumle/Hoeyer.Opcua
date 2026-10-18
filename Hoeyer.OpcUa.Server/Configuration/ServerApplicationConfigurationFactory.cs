@@ -48,20 +48,20 @@ internal sealed class ServerApplicationConfigurationFactory(
         new(UserTokenType.IssuedToken)
     }.ToArray();
 
-    public ApplicationConfiguration CreateServerConfiguration()
+    public ServerApplicationConfiguration CreateServerConfiguration()
     {
         try
         {
             var template = templateFactory.CreateTemplate();
             var templateCopy = new ApplicationConfiguration(template.Configuration);
-            templateCopy.ServerConfiguration ??= new ServerConfiguration();
-            templateCopy.ApplicationType = ApplicationType.Server;
-            additionalConfigure?.Invoke(templateCopy);
+            var config = new ServerApplicationConfiguration(templateCopy);
+            config.OpcUaApplicationConfiguration.ServerConfiguration ??= new ServerConfiguration();
+            additionalConfigure?.Invoke(config);
             
-            var configuration = templateCopy.ServerConfiguration;
-            ConfigureServer(configuration);
+            templateCopy.ApplicationType = ApplicationType.Server;
+            ConfigureServer(config.OpcUaApplicationConfiguration.ServerConfiguration);
 
-            return templateCopy;
+            return new ServerApplicationConfiguration(templateCopy);
         }
         catch (Exception e)
         {

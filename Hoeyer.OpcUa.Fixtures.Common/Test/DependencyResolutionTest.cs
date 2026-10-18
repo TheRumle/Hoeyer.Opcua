@@ -21,6 +21,7 @@ public abstract class DependencyResolutionTest(IServiceCollection services, Type
         ServiceLifetime[] lifetimes = [ServiceLifetime.Transient, ServiceLifetime.Singleton];
         return Descriptors
             .Where(descriptor => lifetimes.Contains(descriptor.Lifetime))
+            .DistinctBy(e => e.ServiceType)
             .Select(CreateDataRow);
     }
 
@@ -29,6 +30,7 @@ public abstract class DependencyResolutionTest(IServiceCollection services, Type
         ServiceLifetime[] lifetimes = [ServiceLifetime.Transient, ServiceLifetime.Singleton, ServiceLifetime.Scoped];
         return Descriptors
             .Where(descriptor => lifetimes.Contains(descriptor.Lifetime))
+            .DistinctBy(e => e.ServiceType)
             .Select(CreateDataRow);
     }
 
@@ -86,6 +88,7 @@ public abstract class DependencyResolutionTest(IServiceCollection services, Type
         ServiceLifetime[] lifetimes = [ServiceLifetime.Transient, ServiceLifetime.Singleton, ServiceLifetime.Scoped];
         return GenericDescriptors
             .Where(descriptor => lifetimes.Contains(descriptor.Lifetime))
+            .DistinctBy(e => e.ServiceType)
             .Select(CreateDataRow);
     }
 

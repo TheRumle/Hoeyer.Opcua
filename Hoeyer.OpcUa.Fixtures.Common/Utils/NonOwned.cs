@@ -14,7 +14,7 @@ namespace Hoeyer.OpcUa.Fixtures.Common.Utils;
 ///     </para>
 /// </summary>
 /// <typeparam name="T">The borrowed service type.</typeparam>
-public sealed class NonOwned<T>(T value) where T : class
+public sealed class NonOwned<T>(T value)
 {
     /// <summary>
     ///     The borrowed instance. Do not dispose it; its lifetime belongs to the test environment.

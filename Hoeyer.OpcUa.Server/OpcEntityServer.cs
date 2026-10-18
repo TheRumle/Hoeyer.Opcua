@@ -10,31 +10,40 @@ using Opc.Ua.Server;
 
 namespace Hoeyer.OpcUa.Server;
 
-internal sealed class OpcEntityServer(
-    ITelemetryContext telemetryContext,
-    IOpcUaTargetServerSetup applicationProductDetails,
-    IEnumerable<IEntityNodeManagerFactory> entityManagerFactories,
-    ILogger<OpcEntityServer> logger,
-    IServerStartedHealthCheck healthCheck)
-    : StandardServer(telemetryContext), IOpcEntityServer
+internal sealed class OpcEntityServer : StandardServer, IOpcEntityServer
 {
     private static readonly DateTime BuildDate = DateTime.UtcNow;
     public ISystemContext DefaultContext => ServerInternal.DefaultSystemContext;
-    public readonly IOpcUaTargetServerSetup ServerInfo = applicationProductDetails;
+    public readonly IOpcUaTargetServerSetup ServerInfo;
 
     private bool _disposed;
+    private readonly IEnumerable<IEntityNodeManagerFactory> _entityManagerFactories;
+    private readonly ILogger<OpcEntityServer> _logger;
+    private readonly IServerStartedHealthCheck _healthCheck;
+
+    public OpcEntityServer(ITelemetryContext telemetryContext,
+        IOpcUaTargetServerSetup applicationProductDetails,
+        IEnumerable<IEntityNodeManagerFactory> entityManagerFactories,
+        ILogger<OpcEntityServer> logger,
+        IServerStartedHealthCheck healthCheck) : base(telemetryContext)
+    {
+        _entityManagerFactories = entityManagerFactories;
+        _logger = logger;
+        _healthCheck = healthCheck;
+        ServerInfo = applicationProductDetails;
+    }
 
     public IDomainMasterNodeManager? DomainManager { get; private set; }
     public ServerBase AsServerBase() => this;
 
-    public IEnumerable<IEntityManagerHolder> Managers => entityManagerFactories.OfType<IEntityManagerHolder>();
+    public IEnumerable<IEntityManagerHolder> Managers => _entityManagerFactories.OfType<IEntityManagerHolder>();
     
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server,
         ApplicationConfiguration configuration)
     {
-        return logger.Try(() =>
+        return _logger.Try(() =>
         {
-            var managers = entityManagerFactories
+            var managers = _entityManagerFactories
                 .Select(factory => factory.CreateEntityManager(server))
                 .ToArray();
 
@@ -49,13 +58,13 @@ internal sealed class OpcEntityServer(
     {
         try
         {
-            logger.LogInformation("Starting application with configuration {@Configuration}",
+            _logger.LogInformation("Starting application with configuration {@Configuration}",
                 configuration.ToLoggingObject());
             await base.StartApplicationAsync(configuration, cancellationToken);
         }
         catch (ServiceResultException e) when (e.InnerException?.Message.Contains($"[{nameof(ManagerAlreadyInitializedException)}]") ?? false)
         {
-            logger.LogCritical(e, "The entity manager has been initialized more than once.");
+            _logger.LogCritical(e, "The entity manager has been initialized more than once.");
             throw e.InnerException;
         }
         catch (Exception e)
@@ -88,15 +97,15 @@ internal sealed class OpcEntityServer(
             return;
         }
 
-        logger.LogInformation("Closing server...");
+        _logger.LogInformation("Closing server...");
 
-        if (healthCheck.IsServerStarted)
+        if (_healthCheck.IsServerStarted)
         {
             DomainManager?.Dispose();
         }
         else
         {
-            logger.LogWarning(
+            _logger.LogWarning(
                 "The server never reached a valid started state; skipping disposal of the domain manager to avoid tearing down partially-initialized internals.");
         }
 

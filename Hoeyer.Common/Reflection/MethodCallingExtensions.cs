@@ -1,13 +1,15 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoeyer.Common.Reflection;
 
+[SuppressMessage(category:"Maintainability", checkId:"S3011", Justification = "Access to the internal reflection based methods is safe and tested")]
 public static class MethodCallingExtensions
 {
     public static StaticRegistration CreateStaticMethodInvoker(this Type t, string name, IServiceCollection collection)
     {
-        var m = t.GetMethod(name, BindingFlags.Public | BindingFlags.Static | BindingFlags.Public);
+        var m = t.GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Public);
         return new StaticRegistration(m, collection);
     }
 

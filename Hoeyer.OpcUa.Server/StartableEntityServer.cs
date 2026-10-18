@@ -25,7 +25,7 @@ internal sealed class StartableEntityServer(
 
         try
         {
-            await _applicationInstance.StartAsync(entityServer.AsServerBase());
+            await _applicationInstance.StartAsync(entityServer.AsServerBase(), token);
 
             var nodesReadyTask = entityServer.DomainManager!
                 .NodeManagers

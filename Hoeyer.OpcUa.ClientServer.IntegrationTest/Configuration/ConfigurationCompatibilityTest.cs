@@ -17,7 +17,7 @@ public class ConfigurationCompatibilityTest(
     public async Task ClientServerConfigurationEquivalence()
     {
         var clientConfiguration = clientConfigFactory.CreateClientConfiguration();
-        var serverConfiguration = serverConfigFactory.CreateServerConfiguration();
+        var serverConfiguration = serverConfigFactory.CreateServerConfiguration().OpcUaApplicationConfiguration;
 
         await Assert.That(clientConfiguration.ApplicationName).IsEqualTo(serverConfiguration.ApplicationName)
             .Because("ApplicationName should be the same as in the client configuration.");

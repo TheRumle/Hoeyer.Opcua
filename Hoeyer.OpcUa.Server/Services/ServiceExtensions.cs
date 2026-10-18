@@ -23,7 +23,7 @@ public static class ServiceExtensions
     public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServer(
         this OnGoingOpcEntityServiceRegistrationWithModels serviceRegistration,
         Type fromAssembly,
-        Action<IServiceProvider, ServerConfiguration>? additionalConfiguration = null)
+        Action<IServiceProvider, ServerConfigurable>? additionalConfiguration = null)
         =>
             serviceRegistration.WithOpcUaServer([fromAssembly.Assembly],
                 additionalConfiguration
@@ -32,7 +32,7 @@ public static class ServiceExtensions
     public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServer(
         this OnGoingOpcEntityServiceRegistrationWithModels serviceRegistration,
         IEnumerable<Type> assembliesContainingLoaders,
-        Action<IServiceProvider, ServerConfiguration>? additionalConfiguration = null)
+        Action<IServiceProvider, ServerConfigurable>? additionalConfiguration = null)
         => serviceRegistration.WithOpcUaServer(assembliesContainingLoaders.Select(e => e.Assembly),
             additionalConfiguration
         );
@@ -40,9 +40,8 @@ public static class ServiceExtensions
     public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServer(
         this OnGoingOpcEntityServiceRegistrationWithModels serviceRegistration,
         IEnumerable<Assembly> assembliesContainingLoaders,
-        Action<IServiceProvider, ServerConfiguration>? additionalConfiguration = null)
+        Action<IServiceProvider, ServerConfigurable>? additionalConfiguration = null)
     {
-        
         var collection = serviceRegistration.Collection;
         AddLoaders(serviceRegistration.Collection, serviceRegistration.EntityCollection, assembliesContainingLoaders);
 
@@ -53,8 +52,8 @@ public static class ServiceExtensions
         {
             return config =>
             {
-                config.ServerConfiguration ??= new ServerConfiguration();
-                additionalConfiguration?.Invoke(serviceProvider, config.ServerConfiguration);
+                config.OpcUaApplicationConfiguration.ServerConfiguration ??= new ServerConfiguration();
+                additionalConfiguration?.Invoke(serviceProvider, config.GetServerConfigurable());
             };
         });
 
@@ -69,6 +68,10 @@ public static class ServiceExtensions
         }
 
         collection.AddSingleton<ServerApplication>();
+        collection.AddTransient<ServerApplicationConfiguration>(provider =>
+            provider.GetRequiredService<IServerApplicationConfigurationFactory>().CreateServerConfiguration()
+        );
+
         collection.AddServiceAndImplSingleton(typeof(INodeConfigurator<>), typeof(AlarmSetupConfigurator<>));
         collection.AddServiceAndImplSingleton(typeof(INodeConfigurator<>), typeof(AlarmLoggingConfigurator<>));
         collection.AddServiceAndImplSingleton<IEntityNodeAccessConfigurator, NoAccessRestrictionsConfigurator>();
@@ -104,7 +107,7 @@ public static class ServiceExtensions
     public static OnGoingOpcEntityServerServiceRegistration WithOpcUaServerAsBackgroundService(
         this OnGoingOpcEntityServiceRegistrationWithModels serviceRegistration,
         Type assemblyMarker,
-        Action<IServiceProvider, ServerConfiguration>? additionalConfiguration = null
+        Action<IServiceProvider, ServerConfigurable>? additionalConfiguration = null
     )
     {
         var serverConfig = serviceRegistration.WithOpcUaServer(
@@ -115,13 +118,14 @@ public static class ServiceExtensions
         return serverConfig;
     }
 
-    private static void AddLoaders(IServiceCollection collection, EntityTypesCollection types, IEnumerable<Assembly> assemblies)
+    private static void AddLoaders(IServiceCollection collection, EntityTypesCollection types,
+        IEnumerable<Assembly> assemblies)
     {
         var wantedInterfaces = types
             .ModelledEntities
             .Select(entity => typeof(IEntityLoader<>).MakeGenericType(entity))
             .ToHashSet();
-        
+
         var loaders = assemblies.SelectMany(assembly => assembly.GetTypes())
             .Where(type => type is { IsInterface: false, IsAbstract: false })
             .Select(type =>
@@ -130,8 +134,8 @@ public static class ServiceExtensions
                 if (implementedInterface is not null)
                 {
                     return (Service: implementedInterface, Implementation: type);
-                    
                 }
+
                 return default;
             })
             .Where(result => result.Service is not null);

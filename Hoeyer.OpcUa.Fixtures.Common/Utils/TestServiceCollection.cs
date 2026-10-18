@@ -10,7 +10,7 @@ public sealed class TestServiceCollection
     {
         IServiceCollection collection = new ServiceCollection();
         configure(collection);
-        foreach (var descriptor in collection.Where(NotNonOwnedType).ToArray())
+        foreach (var descriptor in collection.Where(IsCandidate).ToArray())
         {
             var nonOwnedType = typeof(NonOwned<>).MakeGenericType(descriptor.ServiceType);
             collection.Add(new ServiceDescriptor(
@@ -29,7 +29,16 @@ public sealed class TestServiceCollection
         ServiceProvider = collection.BuildServiceProvider();
     }
 
-    private static bool NotNonOwnedType(ServiceDescriptor descriptor) =>
-        !(descriptor.ServiceType.IsGenericType &&
-          descriptor.ServiceType.GetGenericTypeDefinition() == typeof(NonOwned<>));
+    private static bool IsCandidate(ServiceDescriptor descriptor)
+    {
+        var isDisposible = (descriptor.ServiceType.IsAssignableTo(typeof(IAsyncDisposable))
+                            || descriptor.ServiceType.IsAssignableTo(typeof(IDisposable)));
+
+        var isNonGeneric = !descriptor.ServiceType.IsGenericType;
+
+        var isAlreadyNonOwned = (descriptor.ServiceType.IsGenericType &&
+                                  descriptor.ServiceType.GetGenericTypeDefinition() == typeof(NonOwned<>));
+        
+        return isDisposible && isNonGeneric && !isAlreadyNonOwned;
+    }
 }

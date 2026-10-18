@@ -8,10 +8,11 @@ namespace Hoeyer.OpcUa.Server.Services;
 internal sealed class ServerApplication : ApplicationInstance
 {
     public ServerApplication(
+        ITelemetryContext context,
         IOpcUaTargetServerSetup setup,
-        IServerApplicationConfigurationFactory factory)
+        IServerApplicationConfigurationFactory factory): base(context)
     {
-        ApplicationConfiguration = factory.CreateServerConfiguration();
+        ApplicationConfiguration = factory.CreateServerConfiguration().OpcUaApplicationConfiguration;
         ApplicationName = setup.ApplicationName;
         ApplicationType = ApplicationType.Server;
     }

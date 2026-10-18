@@ -12,6 +12,6 @@ public class ApplicationConfigurationTest(
     public async Task ValidationForServerMustSucceed(CancellationToken cancellationToken = default)
     {
         var clientConfiguration = serverConfigFactory.CreateServerConfiguration();
-        await clientConfiguration.ValidateAsync(ApplicationType.Server, cancellationToken);
+        await clientConfiguration.OpcUaApplicationConfiguration.ValidateAsync(ApplicationType.Server, cancellationToken);
     }
 }

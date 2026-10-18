@@ -12,7 +12,7 @@ internal sealed class SimulationNodeConfigurator<TEntity, TMethodArgs, TReturnTy
     ISimulationOrchestrator<TEntity, TMethodArgs, TReturnType> orchestrator,
     ISimulationExecutorErrorHandler errorHandler,
     IOpcMethodArgumentsAttributeUsageValidator argsTypeAnnotationValidator,
-    AggregateVariantConverter aggregateVariantConverter
+    VariantConverter aggregateVariantConverter
 )
     : INodeConfigurator<TEntity>
 {
@@ -46,7 +46,7 @@ internal sealed class SimulationNodeConfigurator<TEntity, TMethodArgs>(
     ISimulationOrchestrator<TEntity, TMethodArgs> orchestrator,
     ISimulationExecutorErrorHandler errorHandler,
     IOpcMethodArgumentsAttributeUsageValidator argsTypeAnnotationValidator,
-    AggregateVariantConverter aggregateVariantConverter
+    VariantConverter aggregateVariantConverter
 )
     : INodeConfigurator<TEntity>
 {
