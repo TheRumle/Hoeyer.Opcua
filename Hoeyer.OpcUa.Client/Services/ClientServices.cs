@@ -59,6 +59,7 @@ public static class ClientServices
         services.AddSingleton<IEnumerable<(string PolicyUri, MessageSecurityMode Mode)>>(conf.SupportedPolicies);
         services.AddKeyedSingleton(ServiceKeys.CLIENT_SERVICES, markers.Select(e => new AssemblyMarker(e)));
 
+        services.AddSingleton<SessionEndpointFactory>();
         services.AddSingleton(new ClientApplicationConfigurationAction(conf.clientConfig));
         services.AddSingleton<IClientApplicationConfigurationFactory, ClientApplicationConfigurationFactory>();
         services.AddSingleton<ClientApplicationConfiguration>(
