@@ -3,6 +3,7 @@ using System.Reflection;
 using Hoeyer.Common.Architecture;
 using Hoeyer.Common.Extensions.Types;
 using Hoeyer.Common.Reflection;
+using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Hoeyer.OpcUa.Simulation.Abstractions.PostProcessing;
 using Hoeyer.OpcUa.Simulation.ServerAdapter.Api;

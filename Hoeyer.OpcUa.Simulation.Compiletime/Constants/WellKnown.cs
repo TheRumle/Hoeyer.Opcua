@@ -28,12 +28,8 @@ internal static class WellKnown
         public static readonly FullyQualifiedTypeName GenericEntityBehaviourAttribute =
             CoreTypeName("OpcUaEntityMethodsAttribute<T>");
 
-
-        public static readonly FullyQualifiedTypeName OpcUaEntityServiceAttribute =
-            CoreTypeName("OpcUaEntityServiceAttribute");
-
         public static readonly FullyQualifiedTypeName OpcMethodArgumentsAttribute =
-            SimulationApiName(".OpcMethodArgumentsAttribute");
+            CoreTypeName("OpcMethodArgumentsAttribute");
     }
 
     public static class FullyQualifiedInterface
@@ -41,7 +37,7 @@ internal static class WellKnown
         public const string SIMULATION_INTERFACE_NAME = "ISimulation";
 
         public static readonly FullyQualifiedTypeName IArgsContainer =
-            SimulationApiName(".IArgsContainer");
+            CoreTypeName("IArgsContainer");
 
         public static FullyQualifiedTypeName IActionSimulationConfigurator =>
             SimulationApiName($".Configuration.{SIMULATION_INTERFACE_NAME}`2");
@@ -50,10 +46,7 @@ internal static class WellKnown
             SimulationApiName($".Configuration.{SIMULATION_INTERFACE_NAME}`3");
 
         public static FullyQualifiedTypeName IObjectArgsToTypedArgs(string attributeClassName) =>
-            SimulationServerAdapterApiName($".IEntityMethodArgTranslator<{attributeClassName}>");
-
-        private static FullyQualifiedTypeName SimulationServerAdapterApiName(string s) =>
-            new("Hoeyer.OpcUa.Simulation.ServerAdapter.Api" + s);
+            CoreTypeName($"IEntityMethodArgTranslator<{attributeClassName}>");
     }
 
 

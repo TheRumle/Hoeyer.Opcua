@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Hoeyer.OpcUa.Core.Extensions;
 
-namespace Hoeyer.OpcUa.Simulation.Abstractions;
+namespace Hoeyer.OpcUa.Core;
 
 [AttributeUsage(AttributeTargets.Struct | AttributeTargets.Class, Inherited = false)]
 public sealed class OpcMethodArgumentsAttribute<TEntity, TInterface> : Attribute, IOpcMethodArgumentsAttribute
@@ -22,3 +22,4 @@ public sealed class OpcMethodArgumentsAttribute<TEntity, TInterface> : Attribute
     public Type Interface { get; }
     public string MethodName { get; }
 }
+

@@ -1,7 +1,6 @@
-﻿using Hoeyer.OpcUa.Simulation.Abstractions;
-using Opc.Ua;
+﻿using Opc.Ua;
 
-namespace Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
+namespace Hoeyer.OpcUa.Core;
 
 public interface IEntityMethodArgTranslator<T> where T : IArgsContainer
 {

@@ -7,6 +7,7 @@ using Hoeyer.Common.Messaging.Api;
 using Hoeyer.Common.Messaging.Subscriptions;
 using Hoeyer.Common.Messaging.Subscriptions.ChannelBased;
 using Hoeyer.Common.Reflection;
+using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Abstractions;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Simulation.Abstractions;
