@@ -1,6 +1,6 @@
 ﻿using Hoeyer.OpcUa.Core;
 using Hoeyer.OpcUa.Core.Abstractions;
-using Hoeyer.OpcUa.Simulation.Abstractions;
+using Hoeyer.OpcUa.Simulation.Abstractions.Configuration;
 using Microsoft.CodeAnalysis;
 using Assembly = System.Reflection.Assembly;
 
@@ -18,6 +18,7 @@ public static class AssemblyLoader
         typeof(EntityNode).Assembly,
         typeof(OpcUaEntityMethodsAttribute<>).Assembly,
         typeof(OpcMethodArgumentsAttribute<,>).Assembly,
+        typeof(ISimulation<,>).Assembly,
     ];
 
     public static readonly IReadOnlySet<MetadataReference> CoreMetadataReferences = CoreAssemblies
