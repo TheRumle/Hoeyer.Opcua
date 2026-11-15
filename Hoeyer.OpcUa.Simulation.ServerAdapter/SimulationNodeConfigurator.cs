@@ -26,8 +26,7 @@ internal sealed class SimulationNodeConfigurator<TEntity, TMethodArgs, TReturnTy
         {
             try
             {
-                var inputObjects = inputArguments.ToArray()?.Select(aggregateVariantConverter.ConvertToObject).ToList()
-                                   ?? [];
+                var inputObjects = inputArguments.ToArray()?.ToList() ?? [];
                 var (args, simulationSteps) = contextTranslator.CreateSimulationContext(inputObjects, managed);
                 var result = orchestrator.ExecuteMethodSimulation(args, simulationSteps).Result;
                 outputArguments[0] = aggregateVariantConverter.ConvertToVariant(result);
@@ -60,8 +59,7 @@ internal sealed class SimulationNodeConfigurator<TEntity, TMethodArgs>(
         {
             try
             {
-                var inputObjects = inputArguments.ToArray()?.Select(aggregateVariantConverter.ConvertToObject).ToList()
-                                   ?? [];
+                var inputObjects = inputArguments.ToArray()?.ToList() ?? [];
                 var (args, simulationSteps) = contextTranslator.CreateSimulationContext(inputObjects, managed);
 
                 orchestrator.ExecuteMethodSimulation(args, simulationSteps).Wait();

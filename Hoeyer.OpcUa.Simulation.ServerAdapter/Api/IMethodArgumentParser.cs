@@ -1,4 +1,6 @@
-﻿namespace Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
+﻿using Opc.Ua;
+
+namespace Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
 
 public interface IMethodArgumentParser<out TMethodArgs>
 {
@@ -12,5 +14,5 @@ public interface IMethodArgumentParser<out TMethodArgs>
     ///     <typeparamref name="TMethodArgs" />,
     ///     or when the argument structure could not be parsed successfully.
     /// </exception>
-    TMethodArgs ParseToArgsStructure(IList<object> inputArguments);
+    TMethodArgs ParseToArgsStructure(IList<Variant> inputArguments);
 }

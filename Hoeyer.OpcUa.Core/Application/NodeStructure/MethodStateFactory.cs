@@ -51,7 +51,7 @@ public sealed class MethodStateFactory : IMethodStateFactory
         
         Argument[] inputArguments = arguments.Select(arg =>
         {
-            var data = OpcTypeInfoUtils.ConstructOpcTypeInfo(arg.ParameterType);
+            var data = OpcTypeInfo.FromType(arg.ParameterType);
 
             return new Argument
             {
@@ -69,7 +69,7 @@ public sealed class MethodStateFactory : IMethodStateFactory
 
     private static void AssignReturnValueNode(string methodName, Type returnType, BaseObjectState parent, MethodState method)
     {
-        var (_, valueRank, typeId) = OpcTypeInfoUtils.ConstructOpcTypeInfo(returnType);
+        var (_, valueRank, typeId) = OpcTypeInfo.FromType(returnType);
 
         Argument[] value =
         [

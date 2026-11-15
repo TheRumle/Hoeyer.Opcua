@@ -1,5 +1,6 @@
 ﻿using Hoeyer.OpcUa.Simulation.Abstractions;
 using Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter.Application;
 
@@ -14,7 +15,7 @@ internal sealed class MethodArgumentParser<TMethodArgs>(IEntityMethodArgTranslat
     private static readonly int NumberOfArgs = typeof(TMethodArgs).GetProperties().Length;
 
     /// <inheritdoc />
-    public TMethodArgs ParseToArgsStructure(IList<object> inputArguments)
+    public TMethodArgs ParseToArgsStructure(IList<Variant> inputArguments)
     {
         var argumentStructure = argsMapper.Map(inputArguments);
         if (inputArguments.Count != NumberOfArgs)

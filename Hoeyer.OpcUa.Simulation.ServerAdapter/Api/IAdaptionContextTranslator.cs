@@ -1,16 +1,17 @@
 ﻿using Hoeyer.OpcUa.Server.Abstractions.NodeManagement;
 using Hoeyer.OpcUa.Simulation.Abstractions.Execution.ExecutionSteps;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
 
 public interface IAdaptionContextTranslator<TEntity, TMethodArgs>
 {
     public (TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps)
-        CreateSimulationContext(IList<object> inputArguments, IManagedEntityNode entity);
+        CreateSimulationContext(IList<Variant> inputArguments, IManagedEntityNode entity);
 }
 
 public interface IAdaptionContextTranslator<TEntity, TMethodArgs, TReturn>
 {
     public (TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps) CreateSimulationContext(
-        IList<object> inputArguments, IManagedEntityNode entity);
+        IList<Variant> inputArguments, IManagedEntityNode entity);
 }

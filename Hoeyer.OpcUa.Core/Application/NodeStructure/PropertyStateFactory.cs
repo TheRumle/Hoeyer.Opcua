@@ -19,7 +19,7 @@ public abstract class PropertyStateFactory : IPropertyStateFactory
         PropertyInfo propertyInfo,
         BaseInstanceState parent)
     {
-        var typeInfo = OpcTypeInfoUtils.ConstructOpcTypeInfo(propertyInfo.PropertyType);
+        var typeInfo = OpcTypeInfo.FromType(propertyInfo.PropertyType);
         var nodeId = new NodeId(parent.BrowseName.Name! + "." + browseName, parent.NodeId.NamespaceIndex);
         var context = new PropertyStateCreationContext(typeInfo, parent, nodeId, browseName, typeInfo.Rank);
         return typeInfo.BuiltInType switch

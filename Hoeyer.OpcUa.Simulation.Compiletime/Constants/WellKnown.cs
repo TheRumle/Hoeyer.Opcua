@@ -8,6 +8,12 @@ internal static class WellKnown
         new("Hoeyer.OpcUa.Simulation.Abstractions" + className);
 
     private static FullyQualifiedTypeName CoreTypeName(string className) => new("Hoeyer.OpcUa.Core." + className);
+    
+    public static class VariantConverter
+    {
+        public static FullyQualifiedTypeName Aggregated =>
+            new("Hoeyer.OpcUa.Core.Application.OpcTypeMappers.VariantConverter");
+    }
 
     public static class FullyQualifiedAttribute
     {
@@ -15,6 +21,9 @@ internal static class WellKnown
 
         public static readonly FullyQualifiedTypeName EntityBehaviourAttribute =
             CoreTypeName("OpcUaEntityMethodsAttribute");
+        
+        public static readonly FullyQualifiedTypeName EntityBehaviourAttributeDef =
+            CoreTypeName("OpcUaEntityMethodsAttribute`1");
 
         public static readonly FullyQualifiedTypeName GenericEntityBehaviourAttribute =
             CoreTypeName("OpcUaEntityMethodsAttribute<T>");

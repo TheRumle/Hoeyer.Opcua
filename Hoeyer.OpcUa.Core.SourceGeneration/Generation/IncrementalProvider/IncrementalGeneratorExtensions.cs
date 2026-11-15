@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Hoeyer.OpcUa.Core.SourceGeneration.Constants;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Hoeyer.OpcUa.Core.SourceGeneration.Generation.IncrementalProvider;
@@ -9,7 +10,7 @@ internal static class IncrementalGeneratorExtensions
         this IncrementalGeneratorInitializationContext context)
     {
         var valueProvider = context.SyntaxProvider.ForAttributeWithMetadataName(
-                "Hoeyer.OpcUa.Core.OpcUaEntityAttribute",
+                WellKnown.FullyQualifiedAttribute.OpcUaEntityAttribute.WithoutGlobalPrefix,
                 (_, _) => true,
                 (attributeSyntaxContext, cancellationToken) =>
                 {

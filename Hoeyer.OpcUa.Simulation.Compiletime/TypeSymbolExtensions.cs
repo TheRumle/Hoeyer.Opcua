@@ -9,22 +9,18 @@ public static class TypeSymbolExtensions
         symbol.GetAttributes()
             .Any(IsOpcEntityAttributeSymbol);
 
-    public static bool IsAnnotatedAsOpcMethodArgs(this ITypeSymbol symbol) => symbol.GetOpcArgsAttribute() != null;
+    extension(ITypeSymbol? symbol)
+    {
+        public AttributeData? GetOpcMethodAttribute() =>
+            symbol?
+                .GetAttributes()
+                .FirstOrDefault(IsOpcMethodAttributeSymbol);
 
-    public static AttributeData? GetOpcEntityAttribute(this ITypeSymbol? symbol) =>
-        symbol?
-            .GetAttributes()
-            .FirstOrDefault(IsOpcEntityAttributeSymbol);
-
-    public static AttributeData? GetOpcMethodAttribute(this ITypeSymbol? symbol) =>
-        symbol?
-            .GetAttributes()
-            .FirstOrDefault(IsOpcMethodAttributeSymbol);
-
-    public static AttributeData? GetOpcArgsAttribute(this ITypeSymbol? symbol) =>
-        symbol?
-            .GetAttributes()
-            .FirstOrDefault(IsOpcMethodArgsAttributeSymbol);
+        public AttributeData? GetOpcArgsAttribute() =>
+            symbol?
+                .GetAttributes()
+                .FirstOrDefault(IsOpcMethodArgsAttributeSymbol);
+    }
 
     public static bool IsOpcEntityAttributeSymbol(AttributeData x) =>
         WellKnown.FullyQualifiedAttribute

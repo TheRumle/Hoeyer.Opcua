@@ -4,6 +4,7 @@ using Hoeyer.OpcUa.Simulation.Abstractions.Configuration;
 using Hoeyer.OpcUa.Simulation.Abstractions.Execution.ExecutionSteps;
 using Hoeyer.OpcUa.Simulation.Configuration;
 using Hoeyer.OpcUa.Simulation.ServerAdapter.Api;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.Simulation.ServerAdapter;
 
@@ -14,7 +15,7 @@ public sealed class AdaptionContextTranslator<TEntity, TMethodArgs>(
 ) : IAdaptionContextTranslator<TEntity, TMethodArgs>
 {
     public (TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps) CreateSimulationContext(
-        IList<object> inputArguments, IManagedEntityNode entity)
+        IList<Variant> inputArguments, IManagedEntityNode entity)
     {
         var builder =
             new SimulationBuilder<TEntity, TMethodArgs>(translator, new LockedEntityState<TEntity>(entity, translator));
@@ -31,7 +32,7 @@ public sealed class AdaptionContextTranslator<TEntity, TMethodArgs, TReturn>(
 ) : IAdaptionContextTranslator<TEntity, TMethodArgs, TReturn>
 {
     public (TMethodArgs args, IEnumerable<ISimulationStep> simulationSteps) CreateSimulationContext(
-        IList<object> inputArguments, IManagedEntityNode entity)
+        IList<Variant> inputArguments, IManagedEntityNode entity)
     {
         var builder =
             new SimulationBuilder<TEntity, TMethodArgs, TReturn>(translator,

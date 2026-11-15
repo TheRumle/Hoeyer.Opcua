@@ -1,5 +1,4 @@
 ﻿using Hoeyer.OpcUa.Simulation.SourceGeneration.Constants;
-using Hoeyer.OpcUa.Simulation.SourceGeneration.Models;
 using Microsoft.CodeAnalysis;
 
 namespace Hoeyer.OpcUa.Simulation.SourceGeneration.Generation;
@@ -7,128 +6,170 @@ namespace Hoeyer.OpcUa.Simulation.SourceGeneration.Generation;
 [Generator]
 public sealed class MethodArgumentsStructureGenerator : IIncrementalGenerator
 {
+    private const string CONVERTER = "_converter";
+
     /// <inheritdoc />
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         //find all interfaces annotated as EntityMethod
-        var sourceCodeContainers = context.GetAllOrdinaryTypesFromAllAssemblies()
-            .Select((symbol, c) => (
-                Interface: symbol,
-                InterfaceMethods: symbol.GetMembers().OfType<IMethodSymbol>(),
-                EntitySymbol: symbol.GetEntityFromGenericAttributeArgument()))
-            .Where(symbolTuple => symbolTuple.EntitySymbol is not null)
-            .Select((symbolTuple, c) => CreateOpcMethodContext(symbolTuple))
-            .SelectMany(CreateSourceCode);
+        var sourceCodeContainers = context
+            .GetEntityMethodSyntaxes()
+            .Select(CreateSourceCode);
 
         context.RegisterSourceOutput(sourceCodeContainers.Collect(), (sourceContext, methodModelsList) =>
         {
-            foreach (var (identifier, code) in methodModelsList)
+            foreach (var (className, code) in methodModelsList.SelectMany(e => e))
             {
-                sourceContext.AddSource(identifier + ".g.cs", code);
+                sourceContext.AddSource(className + ".g.cs", code);
             }
         });
     }
 
-    private static OpcMethodContext CreateOpcMethodContext(
-        (INamedTypeSymbol Interface, IEnumerable<IMethodSymbol> InterfaceMethods, INamedTypeSymbol? EntitySymbol)
-            symbolTuple) =>
-        new(symbolTuple.EntitySymbol!, symbolTuple.Interface, symbolTuple.InterfaceMethods.ToList());
-
-
-    private static IEnumerable<(string identifier, string code)> CreateSourceCode(OpcMethodContext model,
+    private static (string className, string definition)[] CreateSourceCode(
+        TypeContext symbol,
         CancellationToken cancellationToken)
     {
-        var results = new List<(string identifier, string code)>();
-        var entity = model.Entity.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
-        var @interface = model.InterfaceSymbol.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
-        var @namespace = model.InterfaceSymbol.GetFullNamespace();
+        var interfaceSymbol = (INamedTypeSymbol)symbol.SemanticModel
+            .GetDeclaredSymbol(symbol.Node, cancellationToken)!;
 
-        foreach (var methodSymbol in model.Methods)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                break;
-            }
+        var entity = interfaceSymbol
+            .GetOpcMethodAttribute()!
+            .AttributeClass!
+            .TypeArguments[0];
 
-            var builder = new SourceCodeWriter();
+        var methods = interfaceSymbol.GetMembers()
+            .OfType<IMethodSymbol>()
+            .ToArray();
 
-            var className = methodSymbol.Name + "Args";
+        var records = methods
+            .AsParallel()
+            .WithCancellation(cancellationToken)
+            .Select(method => CreateArgumentRecord(interfaceSymbol, method, entity));
 
-            var firstLetterToUpper = (string s) => char.ToUpper(s[0]) + s.Substring(1);
-            var paramList = methodSymbol
-                .Parameters
-                .Select((param, index) => (
-                    Type: param.Type.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix),
-                    UpperName: firstLetterToUpper.Invoke(param.Name),
-                    LowerName: param.Name,
-                    Index: index))
-                .ToList();
+        var translators = methods
+            .AsParallel()
+            .WithCancellation(cancellationToken)
+            .Select(method => CreateTranslator(
+                interfaceSymbol,
+                method,
+                symbol.SemanticModel));
 
-            builder.WriteLine("namespace " + @namespace + ".Generated");
-            builder.WriteLine("{");
-
-            //method arg attribute
-            var attrName = WellKnown.FullyQualifiedAttribute.OpcMethodArgumentsAttribute.WithGlobalPrefix;
-            builder.WriteLine($"[{attrName}<{entity}, {@interface}>(\"{methodSymbol.Name}\")]");
-            builder.WriteLine($"public sealed record {className} : " +
-                              WellKnown.FullyQualifiedInterface.IArgsContainer.WithGlobalPrefix);
-            builder.WriteLine("{");
-            foreach (var (type, upperName, _, _) in paramList)
-            {
-                builder.WriteLine($"public {type} {upperName} {{ get; }}");
-            }
-
-            builder.WriteLine(
-                $"public {className}({string.Join(", ", paramList.Select(e => e.Type + " " + e.LowerName))})"); //ctor begin
-            builder.WriteLine("{");
-            foreach (var (_, upperName, lowerName, _) in paramList) //property assignments
-            {
-                builder.WriteLine($"this.{upperName} = {lowerName};");
-            }
-
-            builder.WriteLine("}"); //ctor end
-            builder.WriteLine("}"); //class end
-            builder.WriteLine("}"); // namespace end
-
-            results.Add((className, builder.ToString()));
-            results.Add(CreateTranslator(className, @namespace, paramList));
-        }
-
-        return results;
+        return [.. records, .. translators];
     }
 
-
-    public static (string identifier, string definition) CreateTranslator(string className, string @namespace,
-        List<(string Type, string UpperName, string LowerName, int Index)> paramList)
+    private static (string className, string definition)  CreateTranslator(
+        INamedTypeSymbol interfaceSymbol,
+        IMethodSymbol method,
+        SemanticModel model)
     {
-        var translatorInterface = WellKnown.FullyQualifiedInterface.IObjectArgsToTypedArgs(className).WithGlobalPrefix;
-        var toArgsStructure = string.Join(",\n ",
-            paramList.Select(e =>
-                WellKnown.FullyQualifiedInterfaceMethodName.TypeTranslatorMethodCall(e.Type, $"args[{e.Index}]")
-                    .WithGlobalPrefix));
-        var toObjectArray = string.Join(",\n ", paramList.Select(e => $"args.{e.UpperName}"));
+        var argumentRecord = CreateArgRecordName(method);
+        var @namespace = interfaceSymbol.GetFullNamespace();
+        var className = $"{argumentRecord}Translator";
 
-        var converterIdentifier = className + "Translator";
-        var converterInterface = $$"""
-                                   namespace {{@namespace}}.Generated
-                                   {
-                                       public sealed class {{converterIdentifier}} : {{translatorInterface}}
-                                       {
-                                         public {{className}} Map(IList<object> args)
-                                         {
-                                             return new {{className}}({{toArgsStructure}});   
-                                         }
-                                         public object[] Map({{className}} args)
-                                         {
-                                             return new  object[]
-                                             {
-                                                 {{toObjectArray}}
-                                             };
-                                         }
-                                       }
-                                   }
-                                   """;
+        var classDefinition = $$"""
+                 namespace {{@namespace}}.Generated
+                 {
+                     using Opc.Ua;
+                     public sealed class {{className}} : {{WellKnown.FullyQualifiedInterface.IObjectArgsToTypedArgs(argumentRecord).WithGlobalPrefix}}
+                     {
+                       private readonly {{WellKnown.VariantConverter.Aggregated.WithGlobalPrefix}} {{CONVERTER}};
+                       
+                       //constructor
+                       public {{className}}(
+                          {{WellKnown.VariantConverter.Aggregated.WithGlobalPrefix}} {{CONVERTER}}
+                       ){
+                          this.{{CONVERTER}} = {{CONVERTER}};
+                       }
+                     
+                       public {{argumentRecord}}? Map(IList<Variant> args){
+                            return new {{argumentRecord}}({{ArgRecordCreation(method, model)}});
+                       }
+                       
+                       public Variant[] Map({{argumentRecord}} argRecord)
+                       {
+                           return new Variant[]
+                           {
+                               {{ArgVariantCreation(method)}}
+                           };
+                       }
+                     }
+                 }
+                 """;
 
-        return (converterIdentifier, converterInterface);
+        return (className, classDefinition);
     }
+
+    private static string ArgRecordCreation(IMethodSymbol method, SemanticModel model)
+    {
+        var convertionStatements = method.Parameters.Select((parameter, index) =>
+        {
+            var listInterface = GetListInterface(parameter, model);
+            var argumentValue = $"args[{index}]";
+            if (listInterface is not null)
+            {
+                var genericArg = listInterface.TypeArguments.First().Name;
+                return $"{CONVERTER}.ConvertToCollectionType<{genericArg}, List<{genericArg}>>({argumentValue})";
+            }
+
+            var parameterType = parameter.Type.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
+            return $"{CONVERTER}.ConvertToType<{parameterType}>({argumentValue})";
+        }).ToList();
+
+        return String.Join(", ", convertionStatements);
+    }
+    
+    private static string ArgVariantCreation(IMethodSymbol method)
+    {
+        var convertionStatements = method.Parameters.Select((parameter, index) 
+            => $"{CONVERTER}.ConvertToVariant(argRecord.{FirstLetterToUpper(parameter.Name)})").ToList();
+        return string.Join(", ", convertionStatements);
+    }
+
+
+    private static INamedTypeSymbol? GetListInterface(IParameterSymbol typeSymbol, SemanticModel model)
+    {
+        var ilistType = model.Compilation.GetTypeByMetadataName("System.Collections.Generic.IList`1");
+        return typeSymbol.Type.AllInterfaces
+            .FirstOrDefault(i => i.OriginalDefinition.Equals(ilistType, SymbolEqualityComparer.Default));
+    }
+
+    private static (string className, string definition) CreateArgumentRecord(
+        INamedTypeSymbol interfaceSymbol,
+        IMethodSymbol methodSymbol,
+        ITypeSymbol entityType
+    )
+    {
+        var @interface = interfaceSymbol.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix);
+        var @namespace = interfaceSymbol.GetFullNamespace();
+        var entity = entityType.ToFullyQualifiedTypeName();
+
+        var paramList = methodSymbol
+            .Parameters
+            .Select((param) => (
+                Type: param.Type.ToDisplayString(DisplayFormats.FullyQualifiedGenericWithGlobalPrefix),
+                UpperName: FirstLetterToUpper(param.Name)))
+            .ToList();
+
+        var className = CreateArgRecordName(methodSymbol);
+        var ctorArgs = string.Join(", ", paramList.Select(e => $"{e.Type} {e.UpperName}"));
+        var methodArgsRecordDcl = $$"""
+                                    namespace {{@namespace}}.Generated{
+                                       [{{WellKnown.FullyQualifiedAttribute.OpcMethodArgumentsAttribute.WithGlobalPrefix}}
+                                       <{{entity}}, {{@interface}}>("{{methodSymbol.Name}}")]
+                                       public sealed record {{className}}({{ctorArgs}}) 
+                                           : {{WellKnown.FullyQualifiedInterface.IArgsContainer.WithGlobalPrefix}}{}
+                                    }
+                                    """;
+
+        return (className, methodArgsRecordDcl);
+    }
+
+    private static string CreateArgRecordName(IMethodSymbol methodSymbol)
+    {
+        var className = methodSymbol.Name + "Args";
+        return className;
+    }
+
+
+    private static string FirstLetterToUpper(string s) => char.ToUpper(s[0]) + s.Substring(1);
 }
