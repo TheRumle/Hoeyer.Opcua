@@ -15,6 +15,7 @@ using Hoeyer.OpcUa.Server.Application;
 using Hoeyer.OpcUa.Server.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Opc.Ua;
+using Opc.Ua.Security.Certificates;
 
 namespace Hoeyer.OpcUa.Server.Services;
 
@@ -45,21 +46,21 @@ public static class ServiceExtensions
         var collection = serviceRegistration.Collection;
         AddLoaders(serviceRegistration.Collection, serviceRegistration.EntityCollection, assembliesContainingLoaders);
 
-        collection.AddSingleton(typeof(IEntityNodeStructureFactory<>), typeof(ReflectionBasedEntityStructureFactory<>));
-        collection.AddServiceAndImplSingleton<IOpcUaTargetServerSetup, OpcUaTargetServerSetup>();
-        collection.AddSingleton<IServerApplicationConfigurationFactory, ServerApplicationConfigurationFactory>();
-        collection.AddSingleton<ServerApplicationConfigurationAction>(serviceProvider =>
-        {
-            return config =>
+        collection
+            .AddSingleton<ICertificateFactory, DefaultCertificateFactory>()
+            .AddSingleton(typeof(IEntityNodeStructureFactory<>), typeof(ReflectionBasedEntityStructureFactory<>))
+            .AddServiceAndImplSingleton<IOpcUaTargetServerSetup, OpcUaTargetServerSetup>()
+            .AddSingleton<IServerApplicationConfigurationFactory, ServerApplicationConfigurationFactory>()
+            .AddSingleton<ServerApplicationConfigurationAction>(serviceProvider =>
             {
-                config.OpcUaApplicationConfiguration.ServerConfiguration ??= new ServerConfiguration();
-                additionalConfiguration?.Invoke(serviceProvider, config.GetServerConfigurable());
-            };
-        });
+                return config =>
+                {
+                    config.OpcUaApplicationConfiguration.ServerConfiguration ??= new ServerConfiguration();
+                    additionalConfiguration?.Invoke(serviceProvider, config.GetServerConfigurable());
+                };
+            });
 
-        var registration = typeof(ServiceExtensions)
-            .CreateStaticMethodInvoker(nameof(AddServices), collection);
-
+        var registration = typeof(ServiceExtensions).CreateStaticMethodInvoker(nameof(AddServices), collection);
         foreach (var entity in serviceRegistration.EntityCollection.ModelledEntities
                      .Where(type => type.IsAnnotatedWith<OpcUaEntityAttribute>())
                      .ToFrozenSet())
@@ -67,40 +68,36 @@ public static class ServiceExtensions
             registration.Invoke(entity);
         }
 
-        collection.AddSingleton<ServerApplication>();
-        collection.AddTransient<ServerApplicationConfiguration>(provider =>
-            provider.GetRequiredService<IServerApplicationConfigurationFactory>().CreateServerConfiguration()
-        );
-
-        collection.AddServiceAndImplSingleton(typeof(INodeConfigurator<>), typeof(AlarmSetupConfigurator<>));
-        collection.AddServiceAndImplSingleton(typeof(INodeConfigurator<>), typeof(AlarmLoggingConfigurator<>));
-        collection.AddServiceAndImplSingleton<IEntityNodeAccessConfigurator, NoAccessRestrictionsConfigurator>();
-        collection.AddServiceAndImplSingleton<IServerStartedHealthCheck, HealthCheck>();
-        collection.AddSingleton<IHealthCheckAssignment>(p => p.GetRequiredService<HealthCheck>());
-
-        collection.AddSingleton<IOpcEntityServer, OpcEntityServer>();
-        collection.AddSingleton<IStartableEntityServer, StartableEntityServer>();
+        collection
+            .AddTransient<ServerApplicationConfiguration>(provider =>
+                provider.GetRequiredService<IServerApplicationConfigurationFactory>().CreateServerConfiguration()
+            )
+            .AddSingleton<ServerApplication>()
+            .AddServiceAndImplSingleton(typeof(INodeConfigurator<>), typeof(AlarmSetupConfigurator<>))
+            .AddServiceAndImplSingleton(typeof(INodeConfigurator<>), typeof(AlarmLoggingConfigurator<>))
+            .AddServiceAndImplSingleton<IEntityNodeAccessConfigurator, NoAccessRestrictionsConfigurator>()
+            .AddServiceAndImplSingleton<IServerStartedHealthCheck, HealthCheck>()
+            .AddSingleton<IHealthCheckAssignment>(p => p.GetRequiredService<HealthCheck>())
+            .AddSingleton<IOpcEntityServer, OpcEntityServer>()
+            .AddSingleton<IStartableEntityServer, StartableEntityServer>();
 
         return new OnGoingOpcEntityServerServiceRegistration(serviceRegistration.Collection);
     }
 
     private static void AddServices<TEntity>(IServiceCollection collection)
     {
-        collection.AddSingleton<IManagedEntityNodeProvider<TEntity>, ManagedEntityNodeProvider<TEntity>>();
-
-        collection.AddSingleton<EntityNodeManagerSingletonFactory<TEntity>>();
-
-        collection.AddSingleton<IEntityNodeManagerFactory<TEntity>>(sp =>
-            sp.GetRequiredService<EntityNodeManagerSingletonFactory<TEntity>>());
-
-        collection.AddSingleton<IEntityNodeManagerFactory>(sp =>
-            sp.GetRequiredService<EntityNodeManagerSingletonFactory<TEntity>>());
-
-        collection.AddSingleton<IEntityManagerHolder<TEntity>>(sp =>
-            sp.GetRequiredService<EntityNodeManagerSingletonFactory<TEntity>>());
-
-        collection.AddSingleton<IEntityManagerHolder>(sp =>
-            sp.GetRequiredService<IEntityManagerHolder<TEntity>>());
+        collection
+            .AddSingleton<IManagedEntityNodeProvider<TEntity>, ManagedEntityNodeProvider<TEntity>>()
+            .AddSingleton<EntityNodeManagerSingletonFactory<TEntity>>()
+            .AddSingleton<IEntityNodeManagerFactory<TEntity>>(sp =>
+                sp.GetRequiredService<EntityNodeManagerSingletonFactory<TEntity>>())
+            .AddSingleton<IEntityNodeManagerFactory>(sp =>
+                sp.GetRequiredService<EntityNodeManagerSingletonFactory<TEntity>>())
+            .AddSingleton<IEntityManagerHolder<TEntity>>(sp =>
+                sp.GetRequiredService<EntityNodeManagerSingletonFactory<TEntity>>())
+            .AddSingleton<IEntityManagerHolder>(sp =>
+                sp.GetRequiredService<IEntityManagerHolder<TEntity>>()
+            );
     }
 
 

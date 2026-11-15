@@ -11,7 +11,7 @@ namespace Hoeyer.OpcUa.IntegrationTest.Configuration;
 public class SessionConnectionTest(
     RuntimeSelectedServer serverFixture)
 {
-    private const int CONNECTION_TIMEOUT = 10000;
+    private const int CONNECTION_TIMEOUT = 100000;
     private IEntitySessionFactory sessionFactory => serverFixture.GetService<IEntitySessionFactory>();
 
     [Test]

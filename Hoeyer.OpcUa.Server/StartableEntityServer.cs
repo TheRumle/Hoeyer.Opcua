@@ -63,4 +63,6 @@ internal sealed class StartableEntityServer(
             }
         }
     }
+
+    public IOpcEntityServer Server => entityServer;
 }

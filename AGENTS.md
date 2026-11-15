@@ -61,7 +61,6 @@ The core libraries are suitable candidates for unit testing, but many parts of t
 - Central package management: versions in root `Directory.Packages.props`, references in the owning `.csproj` (do NOT put versions in `.csproj`).
 - Root `Directory.Build.props`: `Nullable` enable, `ImplicitUsings` enable, `LangVersion` latestmajor.
 - Namespaces: `Hoeyer.<ProjectArea>.*`. Keep interfaces in `*.Abstractions` projects.
-- OPC UA API used: `OPCFoundation.NetStandard.Opc.Ua` v1.5.x.
 
 ## OPC UA documentation
 Always consult `.opencode/opc-ua-docs.md` for official documentation links and API lookup guidance
@@ -71,6 +70,12 @@ before writing OPC UA code. Prefer the official spec and OPC Foundation source o
 `known-bugs.md` at the repo root is the registry of known defects. Check it before touching related code,
 and fix them in severity order (Critical → Medium → Low).
 
+
 ## General agent rules
 - Verify with build/tests after making changes (`/build`, `/test`).
 - Match existing patterns (source generation, DI registration style) rather than inventing new ones.
+- Use Rider MCP server at localhost port 64482 to connect to rider and use it to look up symbols, debug etc. 
+
+## Safety harness
+You are under no circumstances allowed to commit code before writing an integration or unit test for it. Exceptions can be made if you ask the user and explain why an exception needs to be made.
+Ask user about what the commit message should be. Come with suggestions.

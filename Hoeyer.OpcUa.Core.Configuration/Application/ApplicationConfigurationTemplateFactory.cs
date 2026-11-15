@@ -40,7 +40,7 @@ internal sealed class ApplicationConfigurationTemplateFactory(
         var template = new ApplicationConfigurationTemplate(configuration);
         setup.Invoke(template.Configuration);
 
-        var _ = new Uri(template.Configuration.ApplicationUri);
+        var _ = new Uri(template.Configuration.ApplicationUri); //throw if wrong
         return template;
     }
 }

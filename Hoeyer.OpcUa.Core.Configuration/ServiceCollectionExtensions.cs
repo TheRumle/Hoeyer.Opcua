@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Opc.Ua;
+using Opc.Ua.Security.Certificates;
 
 namespace Hoeyer.OpcUa.Core.Configuration;
 
@@ -35,6 +36,7 @@ public static class ServiceCollectionExtensions
     )
     {
         var entityServerConfiguration = configurationBuilder.Invoke(ApplicationRequirementBuilder.Create());
+        services.AddSingleton<ICertificateFactory, DefaultCertificateFactory>();
         services.AddSingleton<ICultureInfoProvider, InvariantCultureInfoProvider>();
         services.AddSingleton<IApplicationRequirementsFactory>(new DefaultFactory(() => entityServerConfiguration));
         services.AddApplicationConfiguration(configureOpcUaApplicationConfiguration);

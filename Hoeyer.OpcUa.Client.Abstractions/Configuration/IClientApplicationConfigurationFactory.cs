@@ -1,8 +1,6 @@
-﻿using Opc.Ua;
-
-namespace Hoeyer.OpcUa.Client.Abstractions.Configuration;
+﻿namespace Hoeyer.OpcUa.Client.Abstractions.Configuration;
 
 public interface IClientApplicationConfigurationFactory
 {
-    ApplicationConfiguration CreateClientConfiguration();
+    ClientApplicationConfiguration CreateClientConfiguration();
 }

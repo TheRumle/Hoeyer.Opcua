@@ -8,17 +8,21 @@ using Hoeyer.OpcUa.Client.Abstractions.Browsing.Reading;
 using Hoeyer.OpcUa.Client.Abstractions.Calling;
 using Hoeyer.OpcUa.Client.Abstractions.Configuration;
 using Hoeyer.OpcUa.Client.Abstractions.Connection;
+using Hoeyer.OpcUa.Client.Abstractions.Discovery;
 using Hoeyer.OpcUa.Client.Abstractions.Monitoring;
 using Hoeyer.OpcUa.Client.Abstractions.Writing;
 using Hoeyer.OpcUa.Client.Application.Browsing;
 using Hoeyer.OpcUa.Client.Application.Calling;
 using Hoeyer.OpcUa.Client.Application.Connection;
+using Hoeyer.OpcUa.Client.Application.Discovery;
 using Hoeyer.OpcUa.Client.Application.Subscriptions;
 using Hoeyer.OpcUa.Client.Application.Writing;
 using Hoeyer.OpcUa.Client.Configuration;
 using Hoeyer.OpcUa.Core.Configuration;
 using Hoeyer.OpcUa.Core.Configuration.Modelling;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Opc.Ua;
 using Opc.Ua.Client;
 using INodeBrowser = Hoeyer.OpcUa.Client.Abstractions.Browsing.INodeBrowser;
 
@@ -34,10 +38,10 @@ public static class ClientServices
     public static OnGoingOpcEntityServiceRegistrationWithModels WithOpcUaClientConfiguration(
         this OnGoingOpcEntityServiceRegistrationWithModels registration,
         IEnumerable<Type> fromAssembly,
-        Action<ClientServiceConfiguration>? configure = null
+        Action<ClientServiceConfigurationBuilder>? configure = null
     )
     {
-        var conf = new ClientServiceConfiguration();
+        var conf = new ClientServiceConfigurationBuilder();
         configure?.Invoke(conf);
 
         registration.Collection.AddClientServices(fromAssembly, conf);
@@ -47,14 +51,18 @@ public static class ClientServices
     public static IServiceCollection AddClientServices(
         this IServiceCollection services,
         IEnumerable<Type> fromAssembly,
-        ClientServiceConfiguration conf)
+        ClientServiceConfigurationBuilder conf)
     {
         var markers = fromAssembly.ToList();
         services.AddSingleton(conf.EntityMonitoringConfiguration);
+        services.AddSingleton<IEnumerable<UserTokenPolicy>>(conf.TokenPolicies);
+        services.AddSingleton<IEnumerable<(string PolicyUri, MessageSecurityMode Mode)>>(conf.SupportedPolicies);
         services.AddKeyedSingleton(ServiceKeys.CLIENT_SERVICES, markers.Select(e => new AssemblyMarker(e)));
 
         services.AddSingleton(new ClientApplicationConfigurationAction(conf.clientConfig));
         services.AddSingleton<IClientApplicationConfigurationFactory, ClientApplicationConfigurationFactory>();
+        services.AddSingleton<ClientApplicationConfiguration>(
+            p => p.GetRequiredService<IClientApplicationConfigurationFactory>().CreateClientConfiguration());
 
 
         services.AddNodeBrowsing(conf);
@@ -85,8 +93,9 @@ public static class ClientServices
         }
     }
 
-    private static void AddSessionManagement(this IServiceCollection services, ClientServiceConfiguration conf)
+    private static void AddSessionManagement(this IServiceCollection services, ClientServiceConfigurationBuilder conf)
     {
+        services.AddScoped<IEndpointDiscovery, EndpointDiscovery>();
         services.AddServiceAndImplTransient(typeof(IMonitorItemFactory<>), typeof(MonitorItemFactory<>));
         services.AddSingleton<ISessionFactory, DefaultSessionFactory>();
         services.AddServiceAndImplSingleton(typeof(IEntitySessionFactory), conf.EntitySessionFactory);
@@ -95,7 +104,7 @@ public static class ClientServices
         services.AddServiceAndImplSingleton(typeof(IReconnectionStrategy), conf.ReconnectionStrategy);
     }
 
-    private static void AddNodeBrowsing(this IServiceCollection services, ClientServiceConfiguration conf)
+    private static void AddNodeBrowsing(this IServiceCollection services, ClientServiceConfigurationBuilder conf)
     {
         services.AddServiceAndImplTransient<INodeTreeTraverser, BreadthFirstStrategy>();
         services.AddServiceAndImplTransient<INodeTreeTraverser, DepthFirstStrategy>(); //default

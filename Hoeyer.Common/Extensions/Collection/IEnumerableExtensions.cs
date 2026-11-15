@@ -18,4 +18,8 @@ public static class IEnumerableExtensions
     {
         return source.Select(original => new Func<TResult>(() => selector.Invoke(original)));
     }
+    
+    public static TResult? MapFirst<TSource, TResult>(
+        this IEnumerable<TSource> source,
+        Func<TSource, TResult> selector) => source.Take(1).Select(selector).FirstOrDefault();
 }

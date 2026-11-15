@@ -10,15 +10,14 @@ internal sealed class ClientApplicationConfigurationFactory(
 )
     : IClientApplicationConfigurationFactory
 {
-    public ApplicationConfiguration CreateClientConfiguration()
+    public ClientApplicationConfiguration CreateClientConfiguration()
     {
         var clientApplicationConfiguration = new ApplicationConfiguration(template.CreateTemplate().Configuration);
         clientApplicationConfiguration.ApplicationType = ApplicationType.Client;
         configurationAction.Invoke(clientApplicationConfiguration);
-        return clientApplicationConfiguration;
+        return new ClientApplicationConfiguration(
+            new Uri(clientApplicationConfiguration.ApplicationUri!),
+            clientApplicationConfiguration
+        );
     }
 }
-
-internal delegate void ClientApplicationConfigurationAction(ApplicationConfiguration applicationConfiguration);
-
-public sealed record ClientApplicationConfiguration(ApplicationConfiguration ApplicationConfiguration);

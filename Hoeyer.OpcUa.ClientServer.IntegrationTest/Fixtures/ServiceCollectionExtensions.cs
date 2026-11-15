@@ -5,6 +5,7 @@ using Hoeyer.OpcUa.Fixtures.Common;
 using Hoeyer.OpcUa.Server.Configuration;
 using Hoeyer.OpcUa.Server.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Opc.Ua;
 
 namespace Hoeyer.OpcUa.IntegrationTest.Fixtures;
 
@@ -25,7 +26,13 @@ public static class ServiceCollectionExtensions
         return services
             .AddCoreTestServices(args, entityAssemblyMarkers)
             .WithOpcUaClientConfiguration(clientModelMarker,
-                c => { c.WithEntitySessionFactory<CachedSessionFactory>(); });
+                configuration =>
+                {
+                    configuration
+                        .WithEntitySessionFactory<CachedSessionFactory>()
+                        .AddPolicySecurity(MessageSecurityMode.None, SecurityPolicies.None)
+                        .AddTokenSecurity(UserTokenType.Anonymous, SecurityPolicies.None);
+                });
     }
 
 

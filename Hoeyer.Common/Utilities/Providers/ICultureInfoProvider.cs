@@ -6,8 +6,3 @@ public interface ICultureInfoProvider
 {
     CultureInfo CurrentCulture();
 }
-
-public sealed class InvariantCultureInfoProvider : ICultureInfoProvider
-{
-    public CultureInfo CurrentCulture() => CultureInfo.InvariantCulture;
-}

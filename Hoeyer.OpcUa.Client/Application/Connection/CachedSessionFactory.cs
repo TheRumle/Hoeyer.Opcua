@@ -6,7 +6,7 @@ using Opc.Ua.Client;
 
 namespace Hoeyer.OpcUa.Client.Application.Connection;
 
-public class CachedSessionFactory(
+internal class CachedSessionFactory(
     EntitySessionFactory entitySessionFactory,
     ILogger<CachedSessionFactory> logger,
     ISubscriptionTransferStrategy subscriptionTransferStrategy,
@@ -18,11 +18,10 @@ public class CachedSessionFactory(
     {
         if (!_sessions.TryGetValue(clientKey, out var existingSession))
         {
-            logger.LogInformation("Cache miss, creating new session");
+            logger.LogInformation("Creating new session");
             return _sessions[clientKey] = await entitySessionFactory.GetSessionAsync(clientKey, token);
         }
 
-        logger.LogInformation("Cache hit, using existing session");
         if (SessionIsHealthy(existingSession))
         {
             logger.LogInformation("Session healthy and will be used");
@@ -30,14 +29,13 @@ public class CachedSessionFactory(
         }
 
         logger.LogWarning("Session not healthy, attempting reconnect");
-
         if (await reconnectionStrategy.TryReconnect(existingSession.Session, token))
         {
             logger.LogInformation("Reconnection successful, the session will be used");
             return existingSession;
         }
 
-        logger.LogWarning("Reconnection failed, a new session will be created..");
+        logger.LogInformation("Reconnection failed, a new session will be created..");
 
         var newSession = await entitySessionFactory.GetSessionAsync(clientKey, token);
         logger.LogInformation("New session successfully created, transferring subscriptions...");
